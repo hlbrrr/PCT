@@ -17,7 +17,6 @@ public class testMain {
         try{
             main.init(CommonUtils.getInstance().getDocumentFromFile("d:\\exampleModel"));
             //main.init(CommonUtils.getInstance().getDocumentFromFile("/home/arudin/exampleModel"));
-            //main.init(CommonUtils.getInstance().getDocumentFromFile("/home/arudin/exampleModel"));
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
