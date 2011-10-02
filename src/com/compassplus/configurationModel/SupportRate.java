@@ -1,4 +1,4 @@
-package com.compassplus.pctModel;
+package com.compassplus.configurationModel;
 
 /**
  * Created by IntelliJ IDEA.

@@ -1,8 +1,5 @@
-import com.compassplus.pctModel.PCTManager;
+import com.compassplus.configurationModel.PCTManager;
 import com.compassplus.utils.CommonUtils;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.

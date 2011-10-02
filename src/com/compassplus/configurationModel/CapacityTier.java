@@ -1,4 +1,4 @@
-package com.compassplus.pctModel;
+package com.compassplus.configurationModel;
 
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
