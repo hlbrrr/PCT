@@ -2,8 +2,7 @@ package com.compassplus.configurationModel;
 
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
-import com.compassplus.utils.NodeUtils;
-import org.w3c.dom.Element;
+import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -23,22 +22,47 @@ public class Module {
     private Double capacityStaticPrice;
     private ArrayList<CapacityTier> capacityTiers;
     private Logger log = Logger.getInstance();
-    private NodeUtils nut = NodeUtils.getInstance();
+    private XMLUtils nut = XMLUtils.getInstance();
 
 
-    public Module(Element initialData) throws PCTDataFormatException {
+    public Module(Node initialData) throws PCTDataFormatException {
         init(initialData);
     }
 
-    private void init(Element initialData) throws PCTDataFormatException {
+    private void init(Node initialData) throws PCTDataFormatException {
 
         try {
             log.info("Parsing module");
 
-            this.setName(initialData.getElementsByTagName("Name").item(0));
-            this.setWeight(initialData.getElementsByTagName("Weight").item(0));
-            this.setSecondarySales(initialData.getElementsByTagName("SecondarySales"));
-            this.setCapacityPricing(initialData.getElementsByTagName("CapacityPricing"));
+            this.setName(nut.getNode("Name", initialData));
+            this.setWeight(nut.getNode("Weight", initialData));
+
+            try {
+                this.setSecondarySalesPrice(nut.getNode("SecondarySales/Price", initialData));
+            } catch (PCTDataFormatException e) {
+                log.error(e);
+            }
+            try {
+                this.setSecondarySalesRate(nut.getNode("SecondarySales/Rate", initialData));
+            } catch (PCTDataFormatException e) {
+                log.error(e);
+            }
+            if (this.secondarySalesPrice == null && this.secondarySalesRate == null) {
+                throw new PCTDataFormatException("Module secondary sales pricing is not defined correctly");
+            }
+            try {
+                this.setCapacityStaticPrice(nut.getNode("CapacityPricing/StaticPrice", initialData));
+            } catch (PCTDataFormatException e) {
+                log.error(e);
+            }
+            try {
+                this.setCapacityTiers(nut.getNodes("CapacityPricing/CapacityTiers/Tier", initialData));
+            } catch (PCTDataFormatException e) {
+                log.error(e);
+            }
+            if (this.capacityStaticPrice == null && (this.capacityTiers == null || this.capacityTiers.size() == 0)) {
+                throw new PCTDataFormatException("Module capacity pricing is not defined correctly");
+            }
 
             log.info("Module successfully parsed: \nName: " + this.getName() +
                     "\nWeight: " + this.getWeight() +
@@ -98,27 +122,6 @@ public class Module {
         }
     }
 
-    private void setSecondarySales(NodeList secondarySales) throws PCTDataFormatException {
-        if (secondarySales.getLength() == 1) {
-            Element secondarySalesElement = (Element) secondarySales.item(0);
-            try {
-                this.setSecondarySalesPrice(secondarySalesElement.getElementsByTagName("Price").item(0));
-            } catch (PCTDataFormatException e) {
-                log.error(e);
-            }
-            try {
-                this.setSecondarySalesRate(secondarySalesElement.getElementsByTagName("Rate").item(0));
-            } catch (PCTDataFormatException e) {
-                log.error(e);
-            }
-            if (this.secondarySalesPrice == null && this.secondarySalesRate == null) {
-                throw new PCTDataFormatException("Module secondary sales is not defined correctly");
-            }
-        } else {
-            throw new PCTDataFormatException("Module secondary sales nodes length is not equals 1");
-        }
-    }
-
     public Double getCapacityStaticPrice() {
         return capacityStaticPrice;
     }
@@ -135,48 +138,20 @@ public class Module {
         return capacityTiers;
     }
 
-    private void setCapacityTiers(NodeList capacityTiers) throws PCTDataFormatException {
-        if (capacityTiers.getLength() == 1) {
-            this.capacityTiers = new ArrayList<CapacityTier>();
-            Element capacityTiersElement = (Element) capacityTiers.item(0);
-            NodeList tierNodes = capacityTiersElement.getElementsByTagName("Tier");
-            if (tierNodes.getLength() > 0) {
-                log.info("Found " + tierNodes.getLength() + " capacity tier(s)");
-                for (int i = 0; i < tierNodes.getLength(); i++) {
-                    Element tierElement = (Element) tierNodes.item(i);
-                    try {
-                        this.capacityTiers.add(new CapacityTier(tierElement));
-                    } catch (PCTDataFormatException e) {
-                        log.error(e);
-                    }
+    private void setCapacityTiers(NodeList tiers) throws PCTDataFormatException {
+        this.capacityTiers = new ArrayList<CapacityTier>();
+        if (tiers.getLength() > 0) {
+            log.info("Found " + tiers.getLength() + " capacity tier(s)");
+            for (int i = 0; i < tiers.getLength(); i++) {
+                try {
+                    this.capacityTiers.add(new CapacityTier(tiers.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
                 }
-                log.info("Successfully parsed " + this.capacityTiers.size() + " capacity tier(s)");
-            } else {
-                throw new PCTDataFormatException("No module capacity tiers defined");
             }
+            log.info("Successfully parsed " + this.capacityTiers.size() + " capacity tier(s)");
         } else {
-            throw new PCTDataFormatException("Module capacity pricing nodes length is not equals 1");
-        }
-    }
-
-    private void setCapacityPricing(NodeList capacityPricing) throws PCTDataFormatException {
-        if (capacityPricing.getLength() == 1) {
-            Element capacityPricingElement = (Element) capacityPricing.item(0);
-            try {
-                this.setCapacityStaticPrice(capacityPricingElement.getElementsByTagName("StaticPrice").item(0));
-            } catch (PCTDataFormatException e) {
-                log.error(e);
-            }
-            try {
-                this.setCapacityTiers(capacityPricingElement.getElementsByTagName("CapacityTiers"));
-            } catch (PCTDataFormatException e) {
-                log.error(e);
-            }
-            if (this.capacityStaticPrice == null && (this.capacityTiers == null || this.capacityTiers.size() == 0)) {
-                throw new PCTDataFormatException("Module capacity pricing is not defined correctly");
-            }
-        } else {
-            throw new PCTDataFormatException("Module capacity pricing nodes length is not equals 1");
+            throw new PCTDataFormatException("No module capacity tiers defined");
         }
     }
 }

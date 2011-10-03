@@ -2,8 +2,7 @@ package com.compassplus.configurationModel;
 
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
-import com.compassplus.utils.NodeUtils;
-import org.w3c.dom.Element;
+import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -21,41 +20,35 @@ public class Product {
     private Double minimumPrice;
     private ArrayList<Module> modules = new ArrayList<Module>();
     private Logger log = Logger.getInstance();
-    private NodeUtils nut = NodeUtils.getInstance();
+    private XMLUtils nut = XMLUtils.getInstance();
 
-    public Product(Element initialData) throws PCTDataFormatException {
+    public Product(Node initialData) throws PCTDataFormatException {
         init(initialData);
     }
 
-    private void init(Element initialData) throws PCTDataFormatException {
+    private void init(Node initialData) throws PCTDataFormatException {
         try {
             log.info("Parsing product");
 
-            this.setName(initialData.getElementsByTagName("Name").item(0));
-            this.setMaximumFunctionalityPrice(initialData.getElementsByTagName("MaximumFunctionalityPrice").item(0));
-            this.setMinimumPrice(initialData.getElementsByTagName("MinimumPrice").item(0));
+            this.setName(nut.getNode("Name", initialData));
+            this.setMaximumFunctionalityPrice(nut.getNode("MaximumFunctionalityPrice", initialData));
+            this.setMinimumPrice(nut.getNode("MinimumPrice", initialData));
 
-            NodeList modulesNodes = initialData.getElementsByTagName("Modules");
-            if (modulesNodes.getLength() == 1) {
-                Element modulesElement = (Element) modulesNodes.item(0);
-                NodeList moduleNodes = modulesElement.getElementsByTagName("Module");
-                if (moduleNodes.getLength() > 0) {
-                    log.info("Found " + moduleNodes.getLength() + " modules(s)");
-                    for (int i = 0; i < moduleNodes.getLength(); i++) {
-                        Element moduleElement = (Element) moduleNodes.item(i);
-                        try {
-                            modules.add(new Module(moduleElement));
-                        } catch (PCTDataFormatException e) {
-                            log.error(e);
-                        }
+            NodeList modules = nut.getNodes("Modules/Module", initialData);
+            if (modules.getLength() > 0) {
+                log.info("Found " + modules.getLength() + " modules(s)");
+                for (int i = 0; i < modules.getLength(); i++) {
+                    try {
+                        this.modules.add(new Module(modules.item(i)));
+                    } catch (PCTDataFormatException e) {
+                        log.error(e);
                     }
-                    log.info("Successfully parsed " + modules.size() + " modules(s)");
-                } else {
-                    throw new PCTDataFormatException("No product modules defined");
                 }
+                log.info("Successfully parsed " + this.modules.size() + " modules(s)");
             } else {
-                throw new PCTDataFormatException("Product modules nodes length is not equals 1");
+                throw new PCTDataFormatException("No product modules defined");
             }
+
             if (this.modules.size() == 0) {
                 throw new PCTDataFormatException("Product modules are not defined correctly");
             }

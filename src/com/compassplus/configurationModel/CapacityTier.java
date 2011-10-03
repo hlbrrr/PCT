@@ -2,8 +2,7 @@ package com.compassplus.configurationModel;
 
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
-import com.compassplus.utils.NodeUtils;
-import org.w3c.dom.Element;
+import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 
 /**
@@ -19,20 +18,20 @@ public class CapacityTier {
     private Double packagePrice;
 
     private Logger log = Logger.getInstance();
-    private NodeUtils nut = NodeUtils.getInstance();
+    private XMLUtils nut = XMLUtils.getInstance();
 
-    public CapacityTier(Element initialData) throws PCTDataFormatException {
+    public CapacityTier(Node initialData) throws PCTDataFormatException {
         init(initialData);
     }
 
-    private void init(Element initialData) throws PCTDataFormatException {
+    private void init(Node initialData) throws PCTDataFormatException {
         try {
             log.info("Parsing capacity tier");
 
-            this.setLowerBound(initialData.getElementsByTagName("LowerBound").item(0));
-            this.setUpperBound(initialData.getElementsByTagName("UpperBound").item(0));
-            this.setPackageSize(initialData.getElementsByTagName("PackageSize").item(0));
-            this.setPackagePrice(initialData.getElementsByTagName("PackagePrice").item(0));
+            this.setLowerBound(nut.getNode("LowerBound", initialData));
+            this.setUpperBound(nut.getNode("UpperBound", initialData));
+            this.setPackageSize(nut.getNode("PackageSize", initialData));
+            this.setPackagePrice(nut.getNode("PackagePrice", initialData));
 
             log.info("Capacity tier successfully parsed: \nLowerBound: " + this.getLowerBound() +
                     "\nUpperBound: " + this.getUpperBound() +

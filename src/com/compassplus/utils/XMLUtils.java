@@ -2,6 +2,11 @@ package com.compassplus.utils;
 
 import com.compassplus.exception.PCTDataFormatException;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 /**
  * Created by IntelliJ IDEA.
@@ -9,14 +14,15 @@ import org.w3c.dom.Node;
  * Date: 9/29/11
  * Time: 2:13 PM
  */
-public class NodeUtils {
-    private static NodeUtils ourInstance = new NodeUtils();
+public class XMLUtils {
+    private static XMLUtils ourInstance = new XMLUtils();
+    private XPath xPath = XPathFactory.newInstance().newXPath();
 
-    public static NodeUtils getInstance() {
+    public static XMLUtils getInstance() {
         return ourInstance;
     }
 
-    private NodeUtils() {
+    private XMLUtils() {
     }
 
     public String getString(Node node) throws PCTDataFormatException {
@@ -81,5 +87,21 @@ public class NodeUtils {
             }
         }
 
+    }
+
+    public NodeList getNodes(String xPath, Object src) {
+        try {
+            return (NodeList) this.xPath.evaluate(xPath, src, XPathConstants.NODESET);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Node getNode(String xPath, Object src) {
+        try {
+            return (Node) this.xPath.evaluate(xPath, src, XPathConstants.NODE);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

@@ -2,8 +2,8 @@ package com.compassplus.configurationModel;
 
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
+import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
@@ -19,6 +19,7 @@ public class PCTManager {
     private ArrayList<Product> products = new ArrayList<Product>();
     private ArrayList<SupportRate> supportRates = new ArrayList<SupportRate>();
     private Logger log = Logger.getInstance();
+    private XMLUtils nut = XMLUtils.getInstance();
 
     public static PCTManager getInstance() {
         return ourInstance;
@@ -28,26 +29,19 @@ public class PCTManager {
     }
 
     public void init(Document initialData) throws PCTDataFormatException {
-        NodeList productsNodes = initialData.getElementsByTagName("Products");
-        if (productsNodes.getLength() == 1) {
-            Element productsElement = (Element) productsNodes.item(0);
-            NodeList productNodes = productsElement.getElementsByTagName("Product");
-            if (productNodes.getLength() > 0) {
-                log.info("Found " + productNodes.getLength() + " product(s)");
-                for (int i = 0; i < productNodes.getLength(); i++) {
-                    Element productElement = (Element) productNodes.item(i);
-                    try {
-                        this.products.add(new Product(productElement));
-                    } catch (PCTDataFormatException e) {
-                        log.error(e);
-                    }
+        NodeList products = nut.getNodes("/root/Products/Product", initialData);
+        if (products.getLength() > 0) {
+            log.info("Found " + products.getLength() + " product(s)");
+            for (int i = 0; i < products.getLength(); i++) {
+                try {
+                    this.products.add(new Product(products.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
                 }
-                log.info("Successfully parsed " + products.size() + " product(s)");
-            } else {
-                throw new PCTDataFormatException("No products defined");
             }
+            log.info("Successfully parsed " + this.products.size() + " product(s)");
         } else {
-            throw new PCTDataFormatException("Products nodes length is not equals 1");
+            throw new PCTDataFormatException("No products defined");
         }
 
         if (this.products.size() == 0) {
