@@ -152,5 +152,8 @@ public class Module {
         } else {
             throw new PCTDataFormatException("No module capacity tiers defined");
         }
+        if (this.capacityTiers.size() == 0) {
+            throw new PCTDataFormatException("Module capacity tiers are not defined correctly");
+        }
     }
 }

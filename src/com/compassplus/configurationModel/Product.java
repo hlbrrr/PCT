@@ -34,25 +34,7 @@ public class Product {
             this.setName(xut.getNode("Name", initialData));
             this.setMaximumFunctionalityPrice(xut.getNode("MaximumFunctionalityPrice", initialData));
             this.setMinimumPrice(xut.getNode("MinimumPrice", initialData));
-
-            NodeList modules = xut.getNodes("Modules/Module", initialData);
-            if (modules.getLength() > 0) {
-                log.info("Found " + modules.getLength() + " modules(s)");
-                for (int i = 0; i < modules.getLength(); i++) {
-                    try {
-                        this.modules.add(new Module(modules.item(i)));
-                    } catch (PCTDataFormatException e) {
-                        log.error(e);
-                    }
-                }
-                log.info("Successfully parsed " + this.modules.size() + " modules(s)");
-            } else {
-                throw new PCTDataFormatException("No product modules defined");
-            }
-
-            if (this.modules.size() == 0) {
-                throw new PCTDataFormatException("Product modules are not defined correctly");
-            }
+            this.setModules(xut.getNodes("Modules/Module", initialData));
 
             log.info("Product successfully parsed: \nName: " + this.getName() +
                     "\nMaximumFunctionalityPrice: " + this.getMaximumFunctionalityPrice() +
@@ -100,5 +82,24 @@ public class Product {
 
     public ArrayList<Module> getModules() {
         return modules;
+    }
+
+    public void setModules(NodeList modules) throws PCTDataFormatException {
+        if (modules.getLength() > 0) {
+            log.info("Found " + modules.getLength() + " modules(s)");
+            for (int i = 0; i < modules.getLength(); i++) {
+                try {
+                    this.modules.add(new Module(modules.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.modules.size() + " modules(s)");
+        } else {
+            throw new PCTDataFormatException("No product modules defined");
+        }
+        if (this.modules.size() == 0) {
+            throw new PCTDataFormatException("Product modules are not defined correctly");
+        }
     }
 }

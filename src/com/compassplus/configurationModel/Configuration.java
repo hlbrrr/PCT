@@ -29,27 +29,34 @@ public class Configuration {
     }
 
     public void init(Document initialData) throws PCTDataFormatException {
-        this.products.clear();
         try {
-            NodeList products = xut.getNodes("/root/Products/Product", initialData);
-            if (products.getLength() > 0) {
-                log.info("Found " + products.getLength() + " product(s)");
-                for (int i = 0; i < products.getLength(); i++) {
-                    try {
-                        this.products.add(new Product(products.item(i)));
-                    } catch (PCTDataFormatException e) {
-                        log.error(e);
-                    }
-                }
-                log.info("Successfully parsed " + this.products.size() + " product(s)");
-            } else {
-                throw new PCTDataFormatException("No products defined");
-            }
-            if (this.products.size() == 0) {
-                throw new PCTDataFormatException("Products are not defined correctly");
-            }
+            this.setProducts(xut.getNodes("/root/Products/Product", initialData));
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Bad configuration", e.getDetails());
+        }
+    }
+
+    public ArrayList<Product> getProducts() {
+        return products;
+    }
+
+    private void setProducts(NodeList products) throws PCTDataFormatException {
+        this.products.clear();
+        if (products.getLength() > 0) {
+            log.info("Found " + products.getLength() + " product(s)");
+            for (int i = 0; i < products.getLength(); i++) {
+                try {
+                    this.products.add(new Product(products.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.products.size() + " product(s)");
+        } else {
+            throw new PCTDataFormatException("No products defined");
+        }
+        if (this.products.size() == 0) {
+            throw new PCTDataFormatException("Products are not defined correctly");
         }
     }
 }

@@ -37,7 +37,7 @@ public class Proposal {
                 log.info("Found " + products.getLength() + " product(s)");
                 for (int i = 0; i < products.getLength(); i++) {
                     try {
-                        this.products.add(new Product(products.item(i)));
+                        this.products.add(new Product(products.item(i), this.config.getProducts()));
                     } catch (PCTDataFormatException e) {
                         log.error(e);
                     }
