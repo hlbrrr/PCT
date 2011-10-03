@@ -22,7 +22,7 @@ public class Module {
     private Double capacityStaticPrice;
     private ArrayList<CapacityTier> capacityTiers;
     private Logger log = Logger.getInstance();
-    private XMLUtils nut = XMLUtils.getInstance();
+    private XMLUtils xut = XMLUtils.getInstance();
 
 
     public Module(Node initialData) throws PCTDataFormatException {
@@ -30,20 +30,19 @@ public class Module {
     }
 
     private void init(Node initialData) throws PCTDataFormatException {
-
         try {
             log.info("Parsing module");
 
-            this.setName(nut.getNode("Name", initialData));
-            this.setWeight(nut.getNode("Weight", initialData));
+            this.setName(xut.getNode("Name", initialData));
+            this.setWeight(xut.getNode("Weight", initialData));
 
             try {
-                this.setSecondarySalesPrice(nut.getNode("SecondarySales/Price", initialData));
+                this.setSecondarySalesPrice(xut.getNode("SecondarySales/Price", initialData));
             } catch (PCTDataFormatException e) {
                 log.error(e);
             }
             try {
-                this.setSecondarySalesRate(nut.getNode("SecondarySales/Rate", initialData));
+                this.setSecondarySalesRate(xut.getNode("SecondarySales/Rate", initialData));
             } catch (PCTDataFormatException e) {
                 log.error(e);
             }
@@ -51,12 +50,12 @@ public class Module {
                 throw new PCTDataFormatException("Module secondary sales pricing is not defined correctly");
             }
             try {
-                this.setCapacityStaticPrice(nut.getNode("CapacityPricing/StaticPrice", initialData));
+                this.setCapacityStaticPrice(xut.getNode("CapacityPricing/StaticPrice", initialData));
             } catch (PCTDataFormatException e) {
                 log.error(e);
             }
             try {
-                this.setCapacityTiers(nut.getNodes("CapacityPricing/CapacityTiers/Tier", initialData));
+                this.setCapacityTiers(xut.getNodes("CapacityPricing/CapacityTiers/Tier", initialData));
             } catch (PCTDataFormatException e) {
                 log.error(e);
             }
@@ -80,7 +79,7 @@ public class Module {
 
     private void setName(Node name) throws PCTDataFormatException {
         try {
-            this.name = nut.getString(name);
+            this.name = xut.getString(name);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Module name is not defined correctly", e.getDetails());
         }
@@ -92,7 +91,7 @@ public class Module {
 
     private void setWeight(Node weight) throws PCTDataFormatException {
         try {
-            this.weight = nut.getDouble(weight);
+            this.weight = xut.getDouble(weight);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Module weight is not defined correctly", e.getDetails());
         }
@@ -104,7 +103,7 @@ public class Module {
 
     private void setSecondarySalesPrice(Node secondarySalesPrice) throws PCTDataFormatException {
         try {
-            this.secondarySalesPrice = nut.getDouble(secondarySalesPrice, true);
+            this.secondarySalesPrice = xut.getDouble(secondarySalesPrice, true);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Module secondary sales price is not defined correctly", e.getDetails());
         }
@@ -116,7 +115,7 @@ public class Module {
 
     private void setSecondarySalesRate(Node secondarySalesRate) throws PCTDataFormatException {
         try {
-            this.secondarySalesRate = nut.getDouble(secondarySalesRate, true);
+            this.secondarySalesRate = xut.getDouble(secondarySalesRate, true);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Module secondary sales rate is not defined correctly", e.getDetails());
         }
@@ -128,7 +127,7 @@ public class Module {
 
     private void setCapacityStaticPrice(Node capacityStaticPrice) throws PCTDataFormatException {
         try {
-            this.capacityStaticPrice = nut.getDouble(capacityStaticPrice, true);
+            this.capacityStaticPrice = xut.getDouble(capacityStaticPrice, true);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Module capacity static price is not defined correctly", e.getDetails());
         }

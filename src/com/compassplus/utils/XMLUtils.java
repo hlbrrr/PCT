@@ -51,6 +51,23 @@ public class XMLUtils {
         }
     }
 
+    public Boolean getBoolean(Node node) throws PCTDataFormatException {
+        return getBoolean(node, false);
+    }
+
+    public Boolean getBoolean(Node node, boolean allowEmptyString) throws PCTDataFormatException {
+        String stringValue = this.getString(node, allowEmptyString);
+
+        if (stringValue.equals("true")) {
+            return true;
+        } else if (stringValue.equals("false")) {
+            return false;
+        } else {
+            throw new PCTDataFormatException("Node value is not valid boolean");
+        }
+
+    }
+
     public Double getDouble(Node node) throws PCTDataFormatException {
         return getDouble(node, false);
     }

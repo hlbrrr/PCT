@@ -18,7 +18,7 @@ public class CapacityTier {
     private Double packagePrice;
 
     private Logger log = Logger.getInstance();
-    private XMLUtils nut = XMLUtils.getInstance();
+    private XMLUtils xut = XMLUtils.getInstance();
 
     public CapacityTier(Node initialData) throws PCTDataFormatException {
         init(initialData);
@@ -28,10 +28,10 @@ public class CapacityTier {
         try {
             log.info("Parsing capacity tier");
 
-            this.setLowerBound(nut.getNode("LowerBound", initialData));
-            this.setUpperBound(nut.getNode("UpperBound", initialData));
-            this.setPackageSize(nut.getNode("PackageSize", initialData));
-            this.setPackagePrice(nut.getNode("PackagePrice", initialData));
+            this.setLowerBound(xut.getNode("LowerBound", initialData));
+            this.setUpperBound(xut.getNode("UpperBound", initialData));
+            this.setPackageSize(xut.getNode("PackageSize", initialData));
+            this.setPackagePrice(xut.getNode("PackagePrice", initialData));
 
             log.info("Capacity tier successfully parsed: \nLowerBound: " + this.getLowerBound() +
                     "\nUpperBound: " + this.getUpperBound() +
@@ -48,7 +48,7 @@ public class CapacityTier {
 
     private void setLowerBound(Node lowerBound) throws PCTDataFormatException {
         try {
-            this.lowerBound = nut.getInteger(lowerBound);
+            this.lowerBound = xut.getInteger(lowerBound);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity tier lower bound is not defined correctly", e.getDetails());
         }
@@ -60,7 +60,7 @@ public class CapacityTier {
 
     private void setUpperBound(Node upperBound) throws PCTDataFormatException {
         try {
-            this.upperBound = nut.getInteger(upperBound);
+            this.upperBound = xut.getInteger(upperBound);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity tier upper bound is not defined correctly", e.getDetails());
         }
@@ -72,7 +72,7 @@ public class CapacityTier {
 
     private void setPackageSize(Node packageSize) throws PCTDataFormatException {
         try {
-            this.packageSize = nut.getInteger(packageSize);
+            this.packageSize = xut.getInteger(packageSize);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity tier package size is not defined correctly", e.getDetails());
         }
@@ -84,7 +84,7 @@ public class CapacityTier {
 
     private void setPackagePrice(Node packagePrice) throws PCTDataFormatException {
         try {
-            this.packagePrice = nut.getDouble(packagePrice);
+            this.packagePrice = xut.getDouble(packagePrice);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity tier package price is not defined correctly", e.getDetails());
         }

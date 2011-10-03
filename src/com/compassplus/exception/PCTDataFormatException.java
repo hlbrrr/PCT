@@ -39,9 +39,9 @@ public class PCTDataFormatException extends Exception {
         return messages;
     }
 
-    public PCTDataFormatException() {
+    /*public PCTDataFormatException() {
         super();
-    }
+    }*/
 
     public PCTDataFormatException(String message) {
         super();
@@ -54,12 +54,12 @@ public class PCTDataFormatException extends Exception {
         this.addDetails(messages);
     }
 
-    public PCTDataFormatException(String message, Throwable cause) {
+    /*public PCTDataFormatException(String message, Throwable cause) {
         super(cause);
         this.addDetails(message);
     }
 
     public PCTDataFormatException(Throwable cause) {
         super(cause);
-    }
+    }*/
 }

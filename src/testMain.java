@@ -1,4 +1,4 @@
-import com.compassplus.configurationModel.PCTManager;
+import com.compassplus.configurationModel.Configuration;
 import com.compassplus.utils.CommonUtils;
 
 /**
@@ -10,7 +10,7 @@ import com.compassplus.utils.CommonUtils;
 public class testMain {
 
     public static void main(String[] args) {
-        PCTManager main = PCTManager.getInstance();
+        Configuration main = Configuration.getInstance();
         try {
             //main.init(CommonUtils.getInstance().getDocumentFromFile("d:\\exampleModel"));
             main.init(CommonUtils.getInstance().getDocumentFromFile("/home/arudin/exampleModel"));
