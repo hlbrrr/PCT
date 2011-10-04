@@ -1,0 +1,14 @@
+<root>
+    <ClientName>UBRR</ClientName>
+    <Products>
+        <Product>
+            <SecondarySale>true</SecondarySale>
+            <Name>TWO</Name>
+            <Modules>
+                <Module>
+                    <Name>TWIB</Name>
+                </Module>
+            </Modules>
+        </Product>
+    </Products>
+</root>

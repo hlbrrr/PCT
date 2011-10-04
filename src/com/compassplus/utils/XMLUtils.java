@@ -60,7 +60,7 @@ public class XMLUtils {
 
         if (stringValue.equals("true")) {
             return true;
-        } else if (stringValue.equals("false")) {
+        } else if (stringValue.equals("false") || stringValue.equals("")) {
             return false;
         } else {
             throw new PCTDataFormatException("Node value is not valid boolean");

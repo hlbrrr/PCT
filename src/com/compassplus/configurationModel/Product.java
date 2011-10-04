@@ -19,6 +19,7 @@ public class Product {
     private Double maximumFunctionalityPrice;
     private Double minimumPrice;
     private ArrayList<Module> modules = new ArrayList<Module>();
+    private ArrayList<Capacity> capacities = new ArrayList<Capacity>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
@@ -27,7 +28,6 @@ public class Product {
     }
 
     private void init(Node initialData) throws PCTDataFormatException {
-        modules.clear();
         try {
             log.info("Parsing product");
 
@@ -35,6 +35,7 @@ public class Product {
             this.setMaximumFunctionalityPrice(xut.getNode("MaximumFunctionalityPrice", initialData));
             this.setMinimumPrice(xut.getNode("MinimumPrice", initialData));
             this.setModules(xut.getNodes("Modules/Module", initialData));
+            this.setCapacities(xut.getNodes("Capacities/Capacity", initialData));
 
             log.info("Product successfully parsed: \nName: " + this.getName() +
                     "\nMaximumFunctionalityPrice: " + this.getMaximumFunctionalityPrice() +
@@ -84,22 +85,42 @@ public class Product {
         return modules;
     }
 
-    public void setModules(NodeList modules) throws PCTDataFormatException {
+    private void setModules(NodeList modules) throws PCTDataFormatException {
+        this.getModules().clear();
         if (modules.getLength() > 0) {
             log.info("Found " + modules.getLength() + " modules(s)");
             for (int i = 0; i < modules.getLength(); i++) {
                 try {
-                    this.modules.add(new Module(modules.item(i)));
+                    this.getModules().add(new Module(modules.item(i)));
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
             }
-            log.info("Successfully parsed " + this.modules.size() + " modules(s)");
+            log.info("Successfully parsed " + this.getModules().size() + " modules(s)");
         } else {
             throw new PCTDataFormatException("No product modules defined");
         }
-        if (this.modules.size() == 0) {
+        if (this.getModules().size() == 0) {
             throw new PCTDataFormatException("Product modules are not defined correctly");
+        }
+    }
+
+    public ArrayList<Capacity> getCapacities() {
+        return capacities;
+    }
+
+    private void setCapacities(NodeList capacities) {
+        this.getCapacities().clear();
+        if (capacities.getLength() > 0) {
+            log.info("Found " + capacities.getLength() + " capacities(s)");
+            for (int i = 0; i < capacities.getLength(); i++) {
+                try {
+                    this.getCapacities().add(new Capacity(capacities.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getCapacities().size() + " capacities(s)");
         }
     }
 }
