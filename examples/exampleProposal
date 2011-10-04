@@ -9,6 +9,12 @@
                     <Name>TWIB</Name>
                 </Module>
             </Modules>
+            <Capacities>
+                <Capacity>
+                    <Name>ATMs</Name>
+                    <Value>1</Value>
+                </Capacity>
+            </Capacities>
         </Product>
     </Products>
 </root>

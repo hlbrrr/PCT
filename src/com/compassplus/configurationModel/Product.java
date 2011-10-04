@@ -106,13 +106,13 @@ public class Product {
     }
 
     public ArrayList<Capacity> getCapacities() {
-        return capacities;
+        return this.capacities;
     }
 
     private void setCapacities(NodeList capacities) {
         this.getCapacities().clear();
         if (capacities.getLength() > 0) {
-            log.info("Found " + capacities.getLength() + " capacities(s)");
+            log.info("Found " + capacities.getLength() + " capacity(s)");
             for (int i = 0; i < capacities.getLength(); i++) {
                 try {
                     this.getCapacities().add(new Capacity(capacities.item(i)));
@@ -120,7 +120,7 @@ public class Product {
                     log.error(e);
                 }
             }
-            log.info("Successfully parsed " + this.getCapacities().size() + " capacities(s)");
+            log.info("Successfully parsed " + this.getCapacities().size() + " capacity(s)");
         }
     }
 }

@@ -62,7 +62,7 @@ public class Module {
     }
 
     private com.compassplus.configurationModel.Module getModule() {
-        return module;
+        return this.module;
     }
 
     private void setModule(com.compassplus.configurationModel.Module module) {
