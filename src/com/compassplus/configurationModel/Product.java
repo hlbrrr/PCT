@@ -6,7 +6,7 @@ import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,8 +22,8 @@ public class Product {
     private Double minimumPrice;
     private ModulesGroup modulesRoot = new ModulesGroup("Modules");
     private CapacitiesGroup capacitiesRoot = new CapacitiesGroup("Capacities");
-    private ArrayList<Module> modules = new ArrayList<Module>();
-    private ArrayList<Capacity> capacities = new ArrayList<Capacity>();
+    private HashMap<String, Module> modules = new HashMap<String, Module>();
+    private HashMap<String, Capacity> capacities = new HashMap<String, Capacity>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
@@ -46,7 +46,6 @@ public class Product {
                     "\nMaximumFunctionalityPrice: " + this.getMaximumFunctionalityPrice() +
                     "\nMinimumPrice: " + this.getMinimumPrice() +
                     "\nStructure: \n" + modulesRoot.toString() + "\n" + capacitiesRoot.toString());
-
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Product is not defined correctly", e.getDetails());
         }
@@ -88,15 +87,15 @@ public class Product {
         }
     }
 
-    public ArrayList<Module> getModules() {
+    public HashMap<String, Module> getModules() {
         return modules;
     }
 
     private void setModules(Node modulesNode) {
-        setModules(modulesNode, null);
+        setModules(modulesNode, null, "/");
     }
 
-    private void setModules(Node modulesNode, ModulesGroup modulesGroup) {
+    private void setModules(Node modulesNode, ModulesGroup modulesGroup, String prefix) {
         if (modulesGroup == null) {
             this.getModules().clear();
             modulesGroup = this.getModulesRoot();
@@ -111,8 +110,8 @@ public class Product {
             for (int i = 0; i < modules.getLength(); i++) {
                 try {
                     Module tmpModule = new Module(modules.item(i));
-                    modulesGroup.addModule(tmpModule);
-                    this.getModules().add(tmpModule);
+                    modulesGroup.addModule(prefix + tmpModule.getName(), tmpModule);
+                    this.getModules().put(prefix + tmpModule.getName(), tmpModule);
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
@@ -127,7 +126,7 @@ public class Product {
                 try {
                     ModulesGroup tmpModulesGroup = new ModulesGroup(xut.getNode("Name", groups.item(i)));
                     modulesGroup.addModulesGroup(tmpModulesGroup);
-                    this.setModules(xut.getNode("Modules", groups.item(i)), tmpModulesGroup);
+                    this.setModules(xut.getNode("Modules", groups.item(i)), tmpModulesGroup, prefix + tmpModulesGroup.getName() + "/");
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
@@ -138,15 +137,15 @@ public class Product {
         log.info("Modules group successfully parsed: \nName: " + modulesGroup.getName());
     }
 
-    public ArrayList<Capacity> getCapacities() {
+    public HashMap<String, Capacity> getCapacities() {
         return this.capacities;
     }
 
     private void setCapacities(Node capacitiesNode) {
-        setCapacities(capacitiesNode, null);
+        setCapacities(capacitiesNode, null, "/");
     }
 
-    private void setCapacities(Node capacitiesNode, CapacitiesGroup capacitiesGroup) {
+    private void setCapacities(Node capacitiesNode, CapacitiesGroup capacitiesGroup, String prefix) {
         if (capacitiesGroup == null) {
             this.getCapacities().clear();
             capacitiesGroup = this.getCapacitiesRoot();
@@ -161,8 +160,8 @@ public class Product {
             for (int i = 0; i < capacities.getLength(); i++) {
                 try {
                     Capacity tmpCapacity = new Capacity(capacities.item(i));
-                    capacitiesGroup.addCapacity(tmpCapacity);
-                    this.getCapacities().add(tmpCapacity);
+                    capacitiesGroup.addCapacity(prefix + tmpCapacity.getName(), tmpCapacity);
+                    this.getCapacities().put(prefix + tmpCapacity.getName(), tmpCapacity);
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
@@ -177,7 +176,7 @@ public class Product {
                 try {
                     CapacitiesGroup tmpCapacitiesGroup = new CapacitiesGroup(xut.getNode("Name", groups.item(i)));
                     capacitiesGroup.addCapacitiesGroup(tmpCapacitiesGroup);
-                    this.setCapacities(xut.getNode("Capacities", groups.item(i)), tmpCapacitiesGroup);
+                    this.setCapacities(xut.getNode("Capacities", groups.item(i)), tmpCapacitiesGroup, prefix + tmpCapacitiesGroup.getName() + "/");
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
@@ -202,7 +201,7 @@ public class Product {
 
     private void setTotalWeight() {
         this.totalWeight = 0d;
-        for (Module m : this.getModules()) {
+        for (Module m : this.getModules().values()) {
             this.totalWeight += m.getWeight();
         }
     }

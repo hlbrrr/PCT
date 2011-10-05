@@ -6,12 +6,21 @@
             <Name>TWO</Name>
             <Modules>
                 <Module>
-                    <Name>ATM2</Name>
+                    <Name>/Payment Schemes/MC Issuing/Direct Interface</Name>
+                </Module>
+                <Module>
+                    <Name>/Payment Schemes/VISA Issuing/VISA PayWave Support</Name>
+                </Module>
+                <Module>
+                    <Name>/System-level Properties/Fault tolerant configuration</Name>
+                </Module>
+                <Module>
+                    <Name>/System-level Properties/Versatile Telebanking Interface (VTBI) for Internet and Mobile banking</Name>
                 </Module>
             </Modules>
             <Capacities>
                 <Capacity>
-                    <Name>ATMs</Name>
+                    <Name>/ATMs</Name>
                     <Value>1</Value>
                 </Capacity>
             </Capacities>

@@ -5,7 +5,7 @@ import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,12 +15,13 @@ import java.util.ArrayList;
  */
 public class Capacity {
     private com.compassplus.configurationModel.Capacity capacity;
+    private String key;
     private Integer value;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
 
-    public Capacity(Node initialData, ArrayList<com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
+    public Capacity(Node initialData, HashMap<String, com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
         init(initialData, allowedCapacities);
     }
 
@@ -28,11 +29,11 @@ public class Capacity {
         this.setCapacity(capacity);
     }
 
-    private void init(Node initialData, ArrayList<com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
+    private void init(Node initialData, HashMap<String, com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
         try {
             log.info("Parsing capacity");
 
-            this.setName(xut.getNode("Name", initialData), allowedCapacities);
+            this.setKey(xut.getNode("Name", initialData), allowedCapacities);
             this.setValue(xut.getNode("Value", initialData));
 
             log.info("Capacity successfully parsed: \nName: " + this.getName() +
@@ -44,6 +45,10 @@ public class Capacity {
 
     public String getName() {
         return this.getCapacity().getName();
+    }
+
+    public String getKey() {
+        return this.key;
     }
 
     public Integer getValue() {
@@ -58,16 +63,11 @@ public class Capacity {
         }
     }
 
-    private void setName(Node name, ArrayList<com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
+    private void setKey(Node name, HashMap<String, com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
         try {
             String nameString = xut.getString(name);
-
-            for (com.compassplus.configurationModel.Capacity c : allowedCapacities) {
-                if (c.getName().equals(nameString)) {
-                    this.setCapacity(c);
-                    break;
-                }
-            }
+            this.key = nameString;
+            this.setCapacity(allowedCapacities.get(nameString));
             if (this.getCapacity() == null) {
                 throw new PCTDataFormatException("No such capacity \"" + nameString + "\"");
             }

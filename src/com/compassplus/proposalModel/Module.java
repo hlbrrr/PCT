@@ -5,7 +5,7 @@ import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,11 +15,11 @@ import java.util.ArrayList;
  */
 public class Module {
     private com.compassplus.configurationModel.Module module;
-
+    private String key;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
-    public Module(Node initialData, ArrayList<com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
+    public Module(Node initialData, HashMap<String, com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
         init(initialData, allowedModules);
     }
 
@@ -27,11 +27,11 @@ public class Module {
         this.setModule(module);
     }
 
-    private void init(Node initialData, ArrayList<com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
+    private void init(Node initialData, HashMap<String, com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
         try {
             log.info("Parsing module");
 
-            this.setName(xut.getNode("Name", initialData), allowedModules);
+            this.setKey(xut.getNode("Name", initialData), allowedModules);
 
             log.info("Module successfully parsed: \nName: " + this.getName());
         } catch (PCTDataFormatException e) {
@@ -43,16 +43,15 @@ public class Module {
         return this.getModule().getName();
     }
 
-    private void setName(Node name, ArrayList<com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
+    public String getKey() {
+        return this.key;
+    }
+
+    private void setKey(Node name, HashMap<String, com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
         try {
             String nameString = xut.getString(name);
-
-            for (com.compassplus.configurationModel.Module m : allowedModules) {
-                if (m.getName().equals(nameString)) {
-                    this.setModule(m);
-                    break;
-                }
-            }
+            this.key = nameString;
+            this.setModule(allowedModules.get(nameString));
             if (this.getModule() == null) {
                 throw new PCTDataFormatException("No such module \"" + nameString + "\"");
             }

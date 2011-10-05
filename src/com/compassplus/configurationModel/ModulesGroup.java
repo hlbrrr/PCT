@@ -6,6 +6,7 @@ import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 public class ModulesGroup {
     private String name;
 
-    private ArrayList<Module> modules = new ArrayList<Module>();
+    private HashMap<String, Module> modules = new HashMap<String, Module>();
     private ArrayList<ModulesGroup> groups = new ArrayList<ModulesGroup>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -33,8 +34,8 @@ public class ModulesGroup {
         return this.name;
     }
 
-    public void addModule(Module module) {
-        this.modules.add(module);
+    public void addModule(String key, Module module) {
+        this.modules.put(key, module);
     }
 
     public void addModulesGroup(ModulesGroup modulesGroup) {
@@ -53,27 +54,24 @@ public class ModulesGroup {
         return this.groups;
     }
 
-    public ArrayList<Module> getModules() {
+    public HashMap<String, Module> getModules() {
         return this.modules;
     }
 
     public String toString() {
-        return this.toString("");
+        String ret = this.toString("");
+        return ret.endsWith("\n") ? ret.substring(0, ret.length() - 1) : ret;
     }
 
     public String toString(String pad) {
         StringBuilder sb = new StringBuilder();
         sb.append(pad).append(this.getName()).append(":\n");
-        for (Module m : this.getModules()) {
+        for (Module m : this.getModules().values()) {
             sb.append(pad).append("  -").append(m.getName()).append("\n");
         }
         for (ModulesGroup mg : this.getGroups()) {
             sb.append(mg.toString(pad + "  "));
         }
-        String ret = sb.toString();
-        if(ret.endsWith("\n")){
-            ret = ret.substring(0, ret.length()-1);
-        }
-        return ret;
+        return sb.toString();
     }
 }

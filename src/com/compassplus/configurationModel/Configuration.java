@@ -10,6 +10,7 @@ import org.w3c.dom.NodeList;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,7 +21,7 @@ import java.util.Date;
 public class Configuration {
     private static Configuration ourInstance = new Configuration();
     private String expirationFormat = "dd/MM/yyyy HH:mm:ss";
-    private ArrayList<Product> products = new ArrayList<Product>();
+    private HashMap<String, Product> products = new HashMap<String, Product>();
     private ArrayList<SupportRate> supportRates = new ArrayList<SupportRate>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -41,8 +42,8 @@ public class Configuration {
         }
     }
 
-    public ArrayList<Product> getProducts() {
-        return products;
+    public HashMap<String, Product> getProducts() {
+        return this.products;
     }
 
     private void setProducts(NodeList products) throws PCTDataFormatException {
@@ -51,7 +52,8 @@ public class Configuration {
             log.info("Found " + products.getLength() + " product(s)");
             for (int i = 0; i < products.getLength(); i++) {
                 try {
-                    this.getProducts().add(new Product(products.item(i)));
+                    Product tmpProduct = new Product(products.item(i));
+                    this.getProducts().put(tmpProduct.getName(), tmpProduct);
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }

@@ -52,4 +52,8 @@ public class CommonUtils {
             throw new PCTDataFormatException("File not found");
         }
     }
+
+    public Double toNextThousand(Double val) {
+        return Math.ceil(val / 1000) * 1000;
+    }
 }

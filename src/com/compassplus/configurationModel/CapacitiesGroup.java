@@ -6,6 +6,7 @@ import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 public class CapacitiesGroup {
     private String name;
 
-    private ArrayList<Capacity> capacities = new ArrayList<Capacity>();
+    private HashMap<String, Capacity> capacities = new HashMap<String, Capacity>();
     private ArrayList<CapacitiesGroup> groups = new ArrayList<CapacitiesGroup>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -33,8 +34,8 @@ public class CapacitiesGroup {
         return this.name;
     }
 
-    public void addCapacity(Capacity capacity) {
-        this.capacities.add(capacity);
+    public void addCapacity(String key, Capacity capacity) {
+        this.capacities.put(key, capacity);
     }
 
     public void addCapacitiesGroup(CapacitiesGroup capacitiesGroup) {
@@ -53,28 +54,25 @@ public class CapacitiesGroup {
         return this.groups;
     }
 
-    public ArrayList<Capacity> getCapacities() {
+    public HashMap<String, Capacity> getCapacities() {
         return this.capacities;
     }
 
 
     public String toString() {
-        return this.toString("");
+        String ret = this.toString("");
+        return ret.endsWith("\n") ? ret.substring(0, ret.length() - 1) : ret;
     }
 
     public String toString(String pad) {
         StringBuilder sb = new StringBuilder();
         sb.append(pad).append(this.getName()).append(":\n");
-        for (Capacity c : this.getCapacities()) {
+        for (Capacity c : this.getCapacities().values()) {
             sb.append(pad).append("  -").append(c.getName()).append("\n");
         }
         for (CapacitiesGroup cg : this.getGroups()) {
             sb.append(cg.toString(pad + "  "));
         }
-        String ret = sb.toString();
-        if(ret.endsWith("\n")){
-            ret = ret.substring(0, ret.length()-1);
-        }
-        return ret;
+        return sb.toString();
     }
 }

@@ -2,15 +2,16 @@ package com.compassplus.proposalModel;
 
 import com.compassplus.configurationModel.ModulesGroup;
 import com.compassplus.exception.PCTDataFormatException;
+import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellUtil;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
@@ -30,7 +31,7 @@ public class Product {
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
-    public Product(Node initialData, ArrayList<com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
+    public Product(Node initialData, HashMap<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
         init(initialData, allowedProducts);
     }
 
@@ -38,7 +39,7 @@ public class Product {
         this.setProduct(product);
     }
 
-    private void init(Node initialData, ArrayList<com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
+    private void init(Node initialData, HashMap<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
         try {
             log.info("Parsing product");
 
@@ -66,15 +67,10 @@ public class Product {
         return this.product;
     }
 
-    private void setName(Node name, ArrayList<com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
+    private void setName(Node name, HashMap<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
         try {
             String nameString = xut.getString(name);
-            for (com.compassplus.configurationModel.Product p : allowedProducts) {
-                if (p.getName().equals(nameString)) {
-                    this.setProduct(p);
-                    break;
-                }
-            }
+            this.setProduct(allowedProducts.get(nameString));
             if (this.getProduct() == null) {
                 throw new PCTDataFormatException("No such product \"" + nameString + "\"");
             }
@@ -94,7 +90,7 @@ public class Product {
             for (int i = 0; i < modules.getLength(); i++) {
                 try {
                     Module tmpModule = new Module(modules.item(i), this.getProduct().getModules());
-                    this.getModules().put(tmpModule.getName(), tmpModule);
+                    this.getModules().put(tmpModule.getKey(), tmpModule);
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
@@ -118,7 +114,7 @@ public class Product {
             for (int i = 0; i < capacities.getLength(); i++) {
                 try {
                     Capacity tmpCapacity = new Capacity(capacities.item(i), this.getProduct().getCapacities());
-                    this.getCapacities().put(tmpCapacity.getName(), tmpCapacity);
+                    this.getCapacities().put(tmpCapacity.getKey(), tmpCapacity);
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
@@ -172,59 +168,262 @@ public class Product {
     }
 
     public void createSheet(Workbook wb) {
+        /* fonts */
+        Font calibri = wb.createFont();
+        calibri.setFontName("Calibri");
+        calibri.setFontHeightInPoints((short) 11);
+
+        Font calibriBoldItalic = wb.createFont();
+        calibriBoldItalic.setFontName("Calibri");
+        calibriBoldItalic.setFontHeightInPoints((short) 11);
+        calibriBoldItalic.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        calibriBoldItalic.setItalic(true);
+
+        Font arialBlack = wb.createFont();
+        arialBlack.setFontName("Calibri");
+        arialBlack.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        arialBlack.setFontHeightInPoints((short) 11);
+
+        /* sheet */
         Sheet s = wb.createSheet(this.getName());
-        Row primarySaleRow = s.createRow(0);
-        primarySaleRow.createCell(0).setCellValue(dict.getString("primarySale"));
-        primarySaleRow.createCell(1).setCellValue(this.getSecondarySale() ? "" : this.bullet);
+        {
+            s.setDisplayGridlines(false);
 
-        s.createRow(s.getLastRowNum() + 1); // empty row
+            s.setColumnWidth(0, 55 * 256);
+            s.setColumnWidth(1, 9 * 256);
+            s.setColumnWidth(2, 10 * 256);
+        }
+        {   /* primary sale */
+            Row row = s.createRow(0);
+            //row.setHeightInPoints(16.5f);
 
-        s.createRow(s.getLastRowNum() + 1).createCell(0).setCellValue(dict.getString("modules")); // modules title row
+            CellStyle cs1 = wb.createCellStyle();
+            cs1.setAlignment(CellStyle.ALIGN_RIGHT);
+            cs1.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setFont(arialBlack);
+            CellUtil.createCell(row, 0, dict.getString("primarySale"), cs1);
 
-        Row tableHeaderRow = s.createRow(s.getLastRowNum() + 1);
-        tableHeaderRow.createCell(0).setCellValue(dict.getString("item"));
-        tableHeaderRow.createCell(1).setCellValue(dict.getString("amount"));
-        tableHeaderRow.createCell(2).setCellValue(dict.getString("price"));
+            CellStyle cs2 = wb.createCellStyle();
+            cs2.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs2.setAlignment(CellStyle.ALIGN_CENTER);
+            cs2.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+            cs2.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs2.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs2.setFont(arialBlack);
+            CellUtil.createCell(row, 1, this.getSecondarySale() ? "" : this.bullet, cs2);
+        }
+        {   /* empty row */
+            s.createRow(s.getLastRowNum() + 1);//.setHeightInPoints(15.75f);
+        }
+        {   /* modules header */
+            Row row = s.createRow(s.getLastRowNum() + 1);
+            //row.setHeightInPoints(16.5f);
 
-        this.createRows(s);
+            CellStyle cs1 = wb.createCellStyle();
+            cs1.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setFont(arialBlack);
+            CellUtil.createCell(row, 0, dict.getString("modules"), cs1);
 
-        s.autoSizeColumn(0);
-        s.autoSizeColumn(1);
-        s.autoSizeColumn(2);
+            CellStyle cs2 = wb.createCellStyle();
+            cs2.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs2.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs2.setFont(arialBlack);
+            CellUtil.createCell(row, 1, "", cs2);
+
+            CellStyle cs3 = wb.createCellStyle();
+            cs3.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs3.setFont(arialBlack);
+            CellUtil.createCell(row, 2, "", cs3);
+        }
+        {   /* modules table header */
+            Row row = s.createRow(s.getLastRowNum() + 1);
+            //row.setHeightInPoints(15.75f);
+
+            CellStyle cs1 = wb.createCellStyle();
+            cs1.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setFont(calibriBoldItalic);
+            CellUtil.createCell(row, 0, dict.getString("item"), cs1);
+
+            CellStyle cs2 = wb.createCellStyle();
+            cs2.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs2.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs2.setFont(calibriBoldItalic);
+            CellUtil.createCell(row, 1, dict.getString("amount"), cs2);
+
+            CellStyle cs3 = wb.createCellStyle();
+            cs3.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs3.setFont(calibriBoldItalic);
+            CellUtil.createCell(row, 2, dict.getString("price"), cs3);
+        }
+        int modulesBeg = s.getLastRowNum() + 2;
+        {   /* modules list */
+            this.createModulesRows(s);
+        }
+        int modulesEnd = s.getLastRowNum() + 1;
+        {   /* empty row */
+            Row row = s.createRow(s.getLastRowNum() + 1);//.setHeightInPoints(15.75f);
+            CellStyle cs = wb.createCellStyle();
+            cs.setBorderTop(CellStyle.BORDER_MEDIUM);
+            CellUtil.createCell(row, 0, "", cs);
+            CellUtil.createCell(row, 1, "", cs);
+            CellUtil.createCell(row, 2, "", cs);
+        }
+        {   /* modules total */
+            Row row = s.createRow(s.getLastRowNum() + 1);
+            //row.setHeightInPoints(15.75f);
+
+            CellStyle cs1 = wb.createCellStyle();
+            cs1.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setFont(arialBlack);
+            CellUtil.createCell(row, 0, dict.getString("modulesTotal").replace("%product%", this.getName()), cs1);
+
+            CellStyle cs2 = wb.createCellStyle();
+            cs2.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs2.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs2.setFont(arialBlack);
+            CellUtil.createCell(row, 1, "", cs2);
+
+            CellStyle cs3 = wb.createCellStyle();
+            cs3.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("$#,##0"));
+            cs3.setFont(arialBlack);
+            Cell c = row.createCell(2);
+            c.setCellStyle(cs3);
+            c.setCellFormula("SUM(C" + modulesBeg + ":C" + modulesEnd + ")");
+        }
+
     }
 
-    private void createRows(Sheet s) {
-        this.createRows(s, null);
+    private void createModulesRows(Sheet s) {
+        this.createModulesRows(s, null, 0);
     }
 
-    private void createRows(Sheet s, ModulesGroup modulesGroup) {
+    private void createModulesRows(Sheet s, ModulesGroup modulesGroup, int level) {
+        /* fonts */
+        Font calibri = s.getWorkbook().createFont();
+        calibri.setFontName("Calibri");
+        calibri.setFontHeightInPoints((short) 11);
+
+        Font arialBlack = s.getWorkbook().createFont();
+        arialBlack.setFontName("Calibri");
+        arialBlack.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        arialBlack.setFontHeightInPoints((short) 11);
+
         if (modulesGroup == null) {
             modulesGroup = this.product.getModulesRoot();
         } else {
-            s.createRow(s.getLastRowNum() + 1).createCell(0).setCellValue(modulesGroup.getName());
-        }
-        for (com.compassplus.configurationModel.Module m : modulesGroup.getModules()) {
-            Row moduleRow = s.createRow(s.getLastRowNum() + 1);
-            moduleRow.createCell(0).setCellValue(m.getName());
+            Row row = s.createRow(s.getLastRowNum() + 1);
+            //row.setHeightInPoints(16.5f);
 
-            if (this.getModules().containsKey(m.getName())) {
-                Double price = this.getProduct().getMaximumFunctionalityPrice() * m.getWeight() / this.getProduct().getTotalWeight(); // primary sales price
-                if (this.getSecondarySale()) {
-                    if (m.getSecondarySalesPrice() != null) {
-                        price = m.getSecondarySalesPrice();
-                    } else {
-                        price *= m.getSecondarySalesRate();
-                    }
-                }
-                moduleRow.createCell(1).setCellValue(this.bullet);
-                moduleRow.createCell(2).setCellValue(price);
+            CellStyle cs1 = s.getWorkbook().createCellStyle();
+            CellStyle cs2 = s.getWorkbook().createCellStyle();
+            CellStyle cs3 = s.getWorkbook().createCellStyle();
+            if (level == 1) {
+                cs1.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+                cs1.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cs1.setBorderTop(CellStyle.BORDER_MEDIUM);
+                cs1.setBorderBottom(CellStyle.BORDER_MEDIUM);
+                cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+                cs1.setFont(arialBlack);
+
+                cs2.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+                cs2.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cs2.setBorderTop(CellStyle.BORDER_MEDIUM);
+                cs2.setBorderBottom(CellStyle.BORDER_MEDIUM);
+                cs2.setFont(arialBlack);
+
+                cs3.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+                cs3.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cs3.setBorderTop(CellStyle.BORDER_MEDIUM);
+                cs3.setBorderBottom(CellStyle.BORDER_MEDIUM);
+                cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+                cs3.setFont(arialBlack);
             } else {
-                moduleRow.createCell(1).setCellValue("");
-                moduleRow.createCell(2).setCellValue("");
+                cs1.setFillForegroundColor(HSSFColor.LIGHT_CORNFLOWER_BLUE.index);
+                cs1.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cs1.setBorderTop(CellStyle.BORDER_THIN);
+                cs1.setBorderBottom(CellStyle.BORDER_THIN);
+                cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+                cs1.setFont(calibri);
+
+                cs2.setFillForegroundColor(HSSFColor.LIGHT_CORNFLOWER_BLUE.index);
+                cs2.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cs2.setBorderTop(CellStyle.BORDER_THIN);
+                cs2.setBorderBottom(CellStyle.BORDER_THIN);
+                cs2.setFont(calibri);
+
+                cs3.setFillForegroundColor(HSSFColor.LIGHT_CORNFLOWER_BLUE.index);
+                cs3.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cs3.setBorderTop(CellStyle.BORDER_THIN);
+                cs3.setBorderBottom(CellStyle.BORDER_THIN);
+                cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+                cs3.setFont(calibri);
+            }
+            CellUtil.createCell(row, 0, modulesGroup.getName(), cs1);
+            CellUtil.createCell(row, 1, "", cs2);
+            CellUtil.createCell(row, 2, "", cs3);
+        }
+        {
+            CellStyle cs1 = s.getWorkbook().createCellStyle();
+            cs1.setBorderBottom(CellStyle.BORDER_THIN);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setWrapText(true);
+            cs1.setFont(calibri);
+
+            CellStyle cs2 = s.getWorkbook().createCellStyle();
+            cs2.setAlignment(CellStyle.ALIGN_CENTER);
+            cs2.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+            cs2.setBorderBottom(CellStyle.BORDER_THIN);
+            cs2.setFont(calibri);
+
+            CellStyle cs3 = s.getWorkbook().createCellStyle();
+            cs3.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+            cs3.setBorderBottom(CellStyle.BORDER_THIN);
+            cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("$#,##0"));
+            cs3.setFont(calibri);
+            for (String key : modulesGroup.getModules().keySet()) {
+                com.compassplus.configurationModel.Module m = modulesGroup.getModules().get(key);
+
+                Row row = s.createRow(s.getLastRowNum() + 1);
+                CellUtil.createCell(row, 0, m.getName(), cs1);
+
+                if (this.getModules().containsKey(key)) {
+                    Double price = this.getProduct().getMaximumFunctionalityPrice() * m.getWeight() / this.getProduct().getTotalWeight(); // primary sales price
+                    if (this.getSecondarySale()) {
+                        if (m.getSecondarySalesPrice() != null) {
+                            price = m.getSecondarySalesPrice();
+                        } else {
+                            price *= m.getSecondarySalesRate();
+                        }
+                    }
+                    CellUtil.createCell(row, 1, this.bullet, cs2);
+
+                    Cell c = row.createCell(2);
+                    c.setCellStyle(cs3);
+                    c.setCellValue(CommonUtils.getInstance().toNextThousand(price));
+                } else {
+                    CellUtil.createCell(row, 1, "", cs2);
+                    CellUtil.createCell(row, 2, "", cs3);
+                }
             }
         }
         for (ModulesGroup g : modulesGroup.getGroups()) {
-            this.createRows(s, g);
+            this.createModulesRows(s, g, level + 1);
         }
     }
 }

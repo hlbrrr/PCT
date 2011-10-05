@@ -4,15 +4,14 @@ import com.compassplus.configurationModel.Configuration;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,7 +23,7 @@ public class Proposal {
 
     private Configuration config;
     private String clientName = "";
-    private ArrayList<Product> products = new ArrayList<Product>();
+    private HashMap<String, Product> products = new HashMap<String, Product>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
@@ -53,7 +52,7 @@ public class Proposal {
         }
     }
 
-    public ArrayList<Product> getProducts() {
+    public HashMap<String, Product> getProducts() {
         return this.products;
     }
 
@@ -63,7 +62,8 @@ public class Proposal {
             log.info("Found " + products.getLength() + " product(s)");
             for (int i = 0; i < products.getLength(); i++) {
                 try {
-                    this.getProducts().add(new Product(products.item(i), this.getConfig().getProducts()));
+                    Product tmpProduct = new Product(products.item(i), this.getConfig().getProducts());
+                    this.getProducts().put(tmpProduct.getName(), tmpProduct);
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
@@ -73,7 +73,7 @@ public class Proposal {
     }
 
     public void addProduct(com.compassplus.configurationModel.Product product) {
-        this.getProducts().add(new Product(product));
+        this.getProducts().put(product.getName(), new Product(product));
     }
 
     public void setClientName(String clientName) {
@@ -87,7 +87,7 @@ public class Proposal {
         sb.append("<ClientName>").append(this.getClientName()).append("</ClientName>");
         if (this.getProducts() != null && this.getProducts().size() > 0) {
             sb.append("<Products>");
-            for (Product p : this.getProducts()) {
+            for (Product p : this.getProducts().values()) {
                 sb.append(p.toString());
             }
             sb.append("</Products>");
@@ -104,9 +104,9 @@ public class Proposal {
         this.config = config;
     }
 
-    public Workbook getWorkbook(){
+    public Workbook getWorkbook() {
         Workbook wb = new HSSFWorkbook();
-        for(Product p:this.getProducts()){
+        for (Product p : this.getProducts().values()) {
             p.createSheet(wb);
         }
         return wb;

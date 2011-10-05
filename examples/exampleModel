@@ -3,36 +3,107 @@
     <Products>
         <Product>
             <Name>TWO</Name>
-            <MaximumFunctionalityPrice>500</MaximumFunctionalityPrice>
+            <MaximumFunctionalityPrice>50000</MaximumFunctionalityPrice>
             <MinimumPrice>100</MinimumPrice>
             <Modules>
-                <Module>
-                    <Name>ATM</Name>
-                    <Weight>1</Weight>
-                    <SecondarySales>
-                        <Price></Price>
-                        <Rate>2</Rate>
-                    </SecondarySales>
-                </Module>
-                <Module>
-                    <Name>TWIB</Name>
-                    <Weight>2</Weight>
-                    <SecondarySales>
-                        <Price></Price>
-                        <Rate>2</Rate>
-                    </SecondarySales>
-                </Module>
                 <Group>
-                    <Name>Gagaga</Name>
+                    <Name>System-level Properties</Name>
                     <Modules>
                         <Module>
-                            <Name>ATM2</Name>
+                            <Name>Windows OS</Name>
                             <Weight>1</Weight>
                             <SecondarySales>
                                 <Price></Price>
                                 <Rate>2</Rate>
                             </SecondarySales>
                         </Module>
+                        <Module>
+                            <Name>Linux OS</Name>
+                            <Weight>1</Weight>
+                            <SecondarySales>
+                                <Price></Price>
+                                <Rate>2</Rate>
+                            </SecondarySales>
+                        </Module>
+                        <Module>
+                            <Name>AIX OS</Name>
+                            <Weight>1</Weight>
+                            <SecondarySales>
+                                <Price></Price>
+                                <Rate>2</Rate>
+                            </SecondarySales>
+                        </Module>
+                        <Module>
+                            <Name>Fault tolerant configuration</Name>
+                            <Weight>1</Weight>
+                            <SecondarySales>
+                                <Price></Price>
+                                <Rate>2</Rate>
+                            </SecondarySales>
+                        </Module>
+                        <Module>
+                            <Name>Versatile Telebanking Interface (VTBI) for Internet and Mobile banking</Name>
+                            <Weight>1</Weight>
+                            <SecondarySales>
+                                <Price></Price>
+                                <Rate>2</Rate>
+                            </SecondarySales>
+                        </Module>
+                    </Modules>
+                </Group>
+                <Group>
+                    <Name>Payment Schemes</Name>
+                    <Modules>
+                        <Group>
+                            <Name>VISA Issuing</Name>
+                            <Modules>
+                                <Module>
+                                    <Name>EMV Support</Name>
+                                    <Weight>1</Weight>
+                                    <SecondarySales>
+                                        <Price></Price>
+                                        <Rate>2</Rate>
+                                    </SecondarySales>
+                                </Module>
+                                <Module>
+                                    <Name>VISA PayWave Support</Name>
+                                    <Weight>1</Weight>
+                                    <SecondarySales>
+                                        <Price></Price>
+                                        <Rate>2</Rate>
+                                    </SecondarySales>
+                                </Module>
+                                <Module>
+                                    <Name>Direct Interface</Name>
+                                    <Weight>1</Weight>
+                                    <SecondarySales>
+                                        <Price></Price>
+                                        <Rate>2</Rate>
+                                    </SecondarySales>
+                                </Module>
+                            </Modules>
+                        </Group>
+                        <Group>
+                            <Name>MC Issuing</Name>
+                            <Modules>
+                                <Module>
+                                    <Name>MC PayPass Support</Name>
+                                    <Weight>1</Weight>
+                                    <SecondarySales>
+                                        <Price></Price>
+                                        <Rate>2</Rate>
+                                    </SecondarySales>
+                                </Module>
+                                <Module>
+                                    <Name>Direct Interface</Name>
+                                    <Weight>1</Weight>
+                                    <SecondarySales>
+                                        <Price></Price>
+                                        <Rate>2</Rate>
+                                    </SecondarySales>
+                                </Module>
+                            </Modules>
+                        </Group>
                     </Modules>
                 </Group>
             </Modules>
