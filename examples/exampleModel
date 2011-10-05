@@ -1,4 +1,5 @@
 <root>
+    <Expiration>10/10/2012 10:10:10</Expiration>
     <Products>
         <Product>
             <Name>TWO</Name>
@@ -15,12 +16,25 @@
                 </Module>
                 <Module>
                     <Name>TWIB</Name>
-                    <Weight>1</Weight>
+                    <Weight>2</Weight>
                     <SecondarySales>
                         <Price></Price>
                         <Rate>2</Rate>
                     </SecondarySales>
                 </Module>
+                <Group>
+                    <Name>Gagaga</Name>
+                    <Modules>
+                        <Module>
+                            <Name>ATM2</Name>
+                            <Weight>1</Weight>
+                            <SecondarySales>
+                                <Price></Price>
+                                <Rate>2</Rate>
+                            </SecondarySales>
+                        </Module>
+                    </Modules>
+                </Group>
             </Modules>
             <Capacities>
                 <Capacity>

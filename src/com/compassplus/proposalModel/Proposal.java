@@ -4,6 +4,10 @@ import com.compassplus.configurationModel.Configuration;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -98,5 +102,13 @@ public class Proposal {
 
     private void setConfig(Configuration config) {
         this.config = config;
+    }
+
+    public Workbook getWorkbook(){
+        Workbook wb = new HSSFWorkbook();
+        for(Product p:this.getProducts()){
+            p.createSheet(wb);
+        }
+        return wb;
     }
 }

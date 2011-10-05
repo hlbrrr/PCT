@@ -2,11 +2,11 @@
     <ClientName>UBRR</ClientName>
     <Products>
         <Product>
-            <SecondarySale>true</SecondarySale>
+            <SecondarySale>false</SecondarySale>
             <Name>TWO</Name>
             <Modules>
                 <Module>
-                    <Name>TWIB</Name>
+                    <Name>ATM2</Name>
                 </Module>
             </Modules>
             <Capacities>

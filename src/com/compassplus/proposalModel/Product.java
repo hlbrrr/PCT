@@ -1,12 +1,18 @@
 package com.compassplus.proposalModel;
 
+import com.compassplus.configurationModel.ModulesGroup;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ResourceBundle;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,9 +21,11 @@ import java.util.ArrayList;
  * Time: 18:44
  */
 public class Product {
+    private static String bullet = "\u2022";
+    private static ResourceBundle dict = ResourceBundle.getBundle("dictionary");
     private com.compassplus.configurationModel.Product product;
-    private ArrayList<Module> modules = new ArrayList<Module>();
-    private ArrayList<Capacity> capacities = new ArrayList<Capacity>();
+    private HashMap<String, Module> modules = new HashMap<String, Module>();
+    private HashMap<String, Capacity> capacities = new HashMap<String, Capacity>();
     private Boolean secondarySale = false;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -75,7 +83,7 @@ public class Product {
         }
     }
 
-    public ArrayList<Module> getModules() {
+    public HashMap<String, Module> getModules() {
         return this.modules;
     }
 
@@ -85,7 +93,8 @@ public class Product {
             log.info("Found " + modules.getLength() + " modules(s)");
             for (int i = 0; i < modules.getLength(); i++) {
                 try {
-                    this.getModules().add(new Module(modules.item(i), this.getProduct().getModules()));
+                    Module tmpModule = new Module(modules.item(i), this.getProduct().getModules());
+                    this.getModules().put(tmpModule.getName(), tmpModule);
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
@@ -95,10 +104,10 @@ public class Product {
     }
 
     public void addModule(com.compassplus.configurationModel.Module module) {
-        this.getModules().add(new Module(module));
+        this.getModules().put(module.getName(), new Module(module));
     }
 
-    public ArrayList<Capacity> getCapacities() {
+    public HashMap<String, Capacity> getCapacities() {
         return this.capacities;
     }
 
@@ -108,7 +117,8 @@ public class Product {
             log.info("Found " + capacities.getLength() + " capacity(s)");
             for (int i = 0; i < capacities.getLength(); i++) {
                 try {
-                    this.getCapacities().add(new Capacity(capacities.item(i), this.getProduct().getCapacities()));
+                    Capacity tmpCapacity = new Capacity(capacities.item(i), this.getProduct().getCapacities());
+                    this.getCapacities().put(tmpCapacity.getName(), tmpCapacity);
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
@@ -118,7 +128,7 @@ public class Product {
     }
 
     public void addCapacity(com.compassplus.configurationModel.Capacity capacity) {
-        this.getCapacities().add(new Capacity(capacity));
+        this.getCapacities().put(capacity.getName(), new Capacity(capacity));
     }
 
     @Override
@@ -129,14 +139,14 @@ public class Product {
         sb.append("<SecondarySale>").append(this.getSecondarySale()).append("</SecondarySale>");
         if (this.getModules() != null && this.getModules().size() > 0) {
             sb.append("<Modules>");
-            for (Module m : this.getModules()) {
+            for (Module m : this.getModules().values()) {
                 sb.append(m.toString());
             }
             sb.append("</Modules>");
         }
         if (this.getCapacities() != null && this.getCapacities().size() > 0) {
             sb.append("<Capacities>");
-            for (Capacity c : this.getCapacities()) {
+            for (Capacity c : this.getCapacities().values()) {
                 sb.append(c.toString());
             }
             sb.append("</Capacities>");
@@ -159,5 +169,54 @@ public class Product {
 
     public void setSecondarySale(Boolean secondarySale) {
         this.secondarySale = secondarySale;
+    }
+
+    public void createSheet(Workbook wb) {
+        Sheet s = wb.createSheet(this.getName());
+        Row primarySaleRow = s.createRow(0);
+        primarySaleRow.createCell(0).setCellValue(dict.getString("primarySale"));
+        primarySaleRow.createCell(1).setCellValue(this.getSecondarySale() ? "" : this.bullet);
+
+        s.createRow(s.getLastRowNum() + 1); // empty row
+
+        s.createRow(s.getLastRowNum() + 1).createCell(0).setCellValue(dict.getString("modules")); // modules title row
+
+        Row tableHeaderRow = s.createRow(s.getLastRowNum() + 1);
+        tableHeaderRow.createCell(0).setCellValue(dict.getString("item"));
+        tableHeaderRow.createCell(1).setCellValue(dict.getString("amount"));
+        tableHeaderRow.createCell(2).setCellValue(dict.getString("price"));
+
+        this.createRows(s);
+
+        s.autoSizeColumn(0);
+        s.autoSizeColumn(1);
+        s.autoSizeColumn(2);
+    }
+
+    private void createRows(Sheet s) {
+        this.createRows(s, null);
+    }
+
+    private void createRows(Sheet s, ModulesGroup modulesGroup) {
+        if (modulesGroup == null) {
+            modulesGroup = this.product.getModulesRoot();
+        } else {
+            s.createRow(s.getLastRowNum() + 1).createCell(0).setCellValue(modulesGroup.getName());
+        }
+        for (com.compassplus.configurationModel.Module m : modulesGroup.getModules()) {
+            Row moduleRow = s.createRow(s.getLastRowNum() + 1);
+            moduleRow.createCell(0).setCellValue(m.getName());
+            if (this.getModules().containsKey(m.getName())) {
+                moduleRow.createCell(1).setCellValue(this.bullet);
+                moduleRow.createCell(2).setCellValue(
+                        this.getProduct().getMaximumFunctionalityPrice() * m.getWeight() / this.getProduct().getTotalWeight());
+            } else {
+                moduleRow.createCell(1).setCellValue("");
+                moduleRow.createCell(2).setCellValue("");
+            }
+        }
+        for (ModulesGroup g : modulesGroup.getGroups()) {
+            this.createRows(s, g);
+        }
     }
 }
