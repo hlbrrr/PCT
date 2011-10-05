@@ -206,10 +206,18 @@ public class Product {
         for (com.compassplus.configurationModel.Module m : modulesGroup.getModules()) {
             Row moduleRow = s.createRow(s.getLastRowNum() + 1);
             moduleRow.createCell(0).setCellValue(m.getName());
+
             if (this.getModules().containsKey(m.getName())) {
+                Double price = this.getProduct().getMaximumFunctionalityPrice() * m.getWeight() / this.getProduct().getTotalWeight(); // primary sales price
+                if (this.getSecondarySale()) {
+                    if (m.getSecondarySalesPrice() != null) {
+                        price = m.getSecondarySalesPrice();
+                    } else {
+                        price *= m.getSecondarySalesRate();
+                    }
+                }
                 moduleRow.createCell(1).setCellValue(this.bullet);
-                moduleRow.createCell(2).setCellValue(
-                        this.getProduct().getMaximumFunctionalityPrice() * m.getWeight() / this.getProduct().getTotalWeight());
+                moduleRow.createCell(2).setCellValue(price);
             } else {
                 moduleRow.createCell(1).setCellValue("");
                 moduleRow.createCell(2).setCellValue("");
