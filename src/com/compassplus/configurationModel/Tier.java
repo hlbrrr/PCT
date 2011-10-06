@@ -12,7 +12,7 @@ import org.w3c.dom.Node;
  * Time: 10:24 AM
  */
 public class Tier {
-    private Integer moreThan;
+    private Integer bound;
     private Double price;
 
     private Logger log = Logger.getInstance();
@@ -26,25 +26,25 @@ public class Tier {
         try {
             log.info("Parsing tier");
 
-            this.setMoreThan(xut.getNode("MoreThan", initialData));
+            this.setBound(xut.getNode("Bound", initialData));
             this.setPrice(xut.getNode("Price", initialData));
 
-            log.info("Tier successfully parsed: \nMoreThan: " + this.getMoreThan() +
+            log.info("Tier successfully parsed: \nBound: " + this.getBound() +
                     "\nPrice: " + this.getPrice());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Tier is not defined correctly", e.getDetails());
         }
     }
 
-    public Integer getMoreThan() {
-        return moreThan;
+    public Integer getBound() {
+        return bound;
     }
 
-    private void setMoreThan(Node moreThan) throws PCTDataFormatException {
+    private void setBound(Node bound) throws PCTDataFormatException {
         try {
-            this.moreThan = xut.getInteger(moreThan);
+            this.bound = xut.getInteger(bound);
         } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Tier \"more than\" is not defined correctly", e.getDetails());
+            throw new PCTDataFormatException("Tier bound is not defined correctly", e.getDetails());
         }
     }
 

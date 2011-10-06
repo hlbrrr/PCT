@@ -116,51 +116,51 @@
                             <Type>1</Type>
                             <Tiers>
                                 <Tier>
-                                    <MoreThan>0</MoreThan>
+                                    <Bound>0</Bound>
                                     <Price>0</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>1</MoreThan>
+                                    <Bound>1</Bound>
                                     <Price>20000</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>2</MoreThan>
+                                    <Bound>2</Bound>
                                     <Price>18000</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>3</MoreThan>
+                                    <Bound>3</Bound>
                                     <Price>15000</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>4</MoreThan>
+                                    <Bound>4</Bound>
                                     <Price>13000</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>5</MoreThan>
+                                    <Bound>5</Bound>
                                     <Price>12000</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>6</MoreThan>
+                                    <Bound>6</Bound>
                                     <Price>11000</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>7</MoreThan>
+                                    <Bound>7</Bound>
                                     <Price>10000</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>8</MoreThan>
+                                    <Bound>8</Bound>
                                     <Price>9500</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>9</MoreThan>
+                                    <Bound>9</Bound>
                                     <Price>9000</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>10</MoreThan>
+                                    <Bound>10</Bound>
                                     <Price>8600</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>11</MoreThan>
+                                    <Bound>11</Bound>
                                     <Price>5000</Price>
                                 </Tier>
                             </Tiers>
@@ -170,51 +170,51 @@
                             <Type>1</Type>
                             <Tiers>
                                 <Tier>
-                                    <MoreThan>0</MoreThan>
+                                    <Bound>0</Bound>
                                     <Price>300</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>30</MoreThan>
+                                    <Bound>30</Bound>
                                     <Price>270</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>60</MoreThan>
+                                    <Bound>60</Bound>
                                     <Price>240</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>90</MoreThan>
+                                    <Bound>90</Bound>
                                     <Price>220</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>120</MoreThan>
+                                    <Bound>120</Bound>
                                     <Price>200</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>150</MoreThan>
+                                    <Bound>150</Bound>
                                     <Price>180</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>180</MoreThan>
+                                    <Bound>180</Bound>
                                     <Price>170</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>210</MoreThan>
+                                    <Bound>210</Bound>
                                     <Price>160</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>240</MoreThan>
+                                    <Bound>240</Bound>
                                     <Price>150</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>270</MoreThan>
+                                    <Bound>270</Bound>
                                     <Price>140</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>300</MoreThan>
+                                    <Bound>300</Bound>
                                     <Price>130</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>330</MoreThan>
+                                    <Bound>330</Bound>
                                     <Price>100</Price>
                                 </Tier>
                             </Tiers>
@@ -224,63 +224,63 @@
                             <Type>2</Type>
                             <Tiers>
                                 <Tier>
-                                    <MoreThan>0</MoreThan>
+                                    <Bound>0</Bound>
                                     <Price>0</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>100000</MoreThan>
+                                    <Bound>100000</Bound>
                                     <Price>0.14</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>300000</MoreThan>
+                                    <Bound>300000</Bound>
                                     <Price>0.08</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>500000</MoreThan>
+                                    <Bound>500000</Bound>
                                     <Price>0.06</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>1000000</MoreThan>
+                                    <Bound>1000000</Bound>
                                     <Price>0.05</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>3000000</MoreThan>
+                                    <Bound>3000000</Bound>
                                     <Price>0.023</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>5000000</MoreThan>
+                                    <Bound>5000000</Bound>
                                     <Price>0.011</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>10000000</MoreThan>
+                                    <Bound>10000000</Bound>
                                     <Price>0.0095</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>15000000</MoreThan>
+                                    <Bound>15000000</Bound>
                                     <Price>0.008</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>30000000</MoreThan>
+                                    <Bound>30000000</Bound>
                                     <Price>0.0065</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>60000000</MoreThan>
+                                    <Bound>60000000</Bound>
                                     <Price>0.0035</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>90000000</MoreThan>
+                                    <Bound>90000000</Bound>
                                     <Price>0.0020</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>120000000</MoreThan>
+                                    <Bound>120000000</Bound>
                                     <Price>0.0012</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>200000000</MoreThan>
+                                    <Bound>200000000</Bound>
                                     <Price>0.0010</Price>
                                 </Tier>
                                 <Tier>
-                                    <MoreThan>999999999</MoreThan>
+                                    <Bound>999999999</Bound>
                                     <Price>0.0008</Price>
                                 </Tier>
                             </Tiers>

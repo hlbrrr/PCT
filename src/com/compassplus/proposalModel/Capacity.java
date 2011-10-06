@@ -104,7 +104,7 @@ public class Capacity {
         Double price = 0d;
         if (this.getCapacity().getType().equals(1)) { // packet
             for (Tier t : this.getCapacity().getTiers()) {
-                if (t.getMoreThan() > this.getValue()) {
+                if (t.getBound() > this.getValue()) {
                     break;
                 } else {
                     price = t.getPrice();
@@ -114,13 +114,13 @@ public class Capacity {
         } else if (this.getCapacity().getType().equals(2)) { // level
             Integer used = 0;
             for (Tier t : this.getCapacity().getTiers()) {
-                Integer current = t.getMoreThan() - used;
-                if (t.getMoreThan() > this.getValue()) {
+                Integer current = t.getBound() - used;
+                if (t.getBound() > this.getValue()) {
                     current = this.getValue() - used;
                 }
                 price += t.getPrice() * current;
                 used += current;
-                if (t.getMoreThan() > this.getValue()) {
+                if (t.getBound() > this.getValue()) {
                     break;
                 }
             }
