@@ -1,8 +1,11 @@
 import com.compassplus.configurationModel.Configuration;
+import com.compassplus.gui.MainForm;
+import com.compassplus.gui.ProposalForm;
 import com.compassplus.proposalModel.Proposal;
 import com.compassplus.utils.CommonUtils;
 
-import java.io.FileOutputStream;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,17 +23,27 @@ public class testMain {
             proposal.init(CommonUtils.getInstance().getDocumentFromFile("examples/exampleProposal"));
 
             //FileOutputStream out = new FileOutputStream("c:\\Users\\hlbrrr\\Desktop\\workbook.xls");
-            FileOutputStream out = new FileOutputStream("/home/arudin/Desktop/workbook.xls");
-            proposal.getWorkbook().write(out);
-            out.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-/*        JFrame frame = new JFrame("testForm");
-        frame.setContentPane(new testForm().getMainPanel());
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);*/
-    }
+            //FileOutputStream out = new FileOutputStream("/home/arudin/Desktop/workbook.xls");
+            //proposal.getWorkbook().write(out);
+            //out.close();
 
+
+            MainForm main = new MainForm();
+            main.addProposalForm(new ProposalForm(proposal));
+            final JFrame frame = new JFrame("PCT");
+            main.setExitAction(new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    frame.dispose();
+                }
+            });
+            frame.setJMenuBar(main.getMenu());
+            frame.setContentPane(main.getRoot());
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.pack();
+            frame.setSize(500, 200);
+            frame.setLocationByPlatform(true);
+            frame.setVisible(true);
+        } catch (Exception e) {
+        }
+    }
 }
