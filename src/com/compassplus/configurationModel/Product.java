@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,8 +23,8 @@ public class Product {
     private Double minimumPrice;
     private ModulesGroup modulesRoot = new ModulesGroup("Modules");
     private CapacitiesGroup capacitiesRoot = new CapacitiesGroup("Capacities");
-    private HashMap<String, Module> modules = new HashMap<String, Module>();
-    private HashMap<String, Capacity> capacities = new HashMap<String, Capacity>();
+    private Map<String, Module> modules = new HashMap<String, Module>();
+    private Map<String, Capacity> capacities = new HashMap<String, Capacity>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
@@ -87,7 +88,7 @@ public class Product {
         }
     }
 
-    public HashMap<String, Module> getModules() {
+    public Map<String, Module> getModules() {
         return modules;
     }
 
@@ -137,7 +138,7 @@ public class Product {
         log.info("Modules group successfully parsed: \nName: " + modulesGroup.getName());
     }
 
-    public HashMap<String, Capacity> getCapacities() {
+    public Map<String, Capacity> getCapacities() {
         return this.capacities;
     }
 

@@ -1,11 +1,12 @@
 package com.compassplus.proposalModel;
 
 import com.compassplus.exception.PCTDataFormatException;
+import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,7 +20,7 @@ public class Module {
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
-    public Module(Node initialData, HashMap<String, com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
+    public Module(Node initialData, Map<String, com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
         init(initialData, allowedModules);
     }
 
@@ -27,7 +28,7 @@ public class Module {
         this.setModule(module);
     }
 
-    private void init(Node initialData, HashMap<String, com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
+    private void init(Node initialData, Map<String, com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
         try {
             log.info("Parsing module");
 
@@ -47,7 +48,7 @@ public class Module {
         return this.key;
     }
 
-    private void setKey(Node name, HashMap<String, com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
+    private void setKey(Node name, Map<String, com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
         try {
             String nameString = xut.getString(name);
             this.key = nameString;
@@ -75,5 +76,17 @@ public class Module {
         sb.append("<Name>").append(this.getName()).append("</Name>");
         sb.append("</Module>");
         return sb.toString();
+    }
+
+    public Double getPrice(Product product) {
+        Double price = product.getProduct().getMaximumFunctionalityPrice() * this.getModule().getWeight() / product.getProduct().getTotalWeight(); // primary sales price
+        if (product.getSecondarySale()) {
+            if (this.getModule().getSecondarySalesPrice() != null) {
+                price = this.getModule().getSecondarySalesPrice();
+            } else {
+                price *= this.getModule().getSecondarySalesRate();
+            }
+        }
+        return CommonUtils.getInstance().toNextThousand(price);
     }
 }

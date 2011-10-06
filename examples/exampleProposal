@@ -20,8 +20,16 @@
             </Modules>
             <Capacities>
                 <Capacity>
-                    <Name>/ATMs</Name>
+                    <Name>/Main Metrics/Number of Multi-Purpose Instances</Name>
+                    <Value>2</Value>
+                </Capacity>
+                <Capacity>
+                    <Name>/Main Metrics/Number of FIMI users</Name>
                     <Value>1</Value>
+                </Capacity>
+                <Capacity>
+                    <Name>/Main Metrics/Additional transactions per month</Name>
+                    <Value>3000001</Value>
                 </Capacity>
             </Capacities>
         </Product>

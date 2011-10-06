@@ -10,7 +10,8 @@ import org.w3c.dom.NodeList;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,7 +22,7 @@ import java.util.HashMap;
 public class Configuration {
     private static Configuration ourInstance = new Configuration();
     private String expirationFormat = "dd/MM/yyyy HH:mm:ss";
-    private HashMap<String, Product> products = new HashMap<String, Product>();
+    private Map<String, Product> products = new LinkedHashMap<String, Product>();
     private ArrayList<SupportRate> supportRates = new ArrayList<SupportRate>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -42,7 +43,7 @@ public class Configuration {
         }
     }
 
-    public HashMap<String, Product> getProducts() {
+    public Map<String, Product> getProducts() {
         return this.products;
     }
 

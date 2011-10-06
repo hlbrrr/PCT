@@ -1,11 +1,13 @@
 package com.compassplus.proposalModel;
 
+import com.compassplus.configurationModel.Tier;
 import com.compassplus.exception.PCTDataFormatException;
+import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,7 +23,7 @@ public class Capacity {
     private XMLUtils xut = XMLUtils.getInstance();
 
 
-    public Capacity(Node initialData, HashMap<String, com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
+    public Capacity(Node initialData, Map<String, com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
         init(initialData, allowedCapacities);
     }
 
@@ -29,7 +31,7 @@ public class Capacity {
         this.setCapacity(capacity);
     }
 
-    private void init(Node initialData, HashMap<String, com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
+    private void init(Node initialData, Map<String, com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
         try {
             log.info("Parsing capacity");
 
@@ -63,7 +65,7 @@ public class Capacity {
         }
     }
 
-    private void setKey(Node name, HashMap<String, com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
+    private void setKey(Node name, Map<String, com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
         try {
             String nameString = xut.getString(name);
             this.key = nameString;
@@ -96,5 +98,35 @@ public class Capacity {
 
     public void setValue(Integer value) {
         this.value = value;
+    }
+
+    public Double getPrice() {
+        Double price = 0d;
+        if (this.getCapacity().getType().equals(1)) { // packet
+            for (Tier t : this.getCapacity().getTiers()) {
+                if (t.getMoreThan() > this.getValue()) {
+                    break;
+                } else {
+                    price = t.getPrice();
+                }
+            }
+            price = CommonUtils.getInstance().toNextThousand(price * this.getValue());
+        } else if (this.getCapacity().getType().equals(2)) { // level
+            Integer used = 0;
+            for (Tier t : this.getCapacity().getTiers()) {
+                Integer current = t.getMoreThan() - used;
+                if (t.getMoreThan() > this.getValue()) {
+                    current = this.getValue() - used;
+                }
+                price += t.getPrice() * current;
+                used += current;
+                if (t.getMoreThan() > this.getValue()) {
+                    break;
+                }
+            }
+            price = CommonUtils.getInstance().toNextThousand(price);
+        }
+
+        return price;
     }
 }

@@ -10,8 +10,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,7 +23,7 @@ public class Proposal {
 
     private Configuration config;
     private String clientName = "";
-    private HashMap<String, Product> products = new HashMap<String, Product>();
+    private Map<String, Product> products = new LinkedHashMap<String, Product>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
@@ -52,7 +52,7 @@ public class Proposal {
         }
     }
 
-    public HashMap<String, Product> getProducts() {
+    public Map<String, Product> getProducts() {
         return this.products;
     }
 

@@ -19,7 +19,8 @@ public class testMain {
             Proposal proposal = new Proposal(config);
             proposal.init(CommonUtils.getInstance().getDocumentFromFile("examples/exampleProposal"));
 
-            FileOutputStream out = new FileOutputStream("c:\\Users\\hlbrrr\\Desktop\\workbook.xls");
+            //FileOutputStream out = new FileOutputStream("c:\\Users\\hlbrrr\\Desktop\\workbook.xls");
+            FileOutputStream out = new FileOutputStream("/home/arudin/Desktop/workbook.xls");
             proposal.getWorkbook().write(out);
             out.close();
         } catch (Exception e) {

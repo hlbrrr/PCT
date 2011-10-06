@@ -1,5 +1,6 @@
 package com.compassplus.proposalModel;
 
+import com.compassplus.configurationModel.CapacitiesGroup;
 import com.compassplus.configurationModel.ModulesGroup;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.CommonUtils;
@@ -13,6 +14,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -25,13 +27,14 @@ public class Product {
     private static String bullet = "\u2022";
     private static ResourceBundle dict = ResourceBundle.getBundle("dictionary");
     private com.compassplus.configurationModel.Product product;
-    private HashMap<String, Module> modules = new HashMap<String, Module>();
-    private HashMap<String, Capacity> capacities = new HashMap<String, Capacity>();
+    private Map<String, Module> modules = new HashMap<String, Module>();
+    private Map<String, Capacity> capacities = new HashMap<String, Capacity>();
     private Boolean secondarySale = false;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
+    private CommonUtils cut = CommonUtils.getInstance();
 
-    public Product(Node initialData, HashMap<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
+    public Product(Node initialData, Map<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
         init(initialData, allowedProducts);
     }
 
@@ -39,7 +42,7 @@ public class Product {
         this.setProduct(product);
     }
 
-    private void init(Node initialData, HashMap<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
+    private void init(Node initialData, Map<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
         try {
             log.info("Parsing product");
 
@@ -63,11 +66,11 @@ public class Product {
         this.product = product;
     }
 
-    private com.compassplus.configurationModel.Product getProduct() {
+    public com.compassplus.configurationModel.Product getProduct() {
         return this.product;
     }
 
-    private void setName(Node name, HashMap<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
+    private void setName(Node name, Map<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
         try {
             String nameString = xut.getString(name);
             this.setProduct(allowedProducts.get(nameString));
@@ -79,7 +82,7 @@ public class Product {
         }
     }
 
-    public HashMap<String, Module> getModules() {
+    public Map<String, Module> getModules() {
         return this.modules;
     }
 
@@ -103,7 +106,7 @@ public class Product {
         this.getModules().put(module.getName(), new Module(module));
     }
 
-    public HashMap<String, Capacity> getCapacities() {
+    public Map<String, Capacity> getCapacities() {
         return this.capacities;
     }
 
@@ -305,6 +308,204 @@ public class Product {
             c.setCellStyle(cs3);
             c.setCellFormula("SUM(C" + modulesBeg + ":C" + modulesEnd + ")");
         }
+        Integer modulesTotal = s.getLastRowNum() + 1;
+        {   /* empty row */
+            s.createRow(s.getLastRowNum() + 1);//.setHeightInPoints(15.75f);
+        }
+        {   /* capacities header */
+            Row row = s.createRow(s.getLastRowNum() + 1);
+            //row.setHeightInPoints(16.5f);
+
+            CellStyle cs1 = wb.createCellStyle();
+            cs1.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setFont(arialBlack);
+            CellUtil.createCell(row, 0, dict.getString("capacities"), cs1);
+
+            CellStyle cs2 = wb.createCellStyle();
+            cs2.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs2.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs2.setFont(arialBlack);
+            CellUtil.createCell(row, 1, "", cs2);
+
+            CellStyle cs3 = wb.createCellStyle();
+            cs3.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs3.setFont(arialBlack);
+            CellUtil.createCell(row, 2, "", cs3);
+        }
+        {   /* modules table header */
+            Row row = s.createRow(s.getLastRowNum() + 1);
+            //row.setHeightInPoints(15.75f);
+
+            CellStyle cs1 = wb.createCellStyle();
+            cs1.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setFont(calibriBoldItalic);
+            CellUtil.createCell(row, 0, dict.getString("item"), cs1);
+
+            CellStyle cs2 = wb.createCellStyle();
+            cs2.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs2.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs2.setFont(calibriBoldItalic);
+            CellUtil.createCell(row, 1, dict.getString("amount"), cs2);
+
+            CellStyle cs3 = wb.createCellStyle();
+            cs3.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs3.setFont(calibriBoldItalic);
+            CellUtil.createCell(row, 2, dict.getString("price"), cs3);
+        }
+        int capacitiesBeg = s.getLastRowNum() + 2;
+        {   /* capacities list */
+            this.createCapacitiesRows(s);
+        }
+        int capacitiesEnd = s.getLastRowNum() + 1;
+        {   /* empty row */
+            Row row = s.createRow(s.getLastRowNum() + 1);//.setHeightInPoints(15.75f);
+            CellStyle cs = wb.createCellStyle();
+            cs.setBorderTop(CellStyle.BORDER_MEDIUM);
+            CellUtil.createCell(row, 0, "", cs);
+            CellUtil.createCell(row, 1, "", cs);
+            CellUtil.createCell(row, 2, "", cs);
+        }
+        {   /* capacities total */
+            Row row = s.createRow(s.getLastRowNum() + 1);
+            //row.setHeightInPoints(15.75f);
+
+            CellStyle cs1 = wb.createCellStyle();
+            cs1.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setFont(arialBlack);
+            CellUtil.createCell(row, 0, dict.getString("capacitiesTotal").replace("%product%", this.getName()), cs1);
+
+            CellStyle cs2 = wb.createCellStyle();
+            cs2.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs2.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs2.setFont(arialBlack);
+            CellUtil.createCell(row, 1, "", cs2);
+
+            CellStyle cs3 = wb.createCellStyle();
+            cs3.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("$#,##0"));
+            cs3.setFont(arialBlack);
+            Cell c = row.createCell(2);
+            c.setCellStyle(cs3);
+            c.setCellFormula("SUM(C" + capacitiesBeg + ":C" + capacitiesEnd + ")");
+        }
+        Integer capacitiesTotal = s.getLastRowNum() + 1;
+        {   /* empty row */
+            s.createRow(s.getLastRowNum() + 1);//.setHeightInPoints(15.75f);
+        }
+        {   /* totals header */
+            Row row = s.createRow(s.getLastRowNum() + 1);
+            //row.setHeightInPoints(16.5f);
+
+            CellStyle cs1 = wb.createCellStyle();
+            cs1.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setFont(arialBlack);
+            CellUtil.createCell(row, 0, dict.getString("totals"), cs1);
+
+            CellStyle cs2 = wb.createCellStyle();
+            cs2.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs2.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs2.setFont(arialBlack);
+            CellUtil.createCell(row, 1, "", cs2);
+
+            CellStyle cs3 = wb.createCellStyle();
+            cs3.setBorderTop(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs3.setFont(arialBlack);
+            CellUtil.createCell(row, 2, "", cs3);
+        }
+        {   /* sub-total amount */
+            Row row = s.createRow(s.getLastRowNum() + 1);
+            //row.setHeightInPoints(15.75f);
+
+            CellStyle cs1 = wb.createCellStyle();
+            cs1.setBorderBottom(CellStyle.BORDER_THIN);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setFont(arialBlack);
+            CellUtil.createCell(row, 0, dict.getString("subTotalAmount"), cs1);
+
+            CellStyle cs2 = wb.createCellStyle();
+            cs2.setBorderBottom(CellStyle.BORDER_THIN);
+            cs2.setFont(arialBlack);
+            CellUtil.createCell(row, 1, "", cs2);
+
+            CellStyle cs3 = wb.createCellStyle();
+            cs3.setBorderBottom(CellStyle.BORDER_THIN);
+            cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("$#,##0"));
+            cs3.setFont(arialBlack);
+            Cell c = row.createCell(2);
+            c.setCellStyle(cs3);
+            //c.setCellFormula("MAX(SUM(C" + modulesBeg + ":C" + modulesEnd + ")," + cut.formatDouble(this.getProduct().getMinimumPrice()) + ")");
+            c.setCellFormula("MAX(SUM(C" + modulesTotal + ",C" + capacitiesTotal + ")," + cut.formatDouble(this.getProduct().getMinimumPrice()) + ")");
+        }
+        {   /* discount */
+            Row row = s.createRow(s.getLastRowNum() + 1);
+            //row.setHeightInPoints(16.5f);
+
+            CellStyle cs1 = wb.createCellStyle();
+            cs1.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setFont(arialBlack);
+            cs1.setWrapText(true);
+            CellUtil.createCell(row, 0, dict.getString("discount"), cs1);
+
+            CellStyle cs2 = wb.createCellStyle();
+            cs2.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs2.setFont(arialBlack);
+            CellUtil.createCell(row, 1, "", cs2);
+
+            CellStyle cs3 = wb.createCellStyle();
+            cs3.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+            cs3.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+            cs3.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderLeft(CellStyle.BORDER_THIN);
+            cs3.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+            cs3.setFont(arialBlack);
+            cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%;;@"));
+            Cell c = row.createCell(2);
+            c.setCellStyle(cs3);
+            c.setCellValue(0);
+        }
+        {   /* total amount */
+            Row row = s.createRow(s.getLastRowNum() + 1);
+            //row.setHeightInPoints(15.75f);
+
+            CellStyle cs1 = wb.createCellStyle();
+            cs1.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setFont(arialBlack);
+            CellUtil.createCell(row, 0, dict.getString("totalAmount").replace("%product%", this.getName()), cs1);
+
+            CellStyle cs2 = wb.createCellStyle();
+            cs2.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs2.setFont(arialBlack);
+            CellUtil.createCell(row, 1, "", cs2);
+
+            CellStyle cs3 = wb.createCellStyle();
+            cs3.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("$#,##0"));
+            cs3.setFont(arialBlack);
+            Cell c = row.createCell(2);
+            c.setCellStyle(cs3);
+            c.setCellFormula("C" + (row.getRowNum() - 1) + "-C" + (row.getRowNum() - 1) + "*C" + row.getRowNum());
+        }
 
     }
 
@@ -330,6 +531,7 @@ public class Product {
             //row.setHeightInPoints(16.5f);
 
             CellStyle cs1 = s.getWorkbook().createCellStyle();
+            cs1.setWrapText(true);
             CellStyle cs2 = s.getWorkbook().createCellStyle();
             CellStyle cs3 = s.getWorkbook().createCellStyle();
             if (level == 1) {
@@ -403,19 +605,12 @@ public class Product {
                 CellUtil.createCell(row, 0, m.getName(), cs1);
 
                 if (this.getModules().containsKey(key)) {
-                    Double price = this.getProduct().getMaximumFunctionalityPrice() * m.getWeight() / this.getProduct().getTotalWeight(); // primary sales price
-                    if (this.getSecondarySale()) {
-                        if (m.getSecondarySalesPrice() != null) {
-                            price = m.getSecondarySalesPrice();
-                        } else {
-                            price *= m.getSecondarySalesRate();
-                        }
-                    }
+                    Module mm = this.getModules().get(key);
                     CellUtil.createCell(row, 1, this.bullet, cs2);
 
                     Cell c = row.createCell(2);
                     c.setCellStyle(cs3);
-                    c.setCellValue(CommonUtils.getInstance().toNextThousand(price));
+                    c.setCellValue(mm.getPrice(this));
                 } else {
                     CellUtil.createCell(row, 1, "", cs2);
                     CellUtil.createCell(row, 2, "", cs3);
@@ -424,6 +619,127 @@ public class Product {
         }
         for (ModulesGroup g : modulesGroup.getGroups()) {
             this.createModulesRows(s, g, level + 1);
+        }
+    }
+
+    private void createCapacitiesRows(Sheet s) {
+        this.createCapacitiesRows(s, null, 0);
+    }
+
+    private void createCapacitiesRows(Sheet s, CapacitiesGroup capacitiesGroup, int level) {
+        /* fonts */
+        Font calibri = s.getWorkbook().createFont();
+        calibri.setFontName("Calibri");
+        calibri.setFontHeightInPoints((short) 11);
+
+        Font arialBlack = s.getWorkbook().createFont();
+        arialBlack.setFontName("Calibri");
+        arialBlack.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        arialBlack.setFontHeightInPoints((short) 11);
+
+        if (capacitiesGroup == null) {
+            capacitiesGroup = this.product.getCapacitiesRoot();
+        } else {
+            Row row = s.createRow(s.getLastRowNum() + 1);
+            //row.setHeightInPoints(16.5f);
+
+            CellStyle cs1 = s.getWorkbook().createCellStyle();
+            cs1.setWrapText(true);
+            CellStyle cs2 = s.getWorkbook().createCellStyle();
+            CellStyle cs3 = s.getWorkbook().createCellStyle();
+            if (level == 1) {
+                cs1.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+                cs1.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cs1.setBorderTop(CellStyle.BORDER_MEDIUM);
+                cs1.setBorderBottom(CellStyle.BORDER_MEDIUM);
+                cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+                cs1.setFont(arialBlack);
+
+                cs2.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+                cs2.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cs2.setBorderTop(CellStyle.BORDER_MEDIUM);
+                cs2.setBorderBottom(CellStyle.BORDER_MEDIUM);
+                cs2.setFont(arialBlack);
+
+                cs3.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+                cs3.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cs3.setBorderTop(CellStyle.BORDER_MEDIUM);
+                cs3.setBorderBottom(CellStyle.BORDER_MEDIUM);
+                cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+                cs3.setFont(arialBlack);
+            } else {
+                cs1.setFillForegroundColor(HSSFColor.LIGHT_CORNFLOWER_BLUE.index);
+                cs1.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cs1.setBorderTop(CellStyle.BORDER_THIN);
+                cs1.setBorderBottom(CellStyle.BORDER_THIN);
+                cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+                cs1.setFont(calibri);
+
+                cs2.setFillForegroundColor(HSSFColor.LIGHT_CORNFLOWER_BLUE.index);
+                cs2.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cs2.setBorderTop(CellStyle.BORDER_THIN);
+                cs2.setBorderBottom(CellStyle.BORDER_THIN);
+                cs2.setFont(calibri);
+
+                cs3.setFillForegroundColor(HSSFColor.LIGHT_CORNFLOWER_BLUE.index);
+                cs3.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                cs3.setBorderTop(CellStyle.BORDER_THIN);
+                cs3.setBorderBottom(CellStyle.BORDER_THIN);
+                cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+                cs3.setFont(calibri);
+            }
+            CellUtil.createCell(row, 0, capacitiesGroup.getName(), cs1);
+            CellUtil.createCell(row, 1, "", cs2);
+            CellUtil.createCell(row, 2, "", cs3);
+        }
+        {
+            CellStyle cs1 = s.getWorkbook().createCellStyle();
+            cs1.setBorderBottom(CellStyle.BORDER_THIN);
+            cs1.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cs1.setWrapText(true);
+            cs1.setFont(calibri);
+
+            CellStyle cs2 = s.getWorkbook().createCellStyle();
+            cs2.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+            cs2.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+            cs2.setAlignment(CellStyle.ALIGN_RIGHT);
+            cs2.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+            cs2.setBorderBottom(CellStyle.BORDER_THIN);
+            cs2.setBorderLeft(CellStyle.BORDER_THIN);
+            cs2.setBorderRight(CellStyle.BORDER_THIN);
+            cs2.setFont(calibri);
+
+            CellStyle cs3 = s.getWorkbook().createCellStyle();
+            cs3.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+            cs3.setBorderBottom(CellStyle.BORDER_THIN);
+            cs3.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("$#,##0"));
+            cs3.setFont(calibri);
+            for (String key : capacitiesGroup.getCapacities().keySet()) {
+                com.compassplus.configurationModel.Capacity c = capacitiesGroup.getCapacities().get(key);
+
+                Row row = s.createRow(s.getLastRowNum() + 1);
+                CellUtil.createCell(row, 0, c.getName(), cs1);
+
+                if (this.getCapacities().containsKey(key)) {
+                    Capacity cc = this.getCapacities().get(key);
+                    Integer desiredCapacity = cc.getValue();
+
+                    Cell c1 = row.createCell(1);
+                    c1.setCellStyle(cs2);
+                    c1.setCellValue(desiredCapacity);
+
+                    Cell c2 = row.createCell(2);
+                    c2.setCellStyle(cs3);
+                    c2.setCellValue(cc.getPrice());
+                } else {
+                    CellUtil.createCell(row, 1, "", cs2);
+                    CellUtil.createCell(row, 2, "", cs3);
+                }
+            }
+        }
+        for (CapacitiesGroup g : capacitiesGroup.getGroups()) {
+            this.createCapacitiesRows(s, g, level + 1);
         }
     }
 }

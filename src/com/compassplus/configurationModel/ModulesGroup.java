@@ -6,7 +6,8 @@ import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,7 +18,7 @@ import java.util.HashMap;
 public class ModulesGroup {
     private String name;
 
-    private HashMap<String, Module> modules = new HashMap<String, Module>();
+    private Map<String, Module> modules = new LinkedHashMap<String, Module>();
     private ArrayList<ModulesGroup> groups = new ArrayList<ModulesGroup>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -54,7 +55,7 @@ public class ModulesGroup {
         return this.groups;
     }
 
-    public HashMap<String, Module> getModules() {
+    public Map<String, Module> getModules() {
         return this.modules;
     }
 

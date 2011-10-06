@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.text.DecimalFormat;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,6 +20,7 @@ import java.io.StringReader;
  */
 public class CommonUtils {
     private static CommonUtils ourInstance = new CommonUtils();
+    private static DecimalFormat formatDouble = new DecimalFormat("#");
 
     public static CommonUtils getInstance() {
         return ourInstance;
@@ -55,5 +57,9 @@ public class CommonUtils {
 
     public Double toNextThousand(Double val) {
         return Math.ceil(val / 1000) * 1000;
+    }
+
+    public String formatDouble(Double val) {
+        return formatDouble.format(val);
     }
 }

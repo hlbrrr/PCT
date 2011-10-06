@@ -6,7 +6,8 @@ import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,7 +18,7 @@ import java.util.HashMap;
 public class CapacitiesGroup {
     private String name;
 
-    private HashMap<String, Capacity> capacities = new HashMap<String, Capacity>();
+    private Map<String, Capacity> capacities = new LinkedHashMap<String, Capacity>();
     private ArrayList<CapacitiesGroup> groups = new ArrayList<CapacitiesGroup>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -54,7 +55,7 @@ public class CapacitiesGroup {
         return this.groups;
     }
 
-    public HashMap<String, Capacity> getCapacities() {
+    public Map<String, Capacity> getCapacities() {
         return this.capacities;
     }
 
