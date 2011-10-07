@@ -11,6 +11,7 @@
                     <Modules>
                         <Module>
                             <Name>Windows OS</Name>
+                            <ShortName>Windows OS</ShortName>
                             <Weight>1</Weight>
                             <SecondarySales>
                                 <Price></Price>
@@ -19,6 +20,7 @@
                         </Module>
                         <Module>
                             <Name>Linux OS</Name>
+                            <ShortName>Linux OS</ShortName>
                             <Weight>1</Weight>
                             <SecondarySales>
                                 <Price></Price>
@@ -27,6 +29,7 @@
                         </Module>
                         <Module>
                             <Name>AIX OS</Name>
+                            <ShortName>AIX OS</ShortName>
                             <Weight>1</Weight>
                             <SecondarySales>
                                 <Price></Price>
@@ -35,6 +38,7 @@
                         </Module>
                         <Module>
                             <Name>Fault tolerant configuration</Name>
+                            <ShortName>Fault tolerant configuration</ShortName>
                             <Weight>1</Weight>
                             <SecondarySales>
                                 <Price></Price>
@@ -43,6 +47,7 @@
                         </Module>
                         <Module>
                             <Name>Versatile Telebanking Interface (VTBI) for Internet and Mobile banking</Name>
+                            <ShortName>VTBI</ShortName>
                             <Weight>1</Weight>
                             <SecondarySales>
                                 <Price></Price>

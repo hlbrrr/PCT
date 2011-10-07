@@ -17,8 +17,7 @@ public class ProposalForm {
 
     public ProposalForm(Proposal proposal) {
         this.proposal = proposal;
-
-        mainPanel = new JPanel(new BorderLayout());
+        mainPanel = new ProposalJPanel(new BorderLayout(), this);
     }
 
     public JPanel getRoot() {

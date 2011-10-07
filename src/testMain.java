@@ -1,7 +1,5 @@
 import com.compassplus.configurationModel.Configuration;
 import com.compassplus.gui.MainForm;
-import com.compassplus.gui.ProposalForm;
-import com.compassplus.proposalModel.Proposal;
 import com.compassplus.utils.CommonUtils;
 
 import javax.swing.*;
@@ -19,8 +17,8 @@ public class testMain {
         Configuration config = Configuration.getInstance();
         try {
             config.init(CommonUtils.getInstance().getDocumentFromFile("examples/exampleModel"));
-            Proposal proposal = new Proposal(config);
-            proposal.init(CommonUtils.getInstance().getDocumentFromFile("examples/exampleProposal"));
+            //Proposal proposal = new Proposal(config);
+            //proposal.init(CommonUtils.getInstance().getDocumentFromFile("examples/exampleProposal"));
 
             //FileOutputStream out = new FileOutputStream("c:\\Users\\hlbrrr\\Desktop\\workbook.xls");
             //FileOutputStream out = new FileOutputStream("/home/arudin/Desktop/workbook.xls");
@@ -28,8 +26,8 @@ public class testMain {
             //out.close();
 
 
-            MainForm main = new MainForm();
-            main.addProposalForm(new ProposalForm(proposal));
+            MainForm main = new MainForm(config);
+            //main.addProposalForm(new ProposalForm(proposal));
             final JFrame frame = new JFrame("PCT");
             main.setExitAction(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {

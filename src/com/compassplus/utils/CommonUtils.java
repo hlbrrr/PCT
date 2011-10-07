@@ -6,10 +6,7 @@ import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.text.DecimalFormat;
 
 /**
@@ -50,6 +47,14 @@ public class CommonUtils {
     public Document getDocumentFromFile(String fileName) throws PCTDataFormatException {
         try {
             return getDocumentFromSource(new FileReader(fileName));
+        } catch (FileNotFoundException e) {
+            throw new PCTDataFormatException("File not found");
+        }
+    }
+
+    public Document getDocumentFromFile(File file) throws PCTDataFormatException {
+        try {
+            return getDocumentFromSource(new FileReader(file));
         } catch (FileNotFoundException e) {
             throw new PCTDataFormatException("File not found");
         }

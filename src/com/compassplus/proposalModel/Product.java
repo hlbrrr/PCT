@@ -170,6 +170,25 @@ public class Product {
         this.secondarySale = secondarySale;
     }
 
+    public Double getPrice() {
+        Double price = 0d;
+        for (Module m : this.getModules().values()) {
+            price += m.getPrice(this);
+        }
+
+        for (Capacity c : this.getCapacities().values()) {
+            price += c.getPrice();
+        }
+
+        return price;
+    }
+
+    public String getDescription(){
+        StringBuilder sb = new StringBuilder();
+
+        return sb.toString();
+    }
+
     public void createSheet(Workbook wb) {
         /* fonts */
         Font calibri = wb.createFont();
