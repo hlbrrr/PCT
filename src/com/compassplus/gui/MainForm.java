@@ -13,6 +13,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileOutputStream;
 
 /**
@@ -93,7 +94,9 @@ public class MainForm {
                 int retVal = proposalFileChooser.showDialog(getRoot(), "Export");
                 if (retVal == JFileChooser.APPROVE_OPTION) {
                     try {
-
+                        File f = proposalFileChooser.getSelectedFile();
+                        FileOutputStream out = new FileOutputStream(f);
+                        out.write(getCurrentProposal().toString().getBytes());
                     } catch (Exception exception) {
                     }
                 }
@@ -159,7 +162,7 @@ public class MainForm {
         proposalsTabs = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
         proposalsTabs.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                setCurrentProposal(((ProposalJPanel) getProposalTabs().getSelectedComponent()).getParentForm().getProposal());
+                setCurrentProposal(((ProposalJPanel) proposalsTabs.getSelectedComponent()).getParentForm().getProposal());
             }
         });
         mainPanel = new JPanel();
@@ -173,23 +176,15 @@ public class MainForm {
 
     private void setCurrentProposal(Proposal currentProposal) {
         if (currentProposal != null) {
-            getProposalMenu().setEnabled(true);
+            proposalMenu.setEnabled(true);
         } else {
-            getProposalMenu().setEnabled(false);
+            proposalMenu.setEnabled(false);
         }
         this.currentProposal = currentProposal;
     }
 
     private JMenuItem getSaveProposal() {
         return saveProposal;
-    }
-
-    private JMenu getProposalMenu() {
-        return proposalMenu;
-    }
-
-    private JTabbedPane getProposalTabs() {
-        return this.proposalsTabs;
     }
 
     public Container getRoot() {
@@ -201,14 +196,10 @@ public class MainForm {
     }
 
     public void setExitAction(ActionListener actionListener) {
-        this.exit.addActionListener(actionListener);
-    }
-
-    private JTabbedPane getProposalsTabs() {
-        return proposalsTabs;
+        exit.addActionListener(actionListener);
     }
 
     public void addProposalForm(ProposalForm proposalForm) {
-        this.getProposalsTabs().addTab(proposalForm.getProposal().getClientName(), proposalForm.getRoot());
+        proposalsTabs.addTab(proposalForm.getProposal().getName(), proposalForm.getRoot());
     }
 }

@@ -1,5 +1,5 @@
 <root>
-    <ClientName>UBRR</ClientName>
+    <Name>UBRR</Client>
     <Products>
         <Product>
             <SecondarySale>false</SecondarySale>

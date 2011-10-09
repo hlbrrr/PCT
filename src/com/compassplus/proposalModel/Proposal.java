@@ -22,7 +22,7 @@ import java.util.Map;
 public class Proposal {
 
     private Configuration config;
-    private String clientName = "";
+    private String name = "";
     private Map<String, Product> products = new LinkedHashMap<String, Product>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -33,20 +33,20 @@ public class Proposal {
 
     public void init(Document initialData) throws PCTDataFormatException {
         try {
-            this.setClientName(xut.getNode("/root/ClientName", initialData));
+            this.setName(xut.getNode("/root/Name", initialData));
             this.setProducts(xut.getNodes("/root/Products/Product", initialData));
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Bad proposal", e.getDetails());
         }
     }
 
-    public String getClientName() {
-        return this.clientName;
+    public String getName() {
+        return this.name;
     }
 
-    private void setClientName(Node clientName) throws PCTDataFormatException {
+    private void setName(Node name) throws PCTDataFormatException {
         try {
-            this.clientName = xut.getString(clientName, true);
+            this.name = xut.getString(name, true);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Proposal client name is not defined correctly", e.getDetails());
         }
@@ -77,14 +77,14 @@ public class Proposal {
     }
 
     public void setClientName(String clientName) {
-        this.clientName = clientName;
+        this.name = clientName;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("<root>");
-        sb.append("<ClientName>").append(this.getClientName()).append("</ClientName>");
+        sb.append("<Name>").append(this.getName()).append("</Name>");
         if (this.getProducts() != null && this.getProducts().size() > 0) {
             sb.append("<Products>");
             for (Product p : this.getProducts().values()) {
