@@ -1,8 +1,11 @@
 package com.compassplus.gui;
 
 import com.compassplus.configurationModel.Configuration;
+import com.compassplus.proposalModel.Product;
 import com.compassplus.proposalModel.Proposal;
 import com.compassplus.utils.CommonUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.ss.usermodel.*;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -14,7 +17,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 /**
  * Created by IntelliJ IDEA.
@@ -60,7 +65,7 @@ public class MainForm {
         xlsFileChooser = new JFileChooser();
         xlsFileChooser.setAcceptAllFileFilterUsed(false);
         xlsFileChooser.setMultiSelectionEnabled(false);
-        xlsFileChooser.setFileFilter(new FileNameExtensionFilter("*.xls (Excel documents)", "xls"));
+        xlsFileChooser.setFileFilter(new FileNameExtensionFilter("*.xls (Excel documents)", "xls", "xlsx"));
     }
 
     private void initFileMenu() {
@@ -95,8 +100,9 @@ public class MainForm {
                 if (retVal == JFileChooser.APPROVE_OPTION) {
                     try {
                         File f = proposalFileChooser.getSelectedFile();
-                        FileOutputStream out = new FileOutputStream(f);
+                        OutputStream out = new FileOutputStream(f);
                         out.write(getCurrentProposal().toString().getBytes());
+                        out.close();
                     } catch (Exception exception) {
                     }
                 }
@@ -138,10 +144,38 @@ public class MainForm {
 
                 if (retVal == JFileChooser.APPROVE_OPTION) {
                     try {
-                        FileOutputStream out = new FileOutputStream(xlsFileChooser.getSelectedFile());
-                        getCurrentProposal().getWorkbook().write(out);
+                        FileInputStream inp = new FileInputStream(xlsFileChooser.getSelectedFile());
+                        Workbook wb = WorkbookFactory.create(inp);
+
+                        Sheet s = wb.getSheetAt(0);
+                        int offset = 10;
+                        int i = 0;
+                        for (Product p : getCurrentProposal().getProducts().values()) {
+                            s.shiftRows(offset + i, s.getLastRowNum(), getCurrentProposal().getProducts().size());
+                            Row r = s.createRow(offset + i);
+
+
+                            Cell c1 = r.createCell(0);
+                            CellStyle cs1 = wb.createCellStyle();
+                            cs1.setWrapText(true);
+                            c1.setCellValue(p.getDescription());
+                            c1.setCellStyle(cs1);
+
+
+                            Cell c2 = r.createCell(1);
+                            CellStyle cs2 = wb.createCellStyle();
+                            cs2.setDataFormat(s.getWorkbook().createDataFormat().getFormat("$#,##0"));
+                            c2.setCellStyle(cs2);
+                            c2.setCellValue(p.getPrice());
+                            i++;
+                        }
+
+                        OutputStream out = new FileOutputStream(xlsFileChooser.getSelectedFile());
+                        wb.write(out);
                         out.close();
+
                     } catch (Exception exception) {
+                        exception.printStackTrace();
                     }
                 }
             }

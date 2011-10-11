@@ -179,14 +179,98 @@ public class Product {
         for (Capacity c : this.getCapacities().values()) {
             price += c.getPrice();
         }
-
         return price;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         StringBuilder sb = new StringBuilder();
+        sb.append(getProduct().getShortName().equals("") ? getProduct().getName() : getProduct().getShortName());
+        sb.append("\n");
+        sb.append(getSelectedModulesString());
+        sb.append(getSelectedCapacitiesString());
+        String ret = sb.toString();
+        if (ret.endsWith("\n")) {
+            ret = ret.substring(0, ret.length() - 1);
+        }
+        return ret;
+    }
 
-        return sb.toString();
+    private String getSelectedModulesString() {
+        return getSelectedModulesString(null, "");
+    }
+
+    private String getSelectedModulesString(ModulesGroup modulesGroup, String pad) {
+        StringBuilder sb = new StringBuilder();
+        boolean appendGroupName = true;
+        if (modulesGroup == null) {
+            modulesGroup = getProduct().getModulesRoot();
+            appendGroupName = false;
+        }
+
+        for (String key : modulesGroup.getModules().keySet()) {
+            if (this.getModules().containsKey(key)) {
+                com.compassplus.configurationModel.Module m = modulesGroup.getModules().get(key);
+                sb.append(pad);
+                sb.append("  -");
+                sb.append(m.getShortName().equals("") ? m.getName() : m.getShortName());
+                sb.append("\n");
+            }
+        }
+
+        for (ModulesGroup mg : modulesGroup.getGroups()) {
+            sb.append(getSelectedModulesString(mg, pad + "  "));
+        }
+
+        if (sb.length() > 0) {
+            if (appendGroupName) {
+                sb.insert(0, ":\n");
+                sb.insert(0, modulesGroup.getShortName().equals("") ? modulesGroup.getName() : modulesGroup.getShortName());
+                sb.insert(0, pad);
+            }
+            return sb.toString();
+        } else {
+            return "";
+        }
+    }
+
+    private String getSelectedCapacitiesString() {
+        return getSelectedCapacitiesString(null, "");
+    }
+
+    private String getSelectedCapacitiesString(CapacitiesGroup capacitiesGroup, String pad) {
+        StringBuilder sb = new StringBuilder();
+        boolean appendGroupName = true;
+        if (capacitiesGroup == null) {
+            capacitiesGroup = getProduct().getCapacitiesRoot();
+            appendGroupName = false;
+        }
+
+        for (String key : capacitiesGroup.getCapacities().keySet()) {
+            if (this.getCapacities().containsKey(key)) {
+                com.compassplus.configurationModel.Capacity c = capacitiesGroup.getCapacities().get(key);
+                Capacity cc = this.getCapacities().get(key);
+                sb.append(pad);
+                sb.append("  -");
+                sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
+                sb.append(" = ").append(cc.getValue());
+                sb.append("\n");
+            }
+        }
+
+        for (CapacitiesGroup cg : capacitiesGroup.getGroups()) {
+            sb.append(getSelectedCapacitiesString(cg, pad + "  "));
+        }
+
+        if (sb.length() > 0) {
+            if (appendGroupName) {
+                sb.insert(0, ":\n");
+                sb.insert(0, capacitiesGroup.getShortName().equals("") ? capacitiesGroup.getName() : capacitiesGroup.getShortName());
+                sb.insert(0, pad);
+            }
+            return sb.toString();
+        } else {
+            return "";
+        }
     }
 
     public void createSheet(Workbook wb) {

@@ -17,23 +17,31 @@ import java.util.Map;
  */
 public class CapacitiesGroup {
     private String name;
+    private String shortName;
 
     private Map<String, Capacity> capacities = new LinkedHashMap<String, Capacity>();
     private ArrayList<CapacitiesGroup> groups = new ArrayList<CapacitiesGroup>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
-    public CapacitiesGroup(String name) {
+    public CapacitiesGroup(String name, String shortName) {
         this.name = name;
+        this.shortName = shortName;
     }
 
-    public CapacitiesGroup(Node name) throws PCTDataFormatException {
+    public CapacitiesGroup(Node name, Node shortName) throws PCTDataFormatException {
         this.setName(name);
+        this.setShortName(shortName);
     }
 
     public String getName() {
         return this.name;
     }
+
+    public String getShortName() {
+        return this.shortName;
+    }
+
 
     public void addCapacity(String key, Capacity capacity) {
         this.capacities.put(key, capacity);
@@ -48,6 +56,14 @@ public class CapacitiesGroup {
             this.name = xut.getString(name);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacities group name is not defined correctly", e.getDetails());
+        }
+    }
+
+    private void setShortName(Node shortName) throws PCTDataFormatException {
+        try {
+            this.shortName = xut.getString(shortName, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Capacities group short name is not defined correctly", e.getDetails());
         }
     }
 

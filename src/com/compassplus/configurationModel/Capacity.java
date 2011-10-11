@@ -16,6 +16,7 @@ import java.util.ArrayList;
  */
 public class Capacity {
     private String name;
+    private String shortName;
     private Integer type;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -31,10 +32,12 @@ public class Capacity {
             log.info("Parsing Capacity");
 
             this.setName(xut.getNode("Name", initialData));
+            this.setShortName(xut.getNode("ShortName", initialData));
             this.setType(xut.getNode("Type", initialData));
             this.setTiers(xut.getNodes("Tiers/Tier", initialData));
 
             log.info("Capacity successfully parsed: \nName: " + this.getName() +
+                    "\nShortName: " + this.getShortName() +
                     "\nType: " + this.getType());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity is not defined correctly", e.getDetails());
@@ -50,6 +53,18 @@ public class Capacity {
             this.name = xut.getString(name);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity name is not defined correctly", e.getDetails());
+        }
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    private void setShortName(Node shortName) throws PCTDataFormatException {
+        try {
+            this.shortName = xut.getString(shortName, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Capacity short name is not defined correctly", e.getDetails());
         }
     }
 

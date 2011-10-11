@@ -4,9 +4,6 @@ import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,6 +13,7 @@ import java.util.ArrayList;
  */
 public class Module {
     private String name;
+    private String shortName;
     private Double weight;
     private Double secondarySalesPrice;
     private Double secondarySalesRate;
@@ -34,6 +32,7 @@ public class Module {
             log.info("Parsing module");
 
             this.setName(xut.getNode("Name", initialData));
+            this.setShortName(xut.getNode("ShortName", initialData));
             this.setWeight(xut.getNode("Weight", initialData));
 
             try {
@@ -64,6 +63,7 @@ public class Module {
             }*/
 
             log.info("Module successfully parsed: \nName: " + this.getName() +
+                    "\nShortName: " + this.getShortName() +
                     "\nWeight: " + this.getWeight() +
                     "\nSecondarySalesPrice: " + this.getSecondarySalesPrice() +
                     "\nSecondarySalesRate: " + this.getSecondarySalesRate()/* +
@@ -82,6 +82,18 @@ public class Module {
             this.name = xut.getString(name);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Module name is not defined correctly", e.getDetails());
+        }
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    private void setShortName(Node shortName) throws PCTDataFormatException {
+        try {
+            this.shortName = xut.getString(shortName, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Module short name is not defined correctly", e.getDetails());
         }
     }
 

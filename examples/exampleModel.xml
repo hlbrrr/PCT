@@ -226,6 +226,7 @@
                         </Capacity>
                         <Capacity>
                             <Name>Additional transactions per month</Name>
+                            <ShortName>ATP</ShortName>
                             <Type>2</Type>
                             <Tiers>
                                 <Tier>

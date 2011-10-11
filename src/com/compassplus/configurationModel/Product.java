@@ -17,12 +17,13 @@ import java.util.Map;
  */
 public class Product {
     private String name;
+    private String shortName;
     private Double maximumFunctionalityPrice;
 
     private Double totalWeight;
     private Double minimumPrice;
-    private ModulesGroup modulesRoot = new ModulesGroup("Modules");
-    private CapacitiesGroup capacitiesRoot = new CapacitiesGroup("Capacities");
+    private ModulesGroup modulesRoot = new ModulesGroup("Modules", "");
+    private CapacitiesGroup capacitiesRoot = new CapacitiesGroup("Capacities", "");
     private Map<String, Module> modules = new HashMap<String, Module>();
     private Map<String, Capacity> capacities = new HashMap<String, Capacity>();
     private Logger log = Logger.getInstance();
@@ -37,6 +38,7 @@ public class Product {
             log.info("Parsing product");
 
             this.setName(xut.getNode("Name", initialData));
+            this.setShortName(xut.getNode("ShortName", initialData));
             this.setMaximumFunctionalityPrice(xut.getNode("MaximumFunctionalityPrice", initialData));
             this.setMinimumPrice(xut.getNode("MinimumPrice", initialData));
             this.setModules(xut.getNode("Modules", initialData));
@@ -44,6 +46,7 @@ public class Product {
             this.setTotalWeight();
 
             log.info("Product successfully parsed: \nName: " + this.getName() +
+                    "\nShortName: " + this.getShortName() +
                     "\nMaximumFunctionalityPrice: " + this.getMaximumFunctionalityPrice() +
                     "\nMinimumPrice: " + this.getMinimumPrice() +
                     "\nStructure: \n" + modulesRoot.toString() + "\n" + capacitiesRoot.toString());
@@ -61,6 +64,18 @@ public class Product {
             this.name = xut.getString(name);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Product name is not defined correctly", e.getDetails());
+        }
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    private void setShortName(Node shortName) throws PCTDataFormatException {
+        try {
+            this.shortName = xut.getString(shortName, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Product short name is not defined correctly", e.getDetails());
         }
     }
 
@@ -125,7 +140,7 @@ public class Product {
             log.info("Found " + groups.getLength() + " subgroup(s)");
             for (int i = 0; i < groups.getLength(); i++) {
                 try {
-                    ModulesGroup tmpModulesGroup = new ModulesGroup(xut.getNode("Name", groups.item(i)));
+                    ModulesGroup tmpModulesGroup = new ModulesGroup(xut.getNode("Name", groups.item(i)), xut.getNode("ShortName", groups.item(i)));
                     modulesGroup.addModulesGroup(tmpModulesGroup);
                     this.setModules(xut.getNode("Modules", groups.item(i)), tmpModulesGroup, prefix + tmpModulesGroup.getName() + "/");
                 } catch (PCTDataFormatException e) {
@@ -175,7 +190,7 @@ public class Product {
             log.info("Found " + groups.getLength() + " subgroup(s)");
             for (int i = 0; i < groups.getLength(); i++) {
                 try {
-                    CapacitiesGroup tmpCapacitiesGroup = new CapacitiesGroup(xut.getNode("Name", groups.item(i)));
+                    CapacitiesGroup tmpCapacitiesGroup = new CapacitiesGroup(xut.getNode("Name", groups.item(i)), xut.getNode("ShortName", groups.item(i)));
                     capacitiesGroup.addCapacitiesGroup(tmpCapacitiesGroup);
                     this.setCapacities(xut.getNode("Capacities", groups.item(i)), tmpCapacitiesGroup, prefix + tmpCapacitiesGroup.getName() + "/");
                 } catch (PCTDataFormatException e) {
