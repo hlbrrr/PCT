@@ -181,7 +181,7 @@ public class MainForm {
             }
         });
 
-        proposalMenu = new JMenu("Project");
+        proposalMenu = new JMenu("Proposal");
         proposalMenu.setEnabled(false);
         proposalMenu.add(addProduct);
         proposalMenu.add(export2XLS);
