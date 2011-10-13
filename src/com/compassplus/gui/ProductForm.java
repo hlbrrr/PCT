@@ -46,7 +46,23 @@ public class ProductForm {
         c.gridy = 0;
         mainPanel.add(capacitiesPanel, c);
 
-
+        modulesPanel.add(new JLabel("asd"));
+        modulesPanel.add(new JLabel("asd"));
+        modulesPanel.add(new JLabel("asd"));
+        modulesPanel.add(new JLabel("afghsd"));
+        modulesPanel.add(new JLabel("asd"));
+        modulesPanel.add(new JLabel("aasd"));
+        modulesPanel.add(new JLabel("aasd"));
+        modulesPanel.add(new JLabel("asdaasd"));
+        modulesPanel.add(new JLabel("aasd"));
+        modulesPanel.add(new JLabel("aasd"));
+        modulesPanel.add(new JLabel("asd"));
+        modulesPanel.add(new JLabel("aasd"));
+        modulesPanel.add(new JLabel("aahgsd"));
+        modulesPanel.add(new JLabel("aasd"));
+        modulesPanel.add(new JLabel("aasd"));
+        modulesPanel.add(new JLabel("asgvdfd"));
+        modulesPanel.add(new JLabel("athsd"));
     }
 
     public Product getProduct() {
