@@ -96,7 +96,7 @@ public class Proposal {
         return sb.toString();
     }
 
-    private Configuration getConfig() {
+    public Configuration getConfig() {
         return config;
     }
 

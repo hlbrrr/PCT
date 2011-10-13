@@ -37,6 +37,7 @@ public class testMain {
 
             MainForm main = new MainForm(config);
             final JFrame frame = new JFrame("PCT");
+            main.setFrame(frame);
             main.setExitAction(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
                     frame.dispose();
