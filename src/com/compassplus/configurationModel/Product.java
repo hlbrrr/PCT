@@ -33,6 +33,10 @@ public class Product {
         init(initialData);
     }
 
+    public String toString(){
+        return this.getName();
+    }
+
     private void init(Node initialData) throws PCTDataFormatException {
         try {
             log.info("Parsing product");

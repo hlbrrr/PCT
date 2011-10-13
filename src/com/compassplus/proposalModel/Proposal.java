@@ -46,7 +46,7 @@ public class Proposal {
 
     private void setName(Node name) throws PCTDataFormatException {
         try {
-            this.name = xut.getString(name, true);
+            this.name = xut.getString(name);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Proposal client name is not defined correctly", e.getDetails());
         }
@@ -72,8 +72,14 @@ public class Proposal {
         }
     }
 
-    public void addProduct(com.compassplus.configurationModel.Product product) {
-        this.getProducts().put(product.getName(), new Product(product));
+    public void addProduct(Product product) {
+        this.getProducts().put(product.getName(), product);
+    }
+
+    public void delProduct(Product product) {
+        System.out.println(this.getProducts().containsValue(product) + " b" + this.getProducts().size());
+        this.getProducts().remove(product.getName());
+        System.out.println("a" + this.getProducts().size());
     }
 
     public void setClientName(String clientName) {

@@ -1,15 +1,10 @@
 import com.compassplus.configurationModel.Configuration;
 import com.compassplus.gui.MainForm;
-import com.compassplus.proposalModel.Product;
-import com.compassplus.proposalModel.Proposal;
 import com.compassplus.utils.CommonUtils;
-import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
+import com.compassplus.utils.Logger;
 
 import javax.swing.*;
-import javax.swing.plaf.synth.SynthStyle;
-import javax.tools.JavaCompiler;
 import java.awt.event.ActionEvent;
-import java.util.Enumeration;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,7 +17,13 @@ public class testMain {
     public static void main(String[] args) {
         Configuration config = Configuration.getInstance();
         try {
-            config.init(CommonUtils.getInstance().getDocumentFromFile("examples/exampleModel.xml"));
+            try {
+                config.init(CommonUtils.getInstance().getDocumentFromFile("examples/exampleModel.xml"));
+            } catch (Exception e) {
+                Logger.getInstance().error(e);
+                JOptionPane.showMessageDialog(null, "Broken or expired configuration", "Error", JOptionPane.ERROR_MESSAGE);
+                throw e;
+            }
 //            Proposal proposal = new Proposal(config);
 //            proposal.init(CommonUtils.getInstance().getDocumentFromFile("examples/exampleProposal.xml"));
 
