@@ -35,7 +35,7 @@ public class testMain {
 //                System.out.println(p.getDescription());
 //            }
 
-            /*MainForm main = new MainForm(config);
+            MainForm main = new MainForm(config);
             final JFrame frame = new JFrame("PCT");
             main.setExitAction(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
@@ -48,15 +48,8 @@ public class testMain {
             frame.pack();
             frame.setSize(700, 500);
             frame.setLocationByPlatform(true);
-            frame.setVisible(true);       */
+            frame.setVisible(true);
         } catch (Exception e) {
         }
-
-    Long a=0L;
-    Long b=null;
-    b = a++;
-        System.out.println(b);
     }
-
-
 }
