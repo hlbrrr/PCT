@@ -43,6 +43,7 @@ public class MainForm {
     private JMenuItem createProposal;
     private JMenuItem openProposal;
     private JMenuItem saveProposal;
+    private JMenuItem closeProposal;
     private JMenuItem exit;
 
     private JMenuItem addProduct;
@@ -174,6 +175,13 @@ public class MainForm {
                 }
             }
         });
+        closeProposal = new JMenuItem("Close proposal");
+        closeProposal.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                proposalsTabs.remove(getCurrentProposalForm().getRoot());
+            }
+        });
+
         exit = new JMenuItem("Exit");
 
         fileMenu = new JMenu("File");
@@ -182,6 +190,8 @@ public class MainForm {
         fileMenu.add(new JSeparator());
         fileMenu.add(openProposal);
         fileMenu.add(saveProposal);
+        fileMenu.add(new JSeparator());
+        fileMenu.add(closeProposal);
         fileMenu.add(new JSeparator());
         fileMenu.add(exit);
         fileMenu.addMenuListener(new MenuListener() {

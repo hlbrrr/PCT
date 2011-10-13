@@ -179,7 +179,7 @@ public class Product {
         for (Capacity c : this.getCapacities().values()) {
             price += c.getPrice();
         }
-        return price;
+        return price > getProduct().getMinimumPrice() ? price : getProduct().getMinimumPrice();
     }
 
     public String getDescription() {

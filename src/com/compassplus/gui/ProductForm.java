@@ -17,7 +17,36 @@ public class ProductForm {
 
     public ProductForm(Product product) {
         this.product = product;
-        mainPanel = new ProductJPanel(new BorderLayout(), this);
+        mainPanel = new ProductJPanel(this);
+        mainPanel.setLayout(new GridBagLayout());
+        initForm();
+    }
+
+    private void initForm() {
+        JPanel modulesPanel = new JPanel();
+        modulesPanel.setLayout(new BoxLayout(modulesPanel, BoxLayout.Y_AXIS));
+        JPanel capacitiesPanel = new JPanel();
+        capacitiesPanel.setLayout(new BoxLayout(capacitiesPanel, BoxLayout.Y_AXIS));
+
+        modulesPanel.setBorder(BorderFactory.createTitledBorder("Modules"));
+
+        capacitiesPanel.setBorder(BorderFactory.createTitledBorder("Capacities"));
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.weightx = 0.5;
+        c.weighty = 1.0;
+        c.gridx = 0;
+        c.gridy = 0;
+        mainPanel.add(modulesPanel, c);
+        c.fill = GridBagConstraints.BOTH;
+        c.weightx = 0.5;
+        c.weighty = 1.0;
+        c.gridx = 1;
+        c.gridy = 0;
+        mainPanel.add(capacitiesPanel, c);
+
+
     }
 
     public Product getProduct() {
