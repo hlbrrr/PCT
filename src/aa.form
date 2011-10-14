@@ -6,6 +6,13 @@
     </constraints>
     <properties/>
     <border type="none"/>
-    <children/>
+    <children>
+      <component id="d5bf4" class="javax.swing.JCheckBox" binding="checkBox1" default-binding="true">
+        <constraints/>
+        <properties>
+          <text value="CheckBox"/>
+        </properties>
+      </component>
+    </children>
   </grid>
 </form>

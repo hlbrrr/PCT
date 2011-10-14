@@ -102,8 +102,9 @@ public class Product {
         }
     }
 
-    public void addModule(com.compassplus.configurationModel.Module module) {
-        this.getModules().put(module.getName(), new Module(module));
+    public void addModule(com.compassplus.configurationModel.Module module, String key) {
+        Module tmpModule = new Module(module, key);
+        this.getModules().put(tmpModule.getKey(), tmpModule);
     }
 
     public Map<String, Capacity> getCapacities() {
@@ -126,8 +127,9 @@ public class Product {
         }
     }
 
-    public void addCapacity(com.compassplus.configurationModel.Capacity capacity) {
-        this.getCapacities().put(capacity.getName(), new Capacity(capacity));
+    public void addCapacity(com.compassplus.configurationModel.Capacity capacity, String key) {
+        Capacity tmpCapacity = new Capacity(capacity, key);
+        this.getCapacities().put(tmpCapacity.getKey(), tmpCapacity);
     }
 
     @Override
@@ -844,5 +846,13 @@ public class Product {
         for (CapacitiesGroup g : capacitiesGroup.getGroups()) {
             this.createCapacitiesRows(s, g, level + 1);
         }
+    }
+
+    public void delModule(String key) {
+        getModules().remove(key);
+    }
+
+    public void delCapacity(String key) {
+        getCapacities().remove(key);
     }
 }

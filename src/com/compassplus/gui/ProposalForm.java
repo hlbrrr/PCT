@@ -3,6 +3,7 @@ package com.compassplus.gui;
 import com.compassplus.proposalModel.Proposal;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
@@ -38,6 +39,8 @@ public class ProposalForm {
             }
         }
         mainPanel = new ProposalJPanel(new BorderLayout(), this);
+        mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+
         mainPanel.add(productsTabs, BorderLayout.CENTER);
     }
 

@@ -14,6 +14,7 @@ public class testForm {
     private JTabbedPane tabbedPane1;
     private JButton button2;
     private JButton button3;
+    private JSpinner spinner1;
 
     public JPanel getMainPanel() {
         return mainPanel;

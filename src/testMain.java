@@ -15,6 +15,11 @@ import java.awt.event.ActionEvent;
 public class testMain {
 
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception unused) {
+            // Nothing can be done, so just ignore it.
+        }
         Configuration config = Configuration.getInstance();
         try {
             try {

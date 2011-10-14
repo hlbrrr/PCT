@@ -24,8 +24,9 @@ public class Module {
         init(initialData, allowedModules);
     }
 
-    public Module(com.compassplus.configurationModel.Module module) {
+    public Module(com.compassplus.configurationModel.Module module, String key) {
         this.setModule(module);
+        this.key = key;
     }
 
     private void init(Node initialData, Map<String, com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
@@ -69,11 +70,10 @@ public class Module {
         this.module = module;
     }
 
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("<Module>");
-        sb.append("<Name>").append(this.getName()).append("</Name>");
+        sb.append("<Name>").append(this.getKey()).append("</Name>");
         sb.append("</Module>");
         return sb.toString();
     }

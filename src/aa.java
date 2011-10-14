@@ -8,4 +8,5 @@ import javax.swing.*;
  */
 public class aa {
     private JPanel panel1;
+    private JCheckBox checkBox1;
 }

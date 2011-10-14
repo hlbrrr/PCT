@@ -27,8 +27,9 @@ public class Capacity {
         init(initialData, allowedCapacities);
     }
 
-    public Capacity(com.compassplus.configurationModel.Capacity capacity) {
+    public Capacity(com.compassplus.configurationModel.Capacity capacity, String key) {
         this.setCapacity(capacity);
+        this.key = key;
     }
 
     private void init(Node initialData, Map<String, com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
@@ -86,11 +87,10 @@ public class Capacity {
         this.capacity = capacity;
     }
 
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("<Capacity>");
-        sb.append("<Name>").append(this.getName()).append("</Name>");
+        sb.append("<Name>").append(this.getKey()).append("</Name>");
         sb.append("<Value>").append(this.getValue()).append("</Value>");
         sb.append("</Capacity>");
         return sb.toString();
