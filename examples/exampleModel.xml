@@ -331,16 +331,7 @@
                             </SecondarySales>
                         </Module>
                         <Module>
-                            <Name>Fault tolerant configuration</Name>
-                            <ShortName>Fault tolerant configuration</ShortName>
-                            <Weight>1</Weight>
-                            <SecondarySales>
-                                <Price></Price>
-                                <Rate>2</Rate>
-                            </SecondarySales>
-                        </Module>
-                        <Module>
-                            <Name>Versatile Telebanking Interface (VTBI) for Internet and Mobile banking</Name>
+                            <Name>TWCMS Documentation</Name>
                             <ShortName>VTBI</ShortName>
                             <Weight>1</Weight>
                             <SecondarySales>
@@ -350,68 +341,13 @@
                         </Module>
                     </Modules>
                 </Group>
-                <Group>
-                    <Name>Payment Schemes</Name>
-                    <Modules>
-                        <Group>
-                            <Name>VISA Issuing</Name>
-                            <Modules>
-                                <Module>
-                                    <Name>EMV Support</Name>
-                                    <Weight>1</Weight>
-                                    <SecondarySales>
-                                        <Price></Price>
-                                        <Rate>2</Rate>
-                                    </SecondarySales>
-                                </Module>
-                                <Module>
-                                    <Name>VISA PayWave Support</Name>
-                                    <Weight>1</Weight>
-                                    <SecondarySales>
-                                        <Price></Price>
-                                        <Rate>2</Rate>
-                                    </SecondarySales>
-                                </Module>
-                                <Module>
-                                    <Name>Direct Interface</Name>
-                                    <Weight>1</Weight>
-                                    <SecondarySales>
-                                        <Price></Price>
-                                        <Rate>2</Rate>
-                                    </SecondarySales>
-                                </Module>
-                            </Modules>
-                        </Group>
-                        <Group>
-                            <Name>MC Issuing</Name>
-                            <Modules>
-                                <Module>
-                                    <Name>MC PayPass Support</Name>
-                                    <Weight>1</Weight>
-                                    <SecondarySales>
-                                        <Price></Price>
-                                        <Rate>2</Rate>
-                                    </SecondarySales>
-                                </Module>
-                                <Module>
-                                    <Name>Direct Interface</Name>
-                                    <Weight>1</Weight>
-                                    <SecondarySales>
-                                        <Price></Price>
-                                        <Rate>2</Rate>
-                                    </SecondarySales>
-                                </Module>
-                            </Modules>
-                        </Group>
-                    </Modules>
-                </Group>
             </Modules>
             <Capacities>
                 <Group>
                     <Name>Main Metrics</Name>
                     <Capacities>
                         <Capacity>
-                            <Name>Number of Multi-Purpose Instances</Name>
+                            <Name>Test</Name>
                             <Type>1</Type>
                             <Tiers>
                                 <Tier>
@@ -461,60 +397,6 @@
                                 <Tier>
                                     <Bound>11</Bound>
                                     <Price>5000</Price>
-                                </Tier>
-                            </Tiers>
-                        </Capacity>
-                        <Capacity>
-                            <Name>Number of FIMI users</Name>
-                            <Type>1</Type>
-                            <Tiers>
-                                <Tier>
-                                    <Bound>0</Bound>
-                                    <Price>300</Price>
-                                </Tier>
-                                <Tier>
-                                    <Bound>30</Bound>
-                                    <Price>270</Price>
-                                </Tier>
-                                <Tier>
-                                    <Bound>60</Bound>
-                                    <Price>240</Price>
-                                </Tier>
-                                <Tier>
-                                    <Bound>90</Bound>
-                                    <Price>220</Price>
-                                </Tier>
-                                <Tier>
-                                    <Bound>120</Bound>
-                                    <Price>200</Price>
-                                </Tier>
-                                <Tier>
-                                    <Bound>150</Bound>
-                                    <Price>180</Price>
-                                </Tier>
-                                <Tier>
-                                    <Bound>180</Bound>
-                                    <Price>170</Price>
-                                </Tier>
-                                <Tier>
-                                    <Bound>210</Bound>
-                                    <Price>160</Price>
-                                </Tier>
-                                <Tier>
-                                    <Bound>240</Bound>
-                                    <Price>150</Price>
-                                </Tier>
-                                <Tier>
-                                    <Bound>270</Bound>
-                                    <Price>140</Price>
-                                </Tier>
-                                <Tier>
-                                    <Bound>300</Bound>
-                                    <Price>130</Price>
-                                </Tier>
-                                <Tier>
-                                    <Bound>330</Bound>
-                                    <Price>100</Price>
                                 </Tier>
                             </Tiers>
                         </Capacity>
