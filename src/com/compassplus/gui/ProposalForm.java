@@ -1,5 +1,6 @@
 package com.compassplus.gui;
 
+import com.compassplus.proposalModel.Product;
 import com.compassplus.proposalModel.Proposal;
 
 import javax.swing.*;
@@ -7,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.text.DecimalFormat;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,6 +21,7 @@ public class ProposalForm {
     private Proposal proposal;
     private JTabbedPane productsTabs;
     private ProductForm currentProductForm;
+    private DecimalFormat df = new DecimalFormat();
 
     public ProposalForm(Proposal proposal) {
         this.proposal = proposal;
@@ -33,9 +36,10 @@ public class ProposalForm {
                 }
             }
         });
+
         for (String key : proposal.getConfig().getProducts().keySet()) {
             if (proposal.getProducts().containsKey(key)) {
-                addProductForm(new ProductForm(proposal.getProducts().get(key)));
+                addProductForm(proposal.getProducts().get(key));
             }
         }
         mainPanel = new ProposalJPanel(new BorderLayout(), this);
@@ -65,10 +69,22 @@ public class ProposalForm {
         return proposal;
     }
 
-    public void addProductForm(ProductForm productForm) {
+    public void addProductForm(Product product) {
+        ProductForm productForm = new ProductForm(product, new PCTChangedListener() {
+            public void act(Object src) {
+                if (src instanceof ProductForm) {
+                    ProductForm pf = (ProductForm) src;
+                    Integer ti = productsTabs.indexOfComponent(pf.getRoot());
+                    if (ti >= 0) {
+                        productsTabs.setTitleAt(ti, pf.getProduct().getName() + " ($" + df.format(pf.getProduct().getPrice()) + ")");
+                    }
+                }
+            }
+        }, df);
         this.getProposal().addProduct(productForm.getProduct());
         productsTabs.addTab(productForm.getProduct().getName(), productForm.getRoot());
         productsTabs.setSelectedComponent(productForm.getRoot());
+        productForm.reloadProductPrice();
     }
 
     public void delProductForm(ProductForm productForm) {

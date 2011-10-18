@@ -1,6 +1,8 @@
 package com.compassplus.configurationModel;
 
 import com.compassplus.exception.PCTDataFormatException;
+import com.compassplus.proposalModel.*;
+import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
@@ -168,4 +170,16 @@ public class Module {
             throw new PCTDataFormatException("Module capacity tiers are not defined correctly");
         }
     }*/
+
+    public Double getPrice(com.compassplus.proposalModel.Product product) {
+        Double price = product.getProduct().getMaximumFunctionalityPrice() * this.getWeight() / product.getProduct().getTotalWeight(); // primary sales price
+        if (product.getSecondarySale()) {
+            if (this.getSecondarySalesPrice() != null) {
+                price = this.getSecondarySalesPrice();
+            } else {
+                price *= this.getSecondarySalesRate();
+            }
+        }
+        return CommonUtils.getInstance().toNextThousand(price);
+    }
 }

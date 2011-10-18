@@ -5,7 +5,6 @@ import com.compassplus.configurationModel.Capacity;
 import com.compassplus.configurationModel.Module;
 import com.compassplus.configurationModel.ModulesGroup;
 import com.compassplus.proposalModel.Product;
-import org.apache.poi.poifs.property.Parent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -14,7 +13,8 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Set;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,15 +23,35 @@ import java.util.Set;
  * Time: 1:08
  */
 public class ProductForm {
+    private DecimalFormat df;
     private Product product;
     private JPanel mainPanel;
     private JCheckBox primaryCheckBox;
+    private ArrayList<ModuleJCheckbox> checkBoxes = new ArrayList<ModuleJCheckbox>();
+    private PCTChangedListener priceChanged;
 
-    public ProductForm(Product product) {
+    public ProductForm(Product product, PCTChangedListener priceChanged, DecimalFormat df) {
         this.product = product;
+        this.df = df;
+        this.priceChanged = priceChanged;
         mainPanel = new ProductJPanel(this);
         mainPanel.setLayout(new GridBagLayout());
         initForm();
+    }
+
+    private ArrayList<ModuleJCheckbox> getCheckBoxes() {
+        return checkBoxes;
+    }
+
+    public void reloadProductPrice() {
+        priceChanged.act(this);
+    }
+
+    private void reloadModulesPrices() {
+        for (ModuleJCheckbox cb : getCheckBoxes()) {
+            Module m = getProduct().getProduct().getModules().get(cb.getKey());
+            cb.setText(m.getName() + " ($" + df.format(m.getPrice(getProduct())) + ")");
+        }
     }
 
     private void initForm() {
@@ -40,6 +60,8 @@ public class ProductForm {
             public void itemStateChanged(ItemEvent e) {
                 JCheckBox src = (JCheckBox) e.getSource();
                 getProduct().setSecondarySale(!src.isSelected());
+                reloadModulesPrices();
+                reloadProductPrice();
             }
         });
         GridBagConstraints c = new GridBagConstraints();
@@ -83,6 +105,8 @@ public class ProductForm {
         JScrollPane capacitiesScroll = new JScrollPane(capacities);
         capacitiesPanel.add(capacitiesScroll, BorderLayout.CENTER);
         getFormFromCapacitiesGroup(capacities);
+
+        reloadModulesPrices();
     }
 
     private void getFormFromModulesGroup(JPanel parent) {
@@ -104,7 +128,8 @@ public class ProductForm {
 
         for (String key : modulesGroup.getModules().keySet()) {
             Module m = modulesGroup.getModules().get(key);
-            final ModuleJCheckbox mc = new ModuleJCheckbox(m.getName(), getProduct().getModules().containsKey(key), key);
+            final ModuleJCheckbox mc = new ModuleJCheckbox(null, getProduct().getModules().containsKey(key), key);
+            checkBoxes.add(mc);
             mc.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
                     if (e.getSource() == mc) {
@@ -114,6 +139,7 @@ public class ProductForm {
                         } else {
                             getProduct().delModule(src.getKey());
                         }
+                        reloadProductPrice();
                     }
                 }
             });
@@ -146,29 +172,37 @@ public class ProductForm {
         parent.setLayout(new BoxLayout(parent, BoxLayout.Y_AXIS));
 
         for (String key : capacitiesGroup.getCapacities().keySet()) {
-            Capacity c = capacitiesGroup.getCapacities().get(key);
+            final Capacity c = capacitiesGroup.getCapacities().get(key);
             final CapacityJSpinner cs = new CapacityJSpinner(new SpinnerNumberModel(getProduct().getCapacities().containsKey(key) ? getProduct().getCapacities().get(key).getValue() : 0, 0, Integer.MAX_VALUE, 1), key);
             cs.setMaximumSize(new Dimension(cs.getMaximumSize().width, cs.getMinimumSize().height));
             cs.setAlignmentX(Component.LEFT_ALIGNMENT);
-            JLabel cl = new JLabel(c.getName());
+            final JLabel cl = new JLabel();
             cl.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-            cs.addChangeListener(new ChangeListener() {
+            ChangeListener changeListener = new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
                     if (e.getSource() == cs) {
                         CapacityJSpinner src = (CapacityJSpinner) e.getSource();
                         if (src.getValue() instanceof Integer && (Integer) src.getValue() > 0) {
                             if (!getProduct().getCapacities().containsKey(src.getKey())) {
-                                com.compassplus.configurationModel.Capacity tmpCapacity = getProduct().getProduct().getCapacities().get(src.getKey());
+                                Capacity tmpCapacity = getProduct().getProduct().getCapacities().get(src.getKey());
                                 getProduct().addCapacity(tmpCapacity, src.getKey());
                             }
                             getProduct().getCapacities().get(src.getKey()).setValue((Integer) src.getValue());
                         } else {
                             getProduct().delCapacity(src.getKey());
                         }
+                        Double newPrice = 0d;
+                        if (getProduct().getCapacities().containsKey(src.getKey())) {
+                            com.compassplus.proposalModel.Capacity c = getProduct().getCapacities().get(src.getKey());
+                            newPrice = c.getPrice();
+                        }
+                        cl.setText(c.getName() + " ($" + df.format(newPrice) + ")");
+                        reloadProductPrice();
                     }
                 }
-            });
+            };
+            changeListener.stateChanged(new ChangeEvent(cs));
+            cs.addChangeListener(changeListener);
             parent.add(cl);
             parent.add(cs);
         }

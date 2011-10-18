@@ -79,14 +79,6 @@ public class Module {
     }
 
     public Double getPrice(Product product) {
-        Double price = product.getProduct().getMaximumFunctionalityPrice() * this.getModule().getWeight() / product.getProduct().getTotalWeight(); // primary sales price
-        if (product.getSecondarySale()) {
-            if (this.getModule().getSecondarySalesPrice() != null) {
-                price = this.getModule().getSecondarySalesPrice();
-            } else {
-                price *= this.getModule().getSecondarySalesRate();
-            }
-        }
-        return CommonUtils.getInstance().toNextThousand(price);
+        return this.getModule().getPrice(product);
     }
 }

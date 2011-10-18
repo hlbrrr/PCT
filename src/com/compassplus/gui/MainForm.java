@@ -232,7 +232,7 @@ public class MainForm {
                         allowedProjects.toArray(),
                         null);
                 if (product != null) {
-                    getCurrentProposalForm().addProductForm(new ProductForm(new com.compassplus.proposalModel.Product((com.compassplus.configurationModel.Product) product)));
+                    getCurrentProposalForm().addProductForm(new com.compassplus.proposalModel.Product((com.compassplus.configurationModel.Product) product));
                 }
             }
         });
