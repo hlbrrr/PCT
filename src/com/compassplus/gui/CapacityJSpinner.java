@@ -1,6 +1,9 @@
 package com.compassplus.gui;
 
 import javax.swing.*;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
+import java.text.DecimalFormat;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,6 +17,11 @@ public class CapacityJSpinner extends JSpinner {
 
     public CapacityJSpinner(SpinnerModel spinnerModel, String key) {
         super(spinnerModel);
+
+        JFormattedTextField tf = ((JSpinner.DefaultEditor) this.getEditor()).getTextField();
+        DefaultFormatterFactory formatterFactory = (DefaultFormatterFactory) tf.getFormatterFactory();
+        DecimalFormat df = new DecimalFormat();
+        ((NumberFormatter) formatterFactory.getDefaultFormatter()).setFormat(df);
         this.key = key;
     }
 

@@ -187,12 +187,12 @@ public class MainForm {
         fileMenu = new JMenu("File");
 
         fileMenu.add(createProposal);
-        fileMenu.add(new JSeparator());
+        //fileMenu.add(new JSeparator());
         fileMenu.add(openProposal);
         fileMenu.add(saveProposal);
-        fileMenu.add(new JSeparator());
+        //fileMenu.add(new JSeparator());
         fileMenu.add(closeProposal);
-        fileMenu.add(new JSeparator());
+        //fileMenu.add(new JSeparator());
         fileMenu.add(exit);
         fileMenu.addMenuListener(new MenuListener() {
             public void menuSelected(MenuEvent e) {
