@@ -59,6 +59,33 @@
                                 <Rate>2</Rate>
                             </SecondarySales>
                         </Module>
+                        <Module>
+                            <Name>Versatile Telebanking Interface (VTBI) for Internet and Mobile banking1</Name>
+                            <ShortName>VTBI</ShortName>
+                            <Weight>1</Weight>
+                            <SecondarySales>
+                                <Price></Price>
+                                <Rate>2</Rate>
+                            </SecondarySales>
+                        </Module>
+                        <Module>
+                            <Name>Versatile Telebanking Interface (VTBI) for Internet and Mobile banking2</Name>
+                            <ShortName>VTBI</ShortName>
+                            <Weight>1</Weight>
+                            <SecondarySales>
+                                <Price></Price>
+                                <Rate>2</Rate>
+                            </SecondarySales>
+                        </Module>
+                        <Module>
+                            <Name>Versatile Telebanking Interface (VTBI) for Internet and Mobile banking3</Name>
+                            <ShortName>VTBI</ShortName>
+                            <Weight>1</Weight>
+                            <SecondarySales>
+                                <Price></Price>
+                                <Rate>2</Rate>
+                            </SecondarySales>
+                        </Module>
                     </Modules>
                 </Group>
                 <Group>
@@ -105,6 +132,10 @@
                                     </SecondarySales>
                                 </Module>
                                 <Module>
+                                    <Dependencies>
+                                        <Require>/System-level Properties/Windows OS</Require>
+                                        <Exclude>/Payment Schemes/VISA Issuing/Direct Interface</Exclude>
+                                    </Dependencies>
                                     <Name>Direct Interface</Name>
                                     <Weight>1</Weight>
                                     <SecondarySales>

@@ -13,6 +13,7 @@ import org.apache.poi.ss.util.CellUtil;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -182,6 +183,36 @@ public class Product {
             price += c.getPrice();
         }
         return price > getProduct().getMinimumPrice() ? price : getProduct().getMinimumPrice();
+    }
+
+    public boolean canBeEnabled(String mKey, ArrayList<String> extraKeys) {
+        StringBuilder sb = new StringBuilder();
+        ArrayList<String> excludeKeys = new ArrayList<String>(0);
+        for (String key : getProduct().getModules().get(mKey).getExcludeModules()) {
+            if (getModules().containsKey(key) || extraKeys.contains(key)) {
+                excludeKeys.add(key);
+            }
+        }
+        ArrayList<String> excludeThisKeys = new ArrayList<String>(0);
+        for (String key : getModules().keySet()) {
+            if (getProduct().getModules().get(key).getExcludeModules().contains(mKey)) {
+                excludeThisKeys.add(key);
+            }
+        }
+        if (excludeKeys.size() > 0 || excludeThisKeys.size() > 0) {
+            return false;
+        } else {
+            ArrayList<String> requireKeys = new ArrayList<String>(0);
+            for (String key : getProduct().getModules().get(mKey).getRequireModules()) {
+                if (!getModules().containsKey(key) && !extraKeys.contains(key)) {
+                    requireKeys.add(key);
+                }
+            }
+            if (requireKeys.size() > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public String getDescription() {
