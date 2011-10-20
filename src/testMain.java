@@ -15,10 +15,17 @@ import java.awt.event.ActionEvent;
 public class testMain {
 
     public static void main(String[] args) {
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI();
+            }
+        });
+    }
+
+    private static void createAndShowGUI() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception unused) {
-            // Nothing can be done, so just ignore it.
         }
         Configuration config = Configuration.getInstance();
         try {
@@ -29,17 +36,6 @@ public class testMain {
                 JOptionPane.showMessageDialog(null, "Broken or expired configuration", "Error", JOptionPane.ERROR_MESSAGE);
                 throw e;
             }
-//            Proposal proposal = new Proposal(config);
-//            proposal.init(CommonUtils.getInstance().getDocumentFromFile("examples/exampleProposal.xml"));
-
-            //FileOutputStream out = new FileOutputStream("c:\\Users\\hlbrrr\\Desktop\\workbook.xls");
-            //FileOutputStream out = new FileOutputStream("/home/arudin/Desktop/workbook.xls");
-            //proposal.getWorkbook().write(out);
-            //out.close();
-
-//            for (Product p : proposal.getProducts().values()) {
-//                System.out.println(p.getDescription());
-//            }
 
             MainForm main = new MainForm(config);
             final JFrame frame = new JFrame("PCT");
