@@ -13,6 +13,8 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -134,9 +136,75 @@ public class ProductForm {
                 public void itemStateChanged(ItemEvent e) {
                     if (e.getSource() == mc) {
                         ModuleJCheckbox src = (ModuleJCheckbox) e.getSource();
-                        if (src.isSelected()) {
+                        if (e.getStateChange() == ItemEvent.SELECTED) {
+                            ArrayList<String> excludeKeys = new ArrayList<String>();
+                            for (String key : getProduct().getProduct().getModules().get(src.getKey()).getExcludeModules()) {
+                                if (getProduct().getModules().containsKey(key)) {
+                                    excludeKeys.add(key);
+                                }
+                            }
+                            ArrayList<String> excludeThisKeys = new ArrayList<String>();
+                            for (String key : getProduct().getModules().keySet()) {
+                                if (getProduct().getProduct().getModules().get(key).getExcludeModules().contains(src.getKey())) {
+                                    excludeThisKeys.add(key);
+                                }
+                            }
+                            if (excludeKeys.size() > 0 || excludeThisKeys.size() > 0) {
+                                StringBuilder sb = new StringBuilder("Selected module conflicts with following module(s):");
+                                for (String key : excludeKeys) {
+                                    sb.append("\n").append(key);
+                                }
+                                for (String key : excludeThisKeys) {
+                                    if (!excludeKeys.contains(key)) {
+                                        sb.append("\n").append(key);
+                                    }
+                                }
+                                sb.append("\nYou should disable conflict module(s) manually, then try again.");
+                                JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+
+                                src.setSelected(false);
+                                return;
+                            } else {
+                                ArrayList<String> requireKeys = new ArrayList<String>();
+                                for (String key : getProduct().getProduct().getModules().get(src.getKey()).getRequireModules()) {
+                                    if (!getProduct().getModules().containsKey(key)) {
+                                        requireKeys.add(key);
+                                    }
+                                }
+                                if (requireKeys.size() > 0) {
+                                    StringBuilder sb = new StringBuilder("Selected module requires following module(s):");
+                                    for (String key : requireKeys) {
+                                        sb.append("\n").append(key);
+                                    }
+                                    sb.append("\nWe will try to automatically, resolve conflict");
+                                    int ret = JOptionPane.showOptionDialog(getRoot(), sb.toString(), "Error", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+                                    if (ret == JOptionPane.OK_OPTION) {
+                                        /* автовключалка */
+                                    } else {
+                                        src.setSelected(false);
+                                        return;
+                                    }
+                                }
+                            }
                             getProduct().addModule(getProduct().getProduct().getModules().get(src.getKey()), src.getKey());
                         } else {
+                            ArrayList<String> requireThisKeys = new ArrayList<String>();
+                            for (String key : getProduct().getModules().keySet()) {
+                                if (getProduct().getProduct().getModules().get(key).getRequireModules().contains(src.getKey())) {
+                                    requireThisKeys.add(key);
+                                }
+                            }
+                            if (requireThisKeys.size() > 0) {
+                                StringBuilder sb = new StringBuilder("You trying to disable module that required by following module(s):");
+                                for (String key : requireThisKeys) {
+                                    sb.append("\n").append(key);
+                                }
+                                sb.append("\nYou should disable conflict module(s) manually, then try again.");
+                                JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+                                src.setSelected(true);
+                                return;
+                            }
+
                             getProduct().delModule(src.getKey());
                         }
                         reloadProductPrice();

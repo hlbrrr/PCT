@@ -6,6 +6,9 @@ import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,9 +21,9 @@ public class Module {
     private String shortName;
     private Double weight;
     private Double secondarySalesPrice;
+    private ArrayList<String> requireModules = new ArrayList<String>(0);
+    private ArrayList<String> excludeModules = new ArrayList<String>(0);
     private Double secondarySalesRate;
-    /*private Double capacityStaticPrice;
-    private ArrayList<Tier> capacityTiers;*/
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
@@ -36,6 +39,8 @@ public class Module {
             this.setName(xut.getNode("Name", initialData));
             this.setShortName(xut.getNode("ShortName", initialData));
             this.setWeight(xut.getNode("Weight", initialData));
+            this.setRequireModules(xut.getNodes("Dependencies/Require", initialData));
+            this.setExcludeModules(xut.getNodes("Dependencies/Exclude", initialData));
 
             try {
                 this.setSecondarySalesPrice(xut.getNode("SecondarySales/Price", initialData));
@@ -50,29 +55,54 @@ public class Module {
             if (this.secondarySalesPrice == null && this.secondarySalesRate == null) {
                 throw new PCTDataFormatException("Module secondary sales pricing is not defined correctly");
             }
-            /*try {
-                this.setCapacityStaticPrice(xut.getNode("CapacityPricing/StaticPrice", initialData));
-            } catch (PCTDataFormatException e) {
-                log.error(e);
-            }
-            try {
-                this.setCapacityTiers(xut.getNodes("CapacityPricing/CapacityTiers/Tier", initialData));
-            } catch (PCTDataFormatException e) {
-                log.error(e);
-            }
-            if (this.capacityStaticPrice == null && (this.capacityTiers == null || this.capacityTiers.size() == 0)) {
-                throw new PCTDataFormatException("Module capacity pricing is not defined correctly");
-            }*/
-
             log.info("Module successfully parsed: \nName: " + this.getName() +
                     "\nShortName: " + this.getShortName() +
                     "\nWeight: " + this.getWeight() +
                     "\nSecondarySalesPrice: " + this.getSecondarySalesPrice() +
-                    "\nSecondarySalesRate: " + this.getSecondarySalesRate()/* +
-                    "\nCapacityStaticPrice: " + this.getCapacityStaticPrice()*/);
+                    "\nSecondarySalesRate: " + this.getSecondarySalesRate());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Module is not defined correctly", e.getDetails());
         }
+    }
+
+    private void setRequireModules(NodeList requireModules) {
+        this.getRequireModules().clear();
+        if (requireModules.getLength() > 0) {
+
+            log.info("Found " + requireModules.getLength() + " \"require\" module(s)");
+            for (int i = 0; i < requireModules.getLength(); i++) {
+                try {
+                    this.getRequireModules().add(xut.getString(requireModules.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getRequireModules().size() + " \"require\" module(s)");
+        }
+    }
+
+    private void setExcludeModules(NodeList excludeModules) {
+        this.getExcludeModules().clear();
+        if (excludeModules.getLength() > 0) {
+
+            log.info("Found " + excludeModules.getLength() + " \"exclude\" module(s)");
+            for (int i = 0; i < excludeModules.getLength(); i++) {
+                try {
+                    this.getExcludeModules().add(xut.getString(excludeModules.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getExcludeModules().size() + " \"exclude\" module(s)");
+        }
+    }
+
+    public ArrayList<String> getRequireModules() {
+        return requireModules;
+    }
+
+    public ArrayList<String> getExcludeModules() {
+        return excludeModules;
     }
 
     public String getName() {
@@ -134,42 +164,6 @@ public class Module {
             throw new PCTDataFormatException("Module secondary sales rate is not defined correctly", e.getDetails());
         }
     }
-
-    /*public Double getCapacityStaticPrice() {
-        return capacityStaticPrice;
-    }
-
-    private void setCapacityStaticPrice(Node capacityStaticPrice) throws PCTDataFormatException {
-        try {
-            this.capacityStaticPrice = xut.getDouble(capacityStaticPrice, true);
-        } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Module capacity static price is not defined correctly", e.getDetails());
-        }
-    }
-
-    public ArrayList<Tier> getCapacityTiers() {
-        return capacityTiers;
-    }
-
-    private void setCapacityTiers(NodeList tiers) throws PCTDataFormatException {
-        this.capacityTiers = new ArrayList<Tier>();
-        if (tiers.getLength() > 0) {
-            log.info("Found " + tiers.getLength() + " capacity tier(s)");
-            for (int i = 0; i < tiers.getLength(); i++) {
-                try {
-                    this.capacityTiers.add(new Tier(tiers.item(i)));
-                } catch (PCTDataFormatException e) {
-                    log.error(e);
-                }
-            }
-            log.info("Successfully parsed " + this.capacityTiers.size() + " capacity tier(s)");
-        } else {
-            throw new PCTDataFormatException("No module capacity tiers defined");
-        }
-        if (this.capacityTiers.size() == 0) {
-            throw new PCTDataFormatException("Module capacity tiers are not defined correctly");
-        }
-    }*/
 
     public Double getPrice(com.compassplus.proposalModel.Product product) {
         Double price = product.getProduct().getMaximumFunctionalityPrice() * this.getWeight() / product.getProduct().getTotalWeight(); // primary sales price
