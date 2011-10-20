@@ -239,9 +239,8 @@ public class ProductForm {
                     }
                 }
             });
-            //mc.setMaximumSize(new Dimension(Integer.MAX_VALUE, mc.getMaximumSize().height));
-
             parent.add(mc);
+            mc.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
         }
         for (ModulesGroup g : modulesGroup.getGroups()) {
             JPanel modules = new JPanel();
@@ -299,8 +298,13 @@ public class ProductForm {
             };
             changeListener.stateChanged(new ChangeEvent(cs));
             cs.addChangeListener(changeListener);
-            parent.add(cl);
-            parent.add(cs);
+            JPanel tmpPanel = new JPanel();
+            tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
+            tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
+            tmpPanel.add(cl);
+            tmpPanel.add(cs);
+
+            parent.add(tmpPanel);
         }
         for (CapacitiesGroup g : capacitiesGroup.getGroups()) {
             JPanel capacities = new JPanel();

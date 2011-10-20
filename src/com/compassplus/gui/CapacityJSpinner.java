@@ -3,6 +3,7 @@ package com.compassplus.gui;
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
+import java.awt.*;
 import java.text.DecimalFormat;
 
 /**

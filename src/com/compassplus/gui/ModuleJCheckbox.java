@@ -1,6 +1,7 @@
 package com.compassplus.gui;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 
 /**
@@ -20,6 +21,7 @@ public class ModuleJCheckbox extends JCheckBox {
 
         public void setSelected(boolean b) {
             setSelected(b, false);
+
         }
 
         public void setSelected(boolean b, boolean ignoreEvent) {
