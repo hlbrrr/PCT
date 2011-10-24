@@ -7,6 +7,7 @@ import com.compassplus.proposalModel.Proposal;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellUtil;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -14,6 +15,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -304,21 +306,24 @@ public class MainForm {
                         final Workbook wb = WorkbookFactory.create(inp);
                         inp.close();
                         {
-                            if (wb.getNumberOfSheets() == 0) {
+                            final ArrayList<String> sheets = new ArrayList<String>(0);
+                            for (int i = 0; i < wb.getNumberOfSheets(); i++) {
+                                if (!(wb.isSheetHidden(i) || wb.isSheetVeryHidden(i))) {
+                                    sheets.add(wb.getSheetName(i));
+                                }
+                            }
+                            if (sheets.size() == 0) {
                                 JOptionPane.showMessageDialog(getRoot(), "Selected excel workbook is empty", "Error", JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
-                            final JTextField sheetIndexField = wb.getNumberOfSheets() > 1 ? new JTextField() : null;
+                            final JComboBox sheetIndexField = sheets.size() > 1 ? new JComboBox(sheets.toArray()) : null;
                             final JTextField rowIndexField = new JTextField();
                             final JTextField cellIndexField = new JTextField();
-                            if (wb.getNumberOfSheets() > 1) {
-                                sheetIndexField.setText("1");
-                            }
                             rowIndexField.setText("1");
                             cellIndexField.setText("1");
                             final JOptionPane optionPane = new JOptionPane(
                                     new JComponent[]{
-                                            wb.getNumberOfSheets() > 1 ? new JLabel("Sheet index") : null, sheetIndexField,
+                                            sheets.size() > 1 ? new JLabel("Sheet") : null, sheetIndexField,
                                             new JLabel("Row index"), rowIndexField,
                                             new JLabel("Cell index"), cellIndexField
                                     },
@@ -350,20 +355,11 @@ public class MainForm {
                                                                 Sheet s = null;
                                                                 if (sheetIndexField != null) {
                                                                     try {
-                                                                        int sheetIndex = Integer.parseInt(sheetIndexField.getText());
-                                                                        if (sheetIndex > 0 && sheetIndex <= wb.getNumberOfSheets()) {
-                                                                            s = wb.getSheetAt(--sheetIndex);
-                                                                        }
+                                                                        s = wb.getSheet((String) sheetIndexField.getSelectedItem());
                                                                     } catch (Exception exception) {
                                                                     }
-                                                                    if (s == null) {
-                                                                        JOptionPane.showMessageDialog(getRoot(), "Sheet index is not valid", "Error", JOptionPane.ERROR_MESSAGE);
-                                                                        sheetIndexField.requestFocus();
-                                                                        sheetIndexField.selectAll();
-                                                                        throw new Exception();
-                                                                    }
                                                                 } else {
-                                                                    s = wb.getSheetAt(0);
+                                                                    s = wb.getSheet(sheets.get(0));
                                                                 }
 
                                                                 Integer rowIndex = null;
@@ -394,8 +390,31 @@ public class MainForm {
                                                                 dialog.dispose();
                                                                 try {
                                                                     int i = 0;
+                                                                    Sheet settingsSheet = wb.getSheet("PCTSettings");
+                                                                    if (settingsSheet == null) {
+                                                                        settingsSheet = wb.createSheet("PCTSettings");
+                                                                    } else {
+                                                                        Row currentSettingsRow = settingsSheet.getRow(0);
+                                                                        if (currentSettingsRow != null) {
+                                                                            Cell rowsCountCell = currentSettingsRow.getCell(1);
+                                                                            Cell rowIndexCell = currentSettingsRow.getCell(2);
+                                                                            if (rowsCountCell != null && rowIndexCell != null) {
+                                                                                Integer rowsCountInt = null;
+                                                                                Integer rowIndexInt = null;
+                                                                                try {
+                                                                                    rowsCountInt = Integer.parseInt(rowsCountCell.getStringCellValue());
+                                                                                    rowIndexInt = Integer.parseInt(rowIndexCell.getStringCellValue());
+                                                                                } catch (Exception ex) {
+                                                                                }
+                                                                                if (rowsCountInt != null && rowIndexInt != null) {
+                                                                                    for (int j = 0; j < rowsCountInt; j++) {
+                                                                                        removeRow(s, rowIndexInt);
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
                                                                     for (Product p : getCurrentProposalForm().getProposal().getProducts().values()) {
-
                                                                         if (s.getLastRowNum() >= rowIndex + i) {
                                                                             s.shiftRows(rowIndex + i, s.getLastRowNum(), getCurrentProposalForm().getProposal().getProducts().size());
                                                                         }
@@ -414,11 +433,20 @@ public class MainForm {
                                                                         c2.setCellValue(p.getPrice());
                                                                         i++;
                                                                     }
+                                                                    Row settingsRow = settingsSheet.getRow(0);
+                                                                    if (settingsRow == null) {
+                                                                        settingsRow = settingsSheet.createRow(0);
+                                                                    }
+                                                                    CellUtil.createCell(settingsRow, 0, getCurrentProposalForm().getProposal().toString());
+                                                                    CellUtil.createCell(settingsRow, 1, new Integer(getCurrentProposalForm().getProposal().getProducts().size()).toString());
+                                                                    CellUtil.createCell(settingsRow, 2, rowIndex.toString());
+                                                                    wb.setSheetHidden(wb.getSheetIndex(settingsSheet), true);
                                                                     OutputStream out = new FileOutputStream(xlsFileChooser.getSelectedFile());
                                                                     wb.write(out);
                                                                     out.close();
                                                                     JOptionPane.showMessageDialog(getRoot(), "Proposal successfully exported", "Result", JOptionPane.INFORMATION_MESSAGE);
                                                                 } catch (Exception exception) {
+                                                                    exception.printStackTrace();
                                                                     JOptionPane.showMessageDialog(getRoot(), "Proposal can't be exported", "Error", JOptionPane.ERROR_MESSAGE);
                                                                 }
                                                             } else if (value == JOptionPane.CANCEL_OPTION) {
@@ -553,5 +581,18 @@ public class MainForm {
 
     private JMenuItem getDelProduct() {
         return delProduct;
+    }
+
+    private void removeRow(Sheet sheet, int rowIndex) {
+        int lastRowNum = sheet.getLastRowNum();
+        if (rowIndex >= 0 && rowIndex < lastRowNum) {
+            sheet.shiftRows(rowIndex + 1, lastRowNum, -1);
+        }
+        if (rowIndex == lastRowNum) {
+            Row removingRow = sheet.getRow(rowIndex);
+            if (removingRow != null) {
+                sheet.removeRow(removingRow);
+            }
+        }
     }
 }
