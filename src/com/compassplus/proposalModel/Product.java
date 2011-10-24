@@ -303,10 +303,12 @@ public class Product {
 
         for (String key : capacitiesGroup.getCapacities().keySet()) {
             if (this.getCapacities().containsKey(key)) {
+                Capacity cc = this.getCapacities().get(key);
                 com.compassplus.configurationModel.Capacity c = capacitiesGroup.getCapacities().get(key);
                 //sb.append(pad);
                 //sb.append("  -");
                 sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
+                sb.append("=").append(cc.getValue());
                 sb.append(", ");
                 //sb.append("\n");
             }
