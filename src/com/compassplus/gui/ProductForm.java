@@ -4,6 +4,7 @@ import com.compassplus.configurationModel.CapacitiesGroup;
 import com.compassplus.configurationModel.Capacity;
 import com.compassplus.configurationModel.Module;
 import com.compassplus.configurationModel.ModulesGroup;
+import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.proposalModel.Product;
 
 import javax.swing.*;
@@ -112,10 +113,15 @@ public class ProductForm {
     }
 
     private void getFormFromModulesGroup(JPanel parent) {
-        getFormFromModulesGroup(parent, null);
+        try {
+            getFormFromModulesGroup(parent, null);
+        } catch (PCTDataFormatException e) {
+        }
     }
 
-    private void getFormFromModulesGroup(JPanel parent, ModulesGroup modulesGroup) {
+    private void getFormFromModulesGroup(JPanel parent, ModulesGroup modulesGroup) throws PCTDataFormatException {
+        int addedItems = 0;
+        int addedGroups = 0;
 
         boolean isRoot = false;
         if (modulesGroup == null) {
@@ -246,14 +252,23 @@ public class ProductForm {
                     }
                 });
                 parent.add(mc);
+                addedItems++;
                 mc.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
             }
 
         }
         for (ModulesGroup g : modulesGroup.getGroups()) {
-            JPanel modules = new JPanel();
-            getFormFromModulesGroup(modules, g);
-            parent.add(modules);
+            JPanel modules = null;
+            try {
+                modules = new JPanel();
+                getFormFromModulesGroup(modules, g);
+                parent.add(modules);
+                addedGroups++;
+            } catch (PCTDataFormatException e) {
+            }
+        }
+        if (addedGroups + addedItems == 0) {
+            throw new PCTDataFormatException("Empty group");
         }
     }
 
