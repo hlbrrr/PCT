@@ -155,11 +155,11 @@ public class ProductForm {
                                     if (excludeKeys.size() > 0 || excludeThisKeys.size() > 0) {
                                         StringBuilder sb = new StringBuilder("Selected module can't be enabled at the same time with following module(s):");
                                         for (String key : excludeKeys) {
-                                            sb.append("\n").append(key);
+                                            sb.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
                                         }
                                         for (String key : excludeThisKeys) {
                                             if (!excludeKeys.contains(key)) {
-                                                sb.append("\n").append(key);
+                                                sb.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
                                             }
                                         }
                                         sb.append("\n\nYou should disable conflict module(s) first, then try again.");
@@ -177,7 +177,7 @@ public class ProductForm {
                                         if (requireKeys.size() > 0) {
                                             StringBuilder sb = new StringBuilder("Selected module requires following module(s):");
                                             for (String key : requireKeys) {
-                                                sb.append("\n").append(key);
+                                                sb.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
                                             }
                                             sb.append("\n\nWe will try to automatically resolve conflict");
                                             int ret = JOptionPane.showOptionDialog(getRoot(), sb.toString(), "Error", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
@@ -192,7 +192,7 @@ public class ProductForm {
                                                 if (cantBeEnabled.size() > 0) {
                                                     StringBuilder sbm = new StringBuilder("Automatic resolution failed. Following module(s) can't be enabled because of complicated dependencies:");
                                                     for (String key : cantBeEnabled) {
-                                                        sbm.append("\n").append(key);
+                                                        sbm.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
                                                     }
                                                     sbm.append("\n\nYou should enable required module(s) manually, then try again.");
                                                     JOptionPane.showMessageDialog(getRoot(), sbm.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
@@ -223,7 +223,7 @@ public class ProductForm {
                                     if (requireThisKeys.size() > 0) {
                                         StringBuilder sb = new StringBuilder("You are trying to disable module that required by following module(s):");
                                         for (String key : requireThisKeys) {
-                                            sb.append("\n").append(key);
+                                            sb.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
                                         }
                                         sb.append("\n\nYou should disable dependent module(s) first, then try again.");
                                         JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);

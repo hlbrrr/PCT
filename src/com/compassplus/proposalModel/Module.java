@@ -33,7 +33,7 @@ public class Module {
         try {
             log.info("Parsing module");
 
-            this.setKey(xut.getNode("Name", initialData), allowedModules);
+            this.setKey(xut.getNode("Key", initialData), allowedModules);
 
             log.info("Module successfully parsed: \nName: " + this.getName());
         } catch (PCTDataFormatException e) {
@@ -49,16 +49,16 @@ public class Module {
         return this.key;
     }
 
-    private void setKey(Node name, Map<String, com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
+    private void setKey(Node key, Map<String, com.compassplus.configurationModel.Module> allowedModules) throws PCTDataFormatException {
         try {
-            String nameString = xut.getString(name);
-            this.key = nameString;
-            this.setModule(allowedModules.get(nameString));
+            String keyString = xut.getString(key);
+            this.key = keyString;
+            this.setModule(allowedModules.get(keyString));
             if (this.getModule() == null) {
-                throw new PCTDataFormatException("No such module \"" + nameString + "\"");
+                throw new PCTDataFormatException("No such module \"" + keyString + "\"");
             }
         } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Module name is not defined correctly", e.getDetails());
+            throw new PCTDataFormatException("Module key is not defined correctly", e.getDetails());
         }
     }
 
@@ -73,7 +73,7 @@ public class Module {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("<Module>");
-        sb.append("<Name>").append(this.getKey()).append("</Name>");
+        sb.append("<Key>").append(this.getKey()).append("</Key>");
         sb.append("</Module>");
         return sb.toString();
     }

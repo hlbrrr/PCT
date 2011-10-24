@@ -63,9 +63,10 @@ public class ModuleJCheckbox extends JCheckBox {
     }
 
     public ModuleJCheckbox(String text, boolean selected, String key) {
-        super(text, selected);
+        super(text);
         this.setModel(new ModuleToggleButtonModel());
         this.key = key;
+        this.setSelected(selected, true);
     }
 
     public void setSelected(boolean b, boolean ignoreEvent) {

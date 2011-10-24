@@ -15,6 +15,8 @@ import java.util.ArrayList;
  * Time: 4:32 PM
  */
 public class Capacity {
+    private String key;
+    private String path;
     private String name;
     private String shortName;
     private Integer type;
@@ -26,17 +28,26 @@ public class Capacity {
         init(initialData);
     }
 
-    private void init(Node initialData) throws PCTDataFormatException {
+    public String getPath() {
+        return path;
+    }
 
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    private void init(Node initialData) throws PCTDataFormatException {
         try {
             log.info("Parsing Capacity");
 
+            this.setKey(xut.getNode("Key", initialData));
             this.setName(xut.getNode("Name", initialData));
             this.setShortName(xut.getNode("ShortName", initialData));
             this.setType(xut.getNode("Type", initialData));
             this.setTiers(xut.getNodes("Tiers/Tier", initialData));
 
-            log.info("Capacity successfully parsed: \nName: " + this.getName() +
+            log.info("Capacity successfully parsed: \nKey: " + this.getKey() +
+                    "\nName: " + this.getName() +
                     "\nShortName: " + this.getShortName() +
                     "\nType: " + this.getType());
         } catch (PCTDataFormatException e) {
@@ -54,6 +65,18 @@ public class Capacity {
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity name is not defined correctly", e.getDetails());
         }
+    }
+
+    private void setKey(Node key) throws PCTDataFormatException {
+        try {
+            this.key = xut.getString(key);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Capacity key is not defined correctly", e.getDetails());
+        }
+    }
+
+    public String getKey() {
+        return this.key;
     }
 
     public String getShortName() {
@@ -103,4 +126,5 @@ public class Capacity {
             throw new PCTDataFormatException("Capacity tiers are not defined correctly");
         }
     }
+
 }

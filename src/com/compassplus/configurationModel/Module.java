@@ -17,6 +17,8 @@ import java.util.ArrayList;
  * Time: 10:14 AM
  */
 public class Module {
+    private String key;
+    private String path;
     private String name;
     private String shortName;
     private Double weight;
@@ -32,10 +34,19 @@ public class Module {
         init(initialData);
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     private void init(Node initialData) throws PCTDataFormatException {
         try {
             log.info("Parsing module");
 
+            this.setKey(xut.getNode("Key", initialData));
             this.setName(xut.getNode("Name", initialData));
             this.setShortName(xut.getNode("ShortName", initialData));
             this.setWeight(xut.getNode("Weight", initialData));
@@ -55,7 +66,8 @@ public class Module {
             if (this.secondarySalesPrice == null && this.secondarySalesRate == null) {
                 throw new PCTDataFormatException("Module secondary sales pricing is not defined correctly");
             }
-            log.info("Module successfully parsed: \nName: " + this.getName() +
+            log.info("Module successfully parsed: \nKey: " + this.getKey() +
+                    "\nName: " + this.getName() +
                     "\nShortName: " + this.getShortName() +
                     "\nWeight: " + this.getWeight() +
                     "\nSecondarySalesPrice: " + this.getSecondarySalesPrice() +
@@ -114,6 +126,18 @@ public class Module {
             this.name = xut.getString(name);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Module name is not defined correctly", e.getDetails());
+        }
+    }
+
+    public String getKey() {
+        return this.key;
+    }
+
+    private void setKey(Node key) throws PCTDataFormatException {
+        try {
+            this.key = xut.getString(key);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Module key is not defined correctly", e.getDetails());
         }
     }
 

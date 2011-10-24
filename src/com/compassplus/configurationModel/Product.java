@@ -33,7 +33,7 @@ public class Product {
         init(initialData);
     }
 
-    public String toString(){
+    public String toString() {
         return this.getName();
     }
 
@@ -130,8 +130,9 @@ public class Product {
             for (int i = 0; i < modules.getLength(); i++) {
                 try {
                     Module tmpModule = new Module(modules.item(i));
-                    modulesGroup.addModule(prefix + tmpModule.getName(), tmpModule);
-                    this.getModules().put(prefix + tmpModule.getName(), tmpModule);
+                    tmpModule.setPath(prefix + tmpModule.getName());
+                    modulesGroup.addModule(tmpModule.getKey(), tmpModule);
+                    this.getModules().put(tmpModule.getKey(), tmpModule);
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
@@ -180,8 +181,9 @@ public class Product {
             for (int i = 0; i < capacities.getLength(); i++) {
                 try {
                     Capacity tmpCapacity = new Capacity(capacities.item(i));
-                    capacitiesGroup.addCapacity(prefix + tmpCapacity.getName(), tmpCapacity);
-                    this.getCapacities().put(prefix + tmpCapacity.getName(), tmpCapacity);
+                    tmpCapacity.setPath(prefix + tmpCapacity.getName());
+                    capacitiesGroup.addCapacity(tmpCapacity.getKey(), tmpCapacity);
+                    this.getCapacities().put(tmpCapacity.getKey(), tmpCapacity);
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }

@@ -36,7 +36,7 @@ public class Capacity {
         try {
             log.info("Parsing capacity");
 
-            this.setKey(xut.getNode("Name", initialData), allowedCapacities);
+            this.setKey(xut.getNode("Key", initialData), allowedCapacities);
             this.setValue(xut.getNode("Value", initialData));
 
             log.info("Capacity successfully parsed: \nName: " + this.getName() +
@@ -66,16 +66,16 @@ public class Capacity {
         }
     }
 
-    private void setKey(Node name, Map<String, com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
+    private void setKey(Node key, Map<String, com.compassplus.configurationModel.Capacity> allowedCapacities) throws PCTDataFormatException {
         try {
-            String nameString = xut.getString(name);
-            this.key = nameString;
-            this.setCapacity(allowedCapacities.get(nameString));
+            String keyString = xut.getString(key);
+            this.key = keyString;
+            this.setCapacity(allowedCapacities.get(keyString));
             if (this.getCapacity() == null) {
-                throw new PCTDataFormatException("No such capacity \"" + nameString + "\"");
+                throw new PCTDataFormatException("No such capacity \"" + keyString + "\"");
             }
         } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Capacity name is not defined correctly", e.getDetails());
+            throw new PCTDataFormatException("Capacity key is not defined correctly", e.getDetails());
         }
     }
 
@@ -90,7 +90,7 @@ public class Capacity {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("<Capacity>");
-        sb.append("<Name>").append(this.getKey()).append("</Name>");
+        sb.append("<Key>").append(this.getKey()).append("</Key>");
         sb.append("<Value>").append(this.getValue()).append("</Value>");
         sb.append("</Capacity>");
         return sb.toString();
