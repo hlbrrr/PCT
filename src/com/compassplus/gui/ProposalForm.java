@@ -91,4 +91,8 @@ public class ProposalForm {
         this.getProposal().delProduct(productForm.getProduct());
         productsTabs.remove(productForm.getRoot());
     }
+
+    public JTabbedPane getProductsTabs() {
+        return productsTabs;
+    }
 }

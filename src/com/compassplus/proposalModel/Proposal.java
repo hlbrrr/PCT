@@ -31,6 +31,22 @@ public class Proposal {
         this.setConfig(config);
     }
 
+    public boolean containsDeprecated() {
+        for (Product p : getProducts().values()) {
+            for(String key:p.getModules().keySet()){
+                if(p.getProduct().getModules().get(key).isDeprecated()){
+                    return true;
+                }
+            }
+            for(String key:p.getCapacities().keySet()){
+                if(p.getProduct().getCapacities().get(key).isDeprecated()){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void init(Document initialData) throws PCTDataFormatException {
         try {
             this.setName(xut.getNode("/root/Name", initialData));

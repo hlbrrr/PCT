@@ -15,6 +15,7 @@ import java.util.ArrayList;
  * Time: 4:32 PM
  */
 public class Capacity {
+    private Boolean deprecated;
     private String key;
     private String path;
     private String name;
@@ -41,18 +42,32 @@ public class Capacity {
             log.info("Parsing Capacity");
 
             this.setKey(xut.getNode("Key", initialData));
+            this.setDeprecated(xut.getNode("Deprecated", initialData));
             this.setName(xut.getNode("Name", initialData));
             this.setShortName(xut.getNode("ShortName", initialData));
             this.setType(xut.getNode("Type", initialData));
             this.setTiers(xut.getNodes("Tiers/Tier", initialData));
 
             log.info("Capacity successfully parsed: \nKey: " + this.getKey() +
+                    "\nDeprecated: " + this.isDeprecated() +
                     "\nName: " + this.getName() +
                     "\nShortName: " + this.getShortName() +
                     "\nType: " + this.getType());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity is not defined correctly", e.getDetails());
         }
+    }
+
+    private void setDeprecated(Node deprecated) throws PCTDataFormatException {
+        try {
+            this.deprecated = xut.getBoolean(deprecated, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Module deprecated-flag is not defined correctly", e.getDetails());
+        }
+    }
+
+    public Boolean isDeprecated() {
+        return this.deprecated != null ? this.deprecated : false;
     }
 
     public String getName() {

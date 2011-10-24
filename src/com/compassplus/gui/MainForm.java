@@ -140,37 +140,47 @@ public class MainForm {
 
         openProposal.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                proposalFileChooser.setDialogTitle("Import");
-                int retVal = proposalFileChooser.showDialog(getRoot(), "Import");
-                if (retVal == JFileChooser.APPROVE_OPTION) {
-                    try {
-                        Proposal proposal = new Proposal(config);
-                        proposal.init(CommonUtils.getInstance().getDocumentFromFile(proposalFileChooser.getSelectedFile()));
-                        addProposalForm(new ProposalForm(proposal));
-                    } catch (Exception exception) {
-                        if (exception instanceof PCTDataFormatException) {
-                            Logger.getInstance().error(exception);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        proposalFileChooser.setDialogTitle("Import");
+                        int retVal = proposalFileChooser.showDialog(getRoot(), "Import");
+                        if (retVal == JFileChooser.APPROVE_OPTION) {
+                            try {
+                                Proposal proposal = new Proposal(config);
+                                proposal.init(CommonUtils.getInstance().getDocumentFromFile(proposalFileChooser.getSelectedFile()));
+                                addProposalForm(new ProposalForm(proposal));
+                                if (proposal.containsDeprecated()) {
+                                    JOptionPane.showMessageDialog(getRoot(), "Selected proposal contains deprecated module(s) or capacity(ies).", "Warning", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            } catch (Exception exception) {
+                                exception.printStackTrace();
+                                if (exception instanceof PCTDataFormatException) {
+                                    Logger.getInstance().error(exception);
+                                }
+                                JOptionPane.showMessageDialog(getRoot(), "Can't read proposal from specified file", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
                         }
-                        JOptionPane.showMessageDialog(getRoot(), "Can't read proposal from specified file", "Error", JOptionPane.ERROR_MESSAGE);
                     }
-                }
+                });
             }
         });
         saveProposal = new JMenuItem("Export proposal");
 
         saveProposal.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                proposalFileChooser.setDialogTitle("Export");
-                int retVal = proposalFileChooser.showDialog(getRoot(), "Export");
-                if (retVal == JFileChooser.APPROVE_OPTION) {
-                    try {
-                        File f = proposalFileChooser.getSelectedFile();
-                        OutputStream out = new FileOutputStream(f);
-                        out.write(getCurrentProposalForm().getProposal().toString().getBytes());
-                        out.close();
-                        JOptionPane.showMessageDialog(getRoot(), "Proposal successfully exported", "Result", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (Exception exception) {
-                        JOptionPane.showMessageDialog(getRoot(), "Can't save proposal to specified file", "Error", JOptionPane.ERROR_MESSAGE);
+                if (checkForConsistence()) {
+                    proposalFileChooser.setDialogTitle("Export");
+                    int retVal = proposalFileChooser.showDialog(getRoot(), "Export");
+                    if (retVal == JFileChooser.APPROVE_OPTION) {
+                        try {
+                            File f = proposalFileChooser.getSelectedFile();
+                            OutputStream out = new FileOutputStream(f);
+                            out.write(getCurrentProposalForm().getProposal().toString().getBytes());
+                            out.close();
+                            JOptionPane.showMessageDialog(getRoot(), "Proposal successfully exported", "Result", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (Exception exception) {
+                            JOptionPane.showMessageDialog(getRoot(), "Can't save proposal to specified file", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 }
             }
@@ -209,6 +219,44 @@ public class MainForm {
             public void menuCanceled(MenuEvent e) {
             }
         });
+    }
+
+    private boolean checkForConsistence() {
+        StringBuilder sb = new StringBuilder();
+        for (Product p : getCurrentProposalForm().getProposal().getProducts().values()) {
+            StringBuilder sbDeprecated = new StringBuilder();
+            StringBuilder sbDependencies = new StringBuilder();
+            for (String key : p.getModules().keySet()) {
+                for (String rkey : p.getProduct().getModules().get(key).getRequireModules()) {
+                    if (!p.getModules().containsKey(rkey)) {
+                        sbDependencies.append("\nModule \"").append(p.getProduct().getModules().get(key).getPath()).append("\" requires disabled module \"").append(p.getProduct().getModules().get(rkey).getPath()).append("\"");
+                    }
+                }
+                for (String rkey : p.getProduct().getModules().get(key).getExcludeModules()) {
+                    if (p.getModules().containsKey(rkey)) {
+                        sbDependencies.append("\nModule \"").append(p.getProduct().getModules().get(key).getPath()).append("\" conflicts with module \"").append(p.getProduct().getModules().get(rkey).getPath()).append("\"");
+                    }
+                }
+                if (p.getProduct().getModules().get(key).isDeprecated()) {
+                    sbDeprecated.append("\nDeprecated module \"").append(p.getProduct().getModules().get(key).getPath()).append("\"");
+                }
+            }
+            for (String key : p.getCapacities().keySet()) {
+                if (p.getProduct().getCapacities().get(key).isDeprecated()) {
+                    sbDeprecated.append("\nDeprecated capacity \"").append(p.getProduct().getCapacities().get(key).getPath()).append("\"");
+                }
+            }
+            if (sbDependencies.length() > 0 || sbDeprecated.length() > 0) {
+                sb.append("\nProduct ").append(p.getName()).append(" contains following error(s):").append(sbDependencies).append(sbDeprecated);
+            }
+        }
+        if (sb.length() > 0) {
+            sb.append("\n\nYou should fix error(s) first, then try again.");
+            JOptionPane.showMessageDialog(getRoot(), "Current proposal is not correct: " + sb.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private void initProposalMenu() {

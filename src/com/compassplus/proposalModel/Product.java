@@ -115,7 +115,7 @@ public class Product {
     private void setCapacities(NodeList capacities) {
         this.getCapacities().clear();
         if (capacities.getLength() > 0) {
-            log.info("Found " + capacities.getLength() + " capacity(s)");
+            log.info("Found " + capacities.getLength() + " capacity(ies)");
             for (int i = 0; i < capacities.getLength(); i++) {
                 try {
                     Capacity tmpCapacity = new Capacity(capacities.item(i), this.getProduct().getCapacities());
@@ -124,7 +124,7 @@ public class Product {
                     log.error(e);
                 }
             }
-            log.info("Successfully parsed " + this.getCapacities().size() + " capacity(s)");
+            log.info("Successfully parsed " + this.getCapacities().size() + " capacity(ies)");
         }
     }
 
@@ -186,6 +186,9 @@ public class Product {
     }
 
     public boolean canBeEnabled(String mKey, ArrayList<String> extraKeys) {
+        if(getProduct().getModules().get(mKey).isDeprecated()){
+            return false;
+        }
         StringBuilder sb = new StringBuilder();
         ArrayList<String> excludeKeys = new ArrayList<String>(0);
         for (String key : getProduct().getModules().get(mKey).getExcludeModules()) {

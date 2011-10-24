@@ -62,6 +62,7 @@
                             </SecondarySales>
                         </Module>
                         <Module>
+                            <Deprecated>true</Deprecated>
                             <Key>VTBI Key</Key>
                             <Name>Versatile Telebanking Interface (VTBI) for Internet and Mobile banking</Name>
                             <ShortName>VTBI</ShortName>
@@ -143,6 +144,7 @@
                     <Name>Main Metrics</Name>
                     <Capacities>
                         <Capacity>
+                            <Deprecated>true</Deprecated>
                             <Key>Multi-Purpose Key</Key>
                             <Name>Number of Multi-Purpose Instances</Name>
                             <Type>1</Type>

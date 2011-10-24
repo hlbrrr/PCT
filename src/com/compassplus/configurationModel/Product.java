@@ -177,7 +177,7 @@ public class Product {
         log.info("Parsing capacities group");
         NodeList capacities = xut.getNodes("Capacity", capacitiesNode);
         if (capacities.getLength() > 0) {
-            log.info("Found " + capacities.getLength() + " capacity(s)");
+            log.info("Found " + capacities.getLength() + " capacity(ies)");
             for (int i = 0; i < capacities.getLength(); i++) {
                 try {
                     Capacity tmpCapacity = new Capacity(capacities.item(i));
@@ -188,7 +188,7 @@ public class Product {
                     log.error(e);
                 }
             }
-            log.info("Successfully parsed " + this.getCapacities().size() + " capacity(s)");
+            log.info("Successfully parsed " + this.getCapacities().size() + " capacity(ies)");
         }
 
         NodeList groups = xut.getNodes("Group", capacitiesNode);

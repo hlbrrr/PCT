@@ -70,7 +70,7 @@ public class ModuleJCheckbox extends JCheckBox {
     }
 
     public void setSelected(boolean b, boolean ignoreEvent) {
-        ((ModuleToggleButtonModel) model).setSelected(b, ignoreEvent);
+        ((ModuleToggleButtonModel) this.getModel()).setSelected(b, ignoreEvent);
     }
 
     public String getKey() {

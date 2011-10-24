@@ -5,6 +5,7 @@ import com.compassplus.proposalModel.*;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -17,6 +18,7 @@ import java.util.ArrayList;
  * Time: 10:14 AM
  */
 public class Module {
+    private Boolean deprecated;
     private String key;
     private String path;
     private String name;
@@ -47,6 +49,7 @@ public class Module {
             log.info("Parsing module");
 
             this.setKey(xut.getNode("Key", initialData));
+            this.setDeprecated(xut.getNode("Deprecated", initialData));
             this.setName(xut.getNode("Name", initialData));
             this.setShortName(xut.getNode("ShortName", initialData));
             this.setWeight(xut.getNode("Weight", initialData));
@@ -67,6 +70,7 @@ public class Module {
                 throw new PCTDataFormatException("Module secondary sales pricing is not defined correctly");
             }
             log.info("Module successfully parsed: \nKey: " + this.getKey() +
+                    "\nDeprecated: " + this.isDeprecated() +
                     "\nName: " + this.getName() +
                     "\nShortName: " + this.getShortName() +
                     "\nWeight: " + this.getWeight() +
@@ -75,6 +79,18 @@ public class Module {
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Module is not defined correctly", e.getDetails());
         }
+    }
+
+    private void setDeprecated(Node deprecated) throws PCTDataFormatException {
+        try {
+            this.deprecated = xut.getBoolean(deprecated, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Module deprecated-flag is not defined correctly", e.getDetails());
+        }
+    }
+
+    public Boolean isDeprecated() {
+        return this.deprecated != null ? this.deprecated : false;
     }
 
     private void setRequireModules(NodeList requireModules) {
