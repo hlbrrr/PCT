@@ -186,7 +186,7 @@ public class Product {
     }
 
     public boolean canBeEnabled(String mKey, ArrayList<String> extraKeys) {
-        if(getProduct().getModules().get(mKey).isDeprecated()){
+        if (getProduct().getModules().get(mKey).isDeprecated()) {
             return false;
         }
         StringBuilder sb = new StringBuilder();
@@ -221,14 +221,23 @@ public class Product {
     public String getDescription() {
         StringBuilder sb = new StringBuilder();
         sb.append(getProduct().getShortName().equals("") ? getProduct().getName() : getProduct().getShortName());
-        sb.append("\n");
-        sb.append(getSelectedModulesString());
-        sb.append(getSelectedCapacitiesString());
-        String ret = sb.toString();
-        if (ret.endsWith("\n")) {
-            ret = ret.substring(0, ret.length() - 1);
+        String ms = getSelectedModulesString();
+        String cs = getSelectedCapacitiesString();
+        if (ms.length() != 0 || cs.length() != 0) {
+            sb.append(":\n");
         }
-        return ret;
+        if (ms.length() != 0) {
+            sb.append(ms);
+            sb.append(";\n");
+        }
+        if (cs.length() != 0) {
+            sb.append(cs);
+            sb.append(";\n");
+        }
+        if (sb.toString().endsWith("\n")) {
+            sb.setLength(sb.length() - 1);
+        }
+        return sb.toString();
     }
 
     private String getSelectedModulesString() {
@@ -246,22 +255,33 @@ public class Product {
         for (String key : modulesGroup.getModules().keySet()) {
             if (this.getModules().containsKey(key)) {
                 com.compassplus.configurationModel.Module m = modulesGroup.getModules().get(key);
-                sb.append(pad);
-                sb.append("  -");
+                //sb.append(pad);
+                //sb.append("  -");
                 sb.append(m.getShortName().equals("") ? m.getName() : m.getShortName());
-                sb.append("\n");
+                sb.append(", ");
+                //sb.append("\n");
             }
         }
 
         for (ModulesGroup mg : modulesGroup.getGroups()) {
             sb.append(getSelectedModulesString(mg, pad + "  "));
+            sb.append(", ");
         }
 
         if (sb.length() > 0) {
             if (appendGroupName) {
-                sb.insert(0, ":\n");
+                //sb.insert(0, ":\n");
+                sb.insert(0, " (");
                 sb.insert(0, modulesGroup.getShortName().equals("") ? modulesGroup.getName() : modulesGroup.getShortName());
-                sb.insert(0, pad);
+                //sb.insert(0, pad);
+                if (sb.toString().endsWith(", ")) {
+                    sb.setLength(sb.length() - 2);
+                }
+                sb.append(")");
+            }
+
+            if (sb.toString().endsWith(", ")) {
+                sb.setLength(sb.length() - 2);
             }
             return sb.toString();
         } else {
@@ -284,24 +304,33 @@ public class Product {
         for (String key : capacitiesGroup.getCapacities().keySet()) {
             if (this.getCapacities().containsKey(key)) {
                 com.compassplus.configurationModel.Capacity c = capacitiesGroup.getCapacities().get(key);
-                Capacity cc = this.getCapacities().get(key);
-                sb.append(pad);
-                sb.append("  -");
+                //sb.append(pad);
+                //sb.append("  -");
                 sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
-                sb.append(" = ").append(cc.getValue());
-                sb.append("\n");
+                sb.append(", ");
+                //sb.append("\n");
             }
         }
 
         for (CapacitiesGroup cg : capacitiesGroup.getGroups()) {
             sb.append(getSelectedCapacitiesString(cg, pad + "  "));
+            sb.append(", ");
         }
 
         if (sb.length() > 0) {
             if (appendGroupName) {
-                sb.insert(0, ":\n");
+                //sb.insert(0, ":\n");
+                sb.insert(0, " (");
                 sb.insert(0, capacitiesGroup.getShortName().equals("") ? capacitiesGroup.getName() : capacitiesGroup.getShortName());
-                sb.insert(0, pad);
+                //sb.insert(0, pad);
+                if (sb.toString().endsWith(", ")) {
+                    sb.setLength(sb.length() - 2);
+                }
+                sb.append(")");
+            }
+
+            if (sb.toString().endsWith(", ")) {
+                sb.setLength(sb.length() - 2);
             }
             return sb.toString();
         } else {
