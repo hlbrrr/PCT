@@ -29,8 +29,9 @@
             });
         },
         tryToInit:function(initialData) {
-            document.evaluate("/root/")
-            console.log(initialData);
+            $('root>Products>Product', initialData).each(function() {
+                console.log($('>Name', this).text());
+            });
         },
         initError:function() {
             alert('Initialization failed');
