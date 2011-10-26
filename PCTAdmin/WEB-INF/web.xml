@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+  <servlet>
+    <servlet-name>data</servlet-name>
+    <servlet-class>com.compassplus.PCTServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>data</servlet-name>
+    <url-pattern>/data</url-pattern>
+  </servlet-mapping>
+
+  <security-constraint>
+    <display-name>Methods Constraint</display-name>
+    <web-resource-collection>
+      <web-resource-name>Protected Area</web-resource-name>
+	      <!-- Define the context-relative URL(s) to be protected -->
+	      <url-pattern>/*</url-pattern>
+	      <!-- If you list http methods, only those methods are protected -->
+        <http-method>DELETE</http-method>
+        <http-method>PUT</http-method>
+        <http-method>HEAD</http-method>
+        <http-method>OPTIONS</http-method>
+        <http-method>TRACE</http-method>
+        <http-method>PATCH</http-method>
+        <http-method>DEBUG</http-method>
+        <http-method>TRACK</http-method>
+    </web-resource-collection>
+    <auth-constraint />
+  </security-constraint>
+
+  <security-constraint>
+    <display-name>JSP Folder</display-name>
+    <web-resource-collection>
+      <web-resource-name>Protected Area</web-resource-name>
+	    <url-pattern>/jsp/*</url-pattern>
+	    <url-pattern>/debug/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint />
+  </security-constraint>
+
+<!--	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Administrator Area</web-resource-name>
+			<url-pattern>/Admin/*</url-pattern>
+		</web-resource-collection>
+		
+		<auth-constraint>
+			<role-name>tomcat</role-name>
+		</auth-constraint>
+	</security-constraint>
+-->
+	<security-role>
+		<role-name>tomcat</role-name>
+	</security-role>
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>tomcat</realm-name>
+	</login-config>
+
+	<welcome-file-list>
+	  <welcome-file>index.html</welcome-file>
+	  <welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>
