@@ -265,7 +265,6 @@ public class Product {
 
         for (ModulesGroup mg : modulesGroup.getGroups()) {
             sb.append(getSelectedModulesString(mg, pad + "  "));
-            sb.append(", ");
         }
 
         if (sb.length() > 0) {
@@ -277,7 +276,7 @@ public class Product {
                 if (sb.toString().endsWith(", ")) {
                     sb.setLength(sb.length() - 2);
                 }
-                sb.append(")");
+                sb.append("), ");
             }
 
             if (sb.toString().endsWith(", ")) {
@@ -316,7 +315,6 @@ public class Product {
 
         for (CapacitiesGroup cg : capacitiesGroup.getGroups()) {
             sb.append(getSelectedCapacitiesString(cg, pad + "  "));
-            sb.append(", ");
         }
 
         if (sb.length() > 0) {
@@ -328,7 +326,7 @@ public class Product {
                 if (sb.toString().endsWith(", ")) {
                     sb.setLength(sb.length() - 2);
                 }
-                sb.append(")");
+                sb.append("), ");
             }
 
             if (sb.toString().endsWith(", ")) {
