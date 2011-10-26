@@ -6,35 +6,35 @@
  */
 (function($, window) {
     $.extend(window, {
-                PCT:{}
-            });
+        PCT:{}
+    });
     $.extend(PCT, {
-                init:function() {
-                    $.ajax({
-                                url:'pct.jsp',
-                                data:{
-                                    action:'getConfig'
-                                },
-                                success:function(data) {
-                                    var resp;
-                                    try {
-                                        resp = $.parseJSON(data);
-                                        PCT.tryToInit(resp);
-                                    } catch(e) {
-                                        PCT.initError();
-                                    }
-                                },
-                                error:function(data) {
-                                    PCT.initError();
-                                }
-                            });
+        format:'xml'
+    });
+    $.extend(PCT, {
+        init:function() {
+            $.ajax({
+                url:'data',
+                data:{
+                    action:'getConfig',
+                    format:PCT.format
                 },
-                tryToInit:function(initialData) {
-
+                dataType:PCT.format,
+                success:function(data, textStatus, jqXHR) {
+                    PCT.tryToInit(data);
                 },
-                initError:function() {
-                    alert('Initialization failed');
+                error:function(data) {
+                    PCT.initError();
                 }
             });
+        },
+        tryToInit:function(initialData) {
+            document.evaluate("/root/")
+            console.log(initialData);
+        },
+        initError:function() {
+            alert('Initialization failed');
+        }
+    });
 
 })(jQuery, window);
