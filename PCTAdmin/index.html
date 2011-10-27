@@ -7,11 +7,29 @@
     <script type="text/javascript" src="js/admin.js"></script>
     <script type="text/javascript">
         $(function() {
-            PCT.init();
+            PCT.init($('body'), $('body'));
         });
     </script>
 </head>
 <body>
-
+<template id="model">
+    Model:
+    <br/>
+    Expiration:<input id="Expiration"/>
+    <br/>
+    Products:
+    <br/>
+    <div id="Products"/>
+</template>
+<template id="product">
+    Product:
+    <br/>
+    Name:<input id="Name"/>
+    <br/>
+    MaximumFunctionalityPrice:<input id="MaximumFunctionalityPrice"/>
+    <br/>
+    MinimumPrice:<input id="MinimumPrice"/>
+    <br/>
+</template>
 </body>
 </html>
