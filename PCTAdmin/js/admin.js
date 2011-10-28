@@ -90,9 +90,14 @@
                 _products:$('#Products', dom).get()
             });
             $.extend(this, PCT.base, {
-                root:$('<div></div>').append(dom),
+                root:$('<div></div>').append(dom.contents()),
                 init:function(initialData) {
+                    $(this._expiration).datepicker({
+                        dateFormat:'dd/mm/yy',
+                        minDate:new Date()
+                    });
                     $(this._expiration).val($('>Expiration', initialData).text());
+
                     var that = this;
                     $('>Products>Product', initialData).each(function() {
                         that.addProduct((new PCT.product()).init(this));
@@ -122,18 +127,18 @@
             var that = this;
             $(this._expand).click(
                 function() {
-                    if ($(that._modules).hasClass('hidden')) {
+                    if ($(that._modules).hasClass('jhidden')) {
                         $(that._expand).html('collapse');
-                        $(that._modules).removeClass('hidden')
+                        $(that._modules).removeClass('jhidden').show('fast');
                     } else {
                         $(that._expand).html('expand');
-                        $(that._modules).addClass('hidden')
+                        $(that._modules).addClass('jhidden').hide('fast');
                     }
                 }).click();
             $(this._name).change(function() {
                 $(that._productTitle).html($(this).val());
             });
-            $(this._productTitle).addClass('underline').click(
+            $(this._productTitle).click(
                 function() {
                     if ($(that._settingsPane).hasClass('hidden')) {
                         $(that._settingsPane).removeClass('hidden');
@@ -142,7 +147,7 @@
                     }
                 }).click();
             $.extend(this, PCT.base, {
-                root:$('<div></div>').append(dom),
+                root:$('<div></div>').append(dom.contents()),
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._maximumFunctionalityPrice).val($('>MaximumFunctionalityPrice', initialData).text());
@@ -194,8 +199,9 @@
                     $(that._settings).hide();
                     $(that._groupTitle).html('Modules Root');
                     $(that._settingsPane).addClass('hidden');
+                    $(that._groupTitle).addClass('unclickable');
                 } else {
-                    $(that._groupTitle).addClass('underline').click(
+                    $(that._groupTitle).click(
                         function() {
                             if ($(that._settingsPane).hasClass('hidden')) {
                                 $(that._settingsPane).removeClass('hidden');
@@ -207,7 +213,7 @@
             });
 
             $.extend(this, PCT.base, {
-                root:$('<div></div>').append(dom),
+                root:$('<div></div>').append(dom.contents()),
                 init:function(name, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
@@ -253,7 +259,14 @@
             $(this._name).change(function() {
                 $(that._moduleTitle).html($(this).val());
             });
-            $(this._moduleTitle).addClass('underline').click(
+            $(this._deprecated).change(function() {
+                if ($(this).prop('checked')) {
+                    $(that._moduleTitle).addClass('deprecated');
+                } else {
+                    $(that._moduleTitle).removeClass('deprecated');
+                }
+            });
+            $(this._moduleTitle).click(
                 function() {
                     if ($(that._settingsPane).hasClass('hidden')) {
                         $(that._settingsPane).removeClass('hidden');
@@ -262,7 +275,7 @@
                     }
                 }).click();
             $.extend(this, PCT.base, {
-                root:$('<div></div>').append(dom),
+                root:$('<div></div>').append(dom.contents()),
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text());
@@ -270,7 +283,7 @@
                     $(this._key).val($('>Key', initialData).text());
                     $(this._secondarySalesPrice).val($('>SecondarySales>Price', initialData).text());
                     $(this._secondarySalesRate).val($('>SecondarySales>Rate', initialData).text());
-                    $(this._deprecated).val($('>Deprecated', initialData).text());
+                    $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true' ? true : false)).change();
                     return this;
                 }
             });
