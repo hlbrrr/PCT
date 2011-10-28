@@ -1,0 +1,135 @@
+body {
+    font-size: 12px;
+    background-color: #f9f8dd;
+}
+
+.divProduct {
+    border: 1px solid #444;
+    margin-bottom: 10px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    background-color: #fff;
+}
+
+.divProductTitle {
+    background-color: #444;
+    color: white;
+}
+
+.divProductModules {
+    padding: 10px;
+    padding-bottom: 0;
+}
+
+.divModulesGroup .divModules {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.divModulesGroup .divGroups {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.divModulesGroup {
+    border: 1px solid #efc0bd;
+    margin-bottom: 10px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.divGroupTitle {
+    background-color: #efc0bd;
+    color: black;
+    text-shadow: 0 1px 0 #dddddd;
+}
+
+.divGroups .divModulesGroup:first-child {
+    margin-top: 10px;
+}
+
+.divModule {
+    border: 1px solid #e7e6e6;
+    margin-bottom: 10px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.divModuleTitle {
+    background-color: #e7e6e6;
+    color: black;
+    text-shadow: 0 1px 0 #ffffff;
+}
+
+.divModules .divModule:first-child {
+    margin-top: 10px;
+}
+
+.titleTable {
+    width: 100%;
+    display: table;
+}
+
+.titleTableCell {
+    display: table-cell;
+    padding: 5px;
+}
+
+.titleTableCellFill {
+    width: 100%;
+}
+
+.titleTableCellButton {
+    white-space: nowrap;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.hidden {
+    display: none;
+}
+
+.divSettingsPane {
+    padding: 5px;
+    padding-bottom: 0;
+}
+
+.settingInput {
+    border: 0;
+}
+
+.settingsTable {
+    width: 100%;
+    display: table;
+}
+
+.settingsTableRow {
+    display: table-row;
+}
+
+.settingsTableCell {
+    display: table-cell;
+    padding-bottom: 5px;
+}
+
+.settingsTitle {
+    white-space: nowrap;
+    padding-right: 5px;
+    font-style: italic;
+}
+
+.settingsValue {
+    width: 100%;
+}
+
+.settingsValue input {
+    width: 100%;
+}
+
+.underline {
+    text-decoration: underline;
+    cursor: pointer;
+}

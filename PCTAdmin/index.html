@@ -3,6 +3,7 @@
 <html>
 <head>
     <title>PCTAdmin</title>
+    <link type="text/css" rel="stylesheet" media="screen" href="style.css"/>
     <script type="text/javascript" src="js/jquery-1.6.3.js"></script>
     <script type="text/javascript" src="js/admin.js"></script>
     <script type="text/javascript">
@@ -13,23 +14,145 @@
 </head>
 <body>
 <template id="model">
-    Model:
-    <br/>
-    Expiration:<input id="Expiration"/>
-    <br/>
-    Products:
-    <br/>
-    <div id="Products"/>
+    <div class="divModel">
+        Expiration:<input id="Expiration"/>
+
+        <div id="Products"></div>
+    </div>
 </template>
 <template id="product">
-    Product:
-    <br/>
-    Name:<input id="Name"/>
-    <br/>
-    MaximumFunctionalityPrice:<input id="MaximumFunctionalityPrice"/>
-    <br/>
-    MinimumPrice:<input id="MinimumPrice"/>
-    <br/>
+    <div class="divProduct">
+        <div class="divProductTitle">
+            <div class="titleTable">
+                <div class="titleTableCell titleTableCellFill">
+                    <span id="ProductTitle"></span>
+                </div>
+                <div id="Expand" class="titleTableCell titleTableCellButton">
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Maximum Functionality Price:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="MaximumFunctionalityPrice" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Minimum Price:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="MinimumPrice" class="settingInput"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="Modules" class="divProductModules"></div>
+    </div>
+
+</template>
+<template id="modulesGroup">
+    <div class="divModulesGroup">
+        <div class="divGroupTitle">
+            <div class="titleTable">
+                <div class="titleTableCell titleTableCellFill">
+                    <span id="GroupTitle"></span>
+                </div>
+                <div id="Expand" class="titleTableCell titleTableCellButton">
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" class="settingInput"/>
+                        </div>
+                    </div>
+                </div>
+                <input id="IsRoot" type="hidden"/>
+            </div>
+        </div>
+        <div id="Content" class="hidden">
+            <div id="Modules" class="divModules"></div>
+            <div id="Groups" class="divGroups"></div>
+        </div>
+    </div>
+</template>
+<template id="module">
+    <div class="divModule">
+        <div class="divModuleTitle">
+            <div class="titleTable">
+                <div class="titleTableCell titleTableCellFill">
+                    <span id="ModuleTitle"></span>
+                </div>
+                <div id="Settings" class="titleTableCell titleTableCellButton">
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Short Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="ShortName" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Weight:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Weight" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Secondary Sales Price:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="SecondarySalesPrice" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Secondary Sales Rate:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="SecondarySalesRate" class="settingInput"/>
+                        </div>
+                    </div>
+                </div>
+                <input id="IsRoot" type="hidden"/>
+            </div>
+        </div>
+        <div style="display: none">
+            <input id="Name"/>
+        </div>
+    </div>
 </template>
 </body>
 </html>

@@ -6,6 +6,16 @@
             <MaximumFunctionalityPrice>50000</MaximumFunctionalityPrice>
             <MinimumPrice>100</MinimumPrice>
             <Modules>
+                <Module>
+                    <Key>Test</Key>
+                    <Name>Test OS</Name>
+                    <ShortName>Testa OS</ShortName>
+                    <Weight>1</Weight>
+                    <SecondarySales>
+                        <Price></Price>
+                        <Rate>2</Rate>
+                    </SecondarySales>
+                </Module>
                 <Group>
                     <Name>System-level Properties</Name>
                     <Modules>
