@@ -1,3 +1,8 @@
+html {
+    overflow-y: scroll;
+    overflow: -moz-scrollbars-vertical;
+}
+
 body {
     font-size: 12px;
     font-family: Arial;
@@ -34,7 +39,16 @@ body {
     padding-bottom: 0;
 }
 
+.divProductCapacities {
+    padding: 0 10px;
+}
+
 .divModulesGroup .divModules {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.divCapacitiesGroup .divCapacities {
     padding-left: 10px;
     padding-right: 10px;
 }
@@ -44,24 +58,52 @@ body {
     padding-right: 10px;
 }
 
+.divCapacitiesGroup .divGroups {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .divModulesGroup {
-    border: 1px solid #dec1bf;
+    border: 1px solid #eb928c;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
     border-radius: 5px;
     -webkit-border-radius: 5px;
 }
 
-.divGroupTitle {
+.divCapacitiesGroup {
+    border: 1px solid #00acac;
+    margin-bottom: 10px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.divModulesGroup>.divGroupTitle {
     background-color: #efc0bd;
     color: black;
 }
 
+.divCapacitiesGroup>.divGroupTitle {
+    background-color: #00cccc;
+    color: black;
+}
+
 .divGroups .divModulesGroup:first-child {
-    margin-top: 10px;
+}
+
+.divGroups .divCapacitiesGroup:first-child {
 }
 
 .divModule {
+    border: 1px solid #dbd0d0;
+    margin-bottom: 10px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.divCapacity {
     border: 1px solid #dbd0d0;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -74,8 +116,17 @@ body {
     color: black;
 }
 
-.divModules .divModule:first-child {
-    margin-top: 10px;
+.divCapacityTitle {
+    background-color: #e7e6e6;
+    color: black;
+}
+
+.divModules {
+    padding-top:10px;
+}
+
+.divCapacities  {
+    padding-top:10px;
 }
 
 .titleTable {
@@ -105,8 +156,12 @@ body {
     background-color: #777;
 }
 
-.divGroupTitle>.titleTable>.titleTableCellButton:hover {
+.divModulesGroup>.divGroupTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #fae2e1;
+}
+
+.divCapacitiesGroup>.divGroupTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #07e8e8;
 }
 
 .divModuleTitle>.titleTable>.titleTableCellButton:hover {
@@ -170,12 +225,15 @@ body {
     background-color: inherit !important;
     cursor: inherit !important;
 }
-.titleTableCellExpText{
+
+.titleTableCellExpText {
     padding-right: 5px;
 }
-.titleTableCellExpDate{
+
+.titleTableCellExpDate {
     padding-left: 0;
 }
-.titleTableCellExpDate input{
+
+.titleTableCellExpDate input {
     width: 100px;
 }

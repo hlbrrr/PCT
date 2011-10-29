@@ -48,6 +48,7 @@
                 <div class="titleTableCell titleTableCellFill">
                 </div>
                 <div id="Expand" class="titleTableCell titleTableCellButton">
+                    Collapse
                 </div>
             </div>
             <div id="SettingsPane" class="divSettingsPane">
@@ -57,7 +58,7 @@
                             Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Name" class="settingInput"/>
+                            <input id="Name" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -65,7 +66,7 @@
                             Maximum Functionality Price:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="MaximumFunctionalityPrice" class="settingInput"/>
+                            <input id="MaximumFunctionalityPrice" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -73,15 +74,17 @@
                             Minimum Price:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="MinimumPrice" class="settingInput"/>
+                            <input id="MinimumPrice" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="Modules" class="divProductModules hidden"></div>
+        <div id="Content">
+            <div id="Modules" class="divProductModules"></div>
+            <div id="Capacities" class="divProductCapacities"></div>
+        </div>
     </div>
-
 </template>
 <template id="modulesGroup">
     <div class="divModulesGroup">
@@ -91,7 +94,14 @@
                 </div>
                 <div class="titleTableCell titleTableCellFill">
                 </div>
+                <div id="AddGroup" class="titleTableCell titleTableCellButton">
+                    Add Group
+                </div>
+                <div id="AddModule" class="titleTableCell titleTableCellButton">
+                    Add Module
+                </div>
                 <div id="Expand" class="titleTableCell titleTableCellButton">
+                    Collapse
                 </div>
             </div>
             <div id="SettingsPane" class="divSettingsPane">
@@ -101,15 +111,53 @@
                             Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Name" class="settingInput"/>
+                            <input id="Name" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
                 </div>
                 <input id="IsRoot" type="hidden"/>
             </div>
         </div>
-        <div id="Content" class="hidden">
+        <div id="Content">
             <div id="Modules" class="divModules"></div>
+            <div id="Groups" class="divGroups"></div>
+        </div>
+    </div>
+</template>
+<template id="capacitiesGroup">
+    <div class="divCapacitiesGroup">
+        <div class="divGroupTitle">
+            <div class="titleTable">
+                <div id="GroupTitle" class="titleTableCell titleTableCellButton">
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+                <div id="AddGroup" class="titleTableCell titleTableCellButton">
+                    Add Group
+                </div>
+                <div id="AddCapacity" class="titleTableCell titleTableCellButton">
+                    Add Capacity
+                </div>
+                <div id="Expand" class="titleTableCell titleTableCellButton">
+                    Collapse
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
+                </div>
+                <input id="IsRoot" type="hidden"/>
+            </div>
+        </div>
+        <div id="Content">
+            <div id="Capacities" class="divCapacities"></div>
             <div id="Groups" class="divGroups"></div>
         </div>
     </div>
@@ -118,11 +166,9 @@
     <div class="divModule">
         <div class="divModuleTitle">
             <div class="titleTable">
-                <div id="ModuleTitle" class="titleTableCell titleTableCellButton">
+                <div id="Title" class="titleTableCell titleTableCellButton">
                 </div>
                 <div class="titleTableCell titleTableCellFill">
-                </div>
-                <div id="Settings" class="titleTableCell titleTableCellButton">
                 </div>
             </div>
             <div id="SettingsPane" class="divSettingsPane">
@@ -132,7 +178,7 @@
                             Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Name" class="settingInput"/>
+                            <input id="Name" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -140,7 +186,7 @@
                             Short Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="ShortName" class="settingInput"/>
+                            <input id="ShortName" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -148,7 +194,7 @@
                             Weight:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Weight" class="settingInput"/>
+                            <input id="Weight" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -156,7 +202,7 @@
                             Secondary Sales Price:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="SecondarySalesPrice" class="settingInput"/>
+                            <input id="SecondarySalesPrice" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
                     <!--<div class="settingsTableRow">
@@ -172,15 +218,54 @@
                             Deprecated:
                         </div>
                         <div class="settingsTableCell settingsValueCb">
-                            <input id="Deprecated" type="checkbox"/>
+                            <input id="Deprecated" autocomplete="off" type="checkbox"/>
                         </div>
                     </div>
                 </div>
                 <input id="SecondarySalesRate" type="hidden"/>
+                <input id="Key" type="hidden"/>
             </div>
         </div>
-        <div style="display: none">
-            <input id="Name"/>
+    </div>
+</template>
+<template id="capacity">
+    <div class="divCapacity">
+        <div class="divCapacityTitle">
+            <div class="titleTable">
+                <div id="Title" class="titleTableCell titleTableCellButton">
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Type:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Type" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Deprecated:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="Deprecated" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
+                </div>
+                <input id="Key" type="hidden"/>
+            </div>
         </div>
     </div>
 </template>
