@@ -45,6 +45,9 @@
             <div class="titleTable">
                 <div id="ProductTitle" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
                 </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
                 <div id="Expand" class="titleTableCell titleTableCellButton">
                     Collapse
                 </div>
@@ -92,6 +95,9 @@
             <div class="titleTable">
                 <div id="GroupTitle" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
                 </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
                 <div id="AddGroup" class="titleTableCell titleTableCellButton">
                     Add Group
                 </div>
@@ -127,6 +133,9 @@
         <div class="divGroupTitle">
             <div class="titleTable">
                 <div id="GroupTitle" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
                 </div>
                 <div id="AddGroup" class="titleTableCell titleTableCellButton">
                     Add Group
@@ -164,6 +173,9 @@
             <div class="titleTable">
                 <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
                 </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
                 <div id="AddDependency" class="titleTableCell titleTableCellButton">
                     Add Dependency
                 </div>
@@ -187,6 +199,14 @@
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <input id="ShortName" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -223,7 +243,6 @@
                     </div>
                 </div>
                 <input id="SecondarySalesRate" type="hidden"/>
-                <input id="Key" type="hidden"/>
             </div>
         </div>
         <div id="Dependencies" class="divDependencies"></div>
@@ -234,6 +253,9 @@
         <div class="divCapacityTitle">
             <div class="titleTable">
                 <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
                 </div>
                 <div id="AddTier" class="titleTableCell titleTableCellButton">
                     Add Tier
@@ -250,6 +272,14 @@
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <input id="Name" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -273,7 +303,6 @@
                         </div>
                     </div>
                 </div>
-                <input id="Key" type="hidden"/>
             </div>
         </div>
         <div id="Tiers" class="divTiers"></div>
@@ -284,6 +313,9 @@
         <div class="divTierTitle">
             <div class="titleTable">
                 <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
                 </div>
             </div>
             <div id="SettingsPane" class="divSettingsPane">
@@ -315,12 +347,15 @@
             <div class="titleTable">
                 <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
                 </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
             </div>
             <div id="SettingsPane" class="divSettingsPane">
                 <div class="settingsTable">
                     <div class="settingsTableRow">
                         <div class="settingsTableCell settingsTitle">
-                            Module:
+                            Module Key:
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <input id="Key" autocomplete="off" class="settingInput"/>

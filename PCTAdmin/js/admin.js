@@ -133,6 +133,7 @@
             dom = $('<div></div>').append(dom);
             $.extend(this, {
                 _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
                 _maximumFunctionalityPrice:$('#MaximumFunctionalityPrice', dom).get(),
                 _minimumPrice:$('#MinimumPrice', dom).get(),
@@ -142,9 +143,14 @@
                 _productTitle:$('#ProductTitle', dom).get(),
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
-                _expand:$('#Expand', dom).get()
+                _expand:$('#Expand', dom).get(),
+                _remove:$('#Remove', dom).get()
             });
             var that = this;
+            $(this._remove).click(
+                function() {
+                    $(that._body).remove();
+                });
             $(this._expand).click(
                 function(arg) {
                     $(that._content).toggle(PCT.animation, function() {
@@ -161,6 +167,7 @@
             });
             $(this._productTitle).click(
                 function() {
+                    $(that._remove).toggle(PCT.animation);
                     $(that._settingsPane).toggle(PCT.animation);
                 });
             $.extend(this, PCT.base, {
@@ -176,6 +183,7 @@
                     this.addCapacitiesRoot((new PCT.capacitiesGroup()).init(null, $('>Capacities', initialData)));
                     $(this._settingsPane).addClass('hidden');
                     $(this._content).addClass('hidden');
+                    $(this._remove).addClass('hidden');
                     $(this._expand).html('Expand');
                     return this;
                 },
@@ -204,6 +212,7 @@
             dom = $('<div></div>').append(dom);
             $.extend(this, {
                 _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
                 _content:$('#Content', dom).get(),
                 _modules:$('#Modules', dom).get(),
@@ -214,9 +223,14 @@
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _addGroup:$('#AddGroup', dom).get(),
                 _addModule:$('#AddModule', dom).get(),
-                _expand:$('#Expand', dom).get()
+                _expand:$('#Expand', dom).get(),
+                _remove:$('#Remove', dom).get()
             });
             var that = this;
+            $(this._remove).click(
+                function() {
+                    $(that._body).remove();
+                });
             $(this._expand).click(
                 function(arg) {
                     $(that._content).toggle(PCT.animation, function() {
@@ -251,10 +265,12 @@
                     $(that._settings).hide();
                     $(that._groupTitle).html('Modules Root');
                     $(that._settingsPane).addClass('hidden');
+                    $(that._remove).addClass('hidden');
                     $(that._groupTitle).addClass('unclickable');
                 } else {
                     $(that._groupTitle).click(
                         function() {
+                            $(that._remove).toggle(PCT.animation);
                             $(that._settingsPane).toggle(PCT.animation);
                         });
                 }
@@ -284,6 +300,7 @@
                         that.addGroup((new PCT.modulesGroup()).init($('>Name', this).text(), $('>Modules', this)));
                     });
                     $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
                     return this;
                 },
                 addModule:function(module) {
@@ -315,6 +332,7 @@
             dom = $('<div></div>').append(dom);
             $.extend(this, {
                 _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
                 _shortName:$('#ShortName', dom).get(),
                 _weight:$('#Weight', dom).get(),
@@ -327,9 +345,14 @@
                 _dependencies:$('#Dependencies', dom).get(),
                 _addDependency:$('#AddDependency', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
-                _expand:$('#Expand', dom).get()
+                _expand:$('#Expand', dom).get(),
+                _remove:$('#Remove', dom).get()
             });
             var that = this;
+            $(this._remove).click(
+                function() {
+                    $(that._body).remove();
+                });
             $(this._name).change(function() {
                 $(that._moduleTitle).html($(this).val());
             });
@@ -349,6 +372,7 @@
             });
             $(this._moduleTitle).click(
                 function() {
+                    $(that._remove).toggle(PCT.animation);
                     $(that._settingsPane).toggle(PCT.animation);
                 });
             $(this._expand).click(
@@ -376,6 +400,7 @@
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true' ? true : false)).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._dependencies).addClass('hidden');
+                    $(this._remove).addClass('hidden');
                     $(this._expand).html('Expand');
                     var that = this;
                     $('>Dependencies>Require', initialData).each(function() {
@@ -405,14 +430,20 @@
             dom = $('<div></div>').append(dom);
             $.extend(this, {
                 _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
                 _key:$('#Key', dom).get(),
                 _dependencyBody:$('#DependencyBody', dom).get(),
                 _dependencyTitle:$('#Title', dom).get(),
                 _settings:$('#Settings', dom).get(),
                 _type:$('#Type', dom).get(),
-                _settingsPane:$('#SettingsPane', dom).get()
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get()
             });
             var that = this;
+            $(this._remove).click(
+                function() {
+                    $(that._body).remove();
+                });
             $(this._key).change(function() {
                 $(that._dependencyTitle).html($(this).val());
             });
@@ -427,6 +458,7 @@
             });
             $(this._dependencyTitle).click(
                 function() {
+                    $(that._remove).toggle(PCT.animation);
                     $(that._settingsPane).toggle(PCT.animation);
                 });
             $.extend(this, PCT.base, {
@@ -437,6 +469,7 @@
                 init:function(initialData) {
                     $(this._key).val(initialData).change();
                     $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
                     return this;
                 },
                 setType:function(type){
@@ -452,6 +485,7 @@
             dom = $('<div></div>').append(dom);
             $.extend(this, {
                 _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
                 _content:$('#Content', dom).get(),
                 _capacities:$('#Capacities', dom).get(),
@@ -462,9 +496,14 @@
                 _addCapacity:$('#AddCapacity', dom).get(),
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
-                _expand:$('#Expand', dom).get()
+                _expand:$('#Expand', dom).get(),
+                _remove:$('#Remove', dom).get()
             });
             var that = this;
+            $(this._remove).click(
+                function() {
+                    $(that._body).remove();
+                });
             $(this._expand).click(
                 function(arg) {
                     $(that._content).toggle(PCT.animation, function() {
@@ -499,10 +538,12 @@
                     $(that._settings).hide();
                     $(that._groupTitle).html('Capacities Root');
                     $(that._settingsPane).addClass('hidden');
+                    $(that._remove).addClass('hidden');
                     $(that._groupTitle).addClass('unclickable');
                 } else {
                     $(that._groupTitle).click(
                         function() {
+                            $(that._remove).toggle(PCT.animation);
                             $(that._settingsPane).toggle(PCT.animation);
                         });
                 }
@@ -532,6 +573,7 @@
                         that.addGroup((new PCT.capacitiesGroup()).init($('>Name', this).text(), $('>Capacities', this)));
                     });
                     $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
                     return this;
                 },
                 addCapacity:function(capacity) {
@@ -563,6 +605,7 @@
             dom = $('<div></div>').append(dom);
             $.extend(this, {
                 _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
                 _type:$('#Type', dom).get(),
                 _key:$('#Key', dom).get(),
@@ -572,9 +615,14 @@
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _tiers:$('#Tiers', dom).get(),
-                _expand:$('#Expand', dom).get()
+                _expand:$('#Expand', dom).get(),
+                _remove:$('#Remove', dom).get()
             });
             var that = this;
+            $(this._remove).click(
+                function() {
+                    $(that._body).remove();
+                });
             $(this._name).change(function() {
                 $(that._capacityTitle).html($(this).val());
             });
@@ -604,6 +652,7 @@
             });
             $(this._capacityTitle).click(
                 function() {
+                    $(that._remove).toggle(PCT.animation);
                     $(that._settingsPane).toggle(PCT.animation);
                 });
             $.extend(this, PCT.base, {
@@ -619,6 +668,7 @@
                     $(this._settingsPane).addClass('hidden');
                     $(this._tiers).addClass('hidden');
                     $(this._expand).html('Expand');
+                    $(this._remove).addClass('hidden');
                     var that = this;
                     $('>Tiers>Tier', initialData).each(function() {
                         that.addTier((new PCT.tier()).init(this));
@@ -644,13 +694,19 @@
             dom = $('<div></div>').append(dom);
             $.extend(this, {
                 _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
                 _bound:$('#Bound', dom).get(),
                 _price:$('#Price', dom).get(),
                 _tierTitle:$('#Title', dom).get(),
                 _settings:$('#Settings', dom).get(),
-                _settingsPane:$('#SettingsPane', dom).get()
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get()
             });
             var that = this;
+            $(this._remove).click(
+                function() {
+                    $(that._body).remove();
+                });
             $(this._bound).change(function() {
                 $(that._tierTitle).html($(this).val() + ' - ' + $(that._price).val());
             });
@@ -659,6 +715,7 @@
             });
             $(this._tierTitle).click(
                 function() {
+                    $(that._remove).toggle(PCT.animation);
                     $(that._settingsPane).toggle(PCT.animation);
                 });
             $.extend(this, PCT.base, {
@@ -670,6 +727,7 @@
                     $(this._bound).val($('>Bound', initialData).text()).change();
                     $(this._price).val($('>Price', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
                     return this;
                 }
             });

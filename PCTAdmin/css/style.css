@@ -123,11 +123,11 @@ body {
 }
 
 .divDependency.requireDependency {
-    border-color: #4cdb1d;
+    border-color: #62d53d;
 }
 
 .divDependency.excludeDependency {
-    border-color: #e74545;
+    border-color: #eb5959;
 }
 
 .divDependency {
@@ -154,11 +154,11 @@ body {
 }
 
 .divDependency.requireDependency .divDependencyTitle {
-    background-color: #66ff33;
+    background-color: #80fe56;
 }
 
 .divDependency.excludeDependency .divDependencyTitle {
-    background-color: #ff6666;
+    background-color: #ff8888;
 }
 
 .divDependencyTitle {
@@ -231,12 +231,12 @@ body {
 }
 
 .divDependency.requireDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
-    background-color: #a2ff83;
-}
-.divDependency.excludeDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
-    background-color: #fe9393;
+    background-color: #b8fea1;
 }
 
+.divDependency.excludeDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #feb5b5;
+}
 
 .divSettingsPane {
     padding: 10px;
@@ -331,4 +331,8 @@ body {
 
 .titleText {
     white-space: normal;
+}
+
+.removeButton {
+    color: red;
 }
