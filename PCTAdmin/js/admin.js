@@ -39,10 +39,7 @@
     });
     $.extend(PCT, {
         init:function(templatesContainer, root) {
-            var UAString = navigator.userAgent.toLowerCase();
-            if (UAString.indexOf('ipad') != -1 || UAString.indexOf('iphone') != -1) {
-                PCT.disableAnimation();
-            }
+            PCT.disableAnimation();
             $('template', templatesContainer).each(function() {
                 PCT.addTemplate(this);
             });
@@ -327,11 +324,21 @@
                 _deprecated:$('#Deprecated', dom).get(),
                 _moduleTitle:$('#Title', dom).get(),
                 _settings:$('#Settings', dom).get(),
-                _settingsPane:$('#SettingsPane', dom).get()
+                _dependencies:$('#Dependencies', dom).get(),
+                _addDependency:$('#AddDependency', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _expand:$('#Expand', dom).get()
             });
             var that = this;
             $(this._name).change(function() {
                 $(that._moduleTitle).html($(this).val());
+            });
+            $(this._addDependency).click(function() {
+                if ($(that._dependencies).css('display') == 'none') {
+                    $(that._dependencies).show();
+                    $(that._expand).html('Collapse');
+                }
+                that.addDependency();
             });
             $(this._deprecated).change(function() {
                 if ($(this).prop('checked')) {
@@ -343,6 +350,16 @@
             $(this._moduleTitle).click(
                 function() {
                     $(that._settingsPane).toggle(PCT.animation);
+                });
+            $(this._expand).click(
+                function(arg) {
+                    $(that._dependencies).toggle(PCT.animation, function() {
+                        if ($(this).css('display') == 'none') {
+                            $(that._expand).html('Expand');
+                        } else {
+                            $(that._expand).html('Collapse');
+                        }
+                    });
                 });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
@@ -358,12 +375,75 @@
                     $(this._secondarySalesRate).val($('>SecondarySales>Rate', initialData).text());
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true' ? true : false)).change();
                     $(this._settingsPane).addClass('hidden');
+                    $(this._dependencies).addClass('hidden');
+                    $(this._expand).html('Expand');
+                    var that = this;
+                    $('>Dependencies>Require', initialData).each(function() {
+                        that.addDependency((new PCT.dependency()).setType('require').init($(this).text()));
+                    });
+                    $('>Dependencies>Exclude', initialData).each(function() {
+                        that.addDependency((new PCT.dependency()).setType('exclude').init($(this).text()));
+                    });
                     return this;
+                },
+                addDependency:function(dependency) {
+                    if (dependency) {
+                        dependency.setRoot(this._dependencies);
+                        $('html, body').animate({
+                            scrollTop: $(dependency.getHead()).offset().top
+                        }, 200);
+                    } else {
+                        this.addDependency((new PCT.dependency()).setType('require'));
+                    }
                 }
             });
         },
-        moduleDependency:function(dom) {
-
+        dependency:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate("dependency");
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _key:$('#Key', dom).get(),
+                _dependencyBody:$('#DependencyBody', dom).get(),
+                _dependencyTitle:$('#Title', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _type:$('#Type', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get()
+            });
+            var that = this;
+            $(this._key).change(function() {
+                $(that._dependencyTitle).html($(this).val());
+            });
+            $(this._type).change(function() {
+                if($(this).val()=='require'){
+                   $(that._dependencyBody).addClass('requireDependency');
+                   $(that._dependencyBody).removeClass('excludeDependency');
+                }else{
+                   $(that._dependencyBody).addClass('excludeDependency');
+                   $(that._dependencyBody).removeClass('requireDependency');
+                }
+            });
+            $(this._dependencyTitle).click(
+                function() {
+                    $(that._settingsPane).toggle(PCT.animation);
+                });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._key).val(initialData).change();
+                    $(this._settingsPane).addClass('hidden');
+                    return this;
+                },
+                setType:function(type){
+                    $(this._type).val(type).change();
+                    return this;
+                }
+            });
         },
         capacitiesGroup:function(dom) {
             if (!dom) {
@@ -488,19 +568,39 @@
                 _key:$('#Key', dom).get(),
                 _deprecated:$('#Deprecated', dom).get(),
                 _capacityTitle:$('#Title', dom).get(),
+                _addTier:$('#AddTier', dom).get(),
                 _settings:$('#Settings', dom).get(),
-                _settingsPane:$('#SettingsPane', dom).get()
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _tiers:$('#Tiers', dom).get(),
+                _expand:$('#Expand', dom).get()
             });
             var that = this;
             $(this._name).change(function() {
                 $(that._capacityTitle).html($(this).val());
             });
+            $(this._expand).click(
+                function(arg) {
+                    $(that._tiers).toggle(PCT.animation, function() {
+                        if ($(this).css('display') == 'none') {
+                            $(that._expand).html('Expand');
+                        } else {
+                            $(that._expand).html('Collapse');
+                        }
+                    });
+                });
             $(this._deprecated).change(function() {
                 if ($(this).prop('checked')) {
                     $(that._capacityTitle).addClass('deprecated');
                 } else {
                     $(that._capacityTitle).removeClass('deprecated');
                 }
+            });
+            $(this._addTier).click(function() {
+                if ($(that._tiers).css('display') == 'none') {
+                    $(that._tiers).show();
+                    $(that._expand).html('Collapse');
+                }
+                that.addTier();
             });
             $(this._capacityTitle).click(
                 function() {
@@ -516,6 +616,59 @@
                     $(this._type).val($('>Type', initialData).text());
                     $(this._key).val($('>Key', initialData).text());
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true' ? true : false)).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._tiers).addClass('hidden');
+                    $(this._expand).html('Expand');
+                    var that = this;
+                    $('>Tiers>Tier', initialData).each(function() {
+                        that.addTier((new PCT.tier()).init(this));
+                    });
+                    return this;
+                },
+                addTier:function(tier) {
+                    if (tier) {
+                        tier.setRoot(this._tiers);
+                        $('html, body').animate({
+                            scrollTop: $(tier.getHead()).offset().top
+                        }, 200);
+                    } else {
+                        this.addTier(new PCT.tier());
+                    }
+                }
+            });
+        },
+        tier:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate("tier");
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _bound:$('#Bound', dom).get(),
+                _price:$('#Price', dom).get(),
+                _tierTitle:$('#Title', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get()
+            });
+            var that = this;
+            $(this._bound).change(function() {
+                $(that._tierTitle).html($(this).val() + ' - ' + $(that._price).val());
+            });
+            $(this._price).change(function() {
+                $(that._tierTitle).html($(that._bound).val() + ' - ' + $(this).val());
+            });
+            $(this._tierTitle).click(
+                function() {
+                    $(that._settingsPane).toggle(PCT.animation);
+                });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._bound).val($('>Bound', initialData).text()).change();
+                    $(this._price).val($('>Price', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
                     return this;
                 }

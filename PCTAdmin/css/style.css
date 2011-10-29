@@ -36,11 +36,14 @@ body {
 
 .divProductModules {
     padding: 10px;
+    padding-right: 5px;
     padding-bottom: 0;
 }
 
 .divProductCapacities {
-    padding: 0 10px;
+    padding: 10px;
+    padding-left: 5px;
+    padding-bottom: 0;
 }
 
 .divModulesGroup .divModules {
@@ -64,7 +67,7 @@ body {
 }
 
 .divModulesGroup {
-    border: 1px solid #eb928c;
+    border: 1px solid #e39724;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
     border-radius: 5px;
@@ -80,7 +83,7 @@ body {
 }
 
 .divModulesGroup>.divGroupTitle {
-    background-color: #efc0bd;
+    background-color: #f9a930;
     color: black;
 }
 
@@ -111,6 +114,30 @@ body {
     -webkit-border-radius: 5px;
 }
 
+.divTier {
+    border: 1px solid #a3a3f4;
+    margin-bottom: 10px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.divDependency.requireDependency {
+    border-color: #4cdb1d;
+}
+
+.divDependency.excludeDependency {
+    border-color: #e74545;
+}
+
+.divDependency {
+    border: 1px solid;
+    margin-bottom: 10px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
 .divModuleTitle {
     background-color: #e7e6e6;
     color: black;
@@ -121,12 +148,39 @@ body {
     color: black;
 }
 
-.divModules {
-    padding-top:10px;
+.divTierTitle {
+    background-color: #c1c1ff;
+    color: black;
 }
 
-.divCapacities  {
-    padding-top:10px;
+.divDependency.requireDependency .divDependencyTitle {
+    background-color: #66ff33;
+}
+
+.divDependency.excludeDependency .divDependencyTitle {
+    background-color: #ff6666;
+}
+
+.divDependencyTitle {
+    color: black;
+}
+
+.divModules {
+    padding-top: 10px;
+}
+
+.divCapacities {
+    padding-top: 10px;
+}
+
+.divDependencies {
+    padding: 10px;
+    padding-bottom: 0;
+}
+
+.divTiers {
+    padding: 10px;
+    padding-bottom: 0;
 }
 
 .titleTable {
@@ -157,7 +211,7 @@ body {
 }
 
 .divModulesGroup>.divGroupTitle>.titleTable>.titleTableCellButton:hover {
-    background-color: #fae2e1;
+    background-color: #ffbc57;
 }
 
 .divCapacitiesGroup>.divGroupTitle>.titleTable>.titleTableCellButton:hover {
@@ -168,12 +222,24 @@ body {
     background-color: #f5f5f5;
 }
 
-.hidden {
-    display: none;
+.divCapacityTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #f5f5f5;
 }
 
+.divTierTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #dadafc;
+}
+
+.divDependency.requireDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #a2ff83;
+}
+.divDependency.excludeDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #fe9393;
+}
+
+
 .divSettingsPane {
-    padding: 5px;
+    padding: 10px;
     padding-bottom: 0;
 }
 
@@ -181,7 +247,7 @@ body {
 }
 
 .settingsTable {
-    width: 50%;
+    width: 90%;
     display: table;
 }
 
@@ -206,6 +272,17 @@ body {
 
 .settingsValue input {
     width: 100%;
+    padding: 2;
+    margin: 0;
+    border: 0;
+}
+
+.settingsValue select {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    line-height: 30px;
 }
 
 .settingsValueCb {
@@ -236,4 +313,22 @@ body {
 
 .titleTableCellExpDate input {
     width: 100px;
+}
+
+.divProductContent {
+    display: table;
+    width: 100%;
+}
+
+.divProductModules, .divProductCapacities {
+    display: table-cell;
+    width: 50%;
+}
+
+.hidden {
+    display: none;
+}
+
+.titleText {
+    white-space: normal;
 }

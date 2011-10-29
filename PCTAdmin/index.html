@@ -43,9 +43,7 @@
     <div class="divProduct">
         <div class="divProductTitle">
             <div class="titleTable">
-                <div id="ProductTitle" class="titleTableCell titleTableCellButton">
-                </div>
-                <div class="titleTableCell titleTableCellFill">
+                <div id="ProductTitle" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
                 </div>
                 <div id="Expand" class="titleTableCell titleTableCellButton">
                     Collapse
@@ -81,8 +79,10 @@
             </div>
         </div>
         <div id="Content">
-            <div id="Modules" class="divProductModules"></div>
-            <div id="Capacities" class="divProductCapacities"></div>
+            <div class="divProductContent">
+                <div id="Modules" class="divProductModules"></div>
+                <div id="Capacities" class="divProductCapacities"></div>
+            </div>
         </div>
     </div>
 </template>
@@ -90,9 +90,7 @@
     <div class="divModulesGroup">
         <div class="divGroupTitle">
             <div class="titleTable">
-                <div id="GroupTitle" class="titleTableCell titleTableCellButton">
-                </div>
-                <div class="titleTableCell titleTableCellFill">
+                <div id="GroupTitle" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
                 </div>
                 <div id="AddGroup" class="titleTableCell titleTableCellButton">
                     Add Group
@@ -128,9 +126,7 @@
     <div class="divCapacitiesGroup">
         <div class="divGroupTitle">
             <div class="titleTable">
-                <div id="GroupTitle" class="titleTableCell titleTableCellButton">
-                </div>
-                <div class="titleTableCell titleTableCellFill">
+                <div id="GroupTitle" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
                 </div>
                 <div id="AddGroup" class="titleTableCell titleTableCellButton">
                     Add Group
@@ -166,9 +162,13 @@
     <div class="divModule">
         <div class="divModuleTitle">
             <div class="titleTable">
-                <div id="Title" class="titleTableCell titleTableCellButton">
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
                 </div>
-                <div class="titleTableCell titleTableCellFill">
+                <div id="AddDependency" class="titleTableCell titleTableCellButton">
+                    Add Dependency
+                </div>
+                <div id="Expand" class="titleTableCell titleTableCellButton">
+                    Collapse
                 </div>
             </div>
             <div id="SettingsPane" class="divSettingsPane">
@@ -226,15 +226,20 @@
                 <input id="Key" type="hidden"/>
             </div>
         </div>
+        <div id="Dependencies" class="divDependencies"></div>
     </div>
 </template>
 <template id="capacity">
     <div class="divCapacity">
         <div class="divCapacityTitle">
             <div class="titleTable">
-                <div id="Title" class="titleTableCell titleTableCellButton">
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
                 </div>
-                <div class="titleTableCell titleTableCellFill">
+                <div id="AddTier" class="titleTableCell titleTableCellButton">
+                    Add Tier
+                </div>
+                <div id="Expand" class="titleTableCell titleTableCellButton">
+                    Collapse
                 </div>
             </div>
             <div id="SettingsPane" class="divSettingsPane">
@@ -252,7 +257,11 @@
                             Type:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Type" autocomplete="off" class="settingInput"/>
+                            <select id="Type" autocomplete="off" class="settingInput">
+                                <option vaue="1">Type 1</option>
+                                <option vaue="2">Type 2</option>
+                            </select>
+                            <!--<input id="Type" autocomplete="off" class="settingInput"/>-->
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -265,6 +274,70 @@
                     </div>
                 </div>
                 <input id="Key" type="hidden"/>
+            </div>
+        </div>
+        <div id="Tiers" class="divTiers"></div>
+    </div>
+</template>
+<template id="tier">
+    <div class="divTier">
+        <div class="divTierTitle">
+            <div class="titleTable">
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Bound:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Bound" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Price:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Price" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="dependency">
+    <div class="divDependency" id="DependencyBody">
+        <div class="divDependencyTitle">
+            <div class="titleTable">
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Module:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Type:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <select id="Type" autocomplete="off" class="settingInput">
+                                <option value="require">Require</option>
+                                <option value="exclude">Exclude</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
