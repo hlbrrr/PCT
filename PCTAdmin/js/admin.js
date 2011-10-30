@@ -271,7 +271,11 @@
             });
             $(this._remove).click(
                 function() {
-                    $(that._body).remove();
+                    if (confirm('Remove product?')) {
+                        if (confirm('Removing product can result in broken backward compatibility. Remove product?')) {
+                            $(that._body).remove();
+                        }
+                    }
                 });
             $(this._expand).click(
                 function(arg) {
@@ -378,7 +382,11 @@
             });
             $(this._remove).click(
                 function() {
-                    $(that._body).remove();
+                    if (confirm('Remove group?')) {
+                        if (confirm('Group will be removed with nested modules. Removing module can result in broken backward compatibility. Remove group?')) {
+                            $(that._body).remove();
+                        }
+                    }
                 });
             $(this._expand).click(
                 function(arg) {
@@ -531,7 +539,11 @@
             });
             $(this._remove).click(
                 function() {
-                    $(that._body).remove();
+                    if (confirm('Remove module?')) {
+                        if (confirm('Removing module can result in broken backward compatibility. Remove module?')) {
+                            $(that._body).remove();
+                        }
+                    }
                 });
             $(this._name).change(function() {
                 $(that._moduleTitle).html($(this).val());
@@ -628,7 +640,9 @@
             });
             $(this._remove).click(
                 function() {
-                    $(that._body).remove();
+                    if (confirm('Remove dependency?')) {
+                        $(that._body).remove();
+                    }
                 });
             $(this._key).change(function() {
                 $(that._dependencyTitle).html($(this).val());
@@ -714,7 +728,11 @@
             });
             $(this._remove).click(
                 function() {
-                    $(that._body).remove();
+                    if (confirm('Remove group?')) {
+                        if (confirm('Group will be removed with nested capacities. Removing capacity can result in broken backward compatibility. Remove group?')) {
+                            $(that._body).remove();
+                        }
+                    }
                 });
             $(this._expand).click(
                 function(arg) {
@@ -857,7 +875,11 @@
             });
             $(this._remove).click(
                 function() {
-                    $(that._body).remove();
+                    if (confirm('Remove capacity?')) {
+                        if (confirm('Removing capacity can result in broken backward compatibility. Remove capacity?')) {
+                            $(that._body).remove();
+                        }
+                    }
                 });
             $(this._name).change(function() {
                 $(that._capacityTitle).html($(this).val());
@@ -952,7 +974,9 @@
             });
             $(this._remove).click(
                 function() {
-                    $(that._body).remove();
+                    if (confirm('Remove tier?')) {
+                        $(that._body).remove();
+                    }
                 });
             $(this._bound).change(function() {
                 $(that._tierTitle).html($(this).val() + ' - ' + $(that._price).val());
