@@ -8,12 +8,42 @@
     $.extend(window, {
         PCT:{}
     });
+
     $.extend(PCT, {
+        timeout:10000,
+        animation:'blind',
+        format:'xml',
+        lockScreen : function() {
+            if (!PCT.lockCounter) {
+                $.extend(PCT, {
+                    lockCounter : 1
+                });
+            } else {
+                PCT.lockCounter++;
+            }
+            PCT.lockDiv.updateView();
+            $(PCT.lockDiv).show();
+        },
+        unlockScreen : function() {
+            PCT.lockCounter--;
+            if (PCT.lockCounter <= 0) {
+                PCT.lockCounter = 0;
+                $(PCT.lockDiv).hide();
+            }
+        },
+        preventDefault : function(e) {
+            e.preventDefault();
+            return false;
+        },
+        updateViewCallbacks : new Array(),
+        updateView : function() {
+            for (key in PCT.updateViewCallbacks) {
+                PCT.updateViewCallbacks[key]();
+            }
+        },
         disableAnimation:function() {
             $.fx.off = true;
         },
-        animation:'blind',
-        format:'xml',
         template:function(template) {
             $.extend(this, {
                 dom:$('<div></div>').append($(template).contents()),
@@ -43,6 +73,34 @@
             $('template', templatesContainer).each(function() {
                 PCT.addTemplate(this);
             });
+            {
+                var lockDivTemplate = PCT.getTemplate('locker');
+                var lockRoot = $('#lockDiv', lockDivTemplate);
+                lockRoot.bind("touchmove", PCT.preventDefault);
+                lockRoot.bind("touchstart", PCT.preventDefault);
+                lockRoot.bind("touchend", PCT.preventDefault);
+                lockRoot.bind("click", PCT.preventDefault);
+                $.extend(lockDivTemplate, {
+                    updateView : function() {
+                        var pageHeight = $('body').height();
+                        lockRoot.height(pageHeight > window.innerHeight ? pageHeight : innerHeight);
+                        $('.animation', lockRoot).css('top', window.pageYOffset + window.innerHeight / 3);
+                    }
+                });
+                root.append(lockDivTemplate);
+
+                $.extend(PCT, {
+                    lockDiv : lockDivTemplate
+                });
+
+                $(window).bind('scroll', PCT.lockDiv.updateView);
+                PCT.updateViewCallbacks.push(PCT.lockDiv.updateView);
+            }
+            if (window.orientation != undefined) {
+                window.onorientationchange = PCT.updateView;
+            }
+            $(window).resize(PCT.updateView);
+            PCT.lockScreen();
             $.ajax({
                 url:'data',
                 data:{
@@ -55,6 +113,9 @@
                 },
                 error:function(jqXHR, textStatus, errorThrown) {
                     PCT.initError();
+                },
+                complete:function() {
+                    PCT.unlockScreen();
                 }
             });
         },
@@ -93,11 +154,48 @@
             $.extend(this, {
                 _expiration:$('#Expiration', dom).get(),
                 _products:$('#Products', dom).get(),
-                _addProduct:$('#AddProduct', dom).get()
+                _addProduct:$('#AddProduct', dom).get(),
+                _saveConfiguration:$('#SaveConfiguration', dom).get(),
+                _core:$('#Core', dom).get()
             });
             var that = this;
             $(this._addProduct).click(function() {
                 that.addProduct();
+            });
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<root>';
+                    config += '<Expiration>' + $(that._expiration).val() + '</Expiration>';
+                    config += '<Products>';
+                    $(that._products).children().each(function() {
+                        if ($(this).hasClass('divProduct'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Products>';
+                    config += '</root>';
+                    return config;
+                }
+            });
+            $(this._saveConfiguration).click(function() {
+                PCT.lockScreen();
+                var config = $.data($(that._core)[0], 'pct').getXML();
+                $.ajax({
+                    url:'data',
+                    data:{
+                        action:'saveConfig',
+                        config:config
+                    },
+                    dataType:PCT.format,
+                    success:function(data, textStatus, jqXHR) {
+                        alert('Configuration saved');
+                    },
+                    error:function(jqXHR, textStatus, errorThrown) {
+                        PCT.initError();
+                    },
+                    complete:function() {
+                        PCT.unlockScreen();
+                    }
+                });
             });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
@@ -135,6 +233,7 @@
                 _head:$(dom).children().first().get(),
                 _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
+                _shortName:$('#ShortName', dom).get(),
                 _maximumFunctionalityPrice:$('#MaximumFunctionalityPrice', dom).get(),
                 _minimumPrice:$('#MinimumPrice', dom).get(),
                 _content:$('#Content', dom).get(),
@@ -144,9 +243,29 @@
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _expand:$('#Expand', dom).get(),
-                _remove:$('#Remove', dom).get()
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get()
             });
             var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Product>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                    config += '<MaximumFunctionalityPrice>' + $(that._maximumFunctionalityPrice).val() + '</MaximumFunctionalityPrice>';
+                    config += '<MinimumPrice>' + $(that._minimumPrice).val() + '</MinimumPrice>';
+                    $(that._modules).children().each(function() {
+                        if ($(this).hasClass('divModulesGroup'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    $(that._capacities).children().each(function() {
+                        if ($(this).hasClass('divCapacitiesGroup'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Product>';
+                    return config;
+                }
+            });
             $(this._remove).click(
                 function() {
                     $(that._body).remove();
@@ -177,6 +296,7 @@
                 },
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._shortName).val($('>ShortName', initialData).text());
                     $(this._maximumFunctionalityPrice).val($('>MaximumFunctionalityPrice', initialData).text());
                     $(this._minimumPrice).val($('>MinimumPrice', initialData).text());
                     this.addModulesRoot((new PCT.modulesGroup()).init(null, $('>Modules', initialData)));
@@ -214,6 +334,7 @@
                 _head:$(dom).children().first().get(),
                 _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
+                _shortName:$('#ShortName', dom).get(),
                 _content:$('#Content', dom).get(),
                 _modules:$('#Modules', dom).get(),
                 _groups:$('#Groups', dom).get(),
@@ -224,9 +345,34 @@
                 _addGroup:$('#AddGroup', dom).get(),
                 _addModule:$('#AddModule', dom).get(),
                 _expand:$('#Expand', dom).get(),
-                _remove:$('#Remove', dom).get()
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get()
             });
             var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '';
+                    if (!that.getIsRoot()) {
+                        config += '<Group>';
+                        config += '<Name>' + $(that._name).val() + '</Name>';
+                        config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                    }
+                    config += '<Modules>';
+                    $(that._modules).children().each(function() {
+                        if ($(this).hasClass('divModule'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    $(that._groups).children().each(function() {
+                        if ($(this).hasClass('divModulesGroup'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Modules>';
+                    if (!that.getIsRoot()) {
+                        config += '</Group>';
+                    }
+                    return config;
+                }
+            });
             $(this._remove).click(
                 function() {
                     $(that._body).remove();
@@ -285,6 +431,9 @@
                     $(this._isRoot).val(r ? 'true' : false).change();
                     return this;
                 },
+                getIsRoot:function() {
+                    return $(this._isRoot).val() == 'true';
+                },
                 init:function(name, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
@@ -293,6 +442,7 @@
                         $(this._isRoot).val('true').change();
                     }
                     var that = this;
+                    $(this._shortName).val($('>ShortName', initialData).text());
                     $('>Module', initialData).each(function() {
                         that.addModule((new PCT.module()).init(this));
                     });
@@ -346,9 +496,36 @@
                 _addDependency:$('#AddDependency', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _expand:$('#Expand', dom).get(),
-                _remove:$('#Remove', dom).get()
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get()
             });
             var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Module>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                    config += '<Weight>' + $(that._weight).val() + '</Weight>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<SecondarySales>';
+                    config += '<Price>' + $(that._secondarySalesPrice).val() + '</Price>';
+                    config += '<Rate>' + $(that._secondarySalesRate).val() + '</Rate>';
+                    config += '</SecondarySales>';
+                    config += '<Deprecated>' + ($(that._deprecated).prop('checked') ? 'true' : 'false') + '</Deprecated>';
+                    config += '<Dependencies>';
+                    $(that._dependencies).children().each(function() {
+                        if ($(this).hasClass('requireDependency'))
+                            config += '<Require>' + $.data($(this)[0], 'pct').getXML() + '</Require>';
+                    });
+                    $(that._dependencies).children().each(function() {
+                        if ($(this).hasClass('excludeDependency'))
+                            config += '<Exclude>' + $.data($(this)[0], 'pct').getXML() + '</Exclude>';
+                    });
+                    config += '</Dependencies>';
+                    config += '</Module>';
+                    return config;
+                }
+            });
             $(this._remove).click(
                 function() {
                     $(that._body).remove();
@@ -437,9 +614,15 @@
                 _settings:$('#Settings', dom).get(),
                 _type:$('#Type', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
-                _remove:$('#Remove', dom).get()
+                _remove:$('#Remove', dom).get(),
+                _core:$('#DependencyBody', dom).get()
             });
             var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    return $(that._key).val();
+                }
+            });
             $(this._remove).click(
                 function() {
                     $(that._body).remove();
@@ -448,12 +631,12 @@
                 $(that._dependencyTitle).html($(this).val());
             });
             $(this._type).change(function() {
-                if($(this).val()=='require'){
-                   $(that._dependencyBody).addClass('requireDependency');
-                   $(that._dependencyBody).removeClass('excludeDependency');
-                }else{
-                   $(that._dependencyBody).addClass('excludeDependency');
-                   $(that._dependencyBody).removeClass('requireDependency');
+                if ($(this).val() == 'require') {
+                    $(that._dependencyBody).addClass('requireDependency');
+                    $(that._dependencyBody).removeClass('excludeDependency');
+                } else {
+                    $(that._dependencyBody).addClass('excludeDependency');
+                    $(that._dependencyBody).removeClass('requireDependency');
                 }
             });
             $(this._dependencyTitle).click(
@@ -472,7 +655,7 @@
                     $(this._remove).addClass('hidden');
                     return this;
                 },
-                setType:function(type){
+                setType:function(type) {
                     $(this._type).val(type).change();
                     return this;
                 }
@@ -487,6 +670,7 @@
                 _head:$(dom).children().first().get(),
                 _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
+                _shortName:$('#ShortName', dom).get(),
                 _content:$('#Content', dom).get(),
                 _capacities:$('#Capacities', dom).get(),
                 _groups:$('#Groups', dom).get(),
@@ -497,9 +681,34 @@
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _expand:$('#Expand', dom).get(),
-                _remove:$('#Remove', dom).get()
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get()
             });
             var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '';
+                    if (!that.getIsRoot()) {
+                        config += '<Group>';
+                        config += '<Name>' + $(that._name).val() + '</Name>';
+                        config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                    }
+                    config += '<Capacities>';
+                    $(that._capacities).children().each(function() {
+                        if ($(this).hasClass('divCapacity'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    $(that._groups).children().each(function() {
+                        if ($(this).hasClass('divCapacitiesGroup'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Capacities>';
+                    if (!that.getIsRoot()) {
+                        config += '</Group>';
+                    }
+                    return config;
+                }
+            });
             $(this._remove).click(
                 function() {
                     $(that._body).remove();
@@ -558,6 +767,9 @@
                     $(this._isRoot).val(r ? 'true' : 'false').change();
                     return this;
                 },
+                getIsRoot:function() {
+                    return $(this._isRoot).val() == 'true';
+                },
                 init:function(name, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
@@ -566,6 +778,7 @@
                         $(this._isRoot).val('true').change();
                     }
                     var that = this;
+                    $(this._shortName).val($('>ShortName', initialData).text());
                     $('>Capacity', initialData).each(function() {
                         that.addCapacity((new PCT.capacity()).init(this));
                     });
@@ -607,6 +820,7 @@
                 _head:$(dom).children().first().get(),
                 _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
+                _shortName:$('#ShortName', dom).get(),
                 _type:$('#Type', dom).get(),
                 _key:$('#Key', dom).get(),
                 _deprecated:$('#Deprecated', dom).get(),
@@ -616,9 +830,28 @@
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _tiers:$('#Tiers', dom).get(),
                 _expand:$('#Expand', dom).get(),
-                _remove:$('#Remove', dom).get()
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get()
             });
             var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Capacity>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<Type>' + $(that._type).val() + '</Type>';
+                    config += '<Deprecated>' + ($(that._deprecated).prop('checked') ? 'true' : 'false') + '</Deprecated>';
+                    config += '<Tiers>';
+                    $(that._tiers).children().each(function() {
+                        if ($(this).hasClass('divTier'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Tiers>';
+                    config += '</Capacity>';
+                    return config;
+                }
+            });
             $(this._remove).click(
                 function() {
                     $(that._body).remove();
@@ -662,6 +895,7 @@
                 },
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._shortName).val($('>ShortName', initialData).text());
                     $(this._type).val($('>Type', initialData).text());
                     $(this._key).val($('>Key', initialData).text());
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true' ? true : false)).change();
@@ -700,9 +934,19 @@
                 _tierTitle:$('#Title', dom).get(),
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
-                _remove:$('#Remove', dom).get()
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get()
             });
             var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Tier>';
+                    config += '<Bound>' + $(that._bound).val() + '</Bound>';
+                    config += '<Price>' + $(that._price).val() + '</Price>';
+                    config += '</Tier>';
+                    return config;
+                }
+            });
             $(this._remove).click(
                 function() {
                     $(that._body).remove();

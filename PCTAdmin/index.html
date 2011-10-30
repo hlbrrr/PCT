@@ -16,7 +16,7 @@
 </head>
 <body>
 <template id="model">
-    <div class="divModel">
+    <div class="divModel" id="Core">
         <div class="divModelTitle">
             <div class="titleTable">
                 <div id="SaveConfiguration" class="titleTableCell titleTableCellButton">
@@ -40,7 +40,7 @@
     </div>
 </template>
 <template id="product">
-    <div class="divProduct">
+    <div class="divProduct" id="Core">
         <div class="divProductTitle">
             <div class="titleTable">
                 <div id="ProductTitle" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
@@ -60,6 +60,14 @@
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <input id="Name" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Short Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="ShortName" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -90,7 +98,7 @@
     </div>
 </template>
 <template id="modulesGroup">
-    <div class="divModulesGroup">
+    <div class="divModulesGroup" id="Core">
         <div class="divGroupTitle">
             <div class="titleTable">
                 <div id="GroupTitle" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
@@ -118,6 +126,14 @@
                             <input id="Name" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Short Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="ShortName" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
                 </div>
                 <input id="IsRoot" type="hidden"/>
             </div>
@@ -129,7 +145,7 @@
     </div>
 </template>
 <template id="capacitiesGroup">
-    <div class="divCapacitiesGroup">
+    <div class="divCapacitiesGroup" id="Core">
         <div class="divGroupTitle">
             <div class="titleTable">
                 <div id="GroupTitle" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
@@ -157,6 +173,14 @@
                             <input id="Name" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Short Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="ShortName" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
                 </div>
                 <input id="IsRoot" type="hidden"/>
             </div>
@@ -168,7 +192,7 @@
     </div>
 </template>
 <template id="module">
-    <div class="divModule">
+    <div class="divModule" id="Core">
         <div class="divModuleTitle">
             <div class="titleTable">
                 <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
@@ -242,14 +266,14 @@
                         </div>
                     </div>
                 </div>
-                <input id="SecondarySalesRate" type="hidden"/>
+                <input id="SecondarySalesRate" type="hidden" value="2"/>
             </div>
         </div>
         <div id="Dependencies" class="divDependencies"></div>
     </div>
 </template>
 <template id="capacity">
-    <div class="divCapacity">
+    <div class="divCapacity" id="Core">
         <div class="divCapacityTitle">
             <div class="titleTable">
                 <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
@@ -276,6 +300,14 @@
                     </div>
                     <div class="settingsTableRow">
                         <div class="settingsTableCell settingsTitle">
+                            Short Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="ShortName" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
                             Key:
                         </div>
                         <div class="settingsTableCell settingsValue">
@@ -288,8 +320,8 @@
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <select id="Type" autocomplete="off" class="settingInput">
-                                <option vaue="1">Type 1</option>
-                                <option vaue="2">Type 2</option>
+                                <option value="1">Type 1</option>
+                                <option value="2">Type 2</option>
                             </select>
                             <!--<input id="Type" autocomplete="off" class="settingInput"/>-->
                         </div>
@@ -309,7 +341,7 @@
     </div>
 </template>
 <template id="tier">
-    <div class="divTier">
+    <div class="divTier" id="Core">
         <div class="divTierTitle">
             <div class="titleTable">
                 <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
@@ -374,6 +406,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</template>
+<template id="locker">
+    <div>
+        <div class="lockDiv" id="lockDiv">
+            <div class="animation">Loading...</div>
         </div>
     </div>
 </template>
