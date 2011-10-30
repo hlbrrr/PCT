@@ -293,8 +293,8 @@
             });
             $(this._productTitle).click(
                 function() {
-                    $(that._remove).toggle(PCT.animation);
-                    $(that._settingsPane).toggle(PCT.animation);
+                    $(that._remove).toggleClass('hidden');
+                    $(that._settingsPane).toggleClass('hidden');
                 });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
@@ -316,7 +316,7 @@
                 },
                 addModulesRoot:function(modulesGroup) {
                     if (modulesGroup) {
-                        modulesGroup.setRoot(this._modules);
+                        modulesGroup.setIsRoot(true).setRoot(this._modules);
                     } else {
                         this.addModulesRoot((new PCT.modulesGroup()).setIsRoot(true));
                     }
@@ -324,7 +324,7 @@
                 },
                 addCapacitiesRoot:function(capacitiesGroup) {
                     if (capacitiesGroup) {
-                        capacitiesGroup.setRoot(this._capacities);
+                        capacitiesGroup.setIsRoot(true).setRoot(this._capacities);
                     } else {
                         this.addCapacitiesRoot((new PCT.capacitiesGroup()).setIsRoot(true));
                     }
@@ -427,8 +427,8 @@
                 } else {
                     $(that._groupTitle).click(
                         function() {
-                            $(that._remove).toggle(PCT.animation);
-                            $(that._settingsPane).toggle(PCT.animation);
+                            $(that._remove).toggleClass('hidden');
+                            $(that._settingsPane).toggleClass('hidden');
                         });
                 }
             });
@@ -448,9 +448,6 @@
                 init:function(name, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
-                        $(this._isRoot).val('false').change();
-                    } else {
-                        $(this._isRoot).val('true').change();
                     }
                     var that = this;
                     $(this._shortName).val($('>ShortName', initialData).text());
@@ -458,7 +455,7 @@
                         that.addModule((new PCT.module()).init(this));
                     });
                     $('>Group', initialData).each(function() {
-                        that.addGroup((new PCT.modulesGroup()).init($('>Name', this).text(), $('>Modules', this)));
+                        that.addGroup((new PCT.modulesGroup()).init($('>Name', this).text(), $('>Modules', this)).setIsRoot(false));
                     });
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -564,8 +561,8 @@
             });
             $(this._moduleTitle).click(
                 function() {
-                    $(that._remove).toggle(PCT.animation);
-                    $(that._settingsPane).toggle(PCT.animation);
+                    $(that._remove).toggleClass('hidden');
+                    $(that._settingsPane).toggleClass('hidden');
                 });
             $(this._expand).click(
                 function(arg) {
@@ -658,8 +655,8 @@
             });
             $(this._dependencyTitle).click(
                 function() {
-                    $(that._remove).toggle(PCT.animation);
-                    $(that._settingsPane).toggle(PCT.animation);
+                    $(that._remove).toggleClass('hidden');
+                    $(that._settingsPane).toggleClass('hidden');
                 });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
@@ -773,8 +770,8 @@
                 } else {
                     $(that._groupTitle).click(
                         function() {
-                            $(that._remove).toggle(PCT.animation);
-                            $(that._settingsPane).toggle(PCT.animation);
+                            $(that._remove).toggleClass('hidden');
+                            $(that._settingsPane).toggleClass('hidden');
                         });
                 }
             });
@@ -794,17 +791,14 @@
                 init:function(name, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
-                        $(this._isRoot).val('false').change();
-                    } else {
-                        $(this._isRoot).val('true').change();
-                    }
+                    } 
                     var that = this;
                     $(this._shortName).val($('>ShortName', initialData).text());
                     $('>Capacity', initialData).each(function() {
                         that.addCapacity((new PCT.capacity()).init(this));
                     });
                     $('>Group', initialData).each(function() {
-                        that.addGroup((new PCT.capacitiesGroup()).init($('>Name', this).text(), $('>Capacities', this)));
+                        that.addGroup((new PCT.capacitiesGroup()).init($('>Name', this).text(), $('>Capacities', this)).setIsRoot(false));
                     });
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -910,8 +904,8 @@
             });
             $(this._capacityTitle).click(
                 function() {
-                    $(that._remove).toggle(PCT.animation);
-                    $(that._settingsPane).toggle(PCT.animation);
+                    $(that._remove).toggleClass('hidden');
+                    $(that._settingsPane).toggleClass('hidden');
                 });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
@@ -986,8 +980,8 @@
             });
             $(this._tierTitle).click(
                 function() {
-                    $(that._remove).toggle(PCT.animation);
-                    $(that._settingsPane).toggle(PCT.animation);
+                    $(that._remove).toggleClass('hidden');
+                    $(that._settingsPane).toggleClass('hidden');
                 });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
