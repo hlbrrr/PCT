@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class Configuration {
     private static Configuration ourInstance = new Configuration();
-    private String expirationFormat = "dd/MM/yyyy HH:mm:ss";
+    private String expirationFormat = "dd/MM/yyyy";
     private Map<String, Product> products = new LinkedHashMap<String, Product>();
     private ArrayList<SupportRate> supportRates = new ArrayList<SupportRate>();
     private Logger log = Logger.getInstance();
