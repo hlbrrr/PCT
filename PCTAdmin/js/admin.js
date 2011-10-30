@@ -177,20 +177,23 @@
                 }
             });
             $(this._saveConfiguration).click(function() {
+                var message = prompt("Describe configuration changes that you made", "");
+                if (message == null)
+                    return;
                 PCT.lockScreen();
                 var config = $.data($(that._core)[0], 'pct').getXML();
                 $.ajax({
                     url:'data',
                     data:{
                         action:'saveConfig',
-                        config:config
+                        config:config,
+                        message:message
                     },
-                    dataType:PCT.format,
                     success:function(data, textStatus, jqXHR) {
                         alert('Configuration saved');
                     },
                     error:function(jqXHR, textStatus, errorThrown) {
-                        PCT.initError();
+                        alert('Configuration can\'t be saved');
                     },
                     complete:function() {
                         PCT.unlockScreen();
