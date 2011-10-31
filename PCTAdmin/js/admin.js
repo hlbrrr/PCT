@@ -339,6 +339,10 @@
                 _core:$('#Core', dom).get()
             });
             var that = this;
+            $(this._products, dom).sortable({
+                revert:true,
+                handle: '.productDrag'
+            });
             $(this._addProduct).click(function() {
                 that.addProduct();
             });

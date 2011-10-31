@@ -268,11 +268,9 @@ body {
     background-color: #feb5b5;
 }
 
-.moduleDrag:hover, .capacityDrag:hover, .groupDrag:hover, .tierDrag:hover, .dependencyDrag:hover {
+.moduleDrag:hover, .capacityDrag:hover, .groupDrag:hover, .tierDrag:hover, .dependencyDrag:hover, .productDrag:hover {
     background-color: inherit !important;
     cursor: move;
-}
-.moduleDrag, .capacityDrag, .groupDrag, .tierDrag, .dependencyDrag {
 }
 
 .divSettingsPane {
