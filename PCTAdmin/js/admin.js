@@ -389,7 +389,7 @@
                             PCT.unMark($(this));
                         }
                     });
-                    $(this._expiration).val($('>Expiration', initialData).text());
+                    $(this._expiration).val($('>Expiration', initialData).text()).change();
                     var that = this;
                     $('>Products>Product', initialData).each(function() {
                         that.addProduct((new PCT.product()).init(this));
