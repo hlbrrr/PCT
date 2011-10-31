@@ -13,6 +13,15 @@
         timeout:10000,
         animation:'blind',
         format:'xml',
+        randomString:function (string_length) {
+            var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZ";
+            var randomstring = '';
+            for (var i = 0; i < string_length; i++) {
+                var rnum = Math.floor(Math.random() * chars.length);
+                randomstring += chars.substring(rnum, rnum + 1);
+            }
+            return randomstring;
+        },
         lockScreen : function() {
             if (!PCT.lockCounter) {
                 $.extend(PCT, {
@@ -741,6 +750,7 @@
                     $(that._moduleTitle).removeClass('deprecated');
                 }
             });
+            $(this._key).val(PCT.randomString(15)).change();
             $(this._moduleTitle).click(
                 function() {
                     $(that._remove).toggleClass('hidden');
@@ -765,7 +775,7 @@
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $(this._weight).val($('>Weight', initialData).text()).change();
-                    $(this._key).val($('>Key', initialData).text()).change();
+                    $(this._key).val('').val($('>Key', initialData).text()).change();
                     $(this._secondarySalesPrice).val($('>SecondarySales>Price', initialData).text()).change();
                     $(this._secondarySalesRate).val($('>SecondarySales>Rate', initialData).text()).change();
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true' ? true : false)).change();
