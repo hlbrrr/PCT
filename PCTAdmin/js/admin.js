@@ -543,9 +543,20 @@
                 _addModule:$('#AddModule', dom).get(),
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
-                _core:$('#Core', dom).get()
+                _core:$('#Core', dom).get(),
+                _drag:$('#Drag', dom).get()
             });
             var that = this;
+            $(this._modules, dom).sortable({
+                revert:true,
+                handle: '.moduleDrag',
+                connectWith: '.divModules'
+            });
+            $(this._groups, dom).sortable({
+                revert:true,
+                handle: '.groupDrag',
+                connectWith: '.divGroups'
+            });
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
                     var config = '';
@@ -608,6 +619,7 @@
             $(this._isRoot).change(function() {
                 if ($(this).val() == 'true') {
                     $(that._name).val('MR').change();
+                    $(that._drag).addClass('hidden');
                     $(that._content).addClass('hidden');
                     $(that._expand).html('Expand');
                     $(that._settings).hide();
@@ -623,7 +635,6 @@
                         });
                 }
             });
-
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
                 getHead:function() {
@@ -699,6 +710,11 @@
                 _core:$('#Core', dom).get()
             });
             var that = this;
+            $(this._dependencies, dom).sortable({
+                revert:true,
+                handle: '.dependencyDrag',
+                connectWith: '.divDependencies'
+            });
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
                     var config = '<Module>';
@@ -888,9 +904,20 @@
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
-                _core:$('#Core', dom).get()
+                _core:$('#Core', dom).get(),
+                _drag:$('#Drag', dom).get()
             });
             var that = this;
+            $(this._capacities, dom).sortable({
+                revert:true,
+                handle: '.capacityDrag',
+                connectWith: '.divCapacities'
+            });
+            $(this._groups, dom).sortable({
+                revert:true,
+                handle: '.groupDrag',
+                connectWith: '.divGroups'
+            });
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
                     var config = '';
@@ -952,6 +979,7 @@
             });
             $(this._isRoot).change(function() {
                 if ($(this).val() == 'true') {
+                    $(that._drag).addClass('hidden');
                     $(that._name).val('CR').change();
                     $(that._content).addClass('hidden');
                     $(that._expand).html('Expand');
@@ -1042,6 +1070,11 @@
                 _core:$('#Core', dom).get()
             });
             var that = this;
+            $(this._tiers, dom).sortable({
+                revert:true,
+                handle: '.tierDrag',
+                connectWith: '.divTiers'
+            });
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
                     var config = '<Capacity>';
