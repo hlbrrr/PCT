@@ -25,13 +25,16 @@
                 <div id="AddProduct" class="titleTableCell titleTableCellButton">
                     Add Product
                 </div>
+                <div id="DownloadConfiguration" class="titleTableCell titleTableCellButton">
+                    Download Current Configuration
+                </div>
                 <div class="titleTableCell titleTableCellFill">
                 </div>
                 <div class="titleTableCell titleTableCellExpText">
                     Expiration:
                 </div>
                 <div class="titleTableCell titleTableCellExpDate">
-                    <input id="Expiration"/>
+                    <input id="Expiration" class="validate" validclass="date"/>
                 </div>
             </div>
         </div>
@@ -59,7 +62,7 @@
                             Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Name" autocomplete="off" class="settingInput"/>
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -67,7 +70,7 @@
                             Short Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="ShortName" autocomplete="off" class="settingInput"/>
+                            <input id="ShortName" autocomplete="off" class="settingInput validate" validclass="mempty"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -75,7 +78,8 @@
                             Maximum Functionality Price:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="MaximumFunctionalityPrice" autocomplete="off" class="settingInput"/>
+                            <input id="MaximumFunctionalityPrice" autocomplete="off" class="settingInput validate"
+                                   validclass="summ"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -83,7 +87,8 @@
                             Minimum Price:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="MinimumPrice" autocomplete="off" class="settingInput"/>
+                            <input id="MinimumPrice" autocomplete="off" class="settingInput validate"
+                                   validclass="summ"/>
                         </div>
                     </div>
                 </div>
@@ -123,7 +128,7 @@
                             Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Name" autocomplete="off" class="settingInput"/>
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -131,7 +136,7 @@
                             Short Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="ShortName" autocomplete="off" class="settingInput"/>
+                            <input id="ShortName" autocomplete="off" class="settingInput validate" validclass="mempty"/>
                         </div>
                     </div>
                 </div>
@@ -170,7 +175,7 @@
                             Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Name" autocomplete="off" class="settingInput"/>
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -178,7 +183,7 @@
                             Short Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="ShortName" autocomplete="off" class="settingInput"/>
+                            <input id="ShortName" autocomplete="off" class="settingInput validate" validclass="mempty"/>
                         </div>
                     </div>
                 </div>
@@ -214,7 +219,7 @@
                             Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Name" autocomplete="off" class="settingInput"/>
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -222,7 +227,7 @@
                             Short Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="ShortName" autocomplete="off" class="settingInput"/>
+                            <input id="ShortName" autocomplete="off" class="settingInput validate" validclass="mempty"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -230,7 +235,8 @@
                             Key:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Key" autocomplete="off" class="settingInput"/>
+                            <input id="Key" autocomplete="off" class="settingInput validate moduleKey"
+                                   validclass="unique" unique=".moduleKey" uniqueroot=".divProductModules"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -238,7 +244,7 @@
                             Weight:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Weight" autocomplete="off" class="settingInput"/>
+                            <input id="Weight" autocomplete="off" class="settingInput validate" validclass="int"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -246,7 +252,8 @@
                             Secondary Sales Price:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="SecondarySalesPrice" autocomplete="off" class="settingInput"/>
+                            <input id="SecondarySalesPrice" autocomplete="off" class="settingInput validate"
+                                   validclass="summ mempty"/>
                         </div>
                     </div>
                     <!--<div class="settingsTableRow">
@@ -295,7 +302,7 @@
                             Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Name" autocomplete="off" class="settingInput"/>
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -303,7 +310,7 @@
                             Short Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="ShortName" autocomplete="off" class="settingInput"/>
+                            <input id="ShortName" autocomplete="off" class="settingInput validate" validclass="mempty"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -311,7 +318,8 @@
                             Key:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Key" autocomplete="off" class="settingInput"/>
+                            <input id="Key" autocomplete="off" class="settingInput validate capacityKey"
+                                   validclass="unique" unique=".capacityKey" uniqueroot=".divProductCapacities"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -357,7 +365,7 @@
                             Bound:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Bound" autocomplete="off" class="settingInput"/>
+                            <input id="Bound" autocomplete="off" class="settingInput validate" validclass="int"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -365,7 +373,7 @@
                             Price:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Price" autocomplete="off" class="settingInput"/>
+                            <input id="Price" autocomplete="off" class="settingInput validate" validclass="summ"/>
                         </div>
                     </div>
                 </div>
@@ -390,7 +398,7 @@
                             Module Key:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Key" autocomplete="off" class="settingInput"/>
+                            <input id="Key" autocomplete="off" class="settingInput validate"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">

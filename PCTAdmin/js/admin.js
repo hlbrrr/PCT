@@ -48,9 +48,43 @@
             $.extend(this, {
                 dom:$('<div></div>').append($(template).contents()),
                 getCopy:function() {
-                    return this.dom.contents().clone();
+                    var retDom = this.dom.clone();
+                    $('input.validate', retDom).bind('error',
+                        function() {
+                            $(this).addClass('error');
+                            $(this).keypress(function(e) {
+                                var keycode;
+                                if (window.event)
+                                    keycode = window.event.keyCode;
+                                else if (e)
+                                    keycode = e.which;
+                                else
+                                    return true;
+                                if (keycode != 13) {
+                                    $(this).trigger('unError');
+                                }
+                            });
+                        }).bind('unError', function() {
+                            $(this).removeClass('error');
+                        });
+
+                    $('input.validate', retDom).blur(
+                        function(e) {
+                            if (!PCT.validate(this)) {
+                                PCT.mark(this);
+                                e.stopImmediatePropagation();
+                            }
+                        }).change(function(e) {
+                            if (!PCT.validate(this)) {
+                                PCT.mark(this);
+                                e.stopImmediatePropagation();
+                            }
+                        });
+                    $('input.validate', retDom).change();
+                    return retDom.contents();
                 }
             });
+
         },
         addTemplate:function(template) {
             if (!this.templates) {
@@ -65,6 +99,131 @@
             if (this.templates && this.templates[id]) {
                 return this.templates[id].getCopy();
             }
+        },
+        mark : function(item) {
+            $(item).trigger('error');
+            retValue = false;
+        },
+        unMark : function(item) {
+            $(item).trigger('unError');
+        },
+        isDate:function  (day, month, year) {
+            try {
+                day = Number(day);
+                month = Number(month);
+                year = Number(year);
+            } catch(e) {
+                return false;
+            }
+            month--;
+            var test = new Date(year, month, day);
+            if ((test.getFullYear() == year) &&
+                (month == test.getMonth()) &&
+                (day == test.getDate()))
+                return true;
+            else
+                return false;
+        },
+        validate:function(obj) {
+            var elem = $(obj);
+            PCT.unMark(elem)
+            var validclass = elem.attr('validclass') ? elem.attr('validclass') : '';
+
+            if (validclass.indexOf('mempty') != -1 && elem.val() == '') {
+                return true;
+            }
+            if (validclass.indexOf('mempty') == -1 && elem.val() == '') {
+                return false;
+            }
+            if (elem.val().indexOf('>') != -1 || elem.val().indexOf('<') != -1 || elem.val().indexOf('&') != -1) {
+                return false;
+            }
+            if (validclass.indexOf('unique') != -1) {
+                var unique = elem.attr('unique');
+                var uniqueroot = elem.attr('uniqueroot');
+                var elVal = elem.val();
+                var counter = 0;
+                $(unique, elem.parents(uniqueroot)).each(function() {
+                    if ($(this).val() == elVal) {
+                        counter++;
+                    }
+                });
+                return counter < 2;
+            }
+            if (validclass.indexOf('summ') != -1) {
+                if (isNaN(elem.val())) {
+                    return false;
+                } else {
+                    var minval = elem.attr('minval');
+                    var maxval = elem.attr('maxval');
+                    var elVal = Number(elem.val());
+                    var bl = elVal <= 0;
+                    if (minval && minval != '' && !isNaN(minval)) {
+                        bl = elVal < minval;
+                    }
+                    if (maxval && maxval != '' && !isNaN(maxval)) {
+                        bl = bl || elVal > maxval;
+                    }
+                    if (bl) {
+                        return false;
+                    }
+                }
+            }
+            if (validclass.indexOf('int') != -1) {
+                if (isNaN(elem.val())) {
+                    return false;
+                } else {
+                    var maxval = elem.attr('maxval');
+                    var minval = elem.attr('minval');
+                    var elVal = Number(elem.val());
+                    var bl = false;
+                    if (minval && minval != '' && !isNaN(minval)) {
+                        bl = elVal < minval;
+                    }
+                    if (maxval && maxval != '' && !isNaN(maxval)) {
+                        bl = bl || (elVal > maxval);
+                    }
+                    if (bl) {
+                        return false;
+                    }
+                }
+            }
+            if (validclass.indexOf('date') != -1) {
+                var bl = false;
+                var elVal = elem.val();
+                var maxval = elem.datepicker('option', 'maxDate');
+                var minval = elem.datepicker('option', 'minDate');
+
+                var dateArr = elVal.split('/');
+                if (dateArr.length == 3 && PCT.isDate(dateArr[0], dateArr[1], dateArr[2])) {
+                    var dateTest = new Date(dateArr[2], Number(dateArr[1]) - 1, dateArr[0]);
+                    if (maxval) {
+                        maxval.setHours(0);
+                        maxval.setMinutes(0);
+                        maxval.setSeconds(0);
+                        maxval.setMilliseconds(0);
+                        if (dateTest.getTime() > maxval.getTime()) {
+                            bl = true;
+                        }
+                    }
+                    if (minval) {
+                        minval.setHours(0);
+                        minval.setMinutes(0);
+                        minval.setSeconds(0);
+                        minval.setMilliseconds(0);
+                        if (dateTest.getTime() < minval.getTime()) {
+                            bl = true;
+                        }
+                    }
+                } else {
+                    bl = true;
+                }
+                if (bl) {
+                    return false;
+                }
+            }
+
+            return true;
         }
     });
     $.extend(PCT, {
@@ -126,6 +285,17 @@
         },
         initError:function() {
             alert('Initialization failed');
+        },
+        sendData:function (url, data, method) {
+            if (url && data) {
+                var inputs = '';
+                $.each(data.split('&'), function() {
+                    var pair = this.split('=');
+                    inputs += '<input type="hidden" name="' + pair[0] + '" value="' + pair[1] + '" />';
+                });
+                $('<form action="' + url + '" method="' + (method || 'post') + '">' + inputs + '</form>')
+                    .appendTo('body').submit().remove();
+            }
         }
     });
 
@@ -156,6 +326,7 @@
                 _products:$('#Products', dom).get(),
                 _addProduct:$('#AddProduct', dom).get(),
                 _saveConfiguration:$('#SaveConfiguration', dom).get(),
+                _downloadConfiguration:$('#DownloadConfiguration', dom).get(),
                 _core:$('#Core', dom).get()
             });
             var that = this;
@@ -176,7 +347,14 @@
                     return config;
                 }
             });
+            $(this._downloadConfiguration).click(function() {
+                PCT.sendData('/data', 'downloadConfig');
+            });
             $(this._saveConfiguration).click(function() {
+                if ($('.error', this._products).length > 0) {
+                    alert('There are some errors in configuration. Fix them first, then try again.');
+                    return;
+                }
                 var message = prompt("Describe configuration changes that you made", "");
                 if (message == null)
                     return;
@@ -206,7 +384,10 @@
                     $(this._expiration).datepicker({
                         dateFormat:'dd/mm/yy',
                         minDate:new Date(),
-                        showAnim: PCT.animation
+                        showAnim: PCT.animation,
+                        onSelect:function() {
+                            PCT.unMark($(this));
+                        }
                     });
                     $(this._expiration).val($('>Expiration', initialData).text());
                     var that = this;
@@ -303,9 +484,9 @@
                 },
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
-                    $(this._shortName).val($('>ShortName', initialData).text());
-                    $(this._maximumFunctionalityPrice).val($('>MaximumFunctionalityPrice', initialData).text());
-                    $(this._minimumPrice).val($('>MinimumPrice', initialData).text());
+                    $(this._shortName).val($('>ShortName', initialData).text()).change();
+                    $(this._maximumFunctionalityPrice).val($('>MaximumFunctionalityPrice', initialData).text()).change();
+                    $(this._minimumPrice).val($('>MinimumPrice', initialData).text()).change();
                     this.addModulesRoot((new PCT.modulesGroup()).init(null, $('>Modules', initialData)));
                     this.addCapacitiesRoot((new PCT.capacitiesGroup()).init(null, $('>Capacities', initialData)));
                     $(this._settingsPane).addClass('hidden');
@@ -417,6 +598,7 @@
             });
             $(this._isRoot).change(function() {
                 if ($(this).val() == 'true') {
+                    $(that._name).val('MR').change();
                     $(that._content).addClass('hidden');
                     $(that._expand).html('Expand');
                     $(that._settings).hide();
@@ -450,7 +632,7 @@
                         $(this._name).val(name).change();
                     }
                     var that = this;
-                    $(this._shortName).val($('>ShortName', initialData).text());
+                    $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $('>Module', initialData).each(function() {
                         that.addModule((new PCT.module()).init(this));
                     });
@@ -581,11 +763,11 @@
                 },
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
-                    $(this._shortName).val($('>ShortName', initialData).text());
-                    $(this._weight).val($('>Weight', initialData).text());
-                    $(this._key).val($('>Key', initialData).text());
-                    $(this._secondarySalesPrice).val($('>SecondarySales>Price', initialData).text());
-                    $(this._secondarySalesRate).val($('>SecondarySales>Rate', initialData).text());
+                    $(this._shortName).val($('>ShortName', initialData).text()).change();
+                    $(this._weight).val($('>Weight', initialData).text()).change();
+                    $(this._key).val($('>Key', initialData).text()).change();
+                    $(this._secondarySalesPrice).val($('>SecondarySales>Price', initialData).text()).change();
+                    $(this._secondarySalesRate).val($('>SecondarySales>Rate', initialData).text()).change();
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true' ? true : false)).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._dependencies).addClass('hidden');
@@ -760,6 +942,7 @@
             });
             $(this._isRoot).change(function() {
                 if ($(this).val() == 'true') {
+                    $(that._name).val('CR').change();
                     $(that._content).addClass('hidden');
                     $(that._expand).html('Expand');
                     $(that._settings).hide();
@@ -791,9 +974,9 @@
                 init:function(name, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
-                    } 
+                    }
                     var that = this;
-                    $(this._shortName).val($('>ShortName', initialData).text());
+                    $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $('>Capacity', initialData).each(function() {
                         that.addCapacity((new PCT.capacity()).init(this));
                     });
@@ -914,9 +1097,9 @@
                 },
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
-                    $(this._shortName).val($('>ShortName', initialData).text());
+                    $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $(this._type).val($('>Type', initialData).text());
-                    $(this._key).val($('>Key', initialData).text());
+                    $(this._key).val($('>Key', initialData).text()).change();
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true' ? true : false)).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._tiers).addClass('hidden');
