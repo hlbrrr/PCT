@@ -348,7 +348,7 @@
                 }
             });
             $(this._downloadConfiguration).click(function() {
-                PCT.sendData('/data', 'downloadConfig');
+                PCT.sendData('/data', 'action=downloadConfig');
             });
             $(this._saveConfiguration).click(function() {
                 if ($('.error', this._products).length > 0) {
