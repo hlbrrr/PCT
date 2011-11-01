@@ -404,6 +404,6 @@ input.validate.error {
     background-color: red;
 }
 
-.divModulesGroup, .divModule, .divCapacitiesGroups, .divCapacity, .divTier, .divDependency {
+.divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divTier, .divDependency {
     background-color: #fff;
 }
