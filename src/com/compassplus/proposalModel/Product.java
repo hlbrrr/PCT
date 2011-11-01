@@ -13,6 +13,7 @@ import org.apache.poi.ss.util.CellUtil;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,7 @@ public class Product {
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
     private CommonUtils cut = CommonUtils.getInstance();
+    private static DecimalFormat df = new DecimalFormat("#,##0");
 
     public Product(Node initialData, Map<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
         init(initialData, allowedProducts);
@@ -264,8 +266,10 @@ public class Product {
         }
 
         for (ModulesGroup mg : modulesGroup.getGroups()) {
-            sb.append(getSelectedModulesString(mg, pad + "  "));
-            sb.append(", ");
+            String tres = getSelectedModulesString(mg, pad + "  ");
+            if (tres.length() > 0) {
+                sb.append(tres).append(", ");
+            }
         }
 
         if (sb.length() > 0) {
@@ -308,15 +312,17 @@ public class Product {
                 //sb.append(pad);
                 //sb.append("  -");
                 sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
-                sb.append("=").append(cc.getValue());
+                sb.append("=").append(df.format(cc.getValue()));
                 sb.append(", ");
                 //sb.append("\n");
             }
         }
 
         for (CapacitiesGroup cg : capacitiesGroup.getGroups()) {
-            sb.append(getSelectedCapacitiesString(cg, pad + "  "));
-            sb.append(", ");
+            String tres = getSelectedCapacitiesString(cg, pad + "  ");
+            if (tres.length() > 0) {
+                sb.append(tres).append(", ");
+            }
         }
 
         if (sb.length() > 0) {
