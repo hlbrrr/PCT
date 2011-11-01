@@ -271,6 +271,7 @@
             PCT.lockScreen();
             $.ajax({
                 url:'data',
+                type:'POST',
                 data:{
                     action:'getConfig',
                     format:PCT.format
@@ -280,7 +281,18 @@
                     PCT.tryToInit(data, root);
                 },
                 error:function(jqXHR, textStatus, errorThrown) {
-                    PCT.initError();
+                    alert('Initialization failed: ' + textStatus);
+                },
+                statusCode: {
+                    551: function() {
+                        alert('File reading error.');
+                    },
+                    552: function() {
+                        alert('Config validation error.');
+                    },
+                    553: function() {
+                        alert('Unknown data format.');
+                    }
                 },
                 complete:function() {
                     PCT.unlockScreen();
@@ -291,9 +303,6 @@
             $.extend(PCT, {
                 currentModel:(new PCT.model()).init($('root', initialData)).setRoot(root)
             });
-        },
-        initError:function() {
-            alert('Initialization failed');
         },
         sendData:function (url, data, method) {
             if (url && data) {
@@ -375,6 +384,7 @@
                 var config = $.data($(that._core)[0], 'pct').getXML();
                 $.ajax({
                     url:'data',
+                    type:'POST',
                     data:{
                         action:'saveConfig',
                         config:config,
@@ -384,7 +394,15 @@
                         alert('Configuration saved');
                     },
                     error:function(jqXHR, textStatus, errorThrown) {
-                        alert('Configuration can\'t be saved');
+                        alert('Configuration can\'t be saved: ' + textStatus);
+                    },
+                    statusCode: {
+                        551: function() {
+                            alert('File writing error.');
+                        },
+                        552: function() {
+                            alert('Config validation error.');
+                        }
                     },
                     complete:function() {
                         PCT.unlockScreen();
@@ -1108,6 +1126,7 @@
             $(this._name).change(function() {
                 $(that._capacityTitle).html($(this).val());
             });
+            $(this._key).val(PCT.randomString(15)).change();
             $(this._expand).click(
                 function(arg) {
                     $(that._tiers).toggle(PCT.animation, function() {
@@ -1146,7 +1165,7 @@
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $(this._type).val($('>Type', initialData).text());
-                    $(this._key).val($('>Key', initialData).text()).change();
+                    $(this._key).val('').val($('>Key', initialData).text()).change();
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true' ? true : false)).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._tiers).addClass('hidden');
