@@ -135,103 +135,104 @@
         },
         validate:function(obj) {
             var elem = $(obj);
-            PCT.unMark(elem)
-            var validclass = elem.attr('validclass') ? elem.attr('validclass') : '';
+            PCT.unMark(elem);
+            if (elem.hasClass('validate')) {
+                var validclass = elem.attr('validclass') ? elem.attr('validclass') : '';
 
-            if (validclass.indexOf('mempty') != -1 && elem.val() == '') {
-                return true;
-            }
-            if (validclass.indexOf('mempty') == -1 && elem.val() == '') {
-                return false;
-            }
-            if (elem.val().indexOf('>') != -1 || elem.val().indexOf('<') != -1 || elem.val().indexOf('&') != -1) {
-                return false;
-            }
-            if (validclass.indexOf('unique') != -1) {
-                var unique = elem.attr('unique');
-                var uniqueroot = elem.attr('uniqueroot');
-                var elVal = elem.val();
-                var counter = 0;
-                $(unique, elem.parents(uniqueroot)).each(function() {
-                    if ($(this).val() == elVal) {
-                        counter++;
-                    }
-                });
-                return counter < 2;
-            }
-            if (validclass.indexOf('summ') != -1) {
-                if (isNaN(elem.val())) {
+                if (validclass.indexOf('mempty') != -1 && elem.val() == '') {
+                    return true;
+                }
+                if (validclass.indexOf('mempty') == -1 && elem.val() == '') {
                     return false;
-                } else {
-                    var minval = elem.attr('minval');
-                    var maxval = elem.attr('maxval');
-                    var elVal = Number(elem.val());
-                    var bl = elVal <= 0;
-                    if (minval && minval != '' && !isNaN(minval)) {
-                        bl = elVal < minval;
-                    }
-                    if (maxval && maxval != '' && !isNaN(maxval)) {
-                        bl = bl || elVal > maxval;
-                    }
-                    if (bl) {
+                }
+                if (elem.val().indexOf('>') != -1 || elem.val().indexOf('<') != -1 || elem.val().indexOf('&') != -1) {
+                    return false;
+                }
+                if (validclass.indexOf('unique') != -1) {
+                    var unique = elem.attr('unique');
+                    var uniqueroot = elem.attr('uniqueroot');
+                    var elVal = elem.val();
+                    var counter = 0;
+                    $(unique, elem.parents(uniqueroot)).each(function() {
+                        if ($(this).val() == elVal) {
+                            counter++;
+                        }
+                    });
+                    return counter < 2;
+                }
+                if (validclass.indexOf('summ') != -1) {
+                    if (isNaN(elem.val())) {
                         return false;
+                    } else {
+                        var minval = elem.attr('minval');
+                        var maxval = elem.attr('maxval');
+                        var elVal = Number(elem.val());
+                        var bl = elVal <= 0;
+                        if (minval && minval != '' && !isNaN(minval)) {
+                            bl = elVal < minval;
+                        }
+                        if (maxval && maxval != '' && !isNaN(maxval)) {
+                            bl = bl || elVal > maxval;
+                        }
+                        if (bl) {
+                            return false;
+                        }
                     }
                 }
-            }
-            if (validclass.indexOf('int') != -1) {
-                if (isNaN(elem.val())) {
-                    return false;
-                } else {
-                    var maxval = elem.attr('maxval');
-                    var minval = elem.attr('minval');
-                    var elVal = Number(elem.val());
+                if (validclass.indexOf('int') != -1) {
+                    if (isNaN(elem.val())) {
+                        return false;
+                    } else {
+                        var maxval = elem.attr('maxval');
+                        var minval = elem.attr('minval');
+                        var elVal = Number(elem.val());
+                        var bl = false;
+                        if (minval && minval != '' && !isNaN(minval)) {
+                            bl = elVal < minval;
+                        }
+                        if (maxval && maxval != '' && !isNaN(maxval)) {
+                            bl = bl || (elVal > maxval);
+                        }
+                        if (bl) {
+                            return false;
+                        }
+                    }
+                }
+                if (validclass.indexOf('date') != -1) {
                     var bl = false;
-                    if (minval && minval != '' && !isNaN(minval)) {
-                        bl = elVal < minval;
-                    }
-                    if (maxval && maxval != '' && !isNaN(maxval)) {
-                        bl = bl || (elVal > maxval);
+                    var elVal = elem.val();
+                    var maxval = elem.datepicker('option', 'maxDate');
+                    var minval = elem.datepicker('option', 'minDate');
+
+                    var dateArr = elVal.split('/');
+                    if (dateArr.length == 3 && PCT.isDate(dateArr[0], dateArr[1], dateArr[2])) {
+                        var dateTest = new Date(dateArr[2], Number(dateArr[1]) - 1, dateArr[0]);
+                        if (maxval) {
+                            maxval.setHours(0);
+                            maxval.setMinutes(0);
+                            maxval.setSeconds(0);
+                            maxval.setMilliseconds(0);
+                            if (dateTest.getTime() > maxval.getTime()) {
+                                bl = true;
+                            }
+                        }
+                        if (minval) {
+                            minval.setHours(0);
+                            minval.setMinutes(0);
+                            minval.setSeconds(0);
+                            minval.setMilliseconds(0);
+                            if (dateTest.getTime() < minval.getTime()) {
+                                bl = true;
+                            }
+                        }
+                    } else {
+                        bl = true;
                     }
                     if (bl) {
                         return false;
                     }
                 }
             }
-            if (validclass.indexOf('date') != -1) {
-                var bl = false;
-                var elVal = elem.val();
-                var maxval = elem.datepicker('option', 'maxDate');
-                var minval = elem.datepicker('option', 'minDate');
-
-                var dateArr = elVal.split('/');
-                if (dateArr.length == 3 && PCT.isDate(dateArr[0], dateArr[1], dateArr[2])) {
-                    var dateTest = new Date(dateArr[2], Number(dateArr[1]) - 1, dateArr[0]);
-                    if (maxval) {
-                        maxval.setHours(0);
-                        maxval.setMinutes(0);
-                        maxval.setSeconds(0);
-                        maxval.setMilliseconds(0);
-                        if (dateTest.getTime() > maxval.getTime()) {
-                            bl = true;
-                        }
-                    }
-                    if (minval) {
-                        minval.setHours(0);
-                        minval.setMinutes(0);
-                        minval.setSeconds(0);
-                        minval.setMilliseconds(0);
-                        if (dateTest.getTime() < minval.getTime()) {
-                            bl = true;
-                        }
-                    }
-                } else {
-                    bl = true;
-                }
-                if (bl) {
-                    return false;
-                }
-            }
-
             return true;
         }
     });
@@ -336,7 +337,7 @@
     $.extend(PCT, {
         model:function(dom) {
             if (!dom) {
-                dom = PCT.getTemplate("model");
+                dom = PCT.getTemplate('model');
             }
             dom = $('<div></div>').append(dom);
             $.extend(this, {
@@ -441,7 +442,7 @@
         },
         product:function(dom) {
             if (!dom) {
-                dom = PCT.getTemplate("product");
+                dom = PCT.getTemplate('product');
             }
             dom = $('<div></div>').append(dom);
             $.extend(this, {
@@ -546,7 +547,7 @@
         },
         modulesGroup:function(dom) {
             if (!dom) {
-                dom = PCT.getTemplate("modulesGroup");
+                dom = PCT.getTemplate('modulesGroup');
             }
             dom = $('<div></div>').append(dom);
             $.extend(this, {
@@ -709,7 +710,7 @@
         },
         module:function(dom) {
             if (!dom) {
-                dom = PCT.getTemplate("module");
+                dom = PCT.getTemplate('module');
             }
             dom = $('<div></div>').append(dom);
             $.extend(this, {
@@ -757,6 +758,10 @@
                     $(that._dependencies).children().each(function() {
                         if ($(this).hasClass('excludeDependency'))
                             config += '<Exclude>' + $.data($(this)[0], 'pct').getXML() + '</Exclude>';
+                    });
+                    $(that._dependencies).children().each(function() {
+                        if ($(this).hasClass('requireCapacityDependency'))
+                            config += '<RequireCapacity' + $.data($(this)[0], 'pct').getAttributesString() + '>' + $.data($(this)[0], 'pct').getXML() + '</RequireCapacity>';
                     });
                     config += '</Dependencies>';
                     config += '</Module>';
@@ -816,7 +821,7 @@
                     $(this._key).val('').val($('>Key', initialData).text()).change();
                     $(this._secondarySalesPrice).val($('>SecondarySales>Price', initialData).text()).change();
                     $(this._secondarySalesRate).val($('>SecondarySales>Rate', initialData).text()).change();
-                    $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true' ? true : false)).change();
+                    $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true')).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._dependencies).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -827,6 +832,9 @@
                     });
                     $('>Dependencies>Exclude', initialData).each(function() {
                         that.addDependency((new PCT.dependency()).setType('exclude').init($(this).text()));
+                    });
+                    $('>Dependencies>RequireCapacity', initialData).each(function() {
+                        that.addDependency((new PCT.dependency()).setType('capacity').setValue($(this).attr('value')).setIncremental($(this).attr('incremental') == 'true').setFreeOfCharge($(this).attr('freeofcharge') == 'true').init($(this).text()));
                     });
                     return this;
                 },
@@ -844,13 +852,16 @@
         },
         dependency:function(dom) {
             if (!dom) {
-                dom = PCT.getTemplate("dependency");
+                dom = PCT.getTemplate('dependency');
             }
             dom = $('<div></div>').append(dom);
             $.extend(this, {
                 _head:$(dom).children().first().get(),
                 _body:$(dom).contents(),
                 _key:$('#Key', dom).get(),
+                _value:$('#Value', dom).get(),
+                _incremental:$('#Incremental', dom).get(),
+                _freeOfCharge:$('#FreeOfCharge', dom).get(),
                 _dependencyBody:$('#DependencyBody', dom).get(),
                 _dependencyTitle:$('#Title', dom).get(),
                 _settings:$('#Settings', dom).get(),
@@ -863,6 +874,24 @@
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
                     return $(that._key).val();
+                },
+                getAttributesString:function() {
+                    var rets = '';
+                    rets += ' value="' + $(that._value).val() + '"';
+                    if ($(that._incremental).prop('checked')) {
+                        rets += ' incremental="true"';
+                        if ($(that._freeOfCharge).prop('checked')) {
+                            rets += ' freeofcharge="true"';
+                        }
+                    }
+                    return rets;
+                }
+            });
+            $(this._incremental).change(function() {
+                if ($(this).prop('checked')) {
+                    $(that._dependencyBody).addClass('incremental');
+                } else {
+                    $(that._dependencyBody).removeClass('incremental');
                 }
             });
             $(this._remove).click(
@@ -877,10 +906,16 @@
             $(this._type).change(function() {
                 if ($(this).val() == 'require') {
                     $(that._dependencyBody).addClass('requireDependency');
-                    $(that._dependencyBody).removeClass('excludeDependency');
-                } else {
+                    $(that._dependencyBody).removeClass('excludeDependency').removeClass('requireCapacityDependency');
+                    $(that._value).removeClass('validate').change();
+                } else if ($(this).val() == 'exclude') {
                     $(that._dependencyBody).addClass('excludeDependency');
-                    $(that._dependencyBody).removeClass('requireDependency');
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency');
+                    $(that._value).removeClass('validate').change();
+                } else if ($(this).val() == 'capacity') {
+                    $(that._dependencyBody).addClass('requireCapacityDependency');
+                    $(that._value).addClass('validate').change();
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('excludeDependency');
                 }
             });
             $(this._dependencyTitle).click(
@@ -902,12 +937,24 @@
                 setType:function(type) {
                     $(this._type).val(type).change();
                     return this;
+                },
+                setValue:function(value) {
+                    $(this._value).val(value).change();
+                    return this;
+                },
+                setIncremental:function(incremental) {
+                    $(this._incremental).prop('checked', incremental).change();
+                    return this;
+                },
+                setFreeOfCharge:function(freeOfCharge) {
+                    $(this._freeOfCharge).prop('checked', freeOfCharge).change();
+                    return this;
                 }
             });
         },
         capacitiesGroup:function(dom) {
             if (!dom) {
-                dom = PCT.getTemplate("capacitiesGroup");
+                dom = PCT.getTemplate('capacitiesGroup');
             }
             dom = $('<div></div>').append(dom);
             $.extend(this, {
@@ -1071,7 +1118,7 @@
         },
         capacity:function(dom) {
             if (!dom) {
-                dom = PCT.getTemplate("capacity");
+                dom = PCT.getTemplate('capacity');
             }
             dom = $('<div></div>').append(dom);
             $.extend(this, {
@@ -1166,7 +1213,7 @@
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $(this._type).val($('>Type', initialData).text());
                     $(this._key).val('').val($('>Key', initialData).text()).change();
-                    $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true' ? true : false)).change();
+                    $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true')).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._tiers).addClass('hidden');
                     $(this._expand).html('Expand');
@@ -1191,7 +1238,7 @@
         },
         tier:function(dom) {
             if (!dom) {
-                dom = PCT.getTemplate("tier");
+                dom = PCT.getTemplate('tier');
             }
             dom = $('<div></div>').append(dom);
             $.extend(this, {

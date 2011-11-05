@@ -416,7 +416,7 @@
                 <div class="settingsTable">
                     <div class="settingsTableRow">
                         <div class="settingsTableCell settingsTitle">
-                            Module Key:
+                            Key:
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <input id="Key" autocomplete="off" class="settingInput validate"/>
@@ -428,9 +428,34 @@
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <select id="Type" autocomplete="off" class="settingInput">
-                                <option value="require">Require</option>
-                                <option value="exclude">Exclude</option>
+                                <option value="require">Require Module</option>
+                                <option value="exclude">Exclude Module</option>
+                                <option value="capacity">Require Capacity</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow hidden" id="divValue">
+                        <div class="settingsTableCell settingsTitle">
+                            Value:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Value" autocomplete="off" class="settingInput validate" validclass="int"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow hidden" id="divIncremental">
+                        <div class="settingsTableCell settingsTitle">
+                            Incremental:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="Incremental" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow hidden" id="divFreeOfCharge">
+                        <div class="settingsTableCell settingsTitle">
+                            Free Of Charge:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="FreeOfCharge" autocomplete="off" type="checkbox"/>
                         </div>
                     </div>
                 </div>

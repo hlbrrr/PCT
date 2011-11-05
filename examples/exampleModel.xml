@@ -125,6 +125,7 @@
                                     <Dependencies>
                                         <Require>Windows</Require>
                                         <Exclude>Direct Visa Key</Exclude>
+                                        <RequireCapacity value="" incremental="" freeofcharge=""/>
                                     </Dependencies>
                                     <Key>Direct MC Key</Key>
                                     <Name>Direct Interface</Name>

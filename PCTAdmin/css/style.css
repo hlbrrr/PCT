@@ -152,6 +152,10 @@ body {
     border-color: #62d53d;
 }
 
+.divDependency.requireCapacityDependency {
+    border-color: #e85ee8;
+}
+
 .divDependency.excludeDependency {
     border-color: #eb5959;
 }
@@ -181,6 +185,10 @@ body {
 
 .divDependency.requireDependency .divDependencyTitle {
     background-color: #80fe56;
+}
+
+.divDependency.requireCapacityDependency .divDependencyTitle {
+    background-color: #f282f2;
 }
 
 .divDependency.excludeDependency .divDependencyTitle {
@@ -262,6 +270,10 @@ body {
 
 .divDependency.requireDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #b8fea1;
+}
+
+.divDependency.requireCapacityDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #ee9cee;
 }
 
 .divDependency.excludeDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
@@ -406,4 +418,16 @@ input.validate.error {
 
 .divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divTier, .divDependency {
     background-color: #fff;
+}
+
+.divDependency.requireCapacityDependency #divValue {
+    display: table-row !important;
+}
+
+.divDependency.requireCapacityDependency #divIncremental {
+    display: table-row !important;
+}
+
+.divDependency.requireCapacityDependency.incremental #divFreeOfCharge {
+    display: table-row !important;
 }
