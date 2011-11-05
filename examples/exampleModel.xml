@@ -11,6 +11,7 @@
                     <Modules>
                         <Module>
                             <Dependencies>
+                                <RequireCapacity value="1" incremental="" freeofcharge="">Multi-Purpose Key</RequireCapacity>
                                 <Exclude>Linux</Exclude>
                                 <Exclude>AIX</Exclude>
                             </Dependencies>
@@ -125,7 +126,6 @@
                                     <Dependencies>
                                         <Require>Windows</Require>
                                         <Exclude>Direct Visa Key</Exclude>
-                                        <RequireCapacity value="" incremental="" freeofcharge=""/>
                                     </Dependencies>
                                     <Key>Direct MC Key</Key>
                                     <Name>Direct Interface</Name>

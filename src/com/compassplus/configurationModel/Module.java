@@ -1,15 +1,14 @@
 package com.compassplus.configurationModel;
 
 import com.compassplus.exception.PCTDataFormatException;
-import com.compassplus.proposalModel.*;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,6 +26,7 @@ public class Module {
     private Double secondarySalesPrice;
     private ArrayList<String> requireModules = new ArrayList<String>(0);
     private ArrayList<String> excludeModules = new ArrayList<String>(0);
+    private HashMap<String, RequireCapacity> requireCapacities = new HashMap<String, RequireCapacity>(0);
     private Double secondarySalesRate;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -55,6 +55,7 @@ public class Module {
             this.setWeight(xut.getNode("Weight", initialData));
             this.setRequireModules(xut.getNodes("Dependencies/Require", initialData));
             this.setExcludeModules(xut.getNodes("Dependencies/Exclude", initialData));
+            this.setRequireCapacities(xut.getNodes("Dependencies/RequireCapacity", initialData));
 
             try {
                 this.setSecondarySalesPrice(xut.getNode("SecondarySales/Price", initialData));
@@ -125,12 +126,33 @@ public class Module {
         }
     }
 
+    private void setRequireCapacities(NodeList requireCapacities) {
+        this.getRequireCapacities().clear();
+        if (requireCapacities.getLength() > 0) {
+
+            log.info("Found " + requireCapacities.getLength() + " \"require\" capacity(ies)");
+            for (int i = 0; i < requireCapacities.getLength(); i++) {
+                try {
+                    RequireCapacity tmpRC = new RequireCapacity(requireCapacities.item(i));
+                    this.getRequireCapacities().put(tmpRC.getKey(), tmpRC);
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getRequireCapacities().size() + " \"require\" capacity(ies)");
+        }
+    }
+
     public ArrayList<String> getRequireModules() {
         return requireModules;
     }
 
     public ArrayList<String> getExcludeModules() {
         return excludeModules;
+    }
+
+    public HashMap<String, RequireCapacity> getRequireCapacities() {
+        return requireCapacities;
     }
 
     public String getName() {
