@@ -312,7 +312,7 @@ public class Product {
                 //sb.append(pad);
                 //sb.append("  -");
                 sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
-                sb.append("=").append(df.format(cc.getValue()));
+                sb.append("=").append(df.format(cc.getVal()));
                 sb.append(", ");
                 //sb.append("\n");
             }
@@ -899,7 +899,7 @@ public class Product {
 
                 if (this.getCapacities().containsKey(key)) {
                     Capacity cc = this.getCapacities().get(key);
-                    Integer desiredCapacity = cc.getValue();
+                    Integer desiredCapacity = cc.getVal();
 
                     Cell c1 = row.createCell(1);
                     c1.setCellStyle(cs2);

@@ -1,9 +1,6 @@
 package com.compassplus.gui;
 
-import com.compassplus.configurationModel.CapacitiesGroup;
-import com.compassplus.configurationModel.Capacity;
-import com.compassplus.configurationModel.Module;
-import com.compassplus.configurationModel.ModulesGroup;
+import com.compassplus.configurationModel.*;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.proposalModel.Product;
 
@@ -30,6 +27,7 @@ public class ProductForm {
     private Product product;
     private JPanel mainPanel;
     private JCheckBox primaryCheckBox;
+    private Map<String, CapacityJSpinner> spinners = new HashMap<String, CapacityJSpinner>();
     private Map<String, ModuleJCheckbox> checkBoxes = new HashMap<String, ModuleJCheckbox>();
     private PCTChangedListener priceChanged;
 
@@ -44,6 +42,10 @@ public class ProductForm {
 
     private Map<String, ModuleJCheckbox> getCheckBoxes() {
         return checkBoxes;
+    }
+
+    private Map<String, CapacityJSpinner> getSpinners() {
+        return spinners;
     }
 
     public void reloadProductPrice() {
@@ -138,7 +140,7 @@ public class ProductForm {
             Module m = modulesGroup.getModules().get(key);
             if (!m.isDeprecated() || getProduct().getModules().containsKey(key)) {
                 final ModuleJCheckbox mc = new ModuleJCheckbox(null, getProduct().getModules().containsKey(key), key);
-                checkBoxes.put(key, mc);
+                getCheckBoxes().put(key, mc);
                 mc.addItemListener(new ItemListener() {
                     public void itemStateChanged(ItemEvent ev) {
                         if (ev.getSource() == mc) {
@@ -214,6 +216,16 @@ public class ProductForm {
                                                         for (String key : requireKeys) {
                                                             if (!key.equals(src.getKey())) {
                                                                 getProduct().addModule(getProduct().getProduct().getModules().get(key), key);
+                                                                for (RequireCapacity rc : getProduct().getProduct().getModules().get(key).getRequireCapacities().values()) {
+                                                                    if (rc.isIncremental()) {
+                                                                        getSpinners().get(rc.getKey()).addIncr(rc.getValue());
+                                                                        if (rc.isFreeOfCharge()) {
+                                                                            getSpinners().get(rc.getKey()).addFoc(rc.getValue());
+                                                                        }
+                                                                    } else {
+                                                                        getSpinners().get(rc.getKey()).addMin(rc.getValue());
+                                                                    }
+                                                                }
                                                                 getCheckBoxes().get(key).setSelected(true, true);
                                                             }
                                                         }
@@ -225,6 +237,16 @@ public class ProductForm {
                                             }
                                         }
                                         getProduct().addModule(getProduct().getProduct().getModules().get(src.getKey()), src.getKey());
+                                        for (RequireCapacity rc : getProduct().getProduct().getModules().get(src.getKey()).getRequireCapacities().values()) {
+                                            if (rc.isIncremental()) {
+                                                getSpinners().get(rc.getKey()).addIncr(rc.getValue());
+                                                if (rc.isFreeOfCharge()) {
+                                                    getSpinners().get(rc.getKey()).addFoc(rc.getValue());
+                                                }
+                                            } else {
+                                                getSpinners().get(rc.getKey()).addMin(rc.getValue());
+                                            }
+                                        }
                                     } else {
                                         ArrayList<String> requireThisKeys = new ArrayList<String>();
                                         for (String key : getProduct().getModules().keySet()) {
@@ -242,8 +264,18 @@ public class ProductForm {
                                             src.setSelected(true, true);
                                             return;
                                         }
-
                                         getProduct().delModule(src.getKey());
+                                        for (RequireCapacity rc : getProduct().getProduct().getModules().get(src.getKey()).getRequireCapacities().values()) {
+                                            if (rc.isIncremental()) {
+                                                getSpinners().get(rc.getKey()).delIncr(rc.getValue());
+                                                if (rc.isFreeOfCharge()) {
+                                                    getSpinners().get(rc.getKey()).delFoc(rc.getValue());
+                                                }
+                                            } else {
+                                                System.out.println("remove non  incremental");
+                                                getSpinners().get(rc.getKey()).delMin(rc.getValue());
+                                            }
+                                        }
                                     }
                                     reloadProductPrice();
                                 }
@@ -292,11 +324,18 @@ public class ProductForm {
         for (String key : capacitiesGroup.getCapacities().keySet()) {
             final Capacity c = capacitiesGroup.getCapacities().get(key);
             if (!c.isDeprecated() || getProduct().getCapacities().containsKey(key)) {
-                final CapacityJSpinner cs = new CapacityJSpinner(getProduct().getCapacities().containsKey(key) ? getProduct().getCapacities().get(key).getValue() : 0, getRoot(), c.isDeprecated(), key);
+                final JLabel cl = new JLabel();
+                final JLabel cl1 = new JLabel();
+                final JLabel cl2 = new JLabel();
+                final JLabel cl3 = new JLabel();
+                final CapacityJSpinner cs = new CapacityJSpinner(getProduct().getCapacities().containsKey(key) ? getProduct().getCapacities().get(key) : null, c.isDeprecated(), key, this, cl);
                 cs.setMaximumSize(new Dimension(cs.getMaximumSize().width, cs.getMinimumSize().height));
                 cs.setAlignmentX(Component.LEFT_ALIGNMENT);
-                final JLabel cl = new JLabel();
+                getSpinners().put(key, cs);
                 cl.setAlignmentX(Component.LEFT_ALIGNMENT);
+                cl1.setAlignmentX(Component.LEFT_ALIGNMENT);
+                cl2.setAlignmentX(Component.LEFT_ALIGNMENT);
+                cl3.setAlignmentX(Component.LEFT_ALIGNMENT);
                 ChangeListener changeListener = new ChangeListener() {
                     public void stateChanged(ChangeEvent ev) {
                         if (ev.getSource() == cs) {
@@ -304,19 +343,22 @@ public class ProductForm {
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     CapacityJSpinner src = (CapacityJSpinner) e.getSource();
-                                    if (src.getValue() instanceof Integer && (Integer) src.getValue() > 0) {
-                                        if (!getProduct().getCapacities().containsKey(src.getKey())) {
-                                            Capacity tmpCapacity = getProduct().getProduct().getCapacities().get(src.getKey());
-                                            getProduct().addCapacity(tmpCapacity, src.getKey());
-                                        }
-                                        getProduct().getCapacities().get(src.getKey()).setValue((Integer) src.getValue());
-                                    } else {
-                                        getProduct().delCapacity(src.getKey());
-                                    }
                                     Double newPrice = 0d;
+                                    cl1.setText("");
+                                    cl2.setText("");
+                                    cl3.setText("");
                                     if (getProduct().getCapacities().containsKey(src.getKey())) {
                                         com.compassplus.proposalModel.Capacity c = getProduct().getCapacities().get(src.getKey());
                                         newPrice = c.getPrice();
+                                        if ((c.getVal() - c.getFoc() - c.getUser()) > 0) {
+                                            cl1.setText("Required by module(s): " + (c.getVal() - c.getFoc() - c.getUser()));
+                                        }
+                                        if (c.getFoc() > 0) {
+                                            cl2.setText("Free Of Charge: " + c.getFoc());
+                                        }
+                                        if ((c.getVal() - c.getUser()) > 0) {
+                                            cl3.setText("Total: " + c.getVal());
+                                        }
                                     }
                                     cl.setText((c.isDeprecated() ? "[DEPRECATED] " : "") + c.getName() + " ($" + df.format(newPrice) + ")");
                                     reloadProductPrice();
@@ -325,13 +367,15 @@ public class ProductForm {
                         }
                     }
                 };
-                cl.setText((c.isDeprecated() ? "[DEPRECATED] " : "") + c.getName() + " ($" + df.format(getProduct().getCapacities().containsKey(key) ? getProduct().getCapacities().get(key).getPrice() : 0d) + ")");
-
                 cs.addChangeListener(changeListener);
+                cs.recalc();
                 JPanel tmpPanel = new JPanel();
                 tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
                 tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
                 tmpPanel.add(cl);
+                tmpPanel.add(cl1);
+                tmpPanel.add(cl2);
+                tmpPanel.add(cl3);
                 tmpPanel.add(cs);
                 parent.add(tmpPanel);
             }

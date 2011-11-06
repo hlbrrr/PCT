@@ -11,9 +11,6 @@
                     <Modules>
                         <Module>
                             <Dependencies>
-                                <RequireCapacity value="1" incremental="" freeofcharge="">Multi-Purpose Key</RequireCapacity>
-                                <Exclude>Linux</Exclude>
-                                <Exclude>AIX</Exclude>
                             </Dependencies>
                             <Key>Windows</Key>
                             <Name>Windows OS</Name>
@@ -26,8 +23,6 @@
                         </Module>
                         <Module>
                             <Dependencies>
-                                <Exclude>Windows</Exclude>
-                                <Exclude>AIX</Exclude>
                             </Dependencies>
                             <Key>Linux</Key>
                             <Name>Linux OS</Name>
@@ -145,7 +140,6 @@
                     <Name>Main Metrics</Name>
                     <Capacities>
                         <Capacity>
-                            <Deprecated>true</Deprecated>
                             <Key>Multi-Purpose Key</Key>
                             <Name>Number of Multi-Purpose Instances</Name>
                             <Type>1</Type>

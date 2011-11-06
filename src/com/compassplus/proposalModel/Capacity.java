@@ -18,7 +18,10 @@ import java.util.Map;
 public class Capacity {
     private com.compassplus.configurationModel.Capacity capacity;
     private String key;
-    private Integer value;
+    private Integer incr;
+    private Integer min;
+    private Integer user;
+    private Integer foc;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
@@ -37,10 +40,17 @@ public class Capacity {
             log.info("Parsing capacity");
 
             this.setKey(xut.getNode("Key", initialData), allowedCapacities);
-            this.setValue(xut.getNode("Value", initialData));
+
+            this.setIncr(xut.getNode("Value", initialData).getAttributes().getNamedItem("incr"));
+            this.setMin(xut.getNode("Value", initialData).getAttributes().getNamedItem("min"));
+            this.setUser(xut.getNode("Value", initialData).getAttributes().getNamedItem("user"));
+            this.setFoc(xut.getNode("Value", initialData).getAttributes().getNamedItem("foc"));
 
             log.info("Capacity successfully parsed: \nName: " + this.getName() +
-                    "\nValue: " + this.getValue());
+                    "\nincr: " + this.getIncr() +
+                    "\nmin: " + this.getMin() +
+                    "\nuser: " + this.getUser() +
+                    "\nfoc: " + this.getFoc());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity is not defined correctly", e.getDetails());
         }
@@ -54,15 +64,67 @@ public class Capacity {
         return this.key;
     }
 
-    public Integer getValue() {
-        return this.value;
+    public Integer getIncr() {
+        return this.incr != null ? this.incr : 0;
     }
 
-    private void setValue(Node value) throws PCTDataFormatException {
+    private void setIncr(Node incr) throws PCTDataFormatException {
         try {
-            this.value = xut.getInteger(value);
+            this.incr = xut.getInteger(incr, true);
         } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Capacity value is not defined correctly", e.getDetails());
+            throw new PCTDataFormatException("Capacity incr is not defined correctly", e.getDetails());
+        }
+    }
+
+    public Integer getUser() {
+        return this.user != null ? this.user : 0;
+    }
+
+    private void setUser(Node user) throws PCTDataFormatException {
+        try {
+            this.user = xut.getInteger(user, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Capacity user is not defined correctly", e.getDetails());
+        }
+    }
+
+    public void setUser(Integer user) {
+        this.user = user;
+    }
+
+    public void setMin(Integer min) {
+        this.min = min;
+    }
+
+    public void setIncr(Integer incr) {
+        this.incr = incr;
+    }
+
+    public void setFoc(Integer foc) {
+        this.foc = foc;
+    }
+
+    public Integer getMin() {
+        return this.min != null ? this.min : 0;
+    }
+
+    private void setMin(Node min) throws PCTDataFormatException {
+        try {
+            this.min = xut.getInteger(min, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Capacity min is not defined correctly", e.getDetails());
+        }
+    }
+
+    public Integer getFoc() {
+        return this.foc != null ? this.foc : 0;
+    }
+
+    private void setFoc(Node foc) throws PCTDataFormatException {
+        try {
+            this.foc = xut.getInteger(foc, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Capacity foc is not defined correctly", e.getDetails());
         }
     }
 
@@ -91,16 +153,58 @@ public class Capacity {
         StringBuilder sb = new StringBuilder();
         sb.append("<Capacity>");
         sb.append("<Key>").append(this.getKey()).append("</Key>");
-        sb.append("<Value>").append(this.getValue()).append("</Value>");
+        sb.append("<Value");
+        sb.append(" incr=\"").append(this.getIncr()).append("\"");
+        sb.append(" min=\"").append(this.getMin()).append("\"");
+        sb.append(" user=\"").append(this.getUser()).append("\"");
+        sb.append(" foc=\"").append(this.getFoc()).append("\"");
+        sb.append(" />");
         sb.append("</Capacity>");
         return sb.toString();
     }
 
-    public void setValue(Integer value) {
-        this.value = value;
+    public Integer getVal() {
+        Integer ret = this.getIncr() + this.getUser();
+        if (ret < this.getMin()) {
+            ret = this.getMin();
+        }
+        return ret;
+    }
+
+    public Integer getChargeable() {
+        return this.getVal() - this.getFoc();
     }
 
     public Double getPrice() {
+        Double price = 0d;
+        if (this.getCapacity().getType().equals(1)) { // packet
+            for (Tier t : this.getCapacity().getTiers()) {
+                if (t.getBound() > this.getChargeable()) {
+                    break;
+                } else {
+                    price = t.getPrice();
+                }
+            }
+            price = CommonUtils.getInstance().toNextThousand(price * this.getChargeable());
+        } else if (this.getCapacity().getType().equals(2)) { // level
+            Integer used = 0;
+            for (Tier t : this.getCapacity().getTiers()) {
+                Integer current = t.getBound() - used;
+                if (t.getBound() > this.getChargeable()) {
+                    current = this.getChargeable() - used;
+                }
+                price += t.getPrice() * current;
+                used += current;
+                if (t.getBound() > this.getChargeable()) {
+                    break;
+                }
+            }
+            price = CommonUtils.getInstance().toNextThousand(price);
+        }
+
+        return price;
+    }
+    /*public Double getPrice() {
         Double price = 0d;
         if (this.getCapacity().getType().equals(1)) { // packet
             for (Tier t : this.getCapacity().getTiers()) {
@@ -128,5 +232,5 @@ public class Capacity {
         }
 
         return price;
-    }
+    }*/
 }
