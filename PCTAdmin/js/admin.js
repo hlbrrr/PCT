@@ -370,6 +370,13 @@
                     return config;
                 }
             });
+            $.data($(this._products)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Product', xml).each(function() {
+                        that.addProduct((new PCT.product()).init(this));
+                    });
+                }
+            });
             $(this._downloadConfiguration).click(function() {
                 PCT.sendData('/data', 'action=downloadConfig');
             });
@@ -433,9 +440,9 @@
                         product.setRoot(this._products);
                         $('html, body').animate({
                             scrollTop: $(product.getHead()).offset().top
-                        }, 200);
+                        }, 000);
                     } else {
-                        this.addProduct((new PCT.product()).addCapacitiesRoot().addModulesRoot());
+                       this.addProduct((new PCT.product()).addCapacitiesRoot().addModulesRoot());
                     }
                 }
             });
@@ -460,6 +467,7 @@
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
+                _clone:$('#Clone', dom).get(),
                 _core:$('#Core', dom).get()
             });
             var that = this;
@@ -490,6 +498,10 @@
                         }
                     }
                 });
+            $(this._clone).click(
+                function() {
+                    $.data($(that._core).parents('.divModelProducts')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+                });
             $(this._expand).click(
                 function(arg) {
                     $(that._content).toggle(PCT.animation, function() {
@@ -519,8 +531,8 @@
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $(this._maximumFunctionalityPrice).val($('>MaximumFunctionalityPrice', initialData).text()).change();
                     $(this._minimumPrice).val($('>MinimumPrice', initialData).text()).change();
-                    this.addModulesRoot((new PCT.modulesGroup()).init(null, $('>Modules', initialData)));
-                    this.addCapacitiesRoot((new PCT.capacitiesGroup()).init(null, $('>Capacities', initialData)));
+                    this.addModulesRoot((new PCT.modulesGroup()).setRoot(this._modules).init(null, $('>Modules', initialData)));
+                    this.addCapacitiesRoot((new PCT.capacitiesGroup()).setRoot(this._capacities).init(null, $('>Capacities', initialData)));
                     $(this._settingsPane).addClass('hidden');
                     $(this._content).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -529,17 +541,17 @@
                 },
                 addModulesRoot:function(modulesGroup) {
                     if (modulesGroup) {
-                        modulesGroup.setIsRoot(true).setRoot(this._modules);
+                        modulesGroup.setIsRoot(true);
                     } else {
-                        this.addModulesRoot((new PCT.modulesGroup()).setIsRoot(true));
+                        this.addModulesRoot((new PCT.modulesGroup()).setIsRoot(true).setRoot(this._modules));
                     }
                     return this;
                 },
                 addCapacitiesRoot:function(capacitiesGroup) {
                     if (capacitiesGroup) {
-                        capacitiesGroup.setIsRoot(true).setRoot(this._capacities);
+                        capacitiesGroup.setIsRoot(true);
                     } else {
-                        this.addCapacitiesRoot((new PCT.capacitiesGroup()).setIsRoot(true));
+                        this.addCapacitiesRoot((new PCT.capacitiesGroup()).setIsRoot(true).setRoot(this._capacities));
                     }
                     return this;
                 }
@@ -567,6 +579,7 @@
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _core:$('#Core', dom).get(),
+                _clone:$('#Clone', dom).get(),
                 _drag:$('#Drag', dom).get()
             });
             var that = this;
@@ -604,6 +617,26 @@
                     return config;
                 }
             });
+            $.data($(this._groups)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Group', xml).each(function() {
+                        var rt = that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>Modules', this)).setIsRoot(false));
+                        $('.moduleKey', rt).each(function(){
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                }
+            });
+            $.data($(this._modules)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Module', xml).each(function() {
+                        var rt = that.addModule((new PCT.module()).setRoot(that._modules).init(this));
+                        $('.moduleKey', rt).each(function(){
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                }
+            });
             $(this._remove).click(
                 function() {
                     if (confirm('Remove group?')) {
@@ -611,6 +644,10 @@
                             $(that._body).remove();
                         }
                     }
+                });
+            $(this._clone).click(
+                function() {
+                    $.data($(that._core).parents('.divGroups')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
                 });
             $(this._expand).click(
                 function(arg) {
@@ -643,6 +680,7 @@
                 if ($(this).val() == 'true') {
                     $(that._name).val('MR').change();
                     $(that._drag).addClass('hidden');
+                    $(that._clone).addClass('hidden');
                     $(that._content).addClass('hidden');
                     $(that._expand).html('Expand');
                     $(that._settings).hide();
@@ -677,10 +715,10 @@
                     var that = this;
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $('>Module', initialData).each(function() {
-                        that.addModule((new PCT.module()).init(this));
+                        that.addModule((new PCT.module()).setRoot(that._modules).init(this));
                     });
                     $('>Group', initialData).each(function() {
-                        that.addGroup((new PCT.modulesGroup()).init($('>Name', this).text(), $('>Modules', this)).setIsRoot(false));
+                        that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>Modules', this)).setIsRoot(false));
                     });
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -688,22 +726,22 @@
                 },
                 addModule:function(module) {
                     if (module) {
-                        module.setRoot(this._modules);
                         $('html, body').animate({
                             scrollTop: $(module.getHead()).offset().top
-                        }, 200);
+                        }, 000);
+                        return module.getHead();
                     } else {
-                        this.addModule(new PCT.module());
+                        return this.addModule((new PCT.module()).setRoot(this._modules));
                     }
                 },
                 addGroup:function(group) {
                     if (group) {
-                        group.setRoot(this._groups);
                         $('html, body').animate({
                             scrollTop: $(group.getHead()).offset().top
-                        }, 200);
+                        }, 000);
+                        return group.getHead();
                     } else {
-                        this.addGroup((new PCT.modulesGroup()).setIsRoot(false));
+                        return this.addGroup((new PCT.modulesGroup()).setRoot(this._groups).setIsRoot(false));
                     }
                 }
             });
@@ -730,6 +768,7 @@
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
+                _clone:$('#Clone', dom).get(),
                 _core:$('#Core', dom).get()
             });
             var that = this;
@@ -738,6 +777,10 @@
                 handle: '.dependencyDrag',
                 connectWith: '.divDependencies'
             });
+            $(this._clone).click(
+                function() {
+                    $.data($(that._core).parents('.divModules')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+                });
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
                     var config = '<Module>';
@@ -828,24 +871,23 @@
                     $(this._expand).html('Expand');
                     var that = this;
                     $('>Dependencies>Require', initialData).each(function() {
-                        that.addDependency((new PCT.dependency()).setType('require').init($(this).text()));
+                        that.addDependency((new PCT.dependency()).setRoot(that._dependencies).setType('require').init($(this).text()));
                     });
                     $('>Dependencies>Exclude', initialData).each(function() {
-                        that.addDependency((new PCT.dependency()).setType('exclude').init($(this).text()));
+                        that.addDependency((new PCT.dependency()).setRoot(that._dependencies).setType('exclude').init($(this).text()));
                     });
                     $('>Dependencies>RequireCapacity', initialData).each(function() {
-                        that.addDependency((new PCT.dependency()).setType('capacity').setValue($(this).attr('value')).setIncremental($(this).attr('incremental') == 'true').setFreeOfCharge($(this).attr('freeofcharge') == 'true').init($(this).text()));
+                        that.addDependency((new PCT.dependency()).setRoot(that._dependencies).setType('capacity').setValue($(this).attr('value')).setIncremental($(this).attr('incremental') == 'true').setFreeOfCharge($(this).attr('freeofcharge') == 'true').init($(this).text()));
                     });
                     return this;
                 },
                 addDependency:function(dependency) {
                     if (dependency) {
-                        dependency.setRoot(this._dependencies);
                         $('html, body').animate({
                             scrollTop: $(dependency.getHead()).offset().top
-                        }, 200);
+                        }, 000);
                     } else {
-                        this.addDependency((new PCT.dependency()).setType('require'));
+                        this.addDependency((new PCT.dependency()).setRoot(this._dependencies).setType('require'));
                     }
                 }
             });
@@ -974,6 +1016,7 @@
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _core:$('#Core', dom).get(),
+                _clone:$('#Clone', dom).get(),
                 _drag:$('#Drag', dom).get()
             });
             var that = this;
@@ -1011,6 +1054,26 @@
                     return config;
                 }
             });
+            $.data($(this._groups)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Group', xml).each(function() {
+                        var rt = that.addGroup((new PCT.capacitiesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>Capacities', this)).setIsRoot(false));
+                        $('.capacityKey', rt).each(function(){
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                }
+            });
+            $.data($(this._capacities)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Capacity', xml).each(function() {
+                        var rt = that.addCapacity((new PCT.capacity()).setRoot(that._capacities).init(this));
+                        $('.capacityKey', rt).each(function(){
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                }
+            });
             $(this._remove).click(
                 function() {
                     if (confirm('Remove group?')) {
@@ -1018,6 +1081,10 @@
                             $(that._body).remove();
                         }
                     }
+                });
+            $(this._clone).click(
+                function() {
+                    $.data($(that._core).parents('.divGroups')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
                 });
             $(this._expand).click(
                 function(arg) {
@@ -1049,6 +1116,7 @@
             $(this._isRoot).change(function() {
                 if ($(this).val() == 'true') {
                     $(that._drag).addClass('hidden');
+                    $(that._clone).addClass('hidden');
                     $(that._name).val('CR').change();
                     $(that._content).addClass('hidden');
                     $(that._expand).html('Expand');
@@ -1085,10 +1153,10 @@
                     var that = this;
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $('>Capacity', initialData).each(function() {
-                        that.addCapacity((new PCT.capacity()).init(this));
+                        that.addCapacity((new PCT.capacity()).setRoot(that._capacities).init(this));
                     });
                     $('>Group', initialData).each(function() {
-                        that.addGroup((new PCT.capacitiesGroup()).init($('>Name', this).text(), $('>Capacities', this)).setIsRoot(false));
+                        that.addGroup((new PCT.capacitiesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>Capacities', this)).setIsRoot(false));
                     });
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -1096,22 +1164,22 @@
                 },
                 addCapacity:function(capacity) {
                     if (capacity) {
-                        capacity.setRoot(this._capacities);
                         $('html, body').animate({
                             scrollTop: $(capacity.getHead()).offset().top
-                        }, 200);
+                        }, 000);
+                        return capacity.getHead();
                     } else {
-                        this.addCapacity(new PCT.capacity());
+                        return this.addCapacity((new PCT.capacity()).setRoot(this._capacities));
                     }
                 },
                 addGroup:function(group) {
                     if (group) {
-                        group.setRoot(this._groups);
                         $('html, body').animate({
                             scrollTop: $(group.getHead()).offset().top
-                        }, 200);
+                        }, 000);
+                        return group.getHead();
                     } else {
-                        this.addGroup((new PCT.capacitiesGroup()).setIsRoot(false));
+                        return this.addGroup((new PCT.capacitiesGroup()).setRoot(this._groups).setIsRoot(false));
                     }
                 }
             });
@@ -1136,6 +1204,7 @@
                 _tiers:$('#Tiers', dom).get(),
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
+                _clone:$('#Clone', dom).get(),
                 _core:$('#Core', dom).get()
             });
             var that = this;
@@ -1169,6 +1238,10 @@
                             $(that._body).remove();
                         }
                     }
+                });
+            $(this._clone).click(
+                function() {
+                    $.data($(that._core).parents('.divCapacities')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
                 });
             $(this._name).change(function() {
                 $(that._capacityTitle).html($(this).val());
@@ -1211,7 +1284,7 @@
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
-                    $(this._type).val($('>Type', initialData).text());
+                    $(this._type).val($('>Type', initialData).text()).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true')).change();
                     $(this._settingsPane).addClass('hidden');
@@ -1220,18 +1293,17 @@
                     $(this._remove).addClass('hidden');
                     var that = this;
                     $('>Tiers>Tier', initialData).each(function() {
-                        that.addTier((new PCT.tier()).init(this));
+                        that.addTier((new PCT.tier()).setRoot(that._tiers).init(this));
                     });
                     return this;
                 },
                 addTier:function(tier) {
                     if (tier) {
-                        tier.setRoot(this._tiers);
                         $('html, body').animate({
                             scrollTop: $(tier.getHead()).offset().top
-                        }, 200);
+                        }, 000);
                     } else {
-                        this.addTier(new PCT.tier());
+                        this.addTier((new PCT.tier()).setRoot(this._tiers));
                     }
                 }
             });
