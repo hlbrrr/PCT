@@ -672,6 +672,81 @@
         </div>
     </div>
 </template>
+<template id="currency">
+    <div class="divCurrency" id="Core">
+        <div class="divCurrencyTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton currencyDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
+                <div id="AddCurrencyRegion" class="titleTableCell titleTableCellButton">
+                    Add Region
+                </div>
+                <div id="Expand" class="titleTableCell titleTableCellButton">
+                    Collapse
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate currencyName"
+                                   validclass="unique" unique=".currencyName" uniqueroot=".divModelCurrencies"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Symbol:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Symbol" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="CurrencyRegions" class="divCurrencyRegions"></div>
+    </div>
+</template>
+<template id="currencyRegion">
+    <div class="divCurrencyRegion" id="Core">
+        <div class="divCurrencyRegionTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton currencyRegionDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
 <template id="locker">
     <div>
         <div class="lockDiv" id="lockDiv">

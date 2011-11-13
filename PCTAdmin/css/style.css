@@ -148,7 +148,7 @@ body {
     -webkit-border-radius: 5px;
 }
 
-.divSupportPlanRegion {
+.divSupportPlanRegion, .divCurrencyRegion {
     border: 1px solid #dbd0d0;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -191,7 +191,7 @@ body {
     color: black;
 }
 
-.divSupportPlanRegionTitle {
+.divSupportPlanRegionTitle, .divCurrencyRegionTitle {
     background-color: #e7e6e6;
     color: black;
 }
@@ -239,6 +239,10 @@ body {
     padding-bottom: 0;
 }
 
+.divCurrencyRegions {
+    padding: 10px;
+    padding-bottom: 0;
+}
 
 .titleTable {
     width: 100%;
@@ -304,7 +308,7 @@ body {
     background-color: #dadafc;
 }
 
-.divSupportPlanRegionTitle>.titleTable>.titleTableCellButton:hover {
+.divSupportPlanRegionTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyRegionTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #f5f5f5;
 }
 
@@ -456,7 +460,7 @@ input.validate.error {
     background-color: red;
 }
 
-.divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan {
+.divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan, .divCurrency {
     background-color: #fff;
 }
 

@@ -1733,6 +1733,164 @@
                     return this;
                 }
             });
+        },
+        currency:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('currency');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _name:$('#Name', dom).get(),
+                _symbol:$('#Symbol', dom).get(),
+                _currencyTitle:$('#Title', dom).get(),
+                _addCurrencyRegion:$('#AddCurrencyRegion', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _currencyRegions:$('#CurrencyRegions', dom).get(),
+                _expand:$('#Expand', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _clone:$('#Clone', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $(this._currencyRegions, dom).sortable({
+                revert:true,
+                handle: '.currencyRegionDrag',
+                connectWith: '.divCurrencyRegions'
+            });
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Currency>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Symbol>' + $(that._symbol).val() + '</Symbol>';
+                    config += '<Regions>';
+                    $(that._currencyRegions).children().each(function() {
+                        if ($(this).hasClass('divCurrencyRegion'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Regions>';
+                    config += '</Currency>';
+                    return config;
+                }
+            });
+            $(this._remove).click(
+                function() {
+                    if (confirm('Remove currency?')) {
+                        if (confirm('Removing currency can result in broken backward compatibility. Remove currency?')) {
+                            $(that._body).remove();
+                        }
+                    }
+                });
+            $(this._clone).click(
+                function() {
+                    $.data($(that._core).parents('.divModelCurrencies')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+                });
+            $(this._name).change(function() {
+                $(that._currencyTitle).html($(this).val());
+            });
+            $(this._expand).click(
+                function(arg) {
+                    $(that._currencyRegions).toggle(PCT.animation, function() {
+                        if ($(this).css('display') == 'none') {
+                            $(that._expand).html('Expand');
+                        } else {
+                            $(that._expand).html('Collapse');
+                        }
+                    });
+                });
+            $(this._addCurrencyRegion).click(function() {
+                if ($(that._currencyRegions).css('display') == 'none') {
+                    $(that._currencyRegions).show();
+                    $(that._expand).html('Collapse');
+                }
+                that.addCurrencyRegion();
+            });
+            $(this._currencyTitle).click(
+                function() {
+                    $(that._remove).toggleClass('hidden');
+                    $(that._settingsPane).toggleClass('hidden');
+                });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._symbol).val($('>Symbol', initialData).text()).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._currencyRegions).addClass('hidden');
+                    $(this._expand).html('Expand');
+                    $(this._remove).addClass('hidden');
+                    var that = this;
+                    $('>Regions>Region', initialData).each(function() {
+                        that.addCurrencyRegion((new PCT.currencyRegion()).setRoot(that._currencyRegions).init(this));
+                    });
+                    return this;
+                },
+                addCurrencyRegion:function(region) {
+                    if (region) {
+                        $('html, body').animate({
+                            scrollTop: $(region.getHead()).offset().top
+                        }, 000);
+                    } else {
+                        this.addCurrencyRegion((new PCT.currencyRegion()).setRoot(this._currencyRegions));
+                    }
+                }
+            });
+        },
+        currencyRegion:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('currencyRegion');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _key:$('#Key', dom).get(),
+                _currencyRegionTitle:$('#Title', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Region>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '</Region>';
+                    return config;
+                }
+            });
+            $(this._remove).click(
+                function() {
+                    if (confirm('Remove region?')) {
+                        $(that._body).remove();
+                    }
+                });
+            $(this._key).change(function() {
+                $(that._currencyRegionTitle).html($(this).val());
+            });
+            $(this._currencyRegionTitle).click(
+                function() {
+                    $(that._remove).toggleClass('hidden');
+                    $(that._settingsPane).toggleClass('hidden');
+                });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._key).val($('>Key', initialData).text()).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
+                    return this;
+                }
+            });
         }
     });
 })(jQuery, window);
