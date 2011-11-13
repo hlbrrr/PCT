@@ -20,13 +20,22 @@
         <div class="divModelTitle">
             <div class="titleTable">
                 <div id="SaveConfiguration" class="titleTableCell titleTableCellButton">
-                    Save Configuration
-                </div>
-                <div id="AddProduct" class="titleTableCell titleTableCellButton">
-                    Add Product
+                    Save
                 </div>
                 <div id="DownloadConfiguration" class="titleTableCell titleTableCellButton">
-                    Download Current Configuration
+                    Download
+                </div>
+                <div id="ProductsTab" bind="#ProductsWrap" class="titleTableCell titleTableCellButton tab">
+                    Products
+                </div>
+                <div id="RegionsTab" bind="#RegionsWrap" class="titleTableCell titleTableCellButton tab">
+                    Regions
+                </div>
+                <div id="SupportPlansTab" bind="#SupportPlansWrap" class="titleTableCell titleTableCellButton tab">
+                    Support Plans
+                </div>
+                <div id="CurrenciesTab" bind="#CurrenciesWrap" class="titleTableCell titleTableCellButton tab">
+                    Currencies
                 </div>
                 <div class="titleTableCell titleTableCellFill">
                 </div>
@@ -38,8 +47,46 @@
                 </div>
             </div>
         </div>
-
-        <div id="Products" class="divModelProducts"></div>
+        <div id="ProductsWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="AddProduct" class="titleTableCell titleTableCellButton">
+                    Add Product
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="Products" class="divModelProducts"></div>
+        </div>
+        <div id="RegionsWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="AddRegion" class="titleTableCell titleTableCellButton">
+                    Add Region
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="Regions" class="divModelRegions"></div>
+        </div>
+        <div id="SupportPlansWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="AddSupportPlan" class="titleTableCell titleTableCellButton">
+                    Add Support Plan
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="SupportPlans" class="divModelSupportPlans"></div>
+        </div>
+        <div id="CurrenciesWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="AddCurrency" class="titleTableCell titleTableCellButton">
+                    Add Currency
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="Currencies" class="divModelCurrencies"></div>
+        </div>
     </div>
 </template>
 <template id="product">
@@ -456,6 +503,51 @@
                         </div>
                         <div class="settingsTableCell settingsValueCb">
                             <input id="FreeOfCharge" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="region">
+    <div class="divRegion" id="Core">
+        <div class="divRegionTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton regionDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate regionKey"
+                                   validclass="unique" unique=".regionKey" uniqueroot=".divModelRegions"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Rate:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Rate" autocomplete="off" class="settingInput validate" validclass="summ"/>
                         </div>
                     </div>
                 </div>

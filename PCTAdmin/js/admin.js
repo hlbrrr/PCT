@@ -343,18 +343,67 @@
             $.extend(this, {
                 _expiration:$('#Expiration', dom).get(),
                 _products:$('#Products', dom).get(),
+                _regions:$('#Regions', dom).get(),
+                _supportPlans:$('#SupportPlans', dom).get(),
+                _currencies:$('#Currencies', dom).get(),
                 _addProduct:$('#AddProduct', dom).get(),
+                _addRegion:$('#AddRegion', dom).get(),
+                _addSupportPlan:$('#AddSupportPlan', dom).get(),
+                _addCurrency:$('#AddCurrency', dom).get(),
                 _saveConfiguration:$('#SaveConfiguration', dom).get(),
                 _downloadConfiguration:$('#DownloadConfiguration', dom).get(),
-                _core:$('#Core', dom).get()
+                _core:$('#Core', dom).get(),
+                _tabs:new Array()
             });
             var that = this;
             $(this._products, dom).sortable({
                 revert:true,
                 handle: '.productDrag'
             });
+            $(this._regions, dom).sortable({
+                revert:true,
+                handle: '.regionDrag'
+            });
+            $(this._supportPlans, dom).sortable({
+                revert:true,
+                handle: '.supportPlanDrag'
+            });
+            $(this._currencies, dom).sortable({
+                revert:true,
+                handle: '.currencyDrag'
+            });
+            $('.tab', dom).each(function() {
+                that._tabs.push(this);
+                var area = $($(this).attr('bind'), dom).get();
+                $(this).bind('select', function() {
+                    if (!$(this).hasClass('selected')) {
+                        for (key in that._tabs) {
+                            $(that._tabs[key]).trigger('deselect');
+                        }
+                        $(this).addClass('selected');
+                        $(area).removeClass('hidden');
+                    }
+                });
+                $(this).bind('deselect', function() {
+                    $(this).removeClass('selected');
+                    $(area).addClass('hidden');
+                });
+                $(this).click(function() {
+                    $(this).trigger('select');
+                });
+            });
+            $(that._tabs[0]).trigger('select');
             $(this._addProduct).click(function() {
                 that.addProduct();
+            });
+            $(this._addRegion).click(function() {
+                that.addRegion();
+            });
+            $(this._addSupportPlan).click(function() {
+                that.addSupportPlan();
+            });
+            $(this._addCurrency).click(function() {
+                that.addCurrency();
             });
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
@@ -366,6 +415,24 @@
                             config += $.data($(this)[0], 'pct').getXML();
                     });
                     config += '</Products>';
+                    config += '<Regions>';
+                    $(that._regions).children().each(function() {
+                        if ($(this).hasClass('divRegion'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Regions>';
+                    config += '<SupportPlans>';
+                    $(that._supportPlans).children().each(function() {
+                        if ($(this).hasClass('divSupportPlan'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</SupportPlans>';
+                    config += '<Currencies>';
+                    $(that._currencies).children().each(function() {
+                        if ($(this).hasClass('divCurrency'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Currencies>';
                     config += '</root>';
                     return config;
                 }
@@ -374,7 +441,7 @@
                 PCT.sendData('/data', 'action=downloadConfig');
             });
             $(this._saveConfiguration).click(function() {
-                if ($('.error', this._products).length > 0) {
+                if ($('.error', that._core).length > 0 ) {
                     alert('There are some errors in configuration. Fix them first, then try again.');
                     return;
                 }
@@ -426,6 +493,15 @@
                     $('>Products>Product', initialData).each(function() {
                         that.addProduct((new PCT.product()).init(this));
                     });
+                    $('>Regions>Region', initialData).each(function() {
+                        that.addRegion((new PCT.region()).init(this));
+                    });
+                    $('>SupportPlans>SupportPlan', initialData).each(function() {
+                        that.addSupportPlan((new PCT.supportPlan()).init(this));
+                    });
+                    $('>Currencies>Currency', initialData).each(function() {
+                        that.addCurrency((new PCT.currency()).init(this));
+                    });
                     return this;
                 },
                 addProduct:function(product) {
@@ -436,6 +512,36 @@
                         }, 200);
                     } else {
                         this.addProduct((new PCT.product()).addCapacitiesRoot().addModulesRoot());
+                    }
+                },
+                addRegion:function(region) {
+                    if (region) {
+                        region.setRoot(this._regions);
+                        $('html, body').animate({
+                            scrollTop: $(region.getHead()).offset().top
+                        }, 200);
+                    } else {
+                        this.addRegion(new PCT.region());
+                    }
+                },
+                addSupportRate:function(supportRate) {
+                    if (supportRate) {
+                        supportRate.setRoot(this._supportRates);
+                        $('html, body').animate({
+                            scrollTop: $(supportRate.getHead()).offset().top
+                        }, 200);
+                    } else {
+                        this.addSupportRate(new PCT.supportRate());
+                    }
+                },
+                addCurrency:function(currency) {
+                    if (currency) {
+                        currency.setRoot(this._currencies);
+                        $('html, body').animate({
+                            scrollTop: $(currency.getHead()).offset().top
+                        }, 200);
+                    } else {
+                        this.addCurrency(new PCT.currency());
                     }
                 }
             });
@@ -1287,6 +1393,66 @@
                 init:function(initialData) {
                     $(this._bound).val($('>Bound', initialData).text()).change();
                     $(this._price).val($('>Price', initialData).text()).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
+                    return this;
+                }
+            });
+        },
+        region:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('region');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _name:$('#Name', dom).get(),
+                _rate:$('#Rate', dom).get(),
+                _regionTitle:$('#Title', dom).get(),
+                _key:$('#Key', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Region>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Rate>' + $(that._rate).val() + '</Rate>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '</Region>';
+                    return config;
+                }
+            });
+            $(this._remove).click(
+                function() {
+                    if (confirm('Remove region?')) {
+                        if (confirm('Removing region can result in broken backward compatibility. Remove region?')) {
+                            $(that._body).remove();
+                        }
+                    }
+                });
+            $(this._name).change(function() {
+                $(that._regionTitle).html($(this).val());
+            });
+            $(this._key).val(PCT.randomString(15)).change();
+            $(this._regionTitle).click(
+                function() {
+                    $(that._remove).toggleClass('hidden');
+                    $(that._settingsPane).toggleClass('hidden');
+                });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._rate).val($('>Rate', initialData).text()).change();
+                    $(this._key).val('').val($('>Key', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
                     return this;

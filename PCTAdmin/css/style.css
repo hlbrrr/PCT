@@ -16,7 +16,7 @@ body {
     color: white;
 }
 
-.divProduct {
+.divProduct, .divRegion, .divSupportPlan, .divCurrency {
     border: 1px solid #000;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -25,11 +25,11 @@ body {
     background-color: #fff;
 }
 
-.divModelProducts {
+.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans {
     margin: 10px;
 }
 
-.divProductTitle {
+.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divCurrencyTitle {
     background-color: #444;
     color: white;
 }
@@ -240,11 +240,28 @@ body {
     cursor: pointer;
 }
 
+.divModelSubTitle {
+    background-color: #999999;
+}
+
+.divModelSubTitle.titleTable>.titleTableCell {
+    padding: 6px 10px;
+}
+
+.divModelSubTitle.titleTable>.titleTableCellButton {
+    color: #000;
+}
+
+.divModelSubTitle.titleTable>.titleTableCellButton:hover {
+    background-color: #777;
+}
+
 .divModelTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #444;
 }
 
-.divProductTitle>.titleTable>.titleTableCellButton:hover {
+.divProductTitle>.titleTable>.titleTableCellButton:hover, .divRegionTitle>.titleTable>.titleTableCellButton:hover,
+.divSupportPlanTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyTitle>.titleTable>.titleTableCellButton:hover{
     background-color: #777;
 }
 
@@ -430,4 +447,24 @@ input.validate.error {
 
 .divDependency.requireCapacityDependency.incremental #divFreeOfCharge {
     display: table-row !important;
+}
+
+.tab {
+    border-radius: 5pt 5pt 0 0;
+    -moz-border-radius: 5pt 5pt 0 0;
+    -webkit-border-radius: 5pt 5pt 0 0;
+}
+
+.tab.selected, .tab.selected:hover {
+    background-color: #999999 !important;
+    color: #000 !important;
+}
+
+.tab:hover {
+    background-color: #444 !important;
+    color: #fff !important;
+}
+
+.divModelTitle>.titleTable>.titleTableCell {
+    padding: 3px 10px;
 }
