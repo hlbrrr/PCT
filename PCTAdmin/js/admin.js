@@ -14,7 +14,7 @@
         animation:'blind',
         format:'xml',
         randomString:function (string_length) {
-            var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZ";
+            var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZ';
             var randomstring = '';
             for (var i = 0; i < string_length; i++) {
                 var rnum = Math.floor(Math.random() * chars.length);
@@ -444,11 +444,41 @@
                     });
                 }
             });
+            $.data($(this._regions)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Region', xml).each(function() {
+                        var rt = that.addRegion((new PCT.region()).setRoot(that._regions).init(this));
+                        $('.regionKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                }
+            });
+            $.data($(this._supportPlans)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>SupportPlan', xml).each(function() {
+                        var rt = that.addSupportPlan((new PCT.supportPlan()).setRoot(that._supportPlans).init(this));
+                        $('.supportPlanKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                }
+            });
+            $.data($(this._currencies)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Currency', xml).each(function() {
+                        var rt = that.addCurrency((new PCT.currency()).setRoot(that._currencies).init(this));
+                        $('.currencyKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                }
+            });
             $(this._downloadConfiguration).click(function() {
                 PCT.sendData('/data', 'action=downloadConfig');
             });
             $(this._saveConfiguration).click(function() {
-                if ($('.error', that._core).length > 0 ) {
+                if ($('.error', that._core).length > 0) {
                     alert('There are some errors in configuration. Fix them first, then try again.');
                     return;
                 }
@@ -501,13 +531,13 @@
                         that.addProduct((new PCT.product()).init(this));
                     });
                     $('>Regions>Region', initialData).each(function() {
-                        that.addRegion((new PCT.region()).init(this));
+                        that.addRegion((new PCT.region()).setRoot(that._regions).init(this));
                     });
                     $('>SupportPlans>SupportPlan', initialData).each(function() {
-                        that.addSupportPlan((new PCT.supportPlan()).init(this));
+                        that.addSupportPlan((new PCT.supportPlan()).setRoot(that._supportPlans).init(this));
                     });
                     $('>Currencies>Currency', initialData).each(function() {
-                        that.addCurrency((new PCT.currency()).init(this));
+                        that.addCurrency((new PCT.currency()).setRoot(that._currencies).init(this));
                     });
                     return this;
                 },
@@ -518,37 +548,37 @@
                             scrollTop: $(product.getHead()).offset().top
                         }, 000);
                     } else {
-                       this.addProduct((new PCT.product()).addCapacitiesRoot().addModulesRoot());
+                        this.addProduct((new PCT.product()).addCapacitiesRoot().addModulesRoot());
                     }
                 },
                 addRegion:function(region) {
                     if (region) {
-                        region.setRoot(this._regions);
                         $('html, body').animate({
                             scrollTop: $(region.getHead()).offset().top
                         }, 200);
+                        return region.getHead();
                     } else {
-                        this.addRegion(new PCT.region());
+                        return this.addRegion((new PCT.region()).setRoot(that._regions));
                     }
                 },
-                addSupportRate:function(supportRate) {
-                    if (supportRate) {
-                        supportRate.setRoot(this._supportRates);
+                addSupportPlan:function(supportPlan) {
+                    if (supportPlan) {
                         $('html, body').animate({
-                            scrollTop: $(supportRate.getHead()).offset().top
+                            scrollTop: $(supportPlan.getHead()).offset().top
                         }, 200);
+                        return supportPlan.getHead();
                     } else {
-                        this.addSupportRate(new PCT.supportRate());
+                        return this.addSupportPlan((new PCT.supportPlan()).setRoot(that._supportPlans));
                     }
                 },
                 addCurrency:function(currency) {
                     if (currency) {
-                        currency.setRoot(this._currencies);
                         $('html, body').animate({
                             scrollTop: $(currency.getHead()).offset().top
                         }, 200);
+                        return currency.getHead();
                     } else {
-                        this.addCurrency(new PCT.currency());
+                        return this.addCurrency((new PCT.currency()).setRoot(that._currencies));
                     }
                 }
             });
@@ -727,7 +757,7 @@
                 cloneTree:function(xml) {
                     $('root>Group', xml).each(function() {
                         var rt = that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>Modules', this)).setIsRoot(false));
-                        $('.moduleKey', rt).each(function(){
+                        $('.moduleKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
                     });
@@ -737,7 +767,7 @@
                 cloneTree:function(xml) {
                     $('root>Module', xml).each(function() {
                         var rt = that.addModule((new PCT.module()).setRoot(that._modules).init(this));
-                        $('.moduleKey', rt).each(function(){
+                        $('.moduleKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
                     });
@@ -1164,7 +1194,7 @@
                 cloneTree:function(xml) {
                     $('root>Group', xml).each(function() {
                         var rt = that.addGroup((new PCT.capacitiesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>Capacities', this)).setIsRoot(false));
-                        $('.capacityKey', rt).each(function(){
+                        $('.capacityKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
                     });
@@ -1174,7 +1204,7 @@
                 cloneTree:function(xml) {
                     $('root>Capacity', xml).each(function() {
                         var rt = that.addCapacity((new PCT.capacity()).setRoot(that._capacities).init(this));
-                        $('.capacityKey', rt).each(function(){
+                        $('.capacityKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
                     });
@@ -1486,6 +1516,7 @@
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _remove:$('#Remove', dom).get(),
+                _clone:$('#Clone', dom).get(),
                 _core:$('#Core', dom).get()
             });
             var that = this;
@@ -1499,6 +1530,10 @@
                     return config;
                 }
             });
+            $(this._clone).click(
+                function() {
+                    $.data($(that._core).parents('.divModelRegions')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+                });
             $(this._remove).click(
                 function() {
                     if (confirm('Remove region?')) {
@@ -1525,6 +1560,174 @@
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._rate).val($('>Rate', initialData).text()).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
+                    return this;
+                }
+            });
+        },
+        supportPlan:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('supportPlan');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _name:$('#Name', dom).get(),
+                _rate:$('#Rate', dom).get(),
+                _key:$('#Key', dom).get(),
+                _supportPlanTitle:$('#Title', dom).get(),
+                _addSupportPlanRegion:$('#AddSupportPlanRegion', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _supportPlanRegions:$('#SupportPlanRegions', dom).get(),
+                _expand:$('#Expand', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _default:$('#Default', dom).get(),
+                _clone:$('#Clone', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $(this._supportPlanRegions, dom).sortable({
+                revert:true,
+                handle: '.supportPlanRegionDrag',
+                connectWith: '.divSupportPlanRegions'
+            });
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<SupportPlan>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<Default>' + ($(that._default).prop('checked') ? 'true' : 'false') + '</Default>';
+                    config += '<Rate>' + $(that._rate).val() + '</Rate>';
+                    config += '<Regions>';
+                    $(that._supportPlanRegions).children().each(function() {
+                        if ($(this).hasClass('divSupportPlanRegion'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Regions>';
+                    config += '</SupportPlan>';
+                    return config;
+                }
+            });
+            $(this._remove).click(
+                function() {
+                    if (confirm('Remove support plan?')) {
+                        if (confirm('Removing support plan can result in broken backward compatibility. Remove support plan?')) {
+                            $(that._body).remove();
+                        }
+                    }
+                });
+            $(this._clone).click(
+                function() {
+                    $.data($(that._core).parents('.divModelSupportPlans')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+                });
+            $(this._name).change(function() {
+                $(that._supportPlanTitle).html($(this).val());
+            });
+            $(this._key).val(PCT.randomString(15)).change();
+            $(this._expand).click(
+                function(arg) {
+                    $(that._supportPlanRegions).toggle(PCT.animation, function() {
+                        if ($(this).css('display') == 'none') {
+                            $(that._expand).html('Expand');
+                        } else {
+                            $(that._expand).html('Collapse');
+                        }
+                    });
+                });
+            $(this._addSupportPlanRegion).click(function() {
+                if ($(that._supportPlanRegions).css('display') == 'none') {
+                    $(that._supportPlanRegions).show();
+                    $(that._expand).html('Collapse');
+                }
+                that.addSupportPlanRegion();
+            });
+            $(this._supportPlanTitle).click(
+                function() {
+                    $(that._remove).toggleClass('hidden');
+                    $(that._settingsPane).toggleClass('hidden');
+                });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._rate).val($('>Rate', initialData).text()).change();
+                    $(this._default).prop('checked', ($('>Default', initialData).text() == 'true')).change();
+                    $(this._key).val('').val($('>Key', initialData).text()).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._supportPlanRegions).addClass('hidden');
+                    $(this._expand).html('Expand');
+                    $(this._remove).addClass('hidden');
+                    var that = this;
+                    $('>Regions>Region', initialData).each(function() {
+                        that.addSupportPlanRegion((new PCT.supportPlanRegion()).setRoot(that._supportPlanRegions).init(this));
+                    });
+                    return this;
+                },
+                addSupportPlanRegion:function(region) {
+                    if (region) {
+                        $('html, body').animate({
+                            scrollTop: $(region.getHead()).offset().top
+                        }, 000);
+                    } else {
+                        this.addSupportPlanRegion((new PCT.supportPlanRegion()).setRoot(this._supportPlanRegions));
+                    }
+                }
+            });
+        },
+        supportPlanRegion:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('supportPlanRegion');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _key:$('#Key', dom).get(),
+                _rate:$('#Rate', dom).get(),
+                _supportPlanRegionTitle:$('#Title', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Region>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<Rate>' + $(that._rate).val() + '</Rate>';
+                    config += '</Region>';
+                    return config;
+                }
+            });
+            $(this._remove).click(
+                function() {
+                    if (confirm('Remove region?')) {
+                        $(that._body).remove();
+                    }
+                });
+            $(this._key).change(function() {
+                $(that._supportPlanRegionTitle).html($(this).val());
+            });
+            $(this._supportPlanRegionTitle).click(
+                function() {
+                    $(that._remove).toggleClass('hidden');
+                    $(that._settingsPane).toggleClass('hidden');
+                });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._key).val($('>Key', initialData).text()).change();
+                    $(this._rate).val($('>Rate', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
                     return this;

@@ -148,6 +148,14 @@ body {
     -webkit-border-radius: 5px;
 }
 
+.divSupportPlanRegion {
+    border: 1px solid #dbd0d0;
+    margin-bottom: 10px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
 .divDependency.requireDependency {
     border-color: #62d53d;
 }
@@ -180,6 +188,11 @@ body {
 
 .divTierTitle {
     background-color: #c1c1ff;
+    color: black;
+}
+
+.divSupportPlanRegionTitle {
+    background-color: #e7e6e6;
     color: black;
 }
 
@@ -220,6 +233,12 @@ body {
     padding: 10px;
     padding-bottom: 0;
 }
+
+.divSupportPlanRegions {
+    padding: 10px;
+    padding-bottom: 0;
+}
+
 
 .titleTable {
     width: 100%;
@@ -283,6 +302,10 @@ body {
 
 .divTierTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #dadafc;
+}
+
+.divSupportPlanRegionTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #f5f5f5;
 }
 
 .divDependency.requireDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
@@ -433,7 +456,7 @@ input.validate.error {
     background-color: red;
 }
 
-.divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divTier, .divDependency {
+.divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan {
     background-color: #fff;
 }
 

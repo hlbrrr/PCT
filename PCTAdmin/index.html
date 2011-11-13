@@ -537,6 +537,9 @@
                 <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
                     Remove
                 </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
             </div>
             <div id="SettingsPane" class="divSettingsPane">
                 <div class="settingsTable">
@@ -555,6 +558,105 @@
                         <div class="settingsTableCell settingsValue">
                             <input id="Key" autocomplete="off" class="settingInput validate regionKey"
                                    validclass="unique" unique=".regionKey" uniqueroot=".divModelRegions"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Rate:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Rate" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="supportPlan">
+    <div class="divSupportPlan" id="Core">
+        <div class="divSupportPlanTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton supportPlanDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
+                <div id="AddSupportPlanRegion" class="titleTableCell titleTableCellButton">
+                    Add Region
+                </div>
+                <div id="Expand" class="titleTableCell titleTableCellButton">
+                    Collapse
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate supportPlanKey"
+                                   validclass="unique" unique=".supportPlanKey" uniqueroot=".divModelSupportPlans"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Default Rate:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Rate" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Default:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="Default" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="SupportPlanRegions" class="divSupportPlanRegions"></div>
+    </div>
+</template>
+<template id="supportPlanRegion">
+    <div class="divSupportPlanRegion" id="Core">
+        <div class="divSupportPlanRegionTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton supportPlanRegionDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
