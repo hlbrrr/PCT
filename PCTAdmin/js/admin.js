@@ -167,7 +167,7 @@
                         var minval = elem.attr('minval');
                         var maxval = elem.attr('maxval');
                         var elVal = Number(elem.val());
-                        var bl = elVal <= 0;
+                        var bl = elVal < 0;
                         if (minval && minval != '' && !isNaN(minval)) {
                             bl = elVal < minval;
                         }
@@ -1516,6 +1516,7 @@
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _remove:$('#Remove', dom).get(),
+                _defaultCurrency:$('#DefaultCurrency', dom).get(),
                 _clone:$('#Clone', dom).get(),
                 _core:$('#Core', dom).get()
             });
@@ -1525,6 +1526,7 @@
                     var config = '<Region>';
                     config += '<Name>' + $(that._name).val() + '</Name>';
                     config += '<Rate>' + $(that._rate).val() + '</Rate>';
+                    config += '<DefaultCurrency>' + $(that._defaultCurrency).val() + '</DefaultCurrency>';
                     config += '<Key>' + $(that._key).val() + '</Key>';
                     config += '</Region>';
                     return config;
@@ -1559,6 +1561,7 @@
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._rate).val($('>Rate', initialData).text()).change();
+                    $(this._defaultCurrency).val($('>DefaultCurrency', initialData).text()).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -1585,6 +1588,7 @@
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _default:$('#Default', dom).get(),
+                _minPrice:$('#MinPrice', dom).get(),
                 _clone:$('#Clone', dom).get(),
                 _core:$('#Core', dom).get()
             });
@@ -1594,6 +1598,7 @@
                 handle: '.supportPlanRegionDrag',
                 connectWith: '.divSupportPlanRegions'
             });
+            $(this._minPrice).val(0).change();
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
                     var config = '<SupportPlan>';
@@ -1601,6 +1606,7 @@
                     config += '<Key>' + $(that._key).val() + '</Key>';
                     config += '<Default>' + ($(that._default).prop('checked') ? 'true' : 'false') + '</Default>';
                     config += '<Rate>' + $(that._rate).val() + '</Rate>';
+                    config += '<MinPrice>' + $(that._minPrice).val() + '</MinPrice>';
                     config += '<Regions>';
                     $(that._supportPlanRegions).children().each(function() {
                         if ($(this).hasClass('divSupportPlanRegion'))
@@ -1659,6 +1665,7 @@
                     $(this._rate).val($('>Rate', initialData).text()).change();
                     $(this._default).prop('checked', ($('>Default', initialData).text() == 'true')).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();
+                    $(this._minPrice).val('').val($('>MinPrice', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._supportPlanRegions).addClass('hidden');
                     $(this._expand).html('Expand');
@@ -1751,6 +1758,8 @@
                 _currencyRegions:$('#CurrencyRegions', dom).get(),
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
+                _rate:$('#Rate', dom).get(),
+                _rateTitle:$('#RateTitle', dom).get(),
                 _clone:$('#Clone', dom).get(),
                 _core:$('#Core', dom).get()
             });
@@ -1765,6 +1774,7 @@
                     var config = '<Currency>';
                     config += '<Name>' + $(that._name).val() + '</Name>';
                     config += '<Symbol>' + $(that._symbol).val() + '</Symbol>';
+                    config += '<Rate>' + $(that._rate).val() + '</Rate>';
                     config += '<Regions>';
                     $(that._currencyRegions).children().each(function() {
                         if ($(this).hasClass('divCurrencyRegion'))
@@ -1789,7 +1799,9 @@
                 });
             $(this._name).change(function() {
                 $(that._currencyTitle).html($(this).val());
+                $(that._rateTitle).html('Rate (' + $(this).val() + '/USD):');
             });
+            $(this._name).val('').change();
             $(this._expand).click(
                 function(arg) {
                     $(that._currencyRegions).toggle(PCT.animation, function() {
@@ -1820,6 +1832,7 @@
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._symbol).val($('>Symbol', initialData).text()).change();
+                    $(this._rate).val($('>Rate', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._currencyRegions).addClass('hidden');
                     $(this._expand).html('Expand');
