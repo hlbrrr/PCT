@@ -272,7 +272,6 @@ public class ProductForm {
                                                     getSpinners().get(rc.getKey()).delFoc(rc.getValue());
                                                 }
                                             } else {
-                                                System.out.println("remove non  incremental");
                                                 getSpinners().get(rc.getKey()).delMin(rc.getValue());
                                             }
                                         }
@@ -305,10 +304,16 @@ public class ProductForm {
     }
 
     private void getFormFromCapacitiesGroup(JPanel parent) {
-        getFormFromCapacitiesGroup(parent, null);
+        try {
+            getFormFromCapacitiesGroup(parent, null);
+        } catch (PCTDataFormatException e) {
+
+        }
     }
 
-    private void getFormFromCapacitiesGroup(JPanel parent, CapacitiesGroup capacitiesGroup) {
+    private void getFormFromCapacitiesGroup(JPanel parent, CapacitiesGroup capacitiesGroup) throws PCTDataFormatException {
+        int addedItems = 0;
+        int addedGroups = 0;
 
         boolean isRoot = false;
         if (capacitiesGroup == null) {
@@ -378,12 +383,22 @@ public class ProductForm {
                 tmpPanel.add(cl3);
                 tmpPanel.add(cs);
                 parent.add(tmpPanel);
+                addedItems++;
             }
         }
         for (CapacitiesGroup g : capacitiesGroup.getGroups()) {
-            JPanel capacities = new JPanel();
-            getFormFromCapacitiesGroup(capacities, g);
-            parent.add(capacities);
+            JPanel capacities = null;
+            try {
+                capacities = new JPanel();
+                getFormFromCapacitiesGroup(capacities, g);
+                parent.add(capacities);
+                addedGroups++;
+            } catch (PCTDataFormatException e) {
+            }
+        }
+
+        if (addedGroups + addedItems == 0) {
+            throw new PCTDataFormatException("Empty group");
         }
     }
 

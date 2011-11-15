@@ -127,7 +127,7 @@ public class Capacity {
 
     private void setMinValue(Node minValue) throws PCTDataFormatException {
         try {
-            this.minValue = xut.getInteger(minValue);
+            this.minValue = xut.getInteger(minValue, true);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity min value is not defined correctly", e.getDetails());
         }
