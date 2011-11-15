@@ -136,6 +136,7 @@ public class Product {
         for (com.compassplus.configurationModel.Capacity c : product.getCapacities().values()) {
             if (c.getMinValue() != null && c.getMinValue() > 0) {
                 Capacity tmpCapacity = new Capacity(c, c.getKey());
+                tmpCapacity.setUser(c.getMinValue());
                 this.getCapacities().put(tmpCapacity.getKey(), tmpCapacity);
             }
         }
