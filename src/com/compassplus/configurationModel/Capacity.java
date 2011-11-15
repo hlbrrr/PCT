@@ -20,6 +20,7 @@ public class Capacity {
     private String path;
     private String name;
     private String shortName;
+    private Integer minValue;
     private Integer type;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -46,12 +47,14 @@ public class Capacity {
             this.setName(xut.getNode("Name", initialData));
             this.setShortName(xut.getNode("ShortName", initialData));
             this.setType(xut.getNode("Type", initialData));
+            this.setMinValue(xut.getNode("MinValue", initialData));
             this.setTiers(xut.getNodes("Tiers/Tier", initialData));
 
             log.info("Capacity successfully parsed: \nKey: " + this.getKey() +
                     "\nDeprecated: " + this.isDeprecated() +
                     "\nName: " + this.getName() +
                     "\nShortName: " + this.getShortName() +
+                    "\nMinValue: " + this.getMinValue() +
                     "\nType: " + this.getType());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity is not defined correctly", e.getDetails());
@@ -110,11 +113,23 @@ public class Capacity {
         return this.type;
     }
 
+    public Integer getMinValue() {
+        return this.minValue;
+    }
+
     private void setType(Node type) throws PCTDataFormatException {
         try {
             this.type = xut.getInteger(type);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity type is not defined correctly", e.getDetails());
+        }
+    }
+
+    private void setMinValue(Node minValue) throws PCTDataFormatException {
+        try {
+            this.minValue = xut.getInteger(minValue);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Capacity min value is not defined correctly", e.getDetails());
         }
     }
 

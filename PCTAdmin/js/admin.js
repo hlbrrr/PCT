@@ -1339,6 +1339,7 @@
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _tiers:$('#Tiers', dom).get(),
                 _expand:$('#Expand', dom).get(),
+                _minValue:$('#MinValue', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _clone:$('#Clone', dom).get(),
                 _core:$('#Core', dom).get()
@@ -1355,6 +1356,7 @@
                     config += '<Name>' + $(that._name).val() + '</Name>';
                     config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
                     config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<MinValue>' + $(that._minValue).val() + '</MinValue>';
                     config += '<Type>' + $(that._type).val() + '</Type>';
                     config += '<Deprecated>' + ($(that._deprecated).prop('checked') ? 'true' : 'false') + '</Deprecated>';
                     config += '<Tiers>';
@@ -1421,6 +1423,7 @@
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $(this._type).val($('>Type', initialData).text()).change();
+                    $(this._minValue).val($('>MinValue', initialData).text()).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true')).change();
                     $(this._settingsPane).addClass('hidden');

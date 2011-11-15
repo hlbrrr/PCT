@@ -43,6 +43,7 @@ public class Product {
 
     public Product(com.compassplus.configurationModel.Product product) {
         this.setProduct(product);
+        this.setCapacities(product);
     }
 
     private void init(Node initialData, Map<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
@@ -127,6 +128,16 @@ public class Product {
                 }
             }
             log.info("Successfully parsed " + this.getCapacities().size() + " capacity(ies)");
+        }
+    }
+
+    private void setCapacities(com.compassplus.configurationModel.Product product) {
+        this.getCapacities().clear();
+        for (com.compassplus.configurationModel.Capacity c : product.getCapacities().values()) {
+            if (c.getMinValue() != null && c.getMinValue() > 0) {
+                Capacity tmpCapacity = new Capacity(c, c.getKey());
+                this.getCapacities().put(tmpCapacity.getKey(), tmpCapacity);
+            }
         }
     }
 
