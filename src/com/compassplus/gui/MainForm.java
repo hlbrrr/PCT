@@ -118,7 +118,7 @@ public class MainForm {
                                                 } else {
                                                     dialog.dispose();
                                                     Proposal proposal = new Proposal(config);
-                                                    proposal.setClientName(name);
+                                                    proposal.setName(name);
                                                     addProposalForm(new ProposalForm(proposal));
                                                 }
                                             } else if (value == JOptionPane.CANCEL_OPTION) {
