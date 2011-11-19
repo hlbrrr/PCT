@@ -1802,7 +1802,7 @@
                 });
             $(this._name).change(function() {
                 $(that._currencyTitle).html($(this).val());
-                $(that._rateTitle).html('Rate (' + $(this).val() + '/USD):');
+                $(that._rateTitle).html('Rate (USD/' + $(this).val() + '):');
             });
             $(this._name).val('').change();
             $(this._expand).click(
