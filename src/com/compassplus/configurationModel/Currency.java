@@ -57,6 +57,10 @@ public class Currency {
         }
     }
 
+    public void setRate(Double rate) {
+        this.rate = rate;
+    }
+
     public String getName() {
         return name;
     }
@@ -70,7 +74,7 @@ public class Currency {
     }
 
     public String getSymbol() {
-        return symbol;
+        return symbol != null && !symbol.equals("") ? symbol : null;
     }
 
     private void setSymbol(Node symbol) throws PCTDataFormatException {
@@ -101,5 +105,10 @@ public class Currency {
             }
             log.info("Successfully parsed " + this.getAllowedRegions().size() + " allowed region(s)");
         }
+    }
+
+    @Override
+    public String toString() {
+        return this.getName();
     }
 }

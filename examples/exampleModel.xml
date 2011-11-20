@@ -2416,6 +2416,14 @@
     </Regions>
     <SupportPlans>
         <SupportPlan>
+            <Name>Enhanced</Name>
+            <Key>REG-ENHANCED</Key>
+            <Default>false</Default>
+            <Rate>0.24</Rate>
+            <MinPrice></MinPrice>
+            <Regions></Regions>
+        </SupportPlan>
+        <SupportPlan>
             <Name>Standard</Name>
             <Key>SUPP-STANDARD</Key>
             <Default>true</Default>
@@ -2429,23 +2437,22 @@
             </Regions>
         </SupportPlan>
         <SupportPlan>
-            <Name>Enhanced</Name>
-            <Key>REG-ENHANCED</Key>
-            <Default>false</Default>
-            <Rate>0.24</Rate>
-            <MinPrice></MinPrice>
-            <Regions></Regions>
-        </SupportPlan>
-        <SupportPlan>
             <Name>De Luxe</Name>
             <Key>REG-DELUXE</Key>
             <Default>false</Default>
             <Rate>0.3</Rate>
-            <MinPrice>120000</MinPrice>
+            <MinPrice>200000</MinPrice>
             <Regions></Regions>
         </SupportPlan>
     </SupportPlans>
     <Currencies>
+        <Currency>
+            <Name>USD</Name>
+            <Symbol>$</Symbol>
+            <Rate>1</Rate>
+            <Regions>
+            </Regions>
+        </Currency>
         <Currency>
             <Name>EUR</Name>
             <Symbol></Symbol>

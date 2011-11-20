@@ -356,7 +356,11 @@ public class MainForm {
 
                                                                                     Cell c2 = r.createCell(1 + cellIndex);
                                                                                     CellStyle cs2 = wb.createCellStyle();
-                                                                                    cs2.setDataFormat(s.getWorkbook().createDataFormat().getFormat("$#,##0"));
+                                                                                    String format = (getCurrentProposalForm().getProposal().getCurrency().getSymbol() != null ?
+                                                                                            "\"" + getCurrentProposalForm().getProposal().getCurrency().getSymbol() + "\" " : "") + "#,##0" +
+                                                                                            (getCurrentProposalForm().getProposal().getCurrency().getSymbol() == null ?
+                                                                                                    " \"" + getCurrentProposalForm().getProposal().getCurrency().getName() + "\"" : "");
+                                                                                    cs2.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                                                     c2.setCellStyle(cs2);
                                                                                     c2.setCellValue(p.getPrice());
                                                                                     i++;
@@ -518,7 +522,7 @@ public class MainForm {
                         allowedProjects.toArray(),
                         null);
                 if (product != null) {
-                    getCurrentProposalForm().addProductForm(new com.compassplus.proposalModel.Product((com.compassplus.configurationModel.Product) product));
+                    getCurrentProposalForm().addProductForm(new com.compassplus.proposalModel.Product((com.compassplus.configurationModel.Product) product, getCurrentProposalForm().getProposal()));
                 }
             }
         });

@@ -31,9 +31,14 @@ public class Configuration {
     private XMLUtils xut = XMLUtils.getInstance();
 
     private String userName = "test";
+    private Double maxDiscount = 0.25d;
 
     public static Configuration getInstance() {
         return ourInstance;
+    }
+
+    public Double getMaxDiscount() {
+        return maxDiscount;
     }
 
     private Configuration() {

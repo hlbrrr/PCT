@@ -3,7 +3,6 @@ package com.compassplus.configurationModel;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
-import com.sun.xml.internal.bind.v2.runtime.reflect.Accessor;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -22,6 +21,7 @@ public class SupportPlan {
     private String name;
     private Double rate;
     private Double minPrice;
+    private Boolean idefault;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
     private Map<String, Double> regionSettings = new HashMap<String, Double>(0);
@@ -38,11 +38,13 @@ public class SupportPlan {
             this.setName(xut.getNode("Name", initialData));
             this.setRate(xut.getNode("Rate", initialData));
             this.setMinPrice(xut.getNode("MinPrice", initialData));
+            this.setDefault(xut.getNode("Default", initialData));
             this.setRegionSettings(xut.getNodes("Regions/Region", initialData));
 
             log.info("Region successfully parsed: \nName: " + this.getName() +
                     "\nKey: " + this.getKey() +
                     "\nRate: " + this.getRate() +
+                    "\nDefault: " + this.isDefault() +
                     "\nMinPrice: " + this.getMinPrice());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Support plan is not defined correctly", e.getDetails());
@@ -97,6 +99,18 @@ public class SupportPlan {
         }
     }
 
+    public Boolean isDefault() {
+        return this.idefault;
+    }
+
+    private void setDefault(Node idefault) throws PCTDataFormatException {
+        try {
+            this.idefault = xut.getBoolean(idefault);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Support plan \"default\" is not defined correctly", e.getDetails());
+        }
+    }
+
     public Map<String, Double> getRegionSettings() {
         return regionSettings;
     }
@@ -120,5 +134,10 @@ public class SupportPlan {
             }
             log.info("Successfully parsed " + this.getRegionSettings().size() + " region(s)");
         }
+    }
+
+    @Override
+    public String toString() {
+        return this.getName();
     }
 }

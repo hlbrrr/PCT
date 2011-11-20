@@ -1,20 +1,14 @@
 package com.compassplus.gui;
 
 import com.compassplus.configurationModel.Module;
-import com.compassplus.configurationModel.Product;
-import com.compassplus.configurationModel.RequireCapacity;
 import com.compassplus.proposalModel.Capacity;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.geom.Line2D;
-import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,6 +19,7 @@ import java.util.Set;
  */
 public class CapacityJSpinner extends JSpinner {
     private String key;
+        private JLabel label;
 
     private class CapacitySpinnerNumberModel extends SpinnerNumberModel {
         private Number stepSize, value;
@@ -34,7 +29,6 @@ public class CapacityJSpinner extends JSpinner {
 
         private String key;
         private ProductForm form;
-        private JLabel label;
         private ArrayList<Integer> mins = new ArrayList<Integer>(0);
         private Integer incrs;
         private Integer focs;
@@ -69,7 +63,7 @@ public class CapacityJSpinner extends JSpinner {
          *                                  <code>null</code> or if the following expression is false:
          *                                  <code>minimum &lt;= value &lt;= maximum</code>
          */
-        public CapacitySpinnerNumberModel(Component parent, boolean isDeprecated, Capacity value, Comparable minimum, Comparable maximum, Number stepSize, String key, ProductForm form, JLabel label) {
+        public CapacitySpinnerNumberModel(Component parent, boolean isDeprecated, Capacity value, Comparable minimum, Comparable maximum, Number stepSize, String key, ProductForm form) {
             this.isDeprecated = isDeprecated;
             this.parent = parent;
             /*if ((value == null) || (stepSize == null)) {
@@ -83,7 +77,6 @@ public class CapacityJSpinner extends JSpinner {
             this.maximum = maximum;
             this.stepSize = stepSize;
             this.form = form;
-            this.label = label;
             this.key = key;
             this.mins.add(new Integer(0));
             if (value != null) {
@@ -145,8 +138,8 @@ public class CapacityJSpinner extends JSpinner {
          * @throws IllegalArgumentException if the following expression is false:
          *                                  <code>minimum &lt;= value &lt;= maximum</code>
          */
-        public CapacitySpinnerNumberModel(Component parent, boolean isDeprecated, Capacity value, int minimum, int maximum, int stepSize, String key, ProductForm form, JLabel label) {
-            this(parent, isDeprecated, value, new Integer(minimum), new Integer(maximum), new Integer(stepSize), key, form, label);
+        public CapacitySpinnerNumberModel(Component parent, boolean isDeprecated, Capacity value, int minimum, int maximum, int stepSize, String key, ProductForm form) {
+            this(parent, isDeprecated, value, new Integer(minimum), new Integer(maximum), new Integer(stepSize), key, form);
         }
 
 
@@ -486,12 +479,17 @@ public class CapacityJSpinner extends JSpinner {
 
     public CapacityJSpinner(Capacity initialCapacity, boolean isDeprecated, String key, ProductForm form, JLabel label) {
         super();
-        setModel(new CapacitySpinnerNumberModel(form.getRoot(), isDeprecated, initialCapacity, 0, Integer.MAX_VALUE, 1, key, form, label));
+        this.label = label;
+        setModel(new CapacitySpinnerNumberModel(form.getRoot(), isDeprecated, initialCapacity, 0, Integer.MAX_VALUE, 1, key, form));
         JFormattedTextField tf = ((JSpinner.DefaultEditor) this.getEditor()).getTextField();
         DefaultFormatterFactory formatterFactory = (DefaultFormatterFactory) tf.getFormatterFactory();
         DecimalFormat df = new DecimalFormat();
         ((NumberFormatter) formatterFactory.getDefaultFormatter()).setFormat(df);
         this.key = key;
+    }
+
+    public JLabel getLabel() {
+        return label;
     }
 
     public String getKey() {

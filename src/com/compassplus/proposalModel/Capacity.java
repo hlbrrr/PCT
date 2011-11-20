@@ -175,14 +175,14 @@ public class Capacity {
         return this.getVal() - this.getFoc();
     }
 
-    public Double getPrice() {
+    public Double getPrice(Product product) {
         Double price = 0d;
         if (this.getCapacity().getType().equals(1)) { // packet
             for (Tier t : this.getCapacity().getTiers()) {
                 if (t.getBound() > this.getChargeable()) {
                     break;
                 } else {
-                    price = t.getPrice();
+                    price = t.getPrice() * product.getProposal().getCurrencyRate();
                 }
             }
             price = CommonUtils.getInstance().toNextThousand(price * this.getChargeable());
@@ -193,7 +193,7 @@ public class Capacity {
                 if (t.getBound() > this.getChargeable()) {
                     current = this.getChargeable() - used;
                 }
-                price += t.getPrice() * current;
+                price += t.getPrice() * product.getProposal().getCurrencyRate() * current;
                 used += current;
                 if (t.getBound() > this.getChargeable()) {
                     break;

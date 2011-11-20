@@ -22,14 +22,15 @@ public class ProposalForm {
     private JTabbedPane productsTabs;
     private ProductForm currentProductForm;
     private DecimalFormat df = new DecimalFormat();
+    private SummaryForm summaryForm;
 
     public ProposalForm(Proposal proposal) {
         this.proposal = proposal;
         productsTabs = new JTabbedPane(JTabbedPane.BOTTOM, JTabbedPane.WRAP_TAB_LAYOUT);
         productsTabs.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                ProductJPanel p = (ProductJPanel) productsTabs.getSelectedComponent();
-                if (p != null) {
+                if (productsTabs.getSelectedComponent() instanceof ProductJPanel) {
+                    ProductJPanel p = (ProductJPanel) productsTabs.getSelectedComponent();
                     setCurrentProductForm(p.getParentForm());
                 } else {
                     setCurrentProductForm(null);
@@ -37,6 +38,7 @@ public class ProposalForm {
             }
         });
 
+        addSummaryPage(proposal);
         for (String key : proposal.getConfig().getProducts().keySet()) {
             if (proposal.getProducts().containsKey(key)) {
                 addProductForm(proposal.getProducts().get(key));
@@ -46,6 +48,8 @@ public class ProposalForm {
         mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         mainPanel.add(productsTabs, BorderLayout.CENTER);
+
+        productsTabs.setSelectedIndex(0);
     }
 
     private void setCurrentProductForm(ProductForm currentProductForm) {
@@ -69,14 +73,34 @@ public class ProposalForm {
         return proposal;
     }
 
+    private void addSummaryPage(Proposal proposal) {
+        summaryForm = new SummaryForm(proposal, new PCTChangedListener() {
+            public void act(Object src) {
+                if (src instanceof SummaryForm) {
+                    for (Component c : productsTabs.getComponents()) {
+                        if (c instanceof ProductJPanel) {
+                            ((ProductJPanel) c).getParentForm().update();
+                        }
+                    }
+                }
+            }
+        }, df);
+        productsTabs.addTab("Summary", summaryForm.getRoot());
+        productsTabs.setSelectedComponent(summaryForm.getRoot());
+    }
+
     public void addProductForm(Product product) {
         ProductForm productForm = new ProductForm(product, new PCTChangedListener() {
             public void act(Object src) {
                 if (src instanceof ProductForm) {
                     ProductForm pf = (ProductForm) src;
+                    summaryForm.update();
                     Integer ti = productsTabs.indexOfComponent(pf.getRoot());
                     if (ti >= 0) {
-                        productsTabs.setTitleAt(ti, pf.getProduct().getName() + " ($" + df.format(pf.getProduct().getPrice()) + ")");
+                        productsTabs.setTitleAt(ti, pf.getProduct().getName() + " (" + (getProposal().getCurrency().getSymbol() != null ?
+                                getProposal().getCurrency().getSymbol() + " " : "") + "" + df.format(pf.getProduct().getPrice()) + (getProposal().getCurrency().getSymbol() == null ?
+                                " " + getProposal().getCurrency().getName() : "") + ")");
+
                     }
                 }
             }
@@ -90,6 +114,7 @@ public class ProposalForm {
     public void delProductForm(ProductForm productForm) {
         this.getProposal().delProduct(productForm.getProduct());
         productsTabs.remove(productForm.getRoot());
+        summaryForm.update();
     }
 
     public JTabbedPane getProductsTabs() {

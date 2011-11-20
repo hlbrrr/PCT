@@ -90,4 +90,9 @@ public class Region {
             throw new PCTDataFormatException("Region default currency is not defined correctly", e.getDetails());
         }
     }
+
+    @Override
+    public String toString(){
+        return this.getName();
+    }
 }

@@ -2,17 +2,17 @@ package com.compassplus.proposalModel;
 
 import com.compassplus.configurationModel.Configuration;
 import com.compassplus.configurationModel.Currency;
-import com.compassplus.configurationModel.Region;
 import com.compassplus.configurationModel.SupportPlan;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,8 +26,9 @@ public class Proposal {
 
     private Configuration config;
     private String name = "";
+    private String date = "";
     private String clientName = "";
-    private String userName = "";
+    private String userName;
     private String projectName = "";
     private Double currencyRate;
     private Map<String, Product> products = new LinkedHashMap<String, Product>();
@@ -39,6 +40,7 @@ public class Proposal {
 
     public Proposal(Configuration config) {
         this.setConfig(config);
+        userName = config.getUserName();
     }
 
     public boolean containsDeprecated() {
@@ -64,6 +66,7 @@ public class Proposal {
             this.setProjectName(xut.getNode("/root/ProjectName", initialData));
             this.setCurrencyRate(xut.getNode("/root/CurrencyRate", initialData));
             this.setUserName(xut.getNode("/root/UserName", initialData));
+            this.setDate(xut.getNode("/root/Date", initialData));
             this.setRegion(xut.getNode("/root/Region", initialData), config.getRegions());
             this.setCurrency(xut.getNode("/root/Currency", initialData), config.getCurrencies());
             this.setSupportPlan(xut.getNode("/root/SupportPlan", initialData), config.getSupportPlans());
@@ -74,7 +77,7 @@ public class Proposal {
         }
     }
 
-    private void setSupportPlan(com.compassplus.configurationModel.SupportPlan supportPlan) {
+    public void setSupportPlan(com.compassplus.configurationModel.SupportPlan supportPlan) {
         this.supportPlan = supportPlan;
     }
 
@@ -94,7 +97,7 @@ public class Proposal {
         }
     }
 
-    private void setCurrency(com.compassplus.configurationModel.Currency currency) {
+    public void setCurrency(com.compassplus.configurationModel.Currency currency) {
         this.currency = currency;
     }
 
@@ -114,7 +117,7 @@ public class Proposal {
         }
     }
 
-    private void setRegion(com.compassplus.configurationModel.Region region) {
+    public void setRegion(com.compassplus.configurationModel.Region region) {
         this.region = region;
     }
 
@@ -170,6 +173,24 @@ public class Proposal {
         }
     }
 
+    public String getDate() {
+        if (this.date != "") {
+            return this.date;
+        } else {
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = new Date();
+            return dateFormat.format(date);
+        }
+    }
+
+    private void setDate(Node date) throws PCTDataFormatException {
+        try {
+            this.date = xut.getString(date, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Proposal date is not defined correctly", e.getDetails());
+        }
+    }
+
     public String getProjectName() {
         return this.projectName;
     }
@@ -182,8 +203,12 @@ public class Proposal {
         }
     }
 
-    private Double getCurrencyRate() {
+    public Double getCurrencyRate() {
         return this.currencyRate != null ? this.currencyRate : 0d;
+    }
+
+    public void setCurrencyRate(Double currencyRate) {
+        this.currencyRate = currencyRate;
     }
 
     private void setCurrencyRate(Node currencyRate) throws PCTDataFormatException {
@@ -204,7 +229,7 @@ public class Proposal {
             log.info("Found " + products.getLength() + " product(s)");
             for (int i = 0; i < products.getLength(); i++) {
                 try {
-                    Product tmpProduct = new Product(products.item(i), this.getConfig().getProducts());
+                    Product tmpProduct = new Product(products.item(i), this.getConfig().getProducts(), this);
                     this.getProducts().put(tmpProduct.getName(), tmpProduct);
                 } catch (PCTDataFormatException e) {
                     log.error(e);
@@ -219,13 +244,22 @@ public class Proposal {
     }
 
     public void delProduct(Product product) {
-        System.out.println(this.getProducts().containsValue(product) + " b" + this.getProducts().size());
+
         this.getProducts().remove(product.getName());
-        System.out.println("a" + this.getProducts().size());
+
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setClientName(String clientName) {
+
+        this.clientName = clientName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
     @Override
@@ -236,6 +270,7 @@ public class Proposal {
         sb.append("<ClientName>").append(this.getClientName()).append("</ClientName>");
         sb.append("<ProjectName>").append(this.getProjectName()).append("</ProjectName>");
         sb.append("<UserName>").append(this.getConfig().getUserName()).append("</UserName>");
+        sb.append("<Date>").append(this.getDate()).append("</Date>");
         sb.append("<CurrencyRate>").append(this.getCurrencyRate()).append("</CurrencyRate>");
         sb.append("<Region>").append(this.getRegion().getKey()).append("</Region>");
         sb.append("<Currency>").append(this.getCurrency().getName()).append("</Currency>");
@@ -260,11 +295,20 @@ public class Proposal {
         this.config = config;
     }
 
-    public Workbook getWorkbook() {
-        Workbook wb = new HSSFWorkbook();
-        for (Product p : this.getProducts().values()) {
-            p.createSheet(wb);
+
+    public Double getPrice() {
+        Double ret = 0d;
+        for (Product p : this.products.values()) {
+            ret += p.getPrice();
         }
-        return wb;
+        return ret;
+    }
+
+    public boolean isPrimarySale() {
+        boolean primary = true;
+        for (Product p : this.products.values()) {
+            primary &= !p.getSecondarySale();
+        }
+        return primary;
     }
 }

@@ -228,10 +228,10 @@ public class Module {
     }
 
     public Double getPrice(com.compassplus.proposalModel.Product product) {
-        Double price = product.getProduct().getMaximumFunctionalityPrice() * this.getWeight() / product.getProduct().getTotalWeight(); // primary sales price
+        Double price = product.getProduct().getMaximumFunctionalityPrice() * product.getProposal().getCurrencyRate() * this.getWeight() / product.getProduct().getTotalWeight(); // primary sales price
         if (product.getSecondarySale()) {
             if (this.getSecondarySalesPrice() != null) {
-                price = this.getSecondarySalesPrice();
+                price = this.getSecondarySalesPrice() * product.getProposal().getCurrencyRate();
             } else {
                 price *= this.getSecondarySalesRate();
             }

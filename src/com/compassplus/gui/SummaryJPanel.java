@@ -9,19 +9,20 @@ import java.awt.*;
  * Date: 14.10.11
  * Time: 1:15
  */
-public class ProductJPanel extends JPanel {
-    private ProductForm parentForm;
+public class SummaryJPanel extends JPanel {
+    private SummaryForm parentForm;
 
-    public ProductJPanel(ProductForm parentForm) {
+    public SummaryJPanel(SummaryForm parentForm) {
         super();
         this.parentForm = parentForm;
     }
-    public ProductJPanel(LayoutManager layout, ProductForm parentForm) {
+
+    public SummaryJPanel(LayoutManager layout, SummaryForm parentForm) {
         super(layout);
         this.parentForm = parentForm;
     }
 
-    public ProductForm getParentForm() {
+    public SummaryForm getParentForm() {
         return parentForm;
     }
 

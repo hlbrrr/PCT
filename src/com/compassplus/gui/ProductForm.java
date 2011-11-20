@@ -55,8 +55,30 @@ public class ProductForm {
     private void reloadModulesPrices() {
         for (ModuleJCheckbox cb : getCheckBoxes().values()) {
             Module m = getProduct().getProduct().getModules().get(cb.getKey());
-            cb.setText((m.isDeprecated() ? "[DEPRECATED] " : "") + m.getName() + " ($" + df.format(m.getPrice(getProduct())) + ")");
+            cb.setText((m.isDeprecated() ? "[DEPRECATED] " : "") + m.getName() + " (" + (product.getProposal().getCurrency().getSymbol() != null ?
+                    product.getProposal().getCurrency().getSymbol() + " " : "") + "" + df.format(m.getPrice(getProduct())) + (product.getProposal().getCurrency().getSymbol() == null ?
+                    " " + product.getProposal().getCurrency().getName() : "") + ")");
         }
+    }
+
+    private void reloadCapacitiesPrices() {
+        for (CapacityJSpinner cs : getSpinners().values()) {
+            reloadCapacitiesPrices(cs);
+        }
+    }
+
+    private void reloadCapacitiesPrices(CapacityJSpinner cas) {
+        Double newPrice = 0d;
+
+        Capacity c = getProduct().getProduct().getCapacities().get(cas.getKey());
+        com.compassplus.proposalModel.Capacity cP = getProduct().getCapacities().get(cas.getKey());
+        if (cP != null) {
+            newPrice = cP.getPrice(getProduct());
+        }
+        cas.getLabel().setText((c.isDeprecated() ? "[DEPRECATED] " : "") + c.getName() + " (" + (product.getProposal().getCurrency().getSymbol() != null ?
+                product.getProposal().getCurrency().getSymbol() + " " : "") + "" + df.format(newPrice) + (product.getProposal().getCurrency().getSymbol() == null ?
+                " " + product.getProposal().getCurrency().getName() : "") + ")");
+
     }
 
     private void initForm() {
@@ -354,7 +376,7 @@ public class ProductForm {
                                     cl3.setText("");
                                     if (getProduct().getCapacities().containsKey(src.getKey())) {
                                         com.compassplus.proposalModel.Capacity c = getProduct().getCapacities().get(src.getKey());
-                                        newPrice = c.getPrice();
+                                        newPrice = c.getPrice(getProduct());
                                         if ((c.getVal() - c.getFoc() - c.getUser()) > 0) {
                                             cl1.setText("Required by module(s): " + (c.getVal() - c.getFoc() - c.getUser()));
                                         }
@@ -365,7 +387,7 @@ public class ProductForm {
                                             cl3.setText("Total: " + c.getVal());
                                         }
                                     }
-                                    cl.setText((c.isDeprecated() ? "[DEPRECATED] " : "") + c.getName() + " ($" + df.format(newPrice) + ")");
+                                    reloadCapacitiesPrices(cs);
                                     reloadProductPrice();
                                 }
                             });
@@ -408,5 +430,11 @@ public class ProductForm {
 
     public JPanel getRoot() {
         return mainPanel;
+    }
+
+    public void update() {
+        this.reloadModulesPrices();
+        this.reloadCapacitiesPrices();
+        this.reloadProductPrice();
     }
 }
