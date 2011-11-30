@@ -288,7 +288,7 @@ public class SummaryForm {
             rateLabel = new JLabel();
             rateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            rateField = new JSpinner(new SpinnerNumberModel(0, 0, 10000000d, 0.001d));
+            rateField = new JSpinner(new SpinnerNumberModel(0, 0, 10000000d, 0.01d));
             rateField.setMaximumSize(new Dimension(rateField.getMaximumSize().width, 23));
             rateField.setMinimumSize(new Dimension(rateField.getMinimumSize().width, 23));
             rateField.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -395,14 +395,14 @@ public class SummaryForm {
     }
 
     private void curChanged() {
-        JComboBox src = currencyField;
-        getProposal().setCurrency((Currency) src.getSelectedItem());
-        rateField.setValue(((Currency) src.getSelectedItem()).getRate());
-        rateLabel.setText("Currency rate (USD/" + ((Currency) src.getSelectedItem()).getName() + ")");
-        reloadPrices();
-
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                JComboBox src = currencyField;
+                getProposal().setCurrency((Currency) src.getSelectedItem());
+                rateField.setValue(((Currency) src.getSelectedItem()).getRate());
+                rateLabel.setText("Currency rate (USD/" + ((Currency) src.getSelectedItem()).getName() + ")");
+                reloadPrices();
+
                 initSupportPlans(getProposal().getSupportPlan());
             }
         });
@@ -437,13 +437,7 @@ public class SummaryForm {
             supportPlanField.removeAllItems();
             SupportPlan defaultPlan = null;
             for (SupportPlan sp : getProposal().getConfig().getSupportPlans().values()) {
-                /*if (sp.getMinPrice() != null && getProposal().isPrimarySale()) {
-                    if (getProposal().getPrice() >= sp.getMinPrice() * getProposal().getCurrencyRate()) {
-                        supportPlanField.addItem(sp);
-                    }
-                } else {*/
                 supportPlanField.addItem(sp);
-                /*}*/
                 if (sp.isDefault()) {
                     defaultPlan = sp;
                 }
