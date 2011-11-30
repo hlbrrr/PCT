@@ -171,6 +171,7 @@ public class MainForm {
                                     JOptionPane.showMessageDialog(getRoot(), "Selected proposal contains deprecated module(s) or capacity(ies).", "Warning", JOptionPane.INFORMATION_MESSAGE);
                                 }
                             } catch (Exception exception) {
+                                exception.printStackTrace();
                                 if (exception instanceof PCTDataFormatException) {
                                     Logger.getInstance().error(exception);
                                 }

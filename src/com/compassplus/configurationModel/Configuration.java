@@ -32,6 +32,7 @@ public class Configuration {
 
     private String userName = "test";
     private Double maxDiscount = 0.25d;
+    private Double maxSupportDiscount = 0.30d;
 
     public static Configuration getInstance() {
         return ourInstance;
@@ -39,6 +40,9 @@ public class Configuration {
 
     public Double getMaxDiscount() {
         return maxDiscount;
+    }
+    public Double getMaxSupportDiscount() {
+        return maxSupportDiscount;
     }
 
     private Configuration() {
@@ -180,4 +184,5 @@ public class Configuration {
         }
 
     }
+
 }

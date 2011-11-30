@@ -85,6 +85,18 @@ public class Proposal {
         return this.supportPlan;
     }
 
+    public Double getSupportRate() {
+        SupportPlan plan = getSupportPlan();
+        Double rate = 0d;
+        if (plan != null) {
+            rate = plan.getRate();
+            if (plan.getRegionSettings().containsKey(getRegion().getKey())) {
+                rate = plan.getRegionSettings().get(getRegion().getKey());
+            }
+        }
+        return rate;
+    }
+
     private void setSupportPlan(Node supportPlan, Map<String, com.compassplus.configurationModel.SupportPlan> allowedSupportPlans) throws PCTDataFormatException {
         try {
             String supportPlanString = xut.getString(supportPlan);

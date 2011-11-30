@@ -64,6 +64,10 @@ public class CommonUtils {
         return Math.ceil(val / 1000) * 1000;
     }
 
+    public Double toNextInt(Double val) {
+        return Math.ceil(val);
+    }
+
     public String formatDouble(Double val) {
         return formatDouble.format(val);
     }

@@ -5,6 +5,7 @@ import com.compassplus.configurationModel.Region;
 import com.compassplus.configurationModel.SupportPlan;
 import com.compassplus.proposalModel.Product;
 import com.compassplus.proposalModel.Proposal;
+import com.compassplus.utils.CommonUtils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -27,7 +28,10 @@ import java.text.DecimalFormat;
 public class SummaryForm {
     private Proposal proposal;
     private JPanel mainPanel;
-    private JPanel settingsPanel;
+    private JPanel settingsPanelLeft;
+    private JPanel settingsPanelRight;
+    private JPanel settingsPanelCenter;
+    private JPanel settingsWrap;
     private JComboBox currencyField;
     private JLabel rateLabel;
     private JSpinner rateField;
@@ -42,13 +46,48 @@ public class SummaryForm {
         this.df = df;
         this.proposal = proposal;
         mainPanel = new SummaryJPanel(this);
-        settingsPanel = new JPanel();
+        settingsPanelLeft = new JPanel();
+        settingsPanelCenter = new JPanel();
+        settingsPanelRight = new JPanel();
+        settingsWrap = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        JScrollPane scroll = new JScrollPane(settingsPanel);
+        JScrollPane scroll = new JScrollPane(settingsWrap);
         mainPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
         mainPanel.add(scroll, BorderLayout.CENTER);
-        settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.Y_AXIS));
-        settingsPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
+        settingsWrap.setLayout(new GridBagLayout());
+        productsTable = new JPanel(new GridBagLayout());
+        productsTable.setMinimumSize(new Dimension(0, 0));
+        productsTable.setBorder(new EmptyBorder(0, 8, 4, 8));
+        {
+            GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 0;
+            c.gridy = 0;
+            c.weightx = 1 / 3d;
+            c.fill = GridBagConstraints.BOTH;
+            c.anchor = GridBagConstraints.NORTHWEST;
+            settingsWrap.add(settingsPanelLeft, c);
+
+            c.gridx++;
+            c.anchor = GridBagConstraints.NORTH;
+            settingsWrap.add(settingsPanelCenter, c);
+
+            c.gridx++;
+            c.anchor = GridBagConstraints.NORTHEAST;
+            settingsWrap.add(settingsPanelRight, c);
+
+            c.gridy = 1;
+            c.gridx = 0;
+            c.weightx = 1;
+            c.weighty = 1;
+            c.gridwidth = 3;
+            settingsWrap.add(productsTable, c);
+        }
+        settingsPanelLeft.setLayout(new BoxLayout(settingsPanelLeft, BoxLayout.Y_AXIS));
+        settingsPanelLeft.setBorder(new EmptyBorder(4, 4, 4, 4));
+        settingsPanelCenter.setLayout(new BoxLayout(settingsPanelCenter, BoxLayout.Y_AXIS));
+        settingsPanelCenter.setBorder(new EmptyBorder(4, 4, 4, 4));
+        settingsPanelRight.setLayout(new BoxLayout(settingsPanelRight, BoxLayout.Y_AXIS));
+        settingsPanelRight.setBorder(new EmptyBorder(4, 4, 4, 4));
         initForm(proposal);
     }
 
@@ -57,6 +96,78 @@ public class SummaryForm {
     }
 
     private void initForm(Proposal proposal) {
+        {
+            JLabel userLabel = new JLabel("Proposal created by");
+            userLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            JTextField userField = new JTextField(getProposal().getUserName());
+            userField.setEnabled(false);
+            userField.setAlignmentX(Component.LEFT_ALIGNMENT);
+            userField.setMaximumSize(new Dimension(userField.getMaximumSize().width, 23));
+            userField.setMinimumSize(new Dimension(userField.getMinimumSize().width, 23));
+
+            JPanel tmpPanel = new JPanel();
+            tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
+            tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
+            tmpPanel.add(userLabel);
+            tmpPanel.add(userField);
+            settingsPanelLeft.add(tmpPanel);
+        }
+        {
+            JSpinner maxDiscountField = new JSpinner(new SpinnerNumberModel(0, 0, 0, 0));
+            JLabel maxDiscountLabel = new JLabel("Max. product discount (%)");
+            maxDiscountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            maxDiscountField.setValue((int) (getProposal().getConfig().getMaxDiscount() * 100));
+            maxDiscountField.setEnabled(false);
+            maxDiscountField.setAlignmentX(Component.LEFT_ALIGNMENT);
+            maxDiscountField.setMaximumSize(new Dimension(maxDiscountField.getMaximumSize().width, 23));
+            maxDiscountField.setMinimumSize(new Dimension(maxDiscountField.getMinimumSize().width, 23));
+
+            JPanel tmpPanel = new JPanel();
+            tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
+            tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
+            tmpPanel.add(maxDiscountLabel);
+            tmpPanel.add(maxDiscountField);
+
+            JSpinner maxSupportDiscountField = new JSpinner(new SpinnerNumberModel(0, 0, 0, 0));
+            JLabel maxSupportDiscountLabel = new JLabel("Max. support discount (%)");
+            maxSupportDiscountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            maxSupportDiscountField.setValue((int) (getProposal().getConfig().getMaxSupportDiscount() * 100));
+            maxSupportDiscountField.setEnabled(false);
+            maxSupportDiscountField.setAlignmentX(Component.LEFT_ALIGNMENT);
+            maxSupportDiscountField.setMaximumSize(new Dimension(maxSupportDiscountField.getMaximumSize().width, 23));
+            maxSupportDiscountField.setMinimumSize(new Dimension(maxSupportDiscountField.getMinimumSize().width, 23));
+
+            JPanel tmpPanel2 = new JPanel();
+            tmpPanel2.setLayout(new BoxLayout(tmpPanel2, BoxLayout.Y_AXIS));
+            tmpPanel2.setBorder(new EmptyBorder(4, 4, 4, 4));
+            tmpPanel2.add(maxSupportDiscountLabel);
+            tmpPanel2.add(maxSupportDiscountField);
+
+
+            /*JPanel discounts = new JPanel(new GridBagLayout());
+
+            {
+                GridBagConstraints c = new GridBagConstraints();
+                c.gridx = 0;
+                c.gridy = 0;
+                c.weightx = 0.5;
+                c.fill = GridBagConstraints.BOTH;
+                c.anchor = GridBagConstraints.NORTHWEST;
+                discounts.add(tmpPanel, c);
+
+                c.gridx = 1;
+                c.anchor = GridBagConstraints.NORTHEAST;
+                discounts.add(tmpPanel2, c);
+
+            }*/
+
+
+            settingsPanelCenter.add(tmpPanel);
+            settingsPanelRight.add(tmpPanel2);
+        }
         {
             JLabel clientNameLabel = new JLabel("Client name");
             clientNameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -81,14 +192,15 @@ public class SummaryForm {
             });
 
             clientNameField.setAlignmentX(Component.LEFT_ALIGNMENT);
-            clientNameField.setMaximumSize(new Dimension(clientNameField.getMaximumSize().width, clientNameField.getMinimumSize().height));
+            clientNameField.setMaximumSize(new Dimension(clientNameField.getMaximumSize().width, 23));
+            clientNameField.setMinimumSize(new Dimension(clientNameField.getMinimumSize().width, 23));
 
             JPanel tmpPanel = new JPanel();
             tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
             tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
             tmpPanel.add(clientNameLabel);
             tmpPanel.add(clientNameField);
-            settingsPanel.add(tmpPanel);
+            settingsPanelLeft.add(tmpPanel);
         }
         {
             JLabel projectNameLabel = new JLabel("Project name");
@@ -119,14 +231,15 @@ public class SummaryForm {
                 }
             });
             projectNameField.setAlignmentX(Component.LEFT_ALIGNMENT);
-            projectNameField.setMaximumSize(new Dimension(projectNameField.getMaximumSize().width, projectNameField.getMinimumSize().height));
+            projectNameField.setMaximumSize(new Dimension(projectNameField.getMaximumSize().width, 23));
+            projectNameField.setMinimumSize(new Dimension(projectNameField.getMinimumSize().width, 23));
 
             JPanel tmpPanel = new JPanel();
             tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
             tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
             tmpPanel.add(projectNameLabel);
             tmpPanel.add(projectNameField);
-            settingsPanel.add(tmpPanel);
+            settingsPanelCenter.add(tmpPanel);
         }
         {
             JLabel regionLabel = new JLabel("Region");
@@ -137,7 +250,7 @@ public class SummaryForm {
                 public void actionPerformed(ActionEvent e) {
                     JComboBox src = (JComboBox) e.getSource();
                     getProposal().setRegion((Region) src.getSelectedItem());
-                    initCurrency(null);
+                    initCurrency(getProposal().getConfig().getCurrencies().get(getProposal().getRegion().getDefaultCurrencyName()));
                     initPlanRate();
                 }
             });
@@ -146,12 +259,13 @@ public class SummaryForm {
 
             regionField.setAlignmentX(Component.LEFT_ALIGNMENT);
             regionField.setMaximumSize(new Dimension(regionField.getMaximumSize().width, 23));
+            regionField.setMinimumSize(new Dimension(regionField.getMinimumSize().width, 23));
             JPanel tmpPanel = new JPanel();
             tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
             tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
             tmpPanel.add(regionLabel);
             tmpPanel.add(regionField);
-            settingsPanel.add(tmpPanel);
+            settingsPanelLeft.add(tmpPanel);
         }
         {
             JLabel dateLabel = new JLabel("Creation date");
@@ -160,37 +274,23 @@ public class SummaryForm {
             JTextField dateField = new JTextField(getProposal().getDate());
             dateField.setEnabled(false);
             dateField.setAlignmentX(Component.LEFT_ALIGNMENT);
-            dateField.setMaximumSize(new Dimension(dateField.getMaximumSize().width, dateField.getMinimumSize().height));
+            dateField.setMaximumSize(new Dimension(dateField.getMaximumSize().width, 23));
+            dateField.setMinimumSize(new Dimension(dateField.getMinimumSize().width, 23));
 
             JPanel tmpPanel = new JPanel();
             tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
             tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
             tmpPanel.add(dateLabel);
             tmpPanel.add(dateField);
-            settingsPanel.add(tmpPanel);
-        }
-        {
-            JLabel userLabel = new JLabel("Proposal created by");
-            userLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-            JTextField userField = new JTextField(getProposal().getUserName());
-            userField.setEnabled(false);
-            userField.setAlignmentX(Component.LEFT_ALIGNMENT);
-            userField.setMaximumSize(new Dimension(userField.getMaximumSize().width, userField.getMinimumSize().height));
-
-            JPanel tmpPanel = new JPanel();
-            tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
-            tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
-            tmpPanel.add(userLabel);
-            tmpPanel.add(userField);
-            settingsPanel.add(tmpPanel);
+            settingsPanelRight.add(tmpPanel);
         }
         {
             rateLabel = new JLabel();
             rateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
             rateField = new JSpinner(new SpinnerNumberModel(0, 0, 10000000d, 0.001d));
-            rateField.setMaximumSize(new Dimension(rateField.getMaximumSize().width, rateField.getMinimumSize().height));
+            rateField.setMaximumSize(new Dimension(rateField.getMaximumSize().width, 23));
+            rateField.setMinimumSize(new Dimension(rateField.getMinimumSize().width, 23));
             rateField.setAlignmentX(Component.LEFT_ALIGNMENT);
 
             rateField.addChangeListener(new ChangeListener() {
@@ -235,22 +335,26 @@ public class SummaryForm {
 
             currencyField.setAlignmentX(Component.LEFT_ALIGNMENT);
             currencyField.setMaximumSize(new Dimension(currencyField.getMaximumSize().width, 23));
+            currencyField.setMinimumSize(new Dimension(currencyField.getMinimumSize().width, 23));
             JPanel tmpPanel2 = new JPanel();
             tmpPanel2.setLayout(new BoxLayout(tmpPanel2, BoxLayout.Y_AXIS));
             tmpPanel2.setBorder(new EmptyBorder(4, 4, 4, 4));
             tmpPanel2.add(currencyLabel);
             tmpPanel2.add(currencyField);
-            settingsPanel.add(tmpPanel2);
-            settingsPanel.add(tmpPanel);
+            settingsPanelCenter.add(tmpPanel2);
+            settingsPanelRight.add(tmpPanel);
         }
+
+
         {
-            JLabel planRateLabel = new JLabel("Support plan rate");
+            JLabel planRateLabel = new JLabel("Support plan rate (%)");
             planRateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            planRateField = new JSpinner(new SpinnerNumberModel(0d, 0d, 0d, 0d));
+            planRateField = new JSpinner(new SpinnerNumberModel(0, 0, 0, 0));
             planRateField.setEnabled(false);
             planRateField.setAlignmentX(Component.LEFT_ALIGNMENT);
-            planRateField.setMaximumSize(new Dimension(planRateField.getMaximumSize().width, planRateField.getMinimumSize().height));
+            planRateField.setMaximumSize(new Dimension(planRateField.getMaximumSize().width, 23));
+            planRateField.setMinimumSize(new Dimension(planRateField.getMinimumSize().width, 23));
 
             JPanel tmpPanel = new JPanel();
             tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
@@ -277,35 +381,17 @@ public class SummaryForm {
 
             supportPlanField.setAlignmentX(Component.LEFT_ALIGNMENT);
             supportPlanField.setMaximumSize(new Dimension(supportPlanField.getMaximumSize().width, 23));
+            supportPlanField.setMinimumSize(new Dimension(supportPlanField.getMinimumSize().width, 23));
             JPanel tmpPanel2 = new JPanel();
             tmpPanel2.setLayout(new BoxLayout(tmpPanel2, BoxLayout.Y_AXIS));
             tmpPanel2.setBorder(new EmptyBorder(4, 4, 4, 4));
             tmpPanel2.add(supportPlanLabel);
             tmpPanel2.add(supportPlanField);
-            settingsPanel.add(tmpPanel2);
-            settingsPanel.add(tmpPanel);
+            settingsPanelLeft.add(tmpPanel2);
+            settingsPanelCenter.add(tmpPanel);
         }
-        {
-            JLabel maxDiscountLabel = new JLabel("Maximum discount");
-            maxDiscountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-            JSpinner maxDiscountField = new JSpinner(new SpinnerNumberModel(0d,0d,0d,0d));
-            maxDiscountField.setValue(getProposal().getConfig().getMaxDiscount());
-            maxDiscountField.setEnabled(false);
-            maxDiscountField.setAlignmentX(Component.LEFT_ALIGNMENT);
-            maxDiscountField.setMaximumSize(new Dimension(planRateField.getMaximumSize().width, planRateField.getMinimumSize().height));
-
-            JPanel tmpPanel = new JPanel();
-            tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
-            tmpPanel.setBorder(new EmptyBorder(4, 4, 20, 4));
-            tmpPanel.add(maxDiscountLabel);
-            tmpPanel.add(maxDiscountField);
-            settingsPanel.add(tmpPanel);
-        }
+        //maxDiscountField.setMaximumSize(new Dimension(planRateField.getMaximumSize().width, planRateField.getMinimumSize().height));
         initCurrency(getProposal().getCurrency());
-        productsTable = new JPanel(new GridBagLayout());
-        productsTable.setMinimumSize(new Dimension(0, 0));
-        settingsPanel.add(productsTable);
     }
 
     private void curChanged() {
@@ -351,13 +437,13 @@ public class SummaryForm {
             supportPlanField.removeAllItems();
             SupportPlan defaultPlan = null;
             for (SupportPlan sp : getProposal().getConfig().getSupportPlans().values()) {
-                if (sp.getMinPrice() != null && getProposal().isPrimarySale()) {
+                /*if (sp.getMinPrice() != null && getProposal().isPrimarySale()) {
                     if (getProposal().getPrice() >= sp.getMinPrice() * getProposal().getCurrencyRate()) {
                         supportPlanField.addItem(sp);
                     }
-                } else {
-                    supportPlanField.addItem(sp);
-                }
+                } else {*/
+                supportPlanField.addItem(sp);
+                /*}*/
                 if (sp.isDefault()) {
                     defaultPlan = sp;
                 }
@@ -371,13 +457,8 @@ public class SummaryForm {
     }
 
     private void initPlanRate() {
-        if (supportPlanField != null) {
-            SupportPlan plan = (SupportPlan) supportPlanField.getSelectedItem();
-            Double rate = plan.getRate();
-            if (plan.getRegionSettings().containsKey(proposal.getRegion().getKey())) {
-                rate = plan.getRegionSettings().get(proposal.getRegion().getKey());
-            }
-            planRateField.setValue(rate);
+        if (planRateField != null) {
+            planRateField.setValue((int) (proposal.getSupportRate() * 100));
         }
         makeProductList();
     }
@@ -435,19 +516,17 @@ public class SummaryForm {
                     productsTable.add(panel, c);
                 }
                 if (getProposal().getRegion().getRate() != 1d) {
-                    {
-                        c.gridx++;
-                        JLabel label = new JLabel("Regional list price");
-                        JPanel panel = new JPanel();
-                        panel.add(label);
-                        panel.setBorder(border);
-                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                        productsTable.add(panel, c);
-                    }
+                    c.gridx++;
+                    JLabel label = new JLabel("Regional list price");
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                    productsTable.add(panel, c);
                 }
                 {
                     c.gridx++;
-                    JLabel label = new JLabel("Discount");
+                    JLabel label = new JLabel("Product discount (%)");
                     JPanel panel = new JPanel();
                     panel.add(label);
                     panel.setBorder(border);
@@ -457,6 +536,15 @@ public class SummaryForm {
                 {
                     c.gridx++;
                     JLabel label = new JLabel("End user price");
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                    productsTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    JLabel label = new JLabel("Support discount (%)");
                     JPanel panel = new JPanel();
                     panel.add(label);
                     panel.setBorder(border);
@@ -476,20 +564,39 @@ public class SummaryForm {
                     public void act(Object src) {
                         Double price = 0d;
                         for (Product p : getProposal().getProducts().values()) {
-                            price += p.getPrice() * getProposal().getRegion().getRate() - p.getPrice() * getProposal().getRegion().getRate() * p.getDiscount();
-
-
+                            price += p.getEndUserPrice();
                         }
                         ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?
                                 getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (getProposal().getCurrency().getSymbol() == null ?
                                 " " + getProposal().getCurrency().getName() : ""));
                     }
                 });
+                final CustomJLabel glsplabel = new CustomJLabel(new PCTChangedListener() {
+                    public void act(Object src) {
+                        if (planRateField != null) {
+                            Double price = 0d;
+                            for (Product p : getProposal().getProducts().values()) {
+                                price += p.getSupportPrice();
+                            }
+
+                            if (getProposal().isPrimarySale() && getProposal().getSupportPlan().getMinPrice() != null && getProposal().getSupportPlan().getMinPrice() > 0
+                                    && price < CommonUtils.getInstance().toNextThousand(getProposal().getSupportPlan().getMinPrice() * getProposal().getCurrencyRate())) {
+                                price = CommonUtils.getInstance().toNextThousand(getProposal().getSupportPlan().getMinPrice() * getProposal().getCurrencyRate());
+                                //panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                                ((CustomJLabel) src).setForeground(Color.red);
+                            }
+
+                            ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?
+                                    getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (getProposal().getCurrency().getSymbol() == null ?
+                                    " " + getProposal().getCurrency().getName() : ""));
+                        }
+                    }
+                });
                 for (Product p : getProposal().getProducts().values()) {
                     c.gridy++;
                     {
                         c.gridx = 0;
-                        JLabel label = new JLabel(p.getName());
+                        JLabel label = new JLabel(!"".equals(p.getProduct().getShortName()) ? p.getProduct().getShortName() : p.getName());
                         JPanel panel = new JPanel();
                         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                         label.setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -549,7 +656,7 @@ public class SummaryForm {
                     final CustomJLabel eulabel = new CustomJLabel(new PCTChangedListener() {
                         public void act(Object src) {
                             Double price = 0d;
-                            price = prod.getPrice() * getProposal().getRegion().getRate() - prod.getPrice() * getProposal().getRegion().getRate() * prod.getDiscount();
+                            price = prod.getEndUserPrice();
 
                             ((CustomJLabel) src).setText((prod.getProposal().getCurrency().getSymbol() != null ?
                                     prod.getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (prod.getProposal().getCurrency().getSymbol() == null ?
@@ -558,15 +665,14 @@ public class SummaryForm {
                     });
                     {
                         c.gridx++;
-                        final JSpinner sp = new JSpinner(new SpinnerNumberModel(prod.getDiscount().doubleValue(), 0d, getProposal().getConfig().getMaxDiscount().doubleValue(), 0.001d));
+                        final JSpinner sp = new JSpinner(new SpinnerNumberModel((int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1));
                         sp.addChangeListener(new ChangeListener() {
                             public void stateChanged(ChangeEvent e) {
-
                                 final ChangeEvent ev = e;
                                 SwingUtilities.invokeLater(new Runnable() {
                                     public void run() {
                                         if (ev.getSource() == sp) {
-                                            prod.setDiscount((Double) sp.getValue());
+                                            prod.setDiscount((Integer) sp.getValue() / 100d);
                                             eulabel.call();
                                             gleulabel.call();
                                         }
@@ -605,22 +711,72 @@ public class SummaryForm {
                         panel.setBackground(Color.white);
                         productsTable.add(panel, c);
                     }
-                    eulabel.call();
+                    final CustomJLabel splabel = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            if (planRateField != null) {
+                                Double price = prod.getSupportPrice();
+
+                                ((CustomJLabel) src).setText((prod.getProposal().getCurrency().getSymbol() != null ?
+                                        prod.getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (prod.getProposal().getCurrency().getSymbol() == null ?
+                                        " " + prod.getProposal().getCurrency().getName() : ""));
+                            }
+                        }
+                    });
                     {
                         c.gridx++;
-                        JLabel label = new JLabel((p.getProposal().getCurrency().getSymbol() != null ?
-                                p.getProposal().getCurrency().getSymbol() + " " : "") + df.format(p.getPrice() * getProposal().getRegion().getRate() * (Double) planRateField.getValue()) + (p.getProposal().getCurrency().getSymbol() == null ?
-                                " " + p.getProposal().getCurrency().getName() : ""));
+                        final JSpinner sp = new JSpinner(new SpinnerNumberModel((int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1));
+                        sp.addChangeListener(new ChangeListener() {
+                            public void stateChanged(ChangeEvent e) {
+                                final ChangeEvent ev = e;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        if (ev.getSource() == sp) {
+                                            prod.setSupportDiscount((Integer) sp.getValue() / 100d);
+                                            splabel.call();
+                                            glsplabel.call();
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                        sp.setMaximumSize(new Dimension(sp.getMaximumSize().width, sp.getMinimumSize().height));
+
+                        JPanel panelW = new JPanel();
+                        panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                        panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        panelW.add(sp);
+                        panelW.setBackground(Color.white);
+
                         JPanel panel = new JPanel();
                         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                        sp.setAlignmentX(Component.RIGHT_ALIGNMENT);
                         panel.setPreferredSize(new Dimension(0, 32));
-                        panel.add(label);
+                        panel.add(panelW);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        /*if (planRateField != null) {
+                            label.setText((p.getProposal().getCurrency().getSymbol() != null ?
+                                    p.getProposal().getCurrency().getSymbol() + " " : "") + df.format(p.getPrice() * getProposal().getRegion().getRate() * ((Integer) planRateField.getValue() / 100d)) + (p.getProposal().getCurrency().getSymbol() == null ?
+                                    " " + p.getProposal().getCurrency().getName() : ""));
+                        }*/
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        splabel.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        splabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(splabel);
                         panel.setBorder(lborder);
                         panel.setBackground(Color.white);
                         productsTable.add(panel, c);
                     }
+                    eulabel.call();
+                    splabel.call();
                 }
                 c.gridy++;
                 c.weightx = 1;
@@ -670,21 +826,19 @@ public class SummaryForm {
                     productsTable.add(panel, c);
                 }
                 if (getProposal().getRegion().getRate() != 1d) {
-                    {
-                        c.gridx++;
-                        JLabel label = new JLabel((getProposal().getCurrency().getSymbol() != null ?
-                                getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPrice() * getProposal().getRegion().getRate()) + (getProposal().getCurrency().getSymbol() == null ?
-                                " " + getProposal().getCurrency().getName() : ""));
-                        JPanel panel = new JPanel();
-                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                        panel.setPreferredSize(new Dimension(0, 32));
-                        panel.add(label);
-                        panel.setBorder(border);
-                        panel.setBackground(Color.white);
-                        productsTable.add(panel, c);
-                    }
+                    c.gridx++;
+                    JLabel label = new JLabel((getProposal().getCurrency().getSymbol() != null ?
+                            getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPrice() * getProposal().getRegion().getRate()) + (getProposal().getCurrency().getSymbol() == null ?
+                            " " + getProposal().getCurrency().getName() : ""));
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    productsTable.add(panel, c);
                 }
                 {
                     c.gridx++;
@@ -711,23 +865,34 @@ public class SummaryForm {
                     panel.setBackground(Color.white);
                     productsTable.add(panel, c);
                 }
-                gleulabel.call();
                 {
                     c.gridx++;
-                    JLabel label = new JLabel((getProposal().getCurrency().getSymbol() != null ?
-                            getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPrice() * getProposal().getRegion().getRate() *
-                            (Double) planRateField.getValue()) + (getProposal().getCurrency().getSymbol() == null ?
-                            " " + getProposal().getCurrency().getName() : ""));
+                    JLabel label = new JLabel("");
                     JPanel panel = new JPanel();
                     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                     label.setBorder(new EmptyBorder(4, 4, 4, 4));
                     label.setAlignmentX(Component.RIGHT_ALIGNMENT);
                     panel.setPreferredSize(new Dimension(0, 32));
                     panel.add(label);
-                    panel.setBorder(lborder);
+                    panel.setBorder(border);
                     panel.setBackground(Color.white);
                     productsTable.add(panel, c);
                 }
+                {
+                    c.gridx++;
+                    JPanel panel = new JPanel();
+
+                    panel.setBackground(Color.white);
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    glsplabel.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    glsplabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(glsplabel);
+                    panel.setBorder(lborder);
+                    productsTable.add(panel, c);
+                }
+                gleulabel.call();
+                glsplabel.call();
 
                 JLabel em = new JLabel("");
                 c.weighty = 1.0;   //request any extra vertical space

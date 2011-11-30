@@ -5,7 +5,7 @@
             <Name>Test</Name>
             <ShortName>Test ShortName</ShortName>
             <MaximumFunctionalityPrice>1000</MaximumFunctionalityPrice>
-            <MinimumPrice>10</MinimumPrice>
+            <MinimumPrice>1000</MinimumPrice>
             <Modules>
                 <Module>
                     <Name>Test Module without group</Name>
@@ -39,7 +39,7 @@
         </Product>
         <Product>
             <Name>TranzWare Online</Name>
-            <ShortName></ShortName>
+            <ShortName>TWO</ShortName>
             <MaximumFunctionalityPrice>400000</MaximumFunctionalityPrice>
             <MinimumPrice>100000</MinimumPrice>
             <Modules>
@@ -647,9 +647,7 @@
                                             </SecondarySales>
                                             <Deprecated>false</Deprecated>
                                             <Dependencies>
-                                                <RequireCapacity value="1" incremental="true" freeofcharge="true">
-                                                    TWO-CAP-VISA
-                                                </RequireCapacity>
+                                                <RequireCapacity value="1" incremental="true" freeofcharge="true">TWO-CAP-VISA</RequireCapacity>
                                             </Dependencies>
                                         </Module>
                                     </Modules>

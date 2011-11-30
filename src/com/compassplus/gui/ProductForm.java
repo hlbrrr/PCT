@@ -94,6 +94,7 @@ public class ProductForm {
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 0;
+        c.gridwidth = 2;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 1.0;
         mainPanel.add(primaryCheckBox, c);
@@ -110,12 +111,14 @@ public class ProductForm {
 
         c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.NORTHWEST;
         c.weightx = 0.5;
         c.weighty = 1.0;
         c.gridx = 0;
         c.gridy = 1;
         mainPanel.add(modulesPanel, c);
         c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.NORTHEAST;
         c.weightx = 0.5;
         c.weighty = 1.0;
         c.gridx = 1;

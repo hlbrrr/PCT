@@ -2,6 +2,7 @@ package com.compassplus.proposalModel;
 
 import com.compassplus.configurationModel.CapacitiesGroup;
 import com.compassplus.configurationModel.ModulesGroup;
+import com.compassplus.configurationModel.SupportPlan;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
@@ -34,6 +35,7 @@ public class Product {
     private static DecimalFormat df = new DecimalFormat("#,##0");
     private Double discount;
     private Proposal proposal;
+    private Double supportDiscount;
 
     public Proposal getProposal() {
         return this.proposal;
@@ -56,11 +58,14 @@ public class Product {
 
             this.setName(xut.getNode("Name", initialData), allowedProducts);
             this.setDiscount(xut.getNode("Discount", initialData));
+            this.setSupportDiscount(xut.getNode("SupportDiscount", initialData));
             this.setSecondarySale(xut.getNode("SecondarySale", initialData));
             this.setModules(xut.getNodes("Modules/Module", initialData));
             this.setCapacities(xut.getNodes("Capacities/Capacity", initialData));
 
             log.info("Product successfully parsed: \nName: " + this.getName() +
+                    "\nDiscount: " + this.getDiscount() +
+                    "\nSupportDiscount: " + this.getSupportDiscount() +
                     "\nSecondarySale: " + this.getSecondarySale());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Product is not defined correctly", e.getDetails());
@@ -158,6 +163,7 @@ public class Product {
         sb.append("<Product>");
         sb.append("<Name>").append(this.getName()).append("</Name>");
         sb.append("<Discount>").append(this.getDiscount()).append("</Discount>");
+        sb.append("<SupportDiscount>").append(this.getSupportDiscount()).append("</SupportDiscount>");
         sb.append("<SecondarySale>").append(this.getSecondarySale()).append("</SecondarySale>");
         if (this.getModules() != null && this.getModules().size() > 0) {
             sb.append("<Modules>");
@@ -221,6 +227,18 @@ public class Product {
 
         Double minPrice = CommonUtils.getInstance().toNextThousand(getProduct().getMinimumPrice() * getProposal().getCurrencyRate());
         return price > minPrice ? price : minPrice;
+    }
+
+    public Double getEndUserPrice() {
+        return getRegionPrice() * (1 - getDiscount());
+    }
+
+    public Double getRegionPrice() {
+        return getPrice() * getProposal().getRegion().getRate();
+    }
+
+    public Double getSupportPrice() {
+        return CommonUtils.getInstance().toNextInt(getRegionPrice() * getProposal().getSupportRate() * (1 - getSupportDiscount()));
     }
 
     public boolean canBeEnabled(String mKey, ArrayList<String> extraKeys) {
@@ -388,5 +406,21 @@ public class Product {
 
     public void delCapacity(String key) {
         getCapacities().remove(key);
+    }
+
+    public Double getSupportDiscount() {
+        return this.supportDiscount != null ? this.supportDiscount : 0d;
+    }
+
+    private void setSupportDiscount(Node supportDiscount) throws PCTDataFormatException {
+        try {
+            this.supportDiscount = xut.getDouble(supportDiscount, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Product support discount is not defined correctly", e.getDetails());
+        }
+    }
+
+    public void setSupportDiscount(Double supportDiscount) {
+        this.supportDiscount = supportDiscount;
     }
 }
