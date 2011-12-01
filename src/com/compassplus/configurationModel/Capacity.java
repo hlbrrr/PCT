@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class Capacity {
     private Boolean deprecated;
     private String key;
+    private String linkKey;
     private String path;
     private String name;
     private String shortName;
@@ -43,22 +44,37 @@ public class Capacity {
             log.info("Parsing Capacity");
 
             this.setKey(xut.getNode("Key", initialData));
-            this.setDeprecated(xut.getNode("Deprecated", initialData));
             this.setName(xut.getNode("Name", initialData));
             this.setShortName(xut.getNode("ShortName", initialData));
-            this.setType(xut.getNode("Type", initialData));
-            this.setMinValue(xut.getNode("MinValue", initialData));
-            this.setTiers(xut.getNodes("Tiers/Tier", initialData));
+            boolean linkKeyPresent = true;
+            try {
+                this.setLinkKey(xut.getNode("LinkKey", initialData));
+            } catch (PCTDataFormatException e) {
+                linkKeyPresent = false;
+            }
+            if (linkKeyPresent) {
+
+            } else {
+                this.setDeprecated(xut.getNode("Deprecated", initialData));
+                this.setType(xut.getNode("Type", initialData));
+                this.setMinValue(xut.getNode("MinValue", initialData));
+                this.setTiers(xut.getNodes("Tiers/Tier", initialData));
+            }
 
             log.info("Capacity successfully parsed: \nKey: " + this.getKey() +
-                    "\nDeprecated: " + this.isDeprecated() +
                     "\nName: " + this.getName() +
                     "\nShortName: " + this.getShortName() +
+                    "\nLinkKey: " + this.getLinkKey() +
+                    "\nDeprecated: " + this.isDeprecated() +
                     "\nMinValue: " + this.getMinValue() +
                     "\nType: " + this.getType());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity is not defined correctly", e.getDetails());
         }
+    }
+
+    public void setDeprecated(Boolean deprecated) {
+        this.deprecated = deprecated;
     }
 
     private void setDeprecated(Node deprecated) throws PCTDataFormatException {
@@ -97,6 +113,22 @@ public class Capacity {
         return this.key;
     }
 
+    private void setLinkKey(Node linkKey) throws PCTDataFormatException {
+        try {
+            this.linkKey = xut.getString(linkKey);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Capacity link key is not defined correctly", e.getDetails());
+        }
+    }
+
+    public void setLinkKey(String linkKey) {
+        this.linkKey = linkKey;
+    }
+
+    public String getLinkKey() {
+        return this.linkKey;
+    }
+
     public String getShortName() {
         return shortName;
     }
@@ -117,12 +149,20 @@ public class Capacity {
         return this.minValue;
     }
 
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
     private void setType(Node type) throws PCTDataFormatException {
         try {
             this.type = xut.getInteger(type);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity type is not defined correctly", e.getDetails());
         }
+    }
+
+    public void setMinValue(Integer minValue) {
+        this.minValue = minValue;
     }
 
     private void setMinValue(Node minValue) throws PCTDataFormatException {
@@ -135,6 +175,10 @@ public class Capacity {
 
     public ArrayList<Tier> getTiers() {
         return tiers;
+    }
+
+    public void setTiers(ArrayList<Tier> tiers) {
+        this.tiers = tiers;
     }
 
     private void setTiers(NodeList tiers) throws PCTDataFormatException {

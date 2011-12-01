@@ -181,7 +181,7 @@ public class ProductForm {
                                         }
                                         ArrayList<String> excludeKeys = new ArrayList<String>(0);
                                         for (String key : getProduct().getProduct().getModules().get(src.getKey()).getExcludeModules()) {
-                                            if (getProduct().getModules().containsKey(key)) {
+                                            if (getProduct().getModules().containsKey(key) && getProduct().getProduct().getModules().containsKey(key)) {
                                                 excludeKeys.add(key);
                                             }
                                         }
@@ -209,7 +209,7 @@ public class ProductForm {
                                         } else {
                                             ArrayList<String> requireKeys = new ArrayList<String>(0);
                                             for (String key : getProduct().getProduct().getModules().get(src.getKey()).getRequireModules()) {
-                                                if (!getProduct().getModules().containsKey(key)) {
+                                                if (!getProduct().getModules().containsKey(key) && getProduct().getProduct().getModules().containsKey(key)) {
                                                     requireKeys.add(key);
                                                 }
                                             }
@@ -242,13 +242,15 @@ public class ProductForm {
                                                             if (!key.equals(src.getKey())) {
                                                                 getProduct().addModule(getProduct().getProduct().getModules().get(key), key);
                                                                 for (RequireCapacity rc : getProduct().getProduct().getModules().get(key).getRequireCapacities().values()) {
-                                                                    if (rc.isIncremental()) {
-                                                                        getSpinners().get(rc.getKey()).addIncr(rc.getValue());
-                                                                        if (rc.isFreeOfCharge()) {
-                                                                            getSpinners().get(rc.getKey()).addFoc(rc.getValue());
+                                                                    if (getProduct().getProduct().getCapacities().containsKey(rc.getKey())) {
+                                                                        if (rc.isIncremental()) {
+                                                                            getSpinners().get(rc.getKey()).addIncr(rc.getValue());
+                                                                            if (rc.isFreeOfCharge()) {
+                                                                                getSpinners().get(rc.getKey()).addFoc(rc.getValue());
+                                                                            }
+                                                                        } else {
+                                                                            getSpinners().get(rc.getKey()).addMin(rc.getValue());
                                                                         }
-                                                                    } else {
-                                                                        getSpinners().get(rc.getKey()).addMin(rc.getValue());
                                                                     }
                                                                 }
                                                                 getCheckBoxes().get(key).setSelected(true, true);
@@ -263,13 +265,15 @@ public class ProductForm {
                                         }
                                         getProduct().addModule(getProduct().getProduct().getModules().get(src.getKey()), src.getKey());
                                         for (RequireCapacity rc : getProduct().getProduct().getModules().get(src.getKey()).getRequireCapacities().values()) {
-                                            if (rc.isIncremental()) {
-                                                getSpinners().get(rc.getKey()).addIncr(rc.getValue());
-                                                if (rc.isFreeOfCharge()) {
-                                                    getSpinners().get(rc.getKey()).addFoc(rc.getValue());
+                                            if (getProduct().getProduct().getCapacities().containsKey(rc.getKey())) {
+                                                if (rc.isIncremental()) {
+                                                    getSpinners().get(rc.getKey()).addIncr(rc.getValue());
+                                                    if (rc.isFreeOfCharge()) {
+                                                        getSpinners().get(rc.getKey()).addFoc(rc.getValue());
+                                                    }
+                                                } else {
+                                                    getSpinners().get(rc.getKey()).addMin(rc.getValue());
                                                 }
-                                            } else {
-                                                getSpinners().get(rc.getKey()).addMin(rc.getValue());
                                             }
                                         }
                                     } else {
@@ -291,13 +295,15 @@ public class ProductForm {
                                         }
                                         getProduct().delModule(src.getKey());
                                         for (RequireCapacity rc : getProduct().getProduct().getModules().get(src.getKey()).getRequireCapacities().values()) {
-                                            if (rc.isIncremental()) {
-                                                getSpinners().get(rc.getKey()).delIncr(rc.getValue());
-                                                if (rc.isFreeOfCharge()) {
-                                                    getSpinners().get(rc.getKey()).delFoc(rc.getValue());
+                                            if (getProduct().getProduct().getCapacities().containsKey(rc.getKey())) {
+                                                if (rc.isIncremental()) {
+                                                    getSpinners().get(rc.getKey()).delIncr(rc.getValue());
+                                                    if (rc.isFreeOfCharge()) {
+                                                        getSpinners().get(rc.getKey()).delFoc(rc.getValue());
+                                                    }
+                                                } else {
+                                                    getSpinners().get(rc.getKey()).delMin(rc.getValue());
                                                 }
-                                            } else {
-                                                getSpinners().get(rc.getKey()).delMin(rc.getValue());
                                             }
                                         }
                                     }

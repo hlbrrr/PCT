@@ -626,37 +626,32 @@
                     return config;
                 }
             });
-            $(this._remove).click(
-                function() {
-                    if (confirm('Remove product?')) {
-                        if (confirm('Removing product can result in broken backward compatibility. Remove product?')) {
-                            $(that._body).remove();
-                        }
+            $(this._remove).click(function() {
+                if (confirm('Remove product?')) {
+                    if (confirm('Removing product can result in broken backward compatibility. Remove product?')) {
+                        $(that._body).remove();
                     }
-                });
-            $(this._clone).click(
-                function() {
-                    $.data($(that._core).parents('.divModelProducts')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
-                });
-            $(this._expand).click(
-                function(arg) {
-                    $(that._content).toggle(PCT.animation, function() {
-                        if ($(this).css('display') == 'none') {
-                            $(that._expand).html('Expand');
-                        } else {
-                            $(that._expand).html('Collapse');
-                        }
-                    });
-                });
+                }
+            });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divModelProducts')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+            $(this._expand).click(function(arg) {
+                $(that._content).toggleClass('hidden');
+                if ($(that._content).hasClass('hidden')) {
+                    $(that._expand).html('Expand');
+                } else {
+                    $(that._expand).html('Collapse');
+                }
+            });
 
             $(this._name).change(function() {
                 $(that._productTitle).html($(this).val());
             });
-            $(this._productTitle).click(
-                function() {
-                    $(that._remove).toggleClass('hidden');
-                    $(that._settingsPane).toggleClass('hidden');
-                });
+            $(this._productTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
                 getHead:function() {
@@ -773,38 +768,34 @@
                     });
                 }
             });
-            $(this._remove).click(
-                function() {
-                    if (confirm('Remove group?')) {
-                        if (confirm('Group will be removed with nested modules. Removing module can result in broken backward compatibility. Remove group?')) {
-                            $(that._body).remove();
-                        }
+            $(this._remove).click(function() {
+                if (confirm('Remove group?')) {
+                    if (confirm('Group will be removed with nested modules. Removing module can result in broken backward compatibility. Remove group?')) {
+                        $(that._body).remove();
                     }
-                });
-            $(this._clone).click(
-                function() {
-                    $.data($(that._core).parents('.divGroups')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
-                });
-            $(this._expand).click(
-                function(arg) {
-                    $(that._content).toggle(PCT.animation, function() {
-                        if ($(this).css('display') == 'none') {
-                            $(that._expand).html('Expand');
-                        } else {
-                            $(that._expand).html('Collapse');
-                        }
-                    });
-                });
+                }
+            });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divGroups')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+            $(this._expand).click(function(arg) {
+                $(that._content).toggleClass('hidden');
+                if ($(this).hasClass('hidden')) {
+                    $(that._expand).html('Expand');
+                } else {
+                    $(that._expand).html('Collapse');
+                }
+            });
             $(this._addGroup).click(function() {
-                if ($(that._content).css('display') == 'none') {
-                    $(that._content).show();
+                if ($(that._content).hasClass('hidden')) {
+                    $(that._content).removeClass('hidden');
                     $(that._expand).html('Collapse');
                 }
                 that.addGroup();
             });
             $(this._addModule).click(function() {
-                if ($(that._content).css('display') == 'none') {
-                    $(that._content).show();
+                if ($(that._content).hasClass('hidden')) {
+                    $(that._content).removeClass('hidden');
                     $(that._expand).html('Collapse');
                 }
                 that.addModule();
@@ -819,17 +810,16 @@
                     $(that._clone).addClass('hidden');
                     $(that._content).addClass('hidden');
                     $(that._expand).html('Expand');
-                    $(that._settings).hide();
+                    $(that._settings).addClass('hidden');
                     $(that._groupTitle).html('Modules Root');
                     $(that._settingsPane).addClass('hidden');
                     $(that._remove).addClass('hidden');
                     $(that._groupTitle).addClass('unclickable');
                 } else {
-                    $(that._groupTitle).click(
-                        function() {
-                            $(that._remove).toggleClass('hidden');
-                            $(that._settingsPane).toggleClass('hidden');
-                        });
+                    $(that._groupTitle).click(function() {
+                        $(that._remove).toggleClass('hidden');
+                        $(that._settingsPane).toggleClass('hidden');
+                    });
                 }
             });
             $.extend(this, PCT.base, {
@@ -913,10 +903,9 @@
                 handle: '.dependencyDrag',
                 connectWith: '.divDependencies'
             });
-            $(this._clone).click(
-                function() {
-                    $.data($(that._core).parents('.divModules')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
-                });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divModules')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
                     var config = '<Module>';
@@ -947,20 +936,19 @@
                     return config;
                 }
             });
-            $(this._remove).click(
-                function() {
-                    if (confirm('Remove module?')) {
-                        if (confirm('Removing module can result in broken backward compatibility. Remove module?')) {
-                            $(that._body).remove();
-                        }
+            $(this._remove).click(function() {
+                if (confirm('Remove module?')) {
+                    if (confirm('Removing module can result in broken backward compatibility. Remove module?')) {
+                        $(that._body).remove();
                     }
-                });
+                }
+            });
             $(this._name).change(function() {
                 $(that._moduleTitle).html($(this).val());
             });
             $(this._addDependency).click(function() {
-                if ($(that._dependencies).css('display') == 'none') {
-                    $(that._dependencies).show();
+                if ($(that._dependencies).hasClass('hidden')) {
+                    $(that._dependencies).removeClass('hidden');
                     $(that._expand).html('Collapse');
                 }
                 that.addDependency();
@@ -973,21 +961,18 @@
                 }
             });
             $(this._key).val(PCT.randomString(15)).change();
-            $(this._moduleTitle).click(
-                function() {
-                    $(that._remove).toggleClass('hidden');
-                    $(that._settingsPane).toggleClass('hidden');
-                });
-            $(this._expand).click(
-                function(arg) {
-                    $(that._dependencies).toggle(PCT.animation, function() {
-                        if ($(this).css('display') == 'none') {
-                            $(that._expand).html('Expand');
-                        } else {
-                            $(that._expand).html('Collapse');
-                        }
-                    });
-                });
+            $(this._moduleTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+            $(this._expand).click(function(arg) {
+                $(that._dependencies).toggleClass('hidden');
+                if ($(that._dependencies).hasClass('hidden')) {
+                    $(that._expand).html('Expand');
+                } else {
+                    $(that._expand).html('Collapse');
+                }
+            });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
                 getHead:function() {
@@ -1147,6 +1132,7 @@
                 _groupTitle:$('#GroupTitle', dom).get(),
                 _addGroup:$('#AddGroup', dom).get(),
                 _addCapacity:$('#AddCapacity', dom).get(),
+                _addLink:$('#AddLink', dom).get(),
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _expand:$('#Expand', dom).get(),
@@ -1210,44 +1196,47 @@
                     });
                 }
             });
-            $(this._remove).click(
-                function() {
-                    if (confirm('Remove group?')) {
-                        if (confirm('Group will be removed with nested capacities. Removing capacity can result in broken backward compatibility. Remove group?')) {
-                            $(that._body).remove();
-                        }
+            $(this._remove).click(function() {
+                if (confirm('Remove group?')) {
+                    if (confirm('Group will be removed with nested capacities. Removing capacity can result in broken backward compatibility. Remove group?')) {
+                        $(that._body).remove();
                     }
-                });
-            $(this._clone).click(
-                function() {
-                    $.data($(that._core).parents('.divGroups')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
-                });
-            $(this._expand).click(
-                function(arg) {
-                    $(that._content).toggle(PCT.animation, function() {
-                        if ($(this).css('display') == 'none') {
-                            $(that._expand).html('Expand');
-                        } else {
-                            $(that._expand).html('Collapse');
-                        }
-                    });
-                });
+                }
+            });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divGroups')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+            $(this._expand).click(function(arg) {
+                $(that._content).toggleClass('hidden');
+                if ($(that._content).hasClass('hidden')) {
+                    $(that._expand).html('Expand');
+                } else {
+                    $(that._expand).html('Collapse');
+                }
+            });
             $(this._name).change(function() {
                 $(that._groupTitle).html($(this).val());
             });
             $(this._addGroup).click(function() {
-                if ($(that._content).css('display') == 'none') {
-                    $(that._content).show();
+                if ($(that._content).hasClass('hidden')) {
+                    $(that._content).removeClass('hidden');
                     $(that._expand).html('Collapse');
                 }
                 that.addGroup();
             });
             $(this._addCapacity).click(function() {
-                if ($(that._content).css('display') == 'none') {
-                    $(that._content).show();
+                if ($(that._content).hasClass('hidden')) {
+                    $(that._content).removeClass('hidden');
                     $(that._expand).html('Collapse');
                 }
                 that.addCapacity();
+            });
+            $(this._addLink).click(function() {
+                if ($(that._content).hasClass('hidden')) {
+                    $(that._content).removeClass('hidden');
+                    $(that._expand).html('Collapse');
+                }
+                that.addLink();
             });
             $(this._isRoot).change(function() {
                 if ($(this).val() == 'true') {
@@ -1256,17 +1245,16 @@
                     $(that._name).val('CR').change();
                     $(that._content).addClass('hidden');
                     $(that._expand).html('Expand');
-                    $(that._settings).hide();
+                    $(that._settings).addClass('hidden');
                     $(that._groupTitle).html('Capacities Root');
                     $(that._settingsPane).addClass('hidden');
                     $(that._remove).addClass('hidden');
                     $(that._groupTitle).addClass('unclickable');
                 } else {
-                    $(that._groupTitle).click(
-                        function() {
-                            $(that._remove).toggleClass('hidden');
-                            $(that._settingsPane).toggleClass('hidden');
-                        });
+                    $(that._groupTitle).click(function() {
+                        $(that._remove).toggleClass('hidden');
+                        $(that._settingsPane).toggleClass('hidden');
+                    });
                 }
             });
 
@@ -1308,6 +1296,9 @@
                         return this.addCapacity((new PCT.capacity()).setRoot(this._capacities));
                     }
                 },
+                addLink:function() {
+                    return this.addCapacity((new PCT.capacity()).setRoot(this._capacities).setLink());
+                },
                 addGroup:function(group) {
                     if (group) {
                         $('html, body').animate({
@@ -1342,7 +1333,9 @@
                 _minValue:$('#MinValue', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _clone:$('#Clone', dom).get(),
-                _core:$('#Core', dom).get()
+                _core:$('#Core', dom).get(),
+                _linkKey:$('#LinkKey', dom).get(),
+                _isLink:false
             });
             var that = this;
             $(this._tiers, dom).sortable({
@@ -1350,51 +1343,53 @@
                 handle: '.tierDrag',
                 connectWith: '.divTiers'
             });
+
+            $('.linkSetting .settingInput', this._settingsPane).removeClass('validate').change();
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
                     var config = '<Capacity>';
                     config += '<Name>' + $(that._name).val() + '</Name>';
                     config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
                     config += '<Key>' + $(that._key).val() + '</Key>';
-                    config += '<MinValue>' + $(that._minValue).val() + '</MinValue>';
-                    config += '<Type>' + $(that._type).val() + '</Type>';
-                    config += '<Deprecated>' + ($(that._deprecated).prop('checked') ? 'true' : 'false') + '</Deprecated>';
-                    config += '<Tiers>';
-                    $(that._tiers).children().each(function() {
-                        if ($(this).hasClass('divTier'))
-                            config += $.data($(this)[0], 'pct').getXML();
-                    });
-                    config += '</Tiers>';
+                    if (that._isLink) {
+                        config += '<LinkKey>' + $(that._linkKey).val() + '</LinkKey>';
+                    } else {
+                        config += '<MinValue>' + $(that._minValue).val() + '</MinValue>';
+                        config += '<Type>' + $(that._type).val() + '</Type>';
+                        config += '<Deprecated>' + ($(that._deprecated).prop('checked') ? 'true' : 'false') + '</Deprecated>';
+                        config += '<Tiers>';
+                        $(that._tiers).children().each(function() {
+                            if ($(this).hasClass('divTier'))
+                                config += $.data($(this)[0], 'pct').getXML();
+                        });
+                        config += '</Tiers>';
+                    }
                     config += '</Capacity>';
                     return config;
                 }
             });
-            $(this._remove).click(
-                function() {
-                    if (confirm('Remove capacity?')) {
-                        if (confirm('Removing capacity can result in broken backward compatibility. Remove capacity?')) {
-                            $(that._body).remove();
-                        }
+            $(this._remove).click(function() {
+                if (confirm('Remove capacity?')) {
+                    if (confirm('Removing capacity can result in broken backward compatibility. Remove capacity?')) {
+                        $(that._body).remove();
                     }
-                });
-            $(this._clone).click(
-                function() {
-                    $.data($(that._core).parents('.divCapacities')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
-                });
+                }
+            });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divCapacities')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
             $(this._name).change(function() {
                 $(that._capacityTitle).html($(this).val());
             });
             $(this._key).val(PCT.randomString(15)).change();
-            $(this._expand).click(
-                function(arg) {
-                    $(that._tiers).toggle(PCT.animation, function() {
-                        if ($(this).css('display') == 'none') {
-                            $(that._expand).html('Expand');
-                        } else {
-                            $(that._expand).html('Collapse');
-                        }
-                    });
-                });
+            $(this._expand).click(function(arg) {
+                $(that._tiers).toggleClass('hidden');
+                if ($(that._tiers).hasClass('hidden')) {
+                    $(that._expand).html('Expand');
+                } else {
+                    $(that._expand).html('Collapse');
+                }
+            });
             $(this._deprecated).change(function() {
                 if ($(this).prop('checked')) {
                     $(that._capacityTitle).addClass('deprecated');
@@ -1403,17 +1398,16 @@
                 }
             });
             $(this._addTier).click(function() {
-                if ($(that._tiers).css('display') == 'none') {
-                    $(that._tiers).show();
+                if ($(that._tiers).hasClass('hidden')) {
+                    $(that._tiers).removeClass('hidden');
                     $(that._expand).html('Collapse');
                 }
                 that.addTier();
             });
-            $(this._capacityTitle).click(
-                function() {
-                    $(that._remove).toggleClass('hidden');
-                    $(that._settingsPane).toggleClass('hidden');
-                });
+            $(this._capacityTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
                 getHead:function() {
@@ -1422,18 +1416,35 @@
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
-                    $(this._type).val($('>Type', initialData).text()).change();
-                    $(this._minValue).val($('>MinValue', initialData).text()).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();
-                    $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true')).change();
+                    if ($('>LinkKey', initialData).length > 0) {
+                        this.setLink();
+                        $(this._linkKey).val($('>LinkKey', initialData).text()).change();
+                    } else {
+                        $(this._type).val($('>Type', initialData).text()).change();
+                        $(this._minValue).val($('>MinValue', initialData).text()).change();
+                        $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true')).change();
+                        $(this._tiers).addClass('hidden');
+                        $(this._expand).html('Expand');
+                    }
                     $(this._settingsPane).addClass('hidden');
-                    $(this._tiers).addClass('hidden');
-                    $(this._expand).html('Expand');
                     $(this._remove).addClass('hidden');
                     var that = this;
                     $('>Tiers>Tier', initialData).each(function() {
                         that.addTier((new PCT.tier()).setRoot(that._tiers).init(this));
                     });
+                    return this;
+                },
+                setLink:function() {
+                    this._isLink = true;
+                    $(this._expand).addClass('hidden');
+                    $(this._addTier).addClass('hidden');
+                    $(this._tiers).addClass('hidden');
+
+                    $('.capacitySetting .validate', this._settingsPane).removeClass('validate').change();
+                    $('.capacitySetting', this._settingsPane).addClass('hidden');
+                    $('.linkSetting', this._settingsPane).removeClass('hidden');
+                    $('.linkSetting .settingInput', this._settingsPane).addClass('validate').change();
                     return this;
                 },
                 addTier:function(tier) {
@@ -1473,23 +1484,21 @@
                     return config;
                 }
             });
-            $(this._remove).click(
-                function() {
-                    if (confirm('Remove tier?')) {
-                        $(that._body).remove();
-                    }
-                });
+            $(this._remove).click(function() {
+                if (confirm('Remove tier?')) {
+                    $(that._body).remove();
+                }
+            });
             $(this._bound).change(function() {
                 $(that._tierTitle).html($(this).val() + ' - ' + $(that._price).val());
             });
             $(this._price).change(function() {
                 $(that._tierTitle).html($(that._bound).val() + ' - ' + $(this).val());
             });
-            $(this._tierTitle).click(
-                function() {
-                    $(that._remove).toggleClass('hidden');
-                    $(that._settingsPane).toggleClass('hidden');
-                });
+            $(this._tierTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
                 getHead:function() {
@@ -1535,27 +1544,24 @@
                     return config;
                 }
             });
-            $(this._clone).click(
-                function() {
-                    $.data($(that._core).parents('.divModelRegions')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
-                });
-            $(this._remove).click(
-                function() {
-                    if (confirm('Remove region?')) {
-                        if (confirm('Removing region can result in broken backward compatibility. Remove region?')) {
-                            $(that._body).remove();
-                        }
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divModelRegions')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove region?')) {
+                    if (confirm('Removing region can result in broken backward compatibility. Remove region?')) {
+                        $(that._body).remove();
                     }
-                });
+                }
+            });
             $(this._name).change(function() {
                 $(that._regionTitle).html($(this).val());
             });
             $(this._key).val(PCT.randomString(15)).change();
-            $(this._regionTitle).click(
-                function() {
-                    $(that._remove).toggleClass('hidden');
-                    $(that._settingsPane).toggleClass('hidden');
-                });
+            $(this._regionTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
                 getHead:function() {
@@ -1620,44 +1626,39 @@
                     return config;
                 }
             });
-            $(this._remove).click(
-                function() {
-                    if (confirm('Remove support plan?')) {
-                        if (confirm('Removing support plan can result in broken backward compatibility. Remove support plan?')) {
-                            $(that._body).remove();
-                        }
+            $(this._remove).click(function() {
+                if (confirm('Remove support plan?')) {
+                    if (confirm('Removing support plan can result in broken backward compatibility. Remove support plan?')) {
+                        $(that._body).remove();
                     }
-                });
-            $(this._clone).click(
-                function() {
-                    $.data($(that._core).parents('.divModelSupportPlans')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
-                });
+                }
+            });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divModelSupportPlans')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
             $(this._name).change(function() {
                 $(that._supportPlanTitle).html($(this).val());
             });
             $(this._key).val(PCT.randomString(15)).change();
-            $(this._expand).click(
-                function(arg) {
-                    $(that._supportPlanRegions).toggle(PCT.animation, function() {
-                        if ($(this).css('display') == 'none') {
-                            $(that._expand).html('Expand');
-                        } else {
-                            $(that._expand).html('Collapse');
-                        }
-                    });
-                });
+            $(this._expand).click(function(arg) {
+                $(that._supportPlanRegions).toggleClass('hidden');
+                if ($(that._supportPlanRegions).hasClass('hidden')) {
+                    $(that._expand).html('Expand');
+                } else {
+                    $(that._expand).html('Collapse');
+                }
+            });
             $(this._addSupportPlanRegion).click(function() {
-                if ($(that._supportPlanRegions).css('display') == 'none') {
-                    $(that._supportPlanRegions).show();
+                if ($(that._supportPlanRegions).hasClass('hidden')) {
+                    $(that._supportPlanRegions).removeClass('hidden');
                     $(that._expand).html('Collapse');
                 }
                 that.addSupportPlanRegion();
             });
-            $(this._supportPlanTitle).click(
-                function() {
-                    $(that._remove).toggleClass('hidden');
-                    $(that._settingsPane).toggleClass('hidden');
-                });
+            $(this._supportPlanTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
                 getHead:function() {
@@ -1716,20 +1717,18 @@
                     return config;
                 }
             });
-            $(this._remove).click(
-                function() {
-                    if (confirm('Remove region?')) {
-                        $(that._body).remove();
-                    }
-                });
+            $(this._remove).click(function() {
+                if (confirm('Remove region?')) {
+                    $(that._body).remove();
+                }
+            });
             $(this._key).change(function() {
                 $(that._supportPlanRegionTitle).html($(this).val());
             });
-            $(this._supportPlanRegionTitle).click(
-                function() {
-                    $(that._remove).toggleClass('hidden');
-                    $(that._settingsPane).toggleClass('hidden');
-                });
+            $(this._supportPlanRegionTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
                 getHead:function() {
@@ -1788,45 +1787,40 @@
                     return config;
                 }
             });
-            $(this._remove).click(
-                function() {
-                    if (confirm('Remove currency?')) {
-                        if (confirm('Removing currency can result in broken backward compatibility. Remove currency?')) {
-                            $(that._body).remove();
-                        }
+            $(this._remove).click(function() {
+                if (confirm('Remove currency?')) {
+                    if (confirm('Removing currency can result in broken backward compatibility. Remove currency?')) {
+                        $(that._body).remove();
                     }
-                });
-            $(this._clone).click(
-                function() {
-                    $.data($(that._core).parents('.divModelCurrencies')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
-                });
+                }
+            });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divModelCurrencies')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
             $(this._name).change(function() {
                 $(that._currencyTitle).html($(this).val());
                 $(that._rateTitle).html('Rate (USD/' + $(this).val() + '):');
             });
             $(this._name).val('').change();
-            $(this._expand).click(
-                function(arg) {
-                    $(that._currencyRegions).toggle(PCT.animation, function() {
-                        if ($(this).css('display') == 'none') {
-                            $(that._expand).html('Expand');
-                        } else {
-                            $(that._expand).html('Collapse');
-                        }
-                    });
-                });
+            $(this._expand).click(function(arg) {
+                $(that._currencyRegions).toggleClass('hidden');
+                if ($(that._currencyRegions).hasClass('hidden')) {
+                    $(that._expand).html('Expand');
+                } else {
+                    $(that._expand).html('Collapse');
+                }
+            });
             $(this._addCurrencyRegion).click(function() {
-                if ($(that._currencyRegions).css('display') == 'none') {
-                    $(that._currencyRegions).show();
+                if ($(that._currencyRegions).hasClass('hidden')) {
+                    $(that._currencyRegions).removeClass('hidden');
                     $(that._expand).html('Collapse');
                 }
                 that.addCurrencyRegion();
             });
-            $(this._currencyTitle).click(
-                function() {
-                    $(that._remove).toggleClass('hidden');
-                    $(that._settingsPane).toggleClass('hidden');
-                });
+            $(this._currencyTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
                 getHead:function() {
@@ -1881,20 +1875,18 @@
                     return config;
                 }
             });
-            $(this._remove).click(
-                function() {
-                    if (confirm('Remove region?')) {
-                        $(that._body).remove();
-                    }
-                });
+            $(this._remove).click(function() {
+                if (confirm('Remove region?')) {
+                    $(that._body).remove();
+                }
+            });
             $(this._key).change(function() {
                 $(that._currencyRegionTitle).html($(this).val());
             });
-            $(this._currencyRegionTitle).click(
-                function() {
-                    $(that._remove).toggleClass('hidden');
-                    $(that._settingsPane).toggleClass('hidden');
-                });
+            $(this._currencyRegionTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
                 getHead:function() {

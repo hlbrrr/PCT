@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -47,6 +48,23 @@ public class Product {
             this.setMinimumPrice(xut.getNode("MinimumPrice", initialData));
             this.setModules(xut.getNode("Modules", initialData));
             this.setCapacities(xut.getNode("Capacities", initialData));
+
+            for (Capacity c : this.getCapacities().values()) {
+                if (c.getLinkKey() != null) {
+                    if (this.getCapacities().containsKey(c.getLinkKey())) {
+                        Capacity proto = this.getCapacities().get(c.getLinkKey());
+                        c.setType(proto.getType());
+                        c.setDeprecated(proto.isDeprecated());
+                        c.setMinValue(proto.getMinValue());
+                        c.setTiers(proto.getTiers());
+                        c.setLinkKey(null);
+                    } else {
+                        throw new PCTDataFormatException("Capacity \"" + c.getKey() + "\" is missing");
+                    }
+                }
+            }
+
+
             this.setTotalWeight();
 
             log.info("Product successfully parsed: \nName: " + this.getName() +

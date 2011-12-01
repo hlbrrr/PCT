@@ -229,6 +229,9 @@
                 <div id="AddCapacity" class="titleTableCell titleTableCellButton">
                     Add Capacity
                 </div>
+                <div id="AddLink" class="titleTableCell titleTableCellButton">
+                    Add Link
+                </div>
                 <div id="Expand" class="titleTableCell titleTableCellButton">
                     Collapse
                 </div>
@@ -399,7 +402,7 @@
                                    validclass="unique" unique=".capacityKey" uniqueroot=".divProductCapacities"/>
                         </div>
                     </div>
-                    <div class="settingsTableRow">
+                    <div class="settingsTableRow capacitySetting">
                         <div class="settingsTableCell settingsTitle">
                             Type:
                         </div>
@@ -411,20 +414,29 @@
                             <!--<input id="Type" autocomplete="off" class="settingInput"/>-->
                         </div>
                     </div>
-                    <div class="settingsTableRow">
+                    <div class="settingsTableRow capacitySetting">
                         <div class="settingsTableCell settingsTitle">
                             Minimum Value:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="MinValue" autocomplete="off" class="settingInput validate" validclass="int mempty"/>
+                            <input id="MinValue" autocomplete="off" class="settingInput validate"
+                                   validclass="int mempty"/>
                         </div>
                     </div>
-                    <div class="settingsTableRow">
+                    <div class="settingsTableRow capacitySetting">
                         <div class="settingsTableCell settingsTitle">
                             Deprecated:
                         </div>
                         <div class="settingsTableCell settingsValueCb">
                             <input id="Deprecated" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow linkSetting hidden">
+                        <div class="settingsTableCell settingsTitle">
+                            Prototype Capacity Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="LinkKey" autocomplete="off" class="settingInput validate"/>
                         </div>
                     </div>
                 </div>
@@ -581,7 +593,8 @@
                             Default Currency:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="DefaultCurrency" autocomplete="off" class="settingInput validate" validclass="mempty"/>
+                            <input id="DefaultCurrency" autocomplete="off" class="settingInput validate"
+                                   validclass="mempty"/>
                         </div>
                     </div>
                 </div>
@@ -643,7 +656,8 @@
                             Minimum Price:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="MinPrice" autocomplete="off" class="settingInput validate" validclass="mempty summ"/>
+                            <input id="MinPrice" autocomplete="off" class="settingInput validate"
+                                   validclass="mempty summ"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
