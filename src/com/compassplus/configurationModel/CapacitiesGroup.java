@@ -18,6 +18,7 @@ import java.util.Map;
 public class CapacitiesGroup {
     private String name;
     private String shortName;
+    private String hint;
 
     private Map<String, Capacity> capacities = new LinkedHashMap<String, Capacity>();
     private ArrayList<CapacitiesGroup> groups = new ArrayList<CapacitiesGroup>();
@@ -29,9 +30,22 @@ public class CapacitiesGroup {
         this.shortName = shortName;
     }
 
-    public CapacitiesGroup(Node name, Node shortName) throws PCTDataFormatException {
+    public CapacitiesGroup(Node name, Node shortName, Node hint) throws PCTDataFormatException {
         this.setName(name);
         this.setShortName(shortName);
+        this.setHint(hint);
+    }
+
+    public String getHint() {
+        return this.hint;
+    }
+
+    private void setHint(Node hint) throws PCTDataFormatException {
+        try {
+            this.hint = xut.getString(hint, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Modules group hint is not defined correctly", e.getDetails());
+        }
     }
 
     public String getName() {

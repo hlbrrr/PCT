@@ -22,6 +22,7 @@ public class Module {
     private String path;
     private String name;
     private String shortName;
+    private String hint;
     private Double weight;
     private Double secondarySalesPrice;
     private ArrayList<String> requireModules = new ArrayList<String>(0);
@@ -53,6 +54,7 @@ public class Module {
             this.setName(xut.getNode("Name", initialData));
             this.setShortName(xut.getNode("ShortName", initialData));
             this.setWeight(xut.getNode("Weight", initialData));
+            this.setHint(xut.getNode("Hint", initialData));
             this.setRequireModules(xut.getNodes("Dependencies/Require", initialData));
             this.setExcludeModules(xut.getNodes("Dependencies/Exclude", initialData));
             this.setRequireCapacities(xut.getNodes("Dependencies/RequireCapacity", initialData));
@@ -188,6 +190,18 @@ public class Module {
             this.shortName = xut.getString(shortName, true);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Module short name is not defined correctly", e.getDetails());
+        }
+    }
+
+    public String getHint() {
+        return hint;
+    }
+
+    private void setHint(Node hint) throws PCTDataFormatException {
+        try {
+            this.hint = xut.getString(hint, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Module hint is not defined correctly", e.getDetails());
         }
     }
 

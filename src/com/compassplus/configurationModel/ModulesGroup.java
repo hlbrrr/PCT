@@ -18,6 +18,7 @@ import java.util.Map;
 public class ModulesGroup {
     private String name;
     private String shortName;
+    private String hint;
 
     private Map<String, Module> modules = new LinkedHashMap<String, Module>();
     private ArrayList<ModulesGroup> groups = new ArrayList<ModulesGroup>();
@@ -29,9 +30,10 @@ public class ModulesGroup {
         this.shortName = shortName;
     }
 
-    public ModulesGroup(Node name, Node shortName) throws PCTDataFormatException {
+    public ModulesGroup(Node name, Node shortName, Node hint) throws PCTDataFormatException {
         this.setName(name);
         this.setShortName(shortName);
+        this.setHint(hint);
     }
 
     public String getName() {
@@ -40,6 +42,18 @@ public class ModulesGroup {
 
     public String getShortName() {
         return this.shortName;
+    }
+
+    public String getHint() {
+        return this.hint;
+    }
+
+    private void setHint(Node hint) throws PCTDataFormatException {
+        try {
+            this.hint = xut.getString(hint, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Modules group hint is not defined correctly", e.getDetails());
+        }
     }
 
 
@@ -58,6 +72,7 @@ public class ModulesGroup {
             throw new PCTDataFormatException("Modules group name is not defined correctly", e.getDetails());
         }
     }
+
     private void setShortName(Node shortName) throws PCTDataFormatException {
         try {
             this.shortName = xut.getString(shortName, true);

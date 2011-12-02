@@ -4,11 +4,14 @@ html {
 }
 
 body {
-    font-size: 12px;
-    font-family: Arial;
     background-color: #f9f8dd;
     padding: 0;
     margin: 0;
+}
+
+body, input, select, textarea {
+    font-size: 12px;
+    font-family: Arial;
 }
 
 .divModelTitle {
@@ -284,7 +287,7 @@ body {
 }
 
 .divProductTitle>.titleTable>.titleTableCellButton:hover, .divRegionTitle>.titleTable>.titleTableCellButton:hover,
-.divSupportPlanTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyTitle>.titleTable>.titleTableCellButton:hover{
+.divSupportPlanTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #777;
 }
 
@@ -354,7 +357,9 @@ body {
 .settingsTitle {
     white-space: nowrap;
     padding-right: 5px;
+    padding-top: 2px;
     font-style: italic;
+    vertical-align: top;
 }
 
 .settingsValue {
@@ -363,7 +368,25 @@ body {
 
 .settingsValue input {
     width: 100%;
-    padding: 2;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin: 0;
+    border: 0;
+}
+
+.settingsValue textarea {
+    width: 100%;
+    padding: 0;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin: 0;
+    border: 0;
+}
+
+.hasDatepicker {
+    width: 100%;
+    padding: 2px;
+    margin: 2px;
     margin: 0;
     border: 0;
 }
@@ -456,7 +479,7 @@ body {
     text-shadow: 0 1pt 0 #000;
 }
 
-input.validate.error {
+input.validate.error, textarea.validate.error {
     background-color: red;
 }
 

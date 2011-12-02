@@ -163,7 +163,7 @@ public class Product {
             log.info("Found " + groups.getLength() + " subgroup(s)");
             for (int i = 0; i < groups.getLength(); i++) {
                 try {
-                    ModulesGroup tmpModulesGroup = new ModulesGroup(xut.getNode("Name", groups.item(i)), xut.getNode("ShortName", groups.item(i)));
+                    ModulesGroup tmpModulesGroup = new ModulesGroup(xut.getNode("Name", groups.item(i)), xut.getNode("ShortName", groups.item(i)), xut.getNode("Hint", groups.item(i)));
                     modulesGroup.addModulesGroup(tmpModulesGroup);
                     this.setModules(xut.getNode("Modules", groups.item(i)), tmpModulesGroup, prefix + tmpModulesGroup.getName() + "/");
                 } catch (PCTDataFormatException e) {
@@ -214,7 +214,7 @@ public class Product {
             log.info("Found " + groups.getLength() + " subgroup(s)");
             for (int i = 0; i < groups.getLength(); i++) {
                 try {
-                    CapacitiesGroup tmpCapacitiesGroup = new CapacitiesGroup(xut.getNode("Name", groups.item(i)), xut.getNode("ShortName", groups.item(i)));
+                    CapacitiesGroup tmpCapacitiesGroup = new CapacitiesGroup(xut.getNode("Name", groups.item(i)), xut.getNode("ShortName", groups.item(i)), xut.getNode("Hint", groups.item(i)));
                     capacitiesGroup.addCapacitiesGroup(tmpCapacitiesGroup);
                     this.setCapacities(xut.getNode("Capacities", groups.item(i)), tmpCapacitiesGroup, prefix + tmpCapacitiesGroup.getName() + "/");
                 } catch (PCTDataFormatException e) {

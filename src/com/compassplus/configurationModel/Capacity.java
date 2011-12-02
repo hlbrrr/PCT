@@ -22,6 +22,7 @@ public class Capacity {
     private String name;
     private String shortName;
     private Integer minValue;
+    private String hint;
     private Integer type;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -45,6 +46,7 @@ public class Capacity {
 
             this.setKey(xut.getNode("Key", initialData));
             this.setName(xut.getNode("Name", initialData));
+            this.setHint(xut.getNode("Hint", initialData));
             this.setShortName(xut.getNode("ShortName", initialData));
             boolean linkKeyPresent = true;
             try {
@@ -98,6 +100,18 @@ public class Capacity {
             this.name = xut.getString(name);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity name is not defined correctly", e.getDetails());
+        }
+    }
+
+    public String getHint() {
+        return hint;
+    }
+
+    private void setHint(Node hint) throws PCTDataFormatException {
+        try {
+            this.hint = xut.getString(hint, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Capacity hint is not defined correctly", e.getDetails());
         }
     }
 

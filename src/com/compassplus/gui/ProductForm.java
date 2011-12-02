@@ -6,6 +6,7 @@ import com.compassplus.proposalModel.Product;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
@@ -30,6 +31,7 @@ public class ProductForm {
     private Map<String, CapacityJSpinner> spinners = new HashMap<String, CapacityJSpinner>();
     private Map<String, ModuleJCheckbox> checkBoxes = new HashMap<String, ModuleJCheckbox>();
     private PCTChangedListener priceChanged;
+    private final String NOT_SPECIFIED = "No hint specified";
 
     public ProductForm(Product product, PCTChangedListener priceChanged, DecimalFormat df) {
         this.product = product;
@@ -53,11 +55,37 @@ public class ProductForm {
     }
 
     private void reloadModulesPrices() {
+        StringBuilder sb = new StringBuilder();
         for (ModuleJCheckbox cb : getCheckBoxes().values()) {
             Module m = getProduct().getProduct().getModules().get(cb.getKey());
-            cb.setText((m.isDeprecated() ? "[DEPRECATED] " : "") + m.getName() + " (" + (product.getProposal().getCurrency().getSymbol() != null ?
-                    product.getProposal().getCurrency().getSymbol() + " " : "") + "" + df.format(m.getPrice(getProduct())) + (product.getProposal().getCurrency().getSymbol() == null ?
-                    " " + product.getProposal().getCurrency().getName() : "") + ")");
+            sb.setLength(0);
+            sb.append("<html>");
+            sb.append(m.isDeprecated() ? "[DEPRECATED] " : "");
+            if (!"".equals(m.getHint())) {
+                cb.setToolTipText("<html>" + m.getHint().replace("\n", "<br/>") + "</html>");
+                //sb.append("<u>");
+                //cb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            } else {
+                cb.setToolTipText(this.NOT_SPECIFIED);
+            }
+            sb.append(m.getName());
+            if (!"".equals(m.getHint())) {
+                //sb.append("</u>");
+            }
+
+            sb.append(" (");
+            if (product.getProposal().getCurrency().getSymbol() != null) {
+                sb.append(product.getProposal().getCurrency().getSymbol());
+                sb.append(" ");
+            }
+            sb.append(df.format(m.getPrice(getProduct())));
+            if (product.getProposal().getCurrency().getSymbol() == null) {
+                sb.append(" ");
+                sb.append(product.getProposal().getCurrency().getName());
+            }
+            sb.append(")");
+            sb.append("</html>");
+            cb.setText(sb.toString());
         }
     }
 
@@ -75,10 +103,26 @@ public class ProductForm {
         if (cP != null) {
             newPrice = cP.getPrice(getProduct());
         }
-        cas.getLabel().setText((c.isDeprecated() ? "[DEPRECATED] " : "") + c.getName() + " (" + (product.getProposal().getCurrency().getSymbol() != null ?
-                product.getProposal().getCurrency().getSymbol() + " " : "") + "" + df.format(newPrice) + (product.getProposal().getCurrency().getSymbol() == null ?
-                " " + product.getProposal().getCurrency().getName() : "") + ")");
-
+        StringBuilder sb = new StringBuilder();
+        sb.append(c.isDeprecated() ? "[DEPRECATED] " : "");
+        if (!"".equals(c.getHint())) {
+            cas.getLabel().setToolTipText("<html>" + c.getHint().replace("\n", "<br/>") + "</html>");
+        } else {
+            cas.getLabel().setToolTipText(this.NOT_SPECIFIED);
+        }
+        sb.append(c.getName());
+        sb.append(" (");
+        if (product.getProposal().getCurrency().getSymbol() != null) {
+            sb.append(product.getProposal().getCurrency().getSymbol());
+            sb.append(" ");
+        }
+        sb.append(df.format(newPrice));
+        if (product.getProposal().getCurrency().getSymbol() == null) {
+            sb.append(" ");
+            sb.append(product.getProposal().getCurrency().getName());
+        }
+        sb.append(")");
+        cas.getLabel().setText(sb.toString());
     }
 
     private void initForm() {
@@ -104,9 +148,9 @@ public class ProductForm {
         JPanel capacitiesPanel = new JPanel();
         capacitiesPanel.setLayout(new BorderLayout());
 
-        modulesPanel.add(new JLabel("Modules"), BorderLayout.NORTH);
+        // modulesPanel.add(new JLabel("Modules"), BorderLayout.NORTH);
         modulesPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        capacitiesPanel.add(new JLabel("Capacities"), BorderLayout.NORTH);
+        //capacitiesPanel.add(new JLabel("Capacities"), BorderLayout.NORTH);
         capacitiesPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         c = new GridBagConstraints();
@@ -151,12 +195,15 @@ public class ProductForm {
         int addedGroups = 0;
 
         boolean isRoot = false;
+
         if (modulesGroup == null) {
             isRoot = true;
             modulesGroup = getProduct().getProduct().getModulesRoot();
-            parent.setBorder(new EmptyBorder(5, 5, 5, 5));
+            //parent.setBorder(new EmptyBorder(5, 5, 5, 5));
         } else {
-            parent.setBorder(BorderFactory.createTitledBorder(modulesGroup.getName()));
+            //parent.setBorder(BorderFactory.createTitledBorder(modulesGroup.getName()));
+            parent.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+
         }
 
         parent.setLayout(new BoxLayout(parent, BoxLayout.Y_AXIS));
@@ -315,6 +362,7 @@ public class ProductForm {
                 });
                 parent.add(mc);
                 addedItems++;
+                mc.setBorder(new EmptyBorder(2, 3, 2, 3));
                 mc.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
             }
 
@@ -324,7 +372,19 @@ public class ProductForm {
             try {
                 modules = new JPanel();
                 getFormFromModulesGroup(modules, g);
-                parent.add(modules);
+                JLabel gl = new JLabel("<html><b>" + g.getName() + "<b></html>");
+                gl.setBorder(new EmptyBorder(0, 4, 2, 0));
+                if (!"".equals(g.getHint())) {
+                    gl.setToolTipText("<html>" + g.getHint().replace("\n", "<br/>") + "</html>");
+                } else {
+                    gl.setToolTipText(this.NOT_SPECIFIED);
+                }
+                JPanel tmpPanel = new JPanel();
+                tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
+                tmpPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+                tmpPanel.add(gl);
+                tmpPanel.add(modules);
+                parent.add(tmpPanel);
                 addedGroups++;
             } catch (PCTDataFormatException e) {
             }
@@ -350,9 +410,10 @@ public class ProductForm {
         if (capacitiesGroup == null) {
             isRoot = true;
             capacitiesGroup = getProduct().getProduct().getCapacitiesRoot();
-            parent.setBorder(new EmptyBorder(5, 5, 5, 5));
+            //parent.setBorder(new EmptyBorder(5, 5, 5, 5));
         } else {
-            parent.setBorder(BorderFactory.createTitledBorder(capacitiesGroup.getName()));
+            //parent.setBorder(BorderFactory.createTitledBorder(capacitiesGroup.getName()));
+            parent.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         }
 
         parent.setLayout(new BoxLayout(parent, BoxLayout.Y_AXIS));
@@ -422,7 +483,21 @@ public class ProductForm {
             try {
                 capacities = new JPanel();
                 getFormFromCapacitiesGroup(capacities, g);
-                parent.add(capacities);
+
+                JLabel gl = new JLabel("<html><b>" + g.getName() + "<b></html>");
+                gl.setBorder(new EmptyBorder(0, 4, 2, 0));
+                if (!"".equals(g.getHint())) {
+                    gl.setToolTipText("<html>" + g.getHint().replace("\n", "<br/>") + "</html>");
+                } else {
+                    gl.setToolTipText(this.NOT_SPECIFIED);
+                }
+                JPanel tmpPanel = new JPanel();
+                tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
+                tmpPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+                tmpPanel.add(gl);
+                tmpPanel.add(capacities);
+
+                parent.add(tmpPanel);
                 addedGroups++;
             } catch (PCTDataFormatException e) {
             }

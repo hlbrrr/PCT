@@ -58,7 +58,7 @@
                 dom:$('<div></div>').append($(template).contents()),
                 getCopy:function() {
                     var retDom = this.dom.clone();
-                    $('input.validate', retDom).bind('error',
+                    $('input.validate', retDom).add('textarea.validate', retDom).bind('error',
                         function() {
                             $(this).addClass('error');
                             $(this).keypress(function(e) {
@@ -77,7 +77,7 @@
                             $(this).removeClass('error');
                         });
 
-                    $('input.validate', retDom).blur(
+                    $('input.validate', retDom).add('textarea.validate', retDom).blur(
                         function(e) {
                             if (!PCT.validate(this)) {
                                 PCT.mark(this);
@@ -89,7 +89,7 @@
                                 e.stopImmediatePropagation();
                             }
                         });
-                    $('input.validate', retDom).change();
+                    $('input.validate', retDom).add('textarea.validate', retDom).change();
                     return retDom.contents();
                 }
             });
@@ -604,6 +604,7 @@
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _clone:$('#Clone', dom).get(),
+                //_hint:$('#Hint', dom).get(),
                 _core:$('#Core', dom).get()
             });
             var that = this;
@@ -611,6 +612,7 @@
                 getXML:function() {
                     var config = '<Product>';
                     config += '<Name>' + $(that._name).val() + '</Name>';
+                    //config += '<Hint>' + $(that._hint).val() + '</Hint>';
                     config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
                     config += '<MaximumFunctionalityPrice>' + $(that._maximumFunctionalityPrice).val() + '</MaximumFunctionalityPrice>';
                     config += '<MinimumPrice>' + $(that._minimumPrice).val() + '</MinimumPrice>';
@@ -659,11 +661,12 @@
                 },
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
+                    //$(this._hint).val($('>Hint', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $(this._maximumFunctionalityPrice).val($('>MaximumFunctionalityPrice', initialData).text()).change();
                     $(this._minimumPrice).val($('>MinimumPrice', initialData).text()).change();
-                    this.addModulesRoot((new PCT.modulesGroup()).setRoot(this._modules).init(null, $('>Modules', initialData)));
-                    this.addCapacitiesRoot((new PCT.capacitiesGroup()).setRoot(this._capacities).init(null, $('>Capacities', initialData)));
+                    this.addModulesRoot((new PCT.modulesGroup()).setRoot(this._modules).init(null, null, null, $('>Modules', initialData)));
+                    this.addCapacitiesRoot((new PCT.capacitiesGroup()).setRoot(this._capacities).init(null, null, null, $('>Capacities', initialData)));
                     $(this._settingsPane).addClass('hidden');
                     $(this._content).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -711,6 +714,7 @@
                 _remove:$('#Remove', dom).get(),
                 _core:$('#Core', dom).get(),
                 _clone:$('#Clone', dom).get(),
+                _hint:$('#Hint', dom).get(),
                 _drag:$('#Drag', dom).get()
             });
             var that = this;
@@ -731,6 +735,7 @@
                         config += '<Group>';
                         config += '<Name>' + $(that._name).val() + '</Name>';
                         config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                        config += '<Hint>' + $(that._hint).val() + '</Hint>';
                     }
                     config += '<Modules>';
                     $(that._modules).children().each(function() {
@@ -751,7 +756,7 @@
             $.data($(this._groups)[0], 'pct', {
                 cloneTree:function(xml) {
                     $('root>Group', xml).each(function() {
-                        var rt = that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>Modules', this)).setIsRoot(false));
+                        var rt = that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Modules', this)).setIsRoot(false));
                         $('.moduleKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
@@ -780,7 +785,7 @@
             });
             $(this._expand).click(function(arg) {
                 $(that._content).toggleClass('hidden');
-                if ($(this).hasClass('hidden')) {
+                if ($(that._content).hasClass('hidden')) {
                     $(that._expand).html('Expand');
                 } else {
                     $(that._expand).html('Collapse');
@@ -834,17 +839,22 @@
                 getIsRoot:function() {
                     return $(this._isRoot).val() == 'true';
                 },
-                init:function(name, initialData) {
+                init:function(name, shortName, hint, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
                     }
                     var that = this;
-                    $(this._shortName).val($('>ShortName', initialData).text()).change();
+                    if (shortName) {
+                        $(this._shortName).val(shortName).change();
+                    }
+                    if (hint) {
+                        $(this._hint).val(hint).change();
+                    }
                     $('>Module', initialData).each(function() {
                         that.addModule((new PCT.module()).setRoot(that._modules).init(this));
                     });
                     $('>Group', initialData).each(function() {
-                        that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>Modules', this)).setIsRoot(false));
+                        that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Modules', this)).setIsRoot(false));
                     });
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -895,6 +905,7 @@
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _clone:$('#Clone', dom).get(),
+                _hint:$('#Hint', dom).get(),
                 _core:$('#Core', dom).get()
             });
             var that = this;
@@ -910,6 +921,7 @@
                 getXML:function() {
                     var config = '<Module>';
                     config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Hint>' + $(that._hint).val() + '</Hint>';
                     config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
                     config += '<Weight>' + $(that._weight).val() + '</Weight>';
                     config += '<Key>' + $(that._key).val() + '</Key>';
@@ -980,6 +992,7 @@
                 },
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._hint).val($('>Hint', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $(this._weight).val($('>Weight', initialData).text()).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();
@@ -1139,6 +1152,7 @@
                 _remove:$('#Remove', dom).get(),
                 _core:$('#Core', dom).get(),
                 _clone:$('#Clone', dom).get(),
+                _hint:$('#Hint', dom).get(),
                 _drag:$('#Drag', dom).get()
             });
             var that = this;
@@ -1159,6 +1173,7 @@
                         config += '<Group>';
                         config += '<Name>' + $(that._name).val() + '</Name>';
                         config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                        config += '<Hint>' + $(that._hint).val() + '</Hint>';
                     }
                     config += '<Capacities>';
                     $(that._capacities).children().each(function() {
@@ -1179,7 +1194,7 @@
             $.data($(this._groups)[0], 'pct', {
                 cloneTree:function(xml) {
                     $('root>Group', xml).each(function() {
-                        var rt = that.addGroup((new PCT.capacitiesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>Capacities', this)).setIsRoot(false));
+                        var rt = that.addGroup((new PCT.capacitiesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Capacities', this)).setIsRoot(false));
                         $('.capacityKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
@@ -1270,17 +1285,22 @@
                 getIsRoot:function() {
                     return $(this._isRoot).val() == 'true';
                 },
-                init:function(name, initialData) {
+                init:function(name, shortName, hint, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
                     }
                     var that = this;
-                    $(this._shortName).val($('>ShortName', initialData).text()).change();
+                    if (shortName) {
+                        $(this._shortName).val(shortName).change();
+                    }
+                    if (hint) {
+                        $(this._hint).val(hint).change();
+                    }
                     $('>Capacity', initialData).each(function() {
                         that.addCapacity((new PCT.capacity()).setRoot(that._capacities).init(this));
                     });
                     $('>Group', initialData).each(function() {
-                        that.addGroup((new PCT.capacitiesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>Capacities', this)).setIsRoot(false));
+                        that.addGroup((new PCT.capacitiesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Capacities', this)).setIsRoot(false));
                     });
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -1334,6 +1354,7 @@
                 _remove:$('#Remove', dom).get(),
                 _clone:$('#Clone', dom).get(),
                 _core:$('#Core', dom).get(),
+                _hint:$('#Hint', dom).get(),
                 _linkKey:$('#LinkKey', dom).get(),
                 _isLink:false
             });
@@ -1349,6 +1370,7 @@
                 getXML:function() {
                     var config = '<Capacity>';
                     config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Hint>' + $(that._hint).val() + '</Hint>';
                     config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
                     config += '<Key>' + $(that._key).val() + '</Key>';
                     if (that._isLink) {
@@ -1416,6 +1438,7 @@
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
+                    $(this._hint).val($('>Hint', initialData).text()).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();
                     if ($('>LinkKey', initialData).length > 0) {
                         this.setLink();
