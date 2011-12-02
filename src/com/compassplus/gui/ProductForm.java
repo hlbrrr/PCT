@@ -12,6 +12,8 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,20 +61,8 @@ public class ProductForm {
         for (ModuleJCheckbox cb : getCheckBoxes().values()) {
             Module m = getProduct().getProduct().getModules().get(cb.getKey());
             sb.setLength(0);
-            sb.append("<html>");
             sb.append(m.isDeprecated() ? "[DEPRECATED] " : "");
-            if (!"".equals(m.getHint())) {
-                cb.setToolTipText("<html>" + m.getHint().replace("\n", "<br/>") + "</html>");
-                //sb.append("<u>");
-                //cb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            } else {
-                cb.setToolTipText(this.NOT_SPECIFIED);
-            }
             sb.append(m.getName());
-            if (!"".equals(m.getHint())) {
-                //sb.append("</u>");
-            }
-
             sb.append(" (");
             if (product.getProposal().getCurrency().getSymbol() != null) {
                 sb.append(product.getProposal().getCurrency().getSymbol());
@@ -84,7 +74,6 @@ public class ProductForm {
                 sb.append(product.getProposal().getCurrency().getName());
             }
             sb.append(")");
-            sb.append("</html>");
             cb.setText(sb.toString());
         }
     }
@@ -105,11 +94,6 @@ public class ProductForm {
         }
         StringBuilder sb = new StringBuilder();
         sb.append(c.isDeprecated() ? "[DEPRECATED] " : "");
-        if (!"".equals(c.getHint())) {
-            cas.getLabel().setToolTipText("<html>" + c.getHint().replace("\n", "<br/>") + "</html>");
-        } else {
-            cas.getLabel().setToolTipText(this.NOT_SPECIFIED);
-        }
         sb.append(c.getName());
         sb.append(" (");
         if (product.getProposal().getCurrency().getSymbol() != null) {
@@ -170,15 +154,30 @@ public class ProductForm {
         mainPanel.add(capacitiesPanel, c);
 
         JPanel modules = new JPanel();
-        JScrollPane modulesScroll = new JScrollPane(modules);
-        modulesPanel.add(modulesScroll, BorderLayout.CENTER);
-        getFormFromModulesGroup(modules);
-
         JPanel capacities = new JPanel();
-        capacities.setLayout(new GridLayout(0, 1));
+        JScrollPane modulesScroll = new JScrollPane(modules);
         JScrollPane capacitiesScroll = new JScrollPane(capacities);
+        modulesPanel.add(modulesScroll, BorderLayout.CENTER);
         capacitiesPanel.add(capacitiesScroll, BorderLayout.CENTER);
-        getFormFromCapacitiesGroup(capacities);
+        c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weighty = 0;
+        c.weightx = 1.0;
+        modules.setLayout(new GridBagLayout());
+        capacities.setLayout(new GridBagLayout());
+        JPanel modulesC = new JPanel();
+        JPanel capacitiesC = new JPanel();
+        modules.add(modulesC, c);
+        capacities.add(capacitiesC, c);
+        c.gridy++;
+        c.weighty = 1.0;
+        modules.add(new JPanel(), c);
+        capacities.add(new JPanel(), c);
+        getFormFromModulesGroup(modulesC);
+
+        getFormFromCapacitiesGroup(capacitiesC);
 
         reloadModulesPrices();
     }
@@ -199,14 +198,17 @@ public class ProductForm {
         if (modulesGroup == null) {
             isRoot = true;
             modulesGroup = getProduct().getProduct().getModulesRoot();
-            //parent.setBorder(new EmptyBorder(5, 5, 5, 5));
         } else {
-            //parent.setBorder(BorderFactory.createTitledBorder(modulesGroup.getName()));
             parent.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-
         }
+        GridBagConstraints cg = new GridBagConstraints();
+        cg.gridx = 0;
+        cg.gridy = 0;
+        cg.fill = GridBagConstraints.HORIZONTAL;
+        cg.weightx = 1.0;
+        cg.gridwidth = 2;
+        parent.setLayout(new GridBagLayout());
 
-        parent.setLayout(new BoxLayout(parent, BoxLayout.Y_AXIS));
 
         for (String key : modulesGroup.getModules().keySet()) {
             Module m = modulesGroup.getModules().get(key);
@@ -360,31 +362,107 @@ public class ProductForm {
                         }
                     }
                 });
-                parent.add(mc);
+                if (!"".equals(m.getHint())) {
+                    cg.gridwidth = 1;
+                }
+                parent.add(mc, cg);
+                if (!"".equals(m.getHint())) {
+                    cg.weightx = 0;
+                    cg.gridx++;
+                    JLabel hl = new JLabel("<html>[?]</html>");
+                    hl.setBorder(new EmptyBorder(0, 5, 2, 2));
+                    hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    final String about = "<html>" + m.getHint().replace("\n", "<br/>") + "</html>";
+                    hl.addMouseListener(new MouseListener() {
+                        public void mouseClicked(MouseEvent e) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    showHint(about);
+                                }
+                            });
+                        }
+
+                        public void mousePressed(MouseEvent e) {
+                        }
+
+                        public void mouseReleased(MouseEvent e) {
+                        }
+
+                        public void mouseEntered(MouseEvent e) {
+                        }
+
+                        public void mouseExited(MouseEvent e) {
+                        }
+                    });
+                    parent.add(hl, cg);
+                    cg.weightx = 1.0;
+                    cg.gridwidth = 2;
+                    cg.gridx = 0;
+                }
+                cg.gridy++;
                 addedItems++;
-                mc.setBorder(new EmptyBorder(2, 3, 2, 3));
+                mc.setBorder(new EmptyBorder(2, 5, 2, 3));
                 mc.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
             }
 
         }
+        boolean first = true;
         for (ModulesGroup g : modulesGroup.getGroups()) {
             JPanel modules = null;
             try {
                 modules = new JPanel();
                 getFormFromModulesGroup(modules, g);
+                JPanel labelPanel = new JPanel();
+                labelPanel.setLayout(new GridBagLayout());
+                labelPanel.setBorder(new EmptyBorder(first ? 10 : 5, 5, 5, 5));
+                first = false;
+                GridBagConstraints c = new GridBagConstraints();
+                c.gridx = 0;
+                c.gridy = 0;
+                c.fill = GridBagConstraints.HORIZONTAL;
+                c.weightx = 1.0;
                 JLabel gl = new JLabel("<html><b>" + g.getName() + "<b></html>");
                 gl.setBorder(new EmptyBorder(0, 4, 2, 0));
+
+                labelPanel.add(gl, c);
                 if (!"".equals(g.getHint())) {
-                    gl.setToolTipText("<html>" + g.getHint().replace("\n", "<br/>") + "</html>");
+                    JLabel hl = new JLabel("<html><b>[?]<b></html>");
+                    hl.setBorder(new EmptyBorder(0, 4, 2, 2));
+                    hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    final String about = "<html>" + g.getHint().replace("\n", "<br/>") + "</html>";
+                    hl.addMouseListener(new MouseListener() {
+                        public void mouseClicked(MouseEvent e) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    showHint(about);
+                                }
+                            });
+                        }
+
+                        public void mousePressed(MouseEvent e) {
+                        }
+
+                        public void mouseReleased(MouseEvent e) {
+                        }
+
+                        public void mouseEntered(MouseEvent e) {
+                        }
+
+                        public void mouseExited(MouseEvent e) {
+                        }
+                    });
+                    c.gridx++;
+                    c.weightx = 0;
+                    labelPanel.add(hl, c);
+                    c.gridwidth = 2;
+                    c.gridx = 0;
                 } else {
-                    gl.setToolTipText(this.NOT_SPECIFIED);
+                    c.gridwidth = 1;
                 }
-                JPanel tmpPanel = new JPanel();
-                tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
-                tmpPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-                tmpPanel.add(gl);
-                tmpPanel.add(modules);
-                parent.add(tmpPanel);
+                c.gridy++;
+                labelPanel.add(modules, c);
+                parent.add(labelPanel, cg);
+                cg.gridy++;
                 addedGroups++;
             } catch (PCTDataFormatException e) {
             }
@@ -415,8 +493,13 @@ public class ProductForm {
             //parent.setBorder(BorderFactory.createTitledBorder(capacitiesGroup.getName()));
             parent.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         }
-
-        parent.setLayout(new BoxLayout(parent, BoxLayout.Y_AXIS));
+        GridBagConstraints cg = new GridBagConstraints();
+        cg.gridx = 0;
+        cg.gridy = 0;
+        cg.fill = GridBagConstraints.HORIZONTAL;
+        cg.weightx = 1.0;
+        cg.gridwidth = 2;
+        parent.setLayout(new GridBagLayout());
 
         for (String key : capacitiesGroup.getCapacities().keySet()) {
             final Capacity c = capacitiesGroup.getCapacities().get(key);
@@ -427,12 +510,7 @@ public class ProductForm {
                 final JLabel cl3 = new JLabel();
                 final CapacityJSpinner cs = new CapacityJSpinner(getProduct().getCapacities().containsKey(key) ? getProduct().getCapacities().get(key) : null, c.isDeprecated(), key, this, cl);
                 cs.setMaximumSize(new Dimension(cs.getMaximumSize().width, cs.getMinimumSize().height));
-                cs.setAlignmentX(Component.LEFT_ALIGNMENT);
                 getSpinners().put(key, cs);
-                cl.setAlignmentX(Component.LEFT_ALIGNMENT);
-                cl1.setAlignmentX(Component.LEFT_ALIGNMENT);
-                cl2.setAlignmentX(Component.LEFT_ALIGNMENT);
-                cl3.setAlignmentX(Component.LEFT_ALIGNMENT);
                 ChangeListener changeListener = new ChangeListener() {
                     public void stateChanged(ChangeEvent ev) {
                         if (ev.getSource() == cs) {
@@ -440,13 +518,11 @@ public class ProductForm {
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     CapacityJSpinner src = (CapacityJSpinner) e.getSource();
-                                    Double newPrice = 0d;
                                     cl1.setText("");
                                     cl2.setText("");
                                     cl3.setText("");
                                     if (getProduct().getCapacities().containsKey(src.getKey())) {
                                         com.compassplus.proposalModel.Capacity c = getProduct().getCapacities().get(src.getKey());
-                                        newPrice = c.getPrice(getProduct());
                                         if ((c.getVal() - c.getFoc() - c.getUser()) > 0) {
                                             cl1.setText("Required by module(s): " + (c.getVal() - c.getFoc() - c.getUser()));
                                         }
@@ -467,37 +543,124 @@ public class ProductForm {
                 cs.addChangeListener(changeListener);
                 cs.recalc();
                 JPanel tmpPanel = new JPanel();
-                tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
-                tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
-                tmpPanel.add(cl);
-                tmpPanel.add(cl1);
-                tmpPanel.add(cl2);
-                tmpPanel.add(cl3);
-                tmpPanel.add(cs);
-                parent.add(tmpPanel);
+                {
+                    tmpPanel.setLayout(new GridBagLayout());
+                    GridBagConstraints cc = new GridBagConstraints();
+                    cc.gridx = 0;
+                    cc.gridy = 0;
+                    cc.gridwidth = 2;
+                    cc.fill = GridBagConstraints.HORIZONTAL;
+                    cc.weightx = 1.0;
+                    tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    if (!"".equals(c.getHint())) {
+                        cc.gridwidth = 1;
+                    }
+                    tmpPanel.add(cl, cc);
+                    if (!"".equals(c.getHint())) {
+                        cc.weightx = 0;
+                        cc.gridx++;
+                        JLabel hl = new JLabel("<html>[?]</html>");
+                        //hl.setBorder(new EmptyBorder(0, 5, 2, 2));
+                        hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                        final String about = "<html>" + c.getHint().replace("\n", "<br/>") + "</html>";
+                        hl.addMouseListener(new MouseListener() {
+                            public void mouseClicked(MouseEvent e) {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        showHint(about);
+                                    }
+                                });
+                            }
+
+                            public void mousePressed(MouseEvent e) {
+                            }
+
+                            public void mouseReleased(MouseEvent e) {
+                            }
+
+                            public void mouseEntered(MouseEvent e) {
+                            }
+
+                            public void mouseExited(MouseEvent e) {
+                            }
+                        });
+                        tmpPanel.add(hl, cc);
+                        cc.weightx = 1.0;
+                        cc.gridwidth = 2;
+                        cc.gridx = 0;
+                    }
+                    cc.gridy++;
+                    tmpPanel.add(cl1, cc);
+                    cc.gridy++;
+                    tmpPanel.add(cl2, cc);
+                    cc.gridy++;
+                    tmpPanel.add(cl3, cc);
+                    cc.gridy++;
+                    tmpPanel.add(cs, cc);
+                }
+                parent.add(tmpPanel, cg);
+                cg.gridy++;
                 addedItems++;
             }
         }
+        boolean first = true;
         for (CapacitiesGroup g : capacitiesGroup.getGroups()) {
             JPanel capacities = null;
             try {
                 capacities = new JPanel();
                 getFormFromCapacitiesGroup(capacities, g);
 
+                JPanel labelPanel = new JPanel();
+                labelPanel.setLayout(new GridBagLayout());
+                labelPanel.setBorder(new EmptyBorder(first ? 10 : 5, 5, 5, 5));
+                first = false;
+                GridBagConstraints c = new GridBagConstraints();
+                c.gridx = 0;
+                c.gridy = 0;
+                c.fill = GridBagConstraints.HORIZONTAL;
+                c.weightx = 1.0;
                 JLabel gl = new JLabel("<html><b>" + g.getName() + "<b></html>");
                 gl.setBorder(new EmptyBorder(0, 4, 2, 0));
-                if (!"".equals(g.getHint())) {
-                    gl.setToolTipText("<html>" + g.getHint().replace("\n", "<br/>") + "</html>");
-                } else {
-                    gl.setToolTipText(this.NOT_SPECIFIED);
-                }
-                JPanel tmpPanel = new JPanel();
-                tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
-                tmpPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-                tmpPanel.add(gl);
-                tmpPanel.add(capacities);
 
-                parent.add(tmpPanel);
+                labelPanel.add(gl, c);
+                if (!"".equals(g.getHint())) {
+                    JLabel hl = new JLabel("<html><b>[?]<b></html>");
+                    hl.setBorder(new EmptyBorder(0, 4, 2, 2));
+                    hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    final String about = "<html>" + g.getHint().replace("\n", "<br/>") + "</html>";
+                    hl.addMouseListener(new MouseListener() {
+                        public void mouseClicked(MouseEvent e) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    showHint(about);
+                                }
+                            });
+                        }
+
+                        public void mousePressed(MouseEvent e) {
+                        }
+
+                        public void mouseReleased(MouseEvent e) {
+                        }
+
+                        public void mouseEntered(MouseEvent e) {
+                        }
+
+                        public void mouseExited(MouseEvent e) {
+                        }
+                    });
+                    c.gridx++;
+                    c.weightx = 0;
+                    labelPanel.add(hl, c);
+                    c.gridwidth = 2;
+                    c.gridx = 0;
+                } else {
+                    c.gridwidth = 1;
+                }
+                c.gridy++;
+                labelPanel.add(capacities, c);
+                parent.add(labelPanel, cg);
+                cg.gridy++;
                 addedGroups++;
             } catch (PCTDataFormatException e) {
             }
@@ -520,5 +683,9 @@ public class ProductForm {
         this.reloadModulesPrices();
         this.reloadCapacitiesPrices();
         this.reloadProductPrice();
+    }
+
+    private void showHint(String msg) {
+        JOptionPane.showMessageDialog(getRoot(), msg, "Info", JOptionPane.INFORMATION_MESSAGE);
     }
 }
