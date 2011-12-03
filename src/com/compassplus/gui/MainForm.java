@@ -119,7 +119,7 @@ public class MainForm {
                                                     dialog.dispose();
                                                     Proposal proposal = new Proposal(config);
                                                     proposal.setName(name);
-                                                    addProposalForm(new ProposalForm(proposal));
+                                                    addProposalForm(new ProposalForm(proposal, getFrame()));
                                                 }
                                             } else if (value == JOptionPane.CANCEL_OPTION) {
                                                 dialog.dispose();
@@ -166,7 +166,7 @@ public class MainForm {
                                     throw new PCTDataFormatException("Proposal not found");
                                 }
                                 proposal.init(CommonUtils.getInstance().getDocumentFromString(proposalString));
-                                addProposalForm(new ProposalForm(proposal));
+                                addProposalForm(new ProposalForm(proposal, getFrame()));
                                 if (proposal.containsDeprecated()) {
                                     JOptionPane.showMessageDialog(getRoot(), "Selected proposal contains deprecated module(s) or capacity(ies).", "Warning", JOptionPane.INFORMATION_MESSAGE);
                                 }

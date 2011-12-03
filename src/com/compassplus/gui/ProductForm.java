@@ -14,6 +14,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,12 +32,13 @@ public class ProductForm {
     private Product product;
     private JPanel mainPanel;
     private JCheckBox primaryCheckBox;
+    private JFrame frame;
     private Map<String, CapacityJSpinner> spinners = new HashMap<String, CapacityJSpinner>();
     private Map<String, ModuleJCheckbox> checkBoxes = new HashMap<String, ModuleJCheckbox>();
     private PCTChangedListener priceChanged;
-    private final String NOT_SPECIFIED = "No hint specified";
 
-    public ProductForm(Product product, PCTChangedListener priceChanged, DecimalFormat df) {
+    public ProductForm(Product product, PCTChangedListener priceChanged, DecimalFormat df, JFrame frame) {
+        this.frame = frame;
         this.product = product;
         this.df = df;
         this.priceChanged = priceChanged;
@@ -372,7 +375,7 @@ public class ProductForm {
                     JLabel hl = new JLabel("<html>[?]</html>");
                     hl.setBorder(new EmptyBorder(0, 5, 2, 2));
                     hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                    final String about = "<html>" + m.getHint().replace("\n", "<br/>") + "</html>";
+                    final String about = m.getHint();
                     hl.addMouseListener(new MouseListener() {
                         public void mouseClicked(MouseEvent e) {
                             SwingUtilities.invokeLater(new Runnable() {
@@ -417,19 +420,54 @@ public class ProductForm {
                 labelPanel.setBorder(new EmptyBorder(first ? 10 : 5, 5, 5, 5));
                 first = false;
                 GridBagConstraints c = new GridBagConstraints();
+
+                JLabel mm = new JLabel("<html><b>[~]</b></html>\"");
+                mm.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                mm.setBorder(new EmptyBorder(0, 4, 2, 2));
+                final JPanel lnk = modules;
+                mm.addMouseListener(new MouseListener() {
+                    public void mouseClicked(MouseEvent e) {
+                        final JLabel that = ((JLabel) e.getSource());
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                if (lnk.isVisible()) {
+                                    that.setText("<html><b>[+]</b></html>\"");
+                                } else {
+                                    that.setText("<html><b>[~]</b></html>\"");
+                                }
+                                lnk.setVisible(!lnk.isVisible());
+                            }
+                        });
+                    }
+
+                    public void mousePressed(MouseEvent e) {
+                    }
+
+                    public void mouseReleased(MouseEvent e) {
+                    }
+
+                    public void mouseEntered(MouseEvent e) {
+                    }
+
+                    public void mouseExited(MouseEvent e) {
+                    }
+                });
+                c.weightx = 0;
+                c.gridwidth = 1;
                 c.gridx = 0;
                 c.gridy = 0;
                 c.fill = GridBagConstraints.HORIZONTAL;
+                labelPanel.add(mm, c);
+                c.gridx++;
                 c.weightx = 1.0;
-                JLabel gl = new JLabel("<html><b>" + g.getName() + "<b></html>");
+                JLabel gl = new JLabel("<html><b>" + g.getName() + "</b></html>");
                 gl.setBorder(new EmptyBorder(0, 4, 2, 0));
-
                 labelPanel.add(gl, c);
                 if (!"".equals(g.getHint())) {
-                    JLabel hl = new JLabel("<html><b>[?]<b></html>");
+                    JLabel hl = new JLabel("<html><b>[?]</b></html>");
                     hl.setBorder(new EmptyBorder(0, 4, 2, 2));
                     hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                    final String about = "<html>" + g.getHint().replace("\n", "<br/>") + "</html>";
+                    final String about = g.getHint();
                     hl.addMouseListener(new MouseListener() {
                         public void mouseClicked(MouseEvent e) {
                             SwingUtilities.invokeLater(new Runnable() {
@@ -454,12 +492,16 @@ public class ProductForm {
                     c.gridx++;
                     c.weightx = 0;
                     labelPanel.add(hl, c);
-                    c.gridwidth = 2;
-                    c.gridx = 0;
-                } else {
-                    c.gridwidth = 1;
                 }
+
+                if (!"".equals(g.getHint())) {
+                    c.gridwidth = 3;
+                } else {
+                    c.gridwidth = 2;
+                }
+                c.weightx = 1;
                 c.gridy++;
+                c.gridx = 0;
                 labelPanel.add(modules, c);
                 parent.add(labelPanel, cg);
                 cg.gridy++;
@@ -562,7 +604,7 @@ public class ProductForm {
                         JLabel hl = new JLabel("<html>[?]</html>");
                         //hl.setBorder(new EmptyBorder(0, 5, 2, 2));
                         hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                        final String about = "<html>" + c.getHint().replace("\n", "<br/>") + "</html>";
+                        final String about = c.getHint();
                         hl.addMouseListener(new MouseListener() {
                             public void mouseClicked(MouseEvent e) {
                                 SwingUtilities.invokeLater(new Runnable() {
@@ -615,19 +657,55 @@ public class ProductForm {
                 labelPanel.setBorder(new EmptyBorder(first ? 10 : 5, 5, 5, 5));
                 first = false;
                 GridBagConstraints c = new GridBagConstraints();
+
+                JLabel mm = new JLabel("<html><b>[~]</b></html>\"");
+                mm.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                mm.setBorder(new EmptyBorder(0, 4, 2, 2));
+                final JPanel lnk = capacities;
+                mm.addMouseListener(new MouseListener() {
+                    public void mouseClicked(MouseEvent e) {
+                        final JLabel that = ((JLabel) e.getSource());
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                if (lnk.isVisible()) {
+                                    that.setText("<html><b>[+]</b></html>\"");
+                                } else {
+                                    that.setText("<html><b>[~]</b></html>\"");
+                                }
+                                lnk.setVisible(!lnk.isVisible());
+                            }
+                        });
+                    }
+
+                    public void mousePressed(MouseEvent e) {
+                    }
+
+                    public void mouseReleased(MouseEvent e) {
+                    }
+
+                    public void mouseEntered(MouseEvent e) {
+                    }
+
+                    public void mouseExited(MouseEvent e) {
+                    }
+                });
+                c.weightx = 0;
+                c.gridwidth = 1;
                 c.gridx = 0;
                 c.gridy = 0;
                 c.fill = GridBagConstraints.HORIZONTAL;
+                labelPanel.add(mm, c);
+                c.gridx++;
                 c.weightx = 1.0;
-                JLabel gl = new JLabel("<html><b>" + g.getName() + "<b></html>");
+                JLabel gl = new JLabel("<html><b>" + g.getName() + "</b></html>");
                 gl.setBorder(new EmptyBorder(0, 4, 2, 0));
 
                 labelPanel.add(gl, c);
                 if (!"".equals(g.getHint())) {
-                    JLabel hl = new JLabel("<html><b>[?]<b></html>");
+                    JLabel hl = new JLabel("<html><b>[?]</b></html>");
                     hl.setBorder(new EmptyBorder(0, 4, 2, 2));
                     hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                    final String about = "<html>" + g.getHint().replace("\n", "<br/>") + "</html>";
+                    final String about = g.getHint();
                     hl.addMouseListener(new MouseListener() {
                         public void mouseClicked(MouseEvent e) {
                             SwingUtilities.invokeLater(new Runnable() {
@@ -652,12 +730,15 @@ public class ProductForm {
                     c.gridx++;
                     c.weightx = 0;
                     labelPanel.add(hl, c);
-                    c.gridwidth = 2;
-                    c.gridx = 0;
-                } else {
-                    c.gridwidth = 1;
                 }
+                if (!"".equals(g.getHint())) {
+                    c.gridwidth = 3;
+                } else {
+                    c.gridwidth = 2;
+                }
+                c.weightx = 1;
                 c.gridy++;
+                c.gridx = 0;
                 labelPanel.add(capacities, c);
                 parent.add(labelPanel, cg);
                 cg.gridy++;
@@ -685,7 +766,46 @@ public class ProductForm {
         this.reloadProductPrice();
     }
 
-    private void showHint(String msg) {
-        JOptionPane.showMessageDialog(getRoot(), msg, "Info", JOptionPane.INFORMATION_MESSAGE);
+    private void showHint(String text) {
+        JTextArea textArea = new JTextArea(text);
+        textArea.setColumns(35);
+        textArea.setRows(10);
+        textArea.setLineWrap(true);
+        textArea.setEditable(false);
+        textArea.setWrapStyleWord(true);
+        JScrollPane spane = new JScrollPane(textArea);
+        textArea.setFont(spane.getFont());
+        JOptionPane.showMessageDialog(
+                null, spane, "Help", JOptionPane.INFORMATION_MESSAGE);
+/*
+        final JOptionPane optionPane = new JOptionPane(
+                new JComponent[]{
+                        spane,
+                },
+                JOptionPane.INFORMATION_MESSAGE,
+                JOptionPane.DEFAULT_OPTION);
+        final JDialog dialog = new JDialog(getFrame(), "Help", true);
+        dialog.setResizable(true);
+        dialog.setContentPane(optionPane);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        optionPane.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    public void propertyChange(PropertyChangeEvent e) {
+                        String prop = e.getPropertyName();
+                        if (dialog.isVisible()
+                                && (e.getSource() == optionPane)
+                                && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
+                            dialog.setVisible(false);
+                        }
+                    }
+                });
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(getRoot());
+        dialog.setVisible(true);*/
+    }
+
+    private JFrame getFrame() {
+        return frame;
     }
 }

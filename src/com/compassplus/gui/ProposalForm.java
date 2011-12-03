@@ -17,6 +17,7 @@ import java.text.DecimalFormat;
  * Time: 23:08
  */
 public class ProposalForm {
+    private JFrame frame;
     private JPanel mainPanel;
     private Proposal proposal;
     private JTabbedPane productsTabs;
@@ -24,7 +25,8 @@ public class ProposalForm {
     private DecimalFormat df = new DecimalFormat();
     private SummaryForm summaryForm;
 
-    public ProposalForm(Proposal proposal) {
+    public ProposalForm(Proposal proposal, JFrame frame) {
+        this.frame = frame;
         this.proposal = proposal;
         productsTabs = new JTabbedPane(JTabbedPane.BOTTOM, JTabbedPane.WRAP_TAB_LAYOUT);
         productsTabs.addChangeListener(new ChangeListener() {
@@ -104,7 +106,7 @@ public class ProposalForm {
                     }
                 }
             }
-        }, df);
+        }, df, getFrame());
         this.getProposal().addProduct(productForm.getProduct());
         productsTabs.addTab(productForm.getProduct().getName(), productForm.getRoot());
         productsTabs.setSelectedComponent(productForm.getRoot());
@@ -119,5 +121,9 @@ public class ProposalForm {
 
     public JTabbedPane getProductsTabs() {
         return productsTabs;
+    }
+
+    private JFrame getFrame() {
+        return frame;
     }
 }
