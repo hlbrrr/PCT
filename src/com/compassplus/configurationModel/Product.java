@@ -163,7 +163,7 @@ public class Product {
             log.info("Found " + groups.getLength() + " subgroup(s)");
             for (int i = 0; i < groups.getLength(); i++) {
                 try {
-                    ModulesGroup tmpModulesGroup = new ModulesGroup(xut.getNode("Name", groups.item(i)), xut.getNode("ShortName", groups.item(i)), xut.getNode("Hint", groups.item(i)));
+                    ModulesGroup tmpModulesGroup = new ModulesGroup(xut.getNode("Name", groups.item(i)), xut.getNode("ShortName", groups.item(i)), xut.getNode("Hint", groups.item(i)), xut.getNode("RadioButtonGroup", groups.item(i)), xut.getNode("DefaultModuleKey", groups.item(i)));
                     modulesGroup.addModulesGroup(tmpModulesGroup);
                     this.setModules(xut.getNode("Modules", groups.item(i)), tmpModulesGroup, prefix + tmpModulesGroup.getName() + "/");
                 } catch (PCTDataFormatException e) {

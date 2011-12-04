@@ -18,6 +18,8 @@ import java.util.Map;
 public class ModulesGroup {
     private String name;
     private String shortName;
+    private String defaultModuleKey;
+    private Boolean radioButtonGroup;
     private String hint;
 
     private Map<String, Module> modules = new LinkedHashMap<String, Module>();
@@ -30,10 +32,20 @@ public class ModulesGroup {
         this.shortName = shortName;
     }
 
-    public ModulesGroup(Node name, Node shortName, Node hint) throws PCTDataFormatException {
+    public ModulesGroup(Node name, Node shortName, Node hint, Node radioButtonGroup, Node defaultModuleKey) throws PCTDataFormatException {
         this.setName(name);
         this.setShortName(shortName);
         this.setHint(hint);
+        this.setRadioButtonGroup(radioButtonGroup);
+        this.setDefaultModuleKey(defaultModuleKey);
+    }
+
+    public boolean isRadioButtonGroup() {
+        return radioButtonGroup != null ? radioButtonGroup : false;
+    }
+
+    public String getDefaultModuleKey() {
+        return defaultModuleKey;
     }
 
     public String getName() {
@@ -46,6 +58,22 @@ public class ModulesGroup {
 
     public String getHint() {
         return this.hint;
+    }
+
+    private void setRadioButtonGroup(Node radioButtonGroup) throws PCTDataFormatException {
+        try {
+            this.radioButtonGroup = xut.getBoolean(radioButtonGroup, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Modules group radioButtonGroup-flag is not defined correctly", e.getDetails());
+        }
+    }
+
+    private void setDefaultModuleKey(Node defaultModuleKey) throws PCTDataFormatException {
+        try {
+            this.defaultModuleKey = xut.getString(defaultModuleKey, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Modules group default module key is not defined correctly", e.getDetails());
+        }
     }
 
     private void setHint(Node hint) throws PCTDataFormatException {
