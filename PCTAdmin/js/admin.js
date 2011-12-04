@@ -695,7 +695,7 @@
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $(this._maximumFunctionalityPrice).val($('>MaximumFunctionalityPrice', initialData).text()).change();
                     $(this._minimumPrice).val($('>MinimumPrice', initialData).text()).change();
-                    this.addModulesRoot((new PCT.modulesGroup()).setRoot(this._modules).init(null, null, null, $('>Modules', initialData)));
+                    this.addModulesRoot((new PCT.modulesGroup()).setRoot(this._modules).init(null, null, null, null, null, $('>Modules', initialData)));
                     this.addCapacitiesRoot((new PCT.capacitiesGroup()).setRoot(this._capacities).init(null, null, null, $('>Capacities', initialData)));
                     $(this._settingsPane).addClass('hidden');
                     $(this._content).addClass('hidden');
@@ -746,6 +746,8 @@
                 _core:$('#Core', dom).get(),
                 _clone:$('#Clone', dom).get(),
                 _hint:$('#Hint', dom).get(),
+                _radioButtonGroup:$('#RadioButtonGroup', dom).get(),
+                _defaultModuleKey:$('#DefaultModuleKey', dom).get(),
                 _drag:$('#Drag', dom).get()
             });
             var that = this;
@@ -760,6 +762,15 @@
                     that.updateTotal();
                 }
             });
+            $(this._radioButtonGroup).change(function() {
+                if ($(this).prop('checked')) {
+                    $(that._defaultModuleKey).addClass('validate').change();
+                    $(that._defaultModuleKey).parents('.settingsTableRow').removeClass('hidden');
+                } else {
+                    $(that._defaultModuleKey).removeClass('validate').removeClass('error').change();
+                    $(that._defaultModuleKey).parents('.settingsTableRow').addClass('hidden');
+                }
+            }).change();
             $(this._groups, dom).sortable({
                 revert:true,
                 handle: '.groupDrag',
@@ -779,6 +790,8 @@
                         config += '<Name>' + $(that._name).val() + '</Name>';
                         config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
                         config += '<Hint>' + $(that._hint).val() + '</Hint>';
+                        config += '<DefaultModuleKey>' + $(that._defaultModuleKey).val() + '</DefaultModuleKey>';
+                        config += '<RadioButtonGroup>' + ($(that._radioButtonGroup).prop('checked') ? 'true' : 'false') + '</RadioButtonGroup>';
                     }
                     config += '<Modules>';
                     $(that._modules).children().each(function() {
@@ -799,7 +812,7 @@
             $.data($(this._groups)[0], 'pct', {
                 cloneTree:function(xml) {
                     $('root>Group', xml).each(function() {
-                        var rt = that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Modules', this)).setIsRoot(false));
+                        var rt = that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>RadioButtonGroup', this).text(), $('>DefaultModuleKey', this).text(), $('>Modules', this)).setIsRoot(false));
                         $('.moduleKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
@@ -889,13 +902,19 @@
                 updateTotal:function() {
                     $.data($(that._core).parents('.divProductModules')[0], 'pct').updateTotal();
                 },
-                init:function(name, shortName, hint, initialData) {
+                init:function(name, shortName, hint, radioButtonGroup, defaultModuleKey, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
                     }
                     var that = this;
                     if (shortName) {
                         $(this._shortName).val(shortName).change();
+                    }
+                    if (radioButtonGroup) {
+                        $(this._radioButtonGroup).prop('checked', (radioButtonGroup == 'true')).change();
+                    }
+                    if (defaultModuleKey) {
+                        $(this._defaultModuleKey).val(defaultModuleKey).change();
                     }
                     if (hint) {
                         $(this._hint).val(hint).change();
@@ -904,7 +923,7 @@
                         that.addModule((new PCT.module()).setRoot(that._modules).init(this));
                     });
                     $('>Group', initialData).each(function() {
-                        that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Modules', this)).setIsRoot(false));
+                        that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>RadioButtonGroup', this).text(), $('>DefaultModuleKey', this).text(), $('>Modules', this)).setIsRoot(false));
                     });
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -1047,7 +1066,7 @@
                 getHead:function() {
                     return this._head;
                 },
-                updateTotal:function(){
+                updateTotal:function() {
                     $.data($(that._core).parents('.divProductModules')[0], 'pct').updateTotal();
                 },
                 init:function(initialData) {
