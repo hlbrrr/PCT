@@ -589,6 +589,7 @@
             }
             dom = $('<div></div>').append(dom);
             $.extend(this, {
+                _totalWeightInt:0,
                 _head:$(dom).children().first().get(),
                 _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
@@ -604,6 +605,8 @@
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _clone:$('#Clone', dom).get(),
+                _totalWeight:$('#TotalWeight', dom).get(),
+                _pricePerOne:$('#PricePerOne', dom).get(),
                 //_hint:$('#Hint', dom).get(),
                 _core:$('#Core', dom).get()
             });
@@ -626,6 +629,11 @@
                     });
                     config += '</Product>';
                     return config;
+                }
+            });
+            $.data($(this._modules)[0], 'pct', {
+                updateTotal:function() {
+                    that.updateTotal();
                 }
             });
             $(this._remove).click(function() {
@@ -654,10 +662,32 @@
                 $(that._remove).toggleClass('hidden');
                 $(that._settingsPane).toggleClass('hidden');
             });
+            $(this._maximumFunctionalityPrice).change(function() {
+                if (!$(that._maximumFunctionalityPrice).hasClass('error') && that._totalWeightInt > 0) {
+                    try {
+                        $(that._pricePerOne).html((Number($(that._maximumFunctionalityPrice).val()) / that._totalWeightInt).toFixed(2));
+                    } catch(e) {
+                        $(that._pricePerOne).empty();
+                    }
+                } else {
+                    $(that._pricePerOne).empty();
+                }
+            });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
                 getHead:function() {
                     return this._head;
+                },
+                updateTotal:function() {
+                    var totalWeight = 0;
+                    $('.moduleWeight', that._modules).each(function() {
+                        if (!$(this).hasClass('error')) {
+                            totalWeight += Number($(this).val());
+                        }
+                    });
+                    $(that._totalWeight).html(totalWeight);
+                    that._totalWeightInt = totalWeight;
+                    $(that._maximumFunctionalityPrice).change();
                 },
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
@@ -671,6 +701,7 @@
                     $(this._content).addClass('hidden');
                     $(this._remove).addClass('hidden');
                     $(this._expand).html('Expand');
+                    this.updateTotal();
                     return this;
                 },
                 addModulesRoot:function(modulesGroup) {
@@ -721,12 +752,24 @@
             $(this._modules, dom).sortable({
                 revert:true,
                 handle: '.moduleDrag',
-                connectWith: '.divModules'
+                connectWith: '.divModules',
+                start:function() {
+                    that.updateTotal();
+                },
+                update:function() {
+                    that.updateTotal();
+                }
             });
             $(this._groups, dom).sortable({
                 revert:true,
                 handle: '.groupDrag',
-                connectWith: '.divGroups'
+                connectWith: '.divGroups',
+                start:function() {
+                    that.updateTotal();
+                },
+                update:function() {
+                    that.updateTotal();
+                }
             });
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
@@ -761,6 +804,7 @@
                             $(this).val(PCT.randomString(15)).change();
                         });
                     });
+                    that.updateTotal();
                 }
             });
             $.data($(this._modules)[0], 'pct', {
@@ -771,11 +815,14 @@
                             $(this).val(PCT.randomString(15)).change();
                         });
                     });
+                    that.updateTotal();
                 }
             });
             $(this._remove).click(function() {
                 if (confirm('Remove group?')) {
                     if (confirm('Group will be removed with nested modules. Removing module can result in broken backward compatibility. Remove group?')) {
+                        $('.moduleWeight', that._content).val(0);
+                        that.updateTotal();
                         $(that._body).remove();
                     }
                 }
@@ -839,6 +886,9 @@
                 getIsRoot:function() {
                     return $(this._isRoot).val() == 'true';
                 },
+                updateTotal:function() {
+                    $.data($(that._core).parents('.divProductModules')[0], 'pct').updateTotal();
+                },
                 init:function(name, shortName, hint, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
@@ -888,6 +938,7 @@
             }
             dom = $('<div></div>').append(dom);
             $.extend(this, {
+                _allowWeightRecalc:true,
                 _head:$(dom).children().first().get(),
                 _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
@@ -951,6 +1002,7 @@
             $(this._remove).click(function() {
                 if (confirm('Remove module?')) {
                     if (confirm('Removing module can result in broken backward compatibility. Remove module?')) {
+                        $(that._weight).val(0).change();
                         $(that._body).remove();
                     }
                 }
@@ -985,16 +1037,26 @@
                     $(that._expand).html('Collapse');
                 }
             });
+            $(this._weight).change(function() {
+                if (that._allowWeightRecalc) {
+                    that.updateTotal();
+                }
+            });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
                 getHead:function() {
                     return this._head;
                 },
+                updateTotal:function(){
+                    $.data($(that._core).parents('.divProductModules')[0], 'pct').updateTotal();
+                },
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._hint).val($('>Hint', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
+                    this._allowWeightRecalc = false;
                     $(this._weight).val($('>Weight', initialData).text()).change();
+                    this._allowWeightRecalc = true;
                     $(this._key).val('').val($('>Key', initialData).text()).change();
                     $(this._secondarySalesPrice).val($('>SecondarySales>Price', initialData).text()).change();
                     $(this._secondarySalesRate).val($('>SecondarySales>Rate', initialData).text()).change();
