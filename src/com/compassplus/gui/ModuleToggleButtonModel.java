@@ -25,6 +25,10 @@ public class ModuleToggleButtonModel extends JToggleButton.ToggleButtonModel {
 
     }
 
+   /* public ModuleButtonGroup getGroup() {
+        return (ModuleButtonGroup) getGroup();
+    }*/
+
     public void dropOldSelected() {
         ButtonGroup group = getGroup();
         if (group != null && group instanceof ModuleButtonGroup) {
@@ -34,12 +38,12 @@ public class ModuleToggleButtonModel extends JToggleButton.ToggleButtonModel {
     }
 
     public void setSelected(boolean b, boolean ignoreEvent) {
-        ModuleButtonGroup group = (ModuleButtonGroup) getGroup();
+        /*ModuleButtonGroup group = (ModuleButtonGroup) getGroup();
         if (group != null) {
             // use the group model instead
             group.setSelected(this, b, ignoreEvent);
             b = group.isSelected(this);
-        }
+        }*/
 
         if (isSelected() == b) {
             return;

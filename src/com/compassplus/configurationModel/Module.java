@@ -18,6 +18,7 @@ import java.util.HashMap;
  */
 public class Module {
     private Boolean deprecated;
+    private boolean isRadioMember = false;
     private String key;
     private String path;
     private String name;
@@ -251,5 +252,13 @@ public class Module {
             }
         }
         return CommonUtils.getInstance().toNextThousand(price);
+    }
+
+    public void setIsRadioMember(boolean isRadioMember) {
+        this.isRadioMember = isRadioMember;
+    }
+
+    public boolean isRadioMember() {
+        return this.isRadioMember;
     }
 }

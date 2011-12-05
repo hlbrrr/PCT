@@ -29,6 +29,10 @@ public class ModuleJCheckbox extends JCheckBox implements ModuleJButton {
         return key;
     }
 
+    public ModuleButtonGroup getGroup() {
+        return (ModuleButtonGroup)((ModuleToggleButtonModel) this.getModel()).getGroup();
+    }
+
     public void dropOldSelected() {
         if (this.getModel() instanceof ModuleToggleButtonModel) {
             ((ModuleToggleButtonModel) this.getModel()).dropOldSelected();

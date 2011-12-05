@@ -238,16 +238,27 @@ public class ProductForm {
                                                 src.setSelected(false, true);
                                                 throw new PCTDataFormatException("");
                                             }
+                                            /* список модулей которые мешают текущему */
                                             ArrayList<String> excludeKeys = new ArrayList<String>(0);
                                             for (String key : getProduct().getProduct().getModules().get(src.getKey()).getExcludeModules()) {
                                                 if (getProduct().getModules().containsKey(key) && getProduct().getProduct().getModules().containsKey(key)) {
                                                     excludeKeys.add(key);
                                                 }
                                             }
+                                            /* список модулей которым мешает текущий */
                                             ArrayList<String> excludeThisKeys = new ArrayList<String>(0);
                                             for (String key : getProduct().getModules().keySet()) {
                                                 if (getProduct().getProduct().getModules().get(key).getExcludeModules().contains(src.getKey())) {
                                                     excludeThisKeys.add(key);
+                                                }
+                                            }
+                                            /* удалили смежные радиобаттоны */
+                                            if (src.getGroup() != null) {
+                                                for (AbstractButton mjb : src.getGroup().buttons) {
+                                                    if (mjb != null && mjb instanceof ModuleJButton){
+                                                        excludeThisKeys.remove(((ModuleJButton) mjb).getKey());
+                                                        excludeKeys.remove(((ModuleJButton) mjb).getKey());
+                                                    }
                                                 }
                                             }
                                             if (excludeKeys.size() > 0 || excludeThisKeys.size() > 0) {
@@ -322,6 +333,9 @@ public class ProductForm {
                                                     }
                                                 }
                                             }
+                                            /* тут теоретически можно включить выбраный модуль , но сначала надо было проверить можно ли безболезненно выключить
+                                            * исключаемый модуль, и все остальные проверки производить с учетом того что он выключен
+                                            * */
                                             getProduct().addModule(getProduct().getProduct().getModules().get(src.getKey()), src.getKey());
                                             for (RequireCapacity rc : getProduct().getProduct().getModules().get(src.getKey()).getRequireCapacities().values()) {
                                                 if (getProduct().getProduct().getCapacities().containsKey(rc.getKey())) {
@@ -336,6 +350,10 @@ public class ProductForm {
                                                 }
                                             }
                                         } else {
+                                            if (src.getGroup() != null) {
+                                                src.setSelected(true, true);
+                                                throw new PCTDataFormatException("");
+                                            }
                                             ArrayList<String> requireThisKeys = new ArrayList<String>();
                                             for (String key : getProduct().getModules().keySet()) {
                                                 if (getProduct().getProduct().getModules().get(key).getRequireModules().contains(src.getKey())) {

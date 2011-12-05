@@ -151,6 +151,7 @@ public class Product {
                     tmpModule.setPath(prefix + tmpModule.getName());
                     modulesGroup.addModule(tmpModule.getKey(), tmpModule);
                     this.getModules().put(tmpModule.getKey(), tmpModule);
+                    tmpModule.setIsRadioMember(modulesGroup.isRadioButtonGroup());
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }

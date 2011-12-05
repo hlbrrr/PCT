@@ -245,7 +245,6 @@ public class Product {
         if (getProduct().getModules().get(mKey).isDeprecated()) {
             return false;
         }
-        StringBuilder sb = new StringBuilder();
         ArrayList<String> excludeKeys = new ArrayList<String>(0);
         for (String key : getProduct().getModules().get(mKey).getExcludeModules()) {
             if (getModules().containsKey(key) || extraKeys.contains(key)) {
@@ -269,6 +268,13 @@ public class Product {
             }
             if (requireKeys.size() > 0) {
                 return false;
+            }
+        }
+        for (String key : extraKeys) {
+            if (!key.equals(mKey)) {
+                if (getProduct().getModules().get(key).isRadioMember()) {
+                    return false;
+                }
             }
         }
         return true;

@@ -21,6 +21,7 @@ public class ModuleJRadio extends JRadioButton implements ModuleJButton {
         this.setModel(new ModuleToggleButtonModel(this, form));
         this.key = key;
         this.setSelected(selected, true);
+
     }
 
     public void setSelected(boolean b, boolean ignoreEvent) {
@@ -29,6 +30,10 @@ public class ModuleJRadio extends JRadioButton implements ModuleJButton {
 
     public String getKey() {
         return key;
+    }
+
+    public ModuleButtonGroup getGroup() {
+        return (ModuleButtonGroup)((ModuleToggleButtonModel) this.getModel()).getGroup();
     }
 
     public void dropOldSelected() {
