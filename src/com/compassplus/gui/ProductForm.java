@@ -32,7 +32,7 @@ public class ProductForm {
     private JCheckBox primaryCheckBox;
     private JFrame frame;
     private Map<String, CapacityJSpinner> spinners = new HashMap<String, CapacityJSpinner>();
-    private Map<String, ModuleJCheckbox> checkBoxes = new HashMap<String, ModuleJCheckbox>();
+    private Map<String, ModuleJButton> checkBoxes = new HashMap<String, ModuleJButton>();
     private PCTChangedListener priceChanged;
 
     public ProductForm(Product product, PCTChangedListener priceChanged, DecimalFormat df, JFrame frame) {
@@ -45,7 +45,7 @@ public class ProductForm {
         initForm();
     }
 
-    private Map<String, ModuleJCheckbox> getCheckBoxes() {
+    private Map<String, ModuleJButton> getCheckBoxes() {
         return checkBoxes;
     }
 
@@ -59,7 +59,7 @@ public class ProductForm {
 
     private void reloadModulesPrices() {
         StringBuilder sb = new StringBuilder();
-        for (ModuleJCheckbox cb : getCheckBoxes().values()) {
+        for (ModuleJButton cb : getCheckBoxes().values()) {
             Module m = getProduct().getProduct().getModules().get(cb.getKey());
             sb.setLength(0);
             sb.append(m.isDeprecated() ? "[DEPRECATED] " : "");
@@ -76,6 +76,7 @@ public class ProductForm {
             }
             sb.append(")");
             cb.setText(sb.toString());
+            cb.setActionCommand(sb.toString());
         }
     }
 
@@ -211,24 +212,31 @@ public class ProductForm {
         parent.setLayout(new GridBagLayout());
 
 
-        if (!modulesGroup.isRadioButtonGroup()) {
-            for (String key : modulesGroup.getModules().keySet()) {
-                Module m = modulesGroup.getModules().get(key);
-                if (!m.isDeprecated() || getProduct().getModules().containsKey(key)) {
-                    final ModuleJCheckbox mc = new ModuleJCheckbox(null, getProduct().getModules().containsKey(key), key);
-                    getCheckBoxes().put(key, mc);
-                    mc.addItemListener(new ItemListener() {
-                        public void itemStateChanged(ItemEvent ev) {
-                            if (ev.getSource() == mc) {
-                                final ItemEvent e = ev;
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        ModuleJCheckbox src = (ModuleJCheckbox) e.getSource();
+        /*if (!modulesGroup.isRadioButtonGroup() || true) {*/
+        ButtonGroup bg = null;
+        for (String key : modulesGroup.getModules().keySet()) {
+            Module m = modulesGroup.getModules().get(key);
+            if (!m.isDeprecated() || getProduct().getModules().containsKey(key)) {
+                final ModuleJButton mc;
+                if (modulesGroup.isRadioButtonGroup()) {
+                    mc = new ModuleJRadio(null, getProduct().getModules().containsKey(key), key, this);
+                } else {
+                    mc = new ModuleJCheckbox(null, getProduct().getModules().containsKey(key), key, this);
+                }
+                getCheckBoxes().put(key, mc);
+                mc.addItemListener(new ItemListener() {
+                    public void itemStateChanged(ItemEvent ev) {
+                        if (ev.getSource() == mc) {
+                            final ItemEvent e = ev;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    ModuleJButton src = (ModuleJButton) e.getSource();
+                                    try {
                                         if (e.getStateChange() == ItemEvent.SELECTED) {
                                             if (getProduct().getProduct().getModules().get(src.getKey()).isDeprecated()) {
                                                 JOptionPane.showMessageDialog(getRoot(), "Deprecated module can't be enabled.", "Error", JOptionPane.INFORMATION_MESSAGE);
                                                 src.setSelected(false, true);
-                                                return;
+                                                throw new PCTDataFormatException("");
                                             }
                                             ArrayList<String> excludeKeys = new ArrayList<String>(0);
                                             for (String key : getProduct().getProduct().getModules().get(src.getKey()).getExcludeModules()) {
@@ -256,7 +264,7 @@ public class ProductForm {
                                                 JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
 
                                                 src.setSelected(false, true);
-                                                return;
+                                                throw new PCTDataFormatException("");
                                             } else {
                                                 ArrayList<String> requireKeys = new ArrayList<String>(0);
                                                 for (String key : getProduct().getProduct().getModules().get(src.getKey()).getRequireModules()) {
@@ -287,7 +295,7 @@ public class ProductForm {
                                                             sbm.append("\n\nYou should enable required module(s) manually, then try again.");
                                                             JOptionPane.showMessageDialog(getRoot(), sbm.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
                                                             src.setSelected(false, true);
-                                                            return;
+                                                            throw new PCTDataFormatException("");
                                                         } else {
                                                             for (String key : requireKeys) {
                                                                 if (!key.equals(src.getKey())) {
@@ -310,7 +318,7 @@ public class ProductForm {
                                                         }
                                                     } else {
                                                         src.setSelected(false, true);
-                                                        return;
+                                                        throw new PCTDataFormatException("");
                                                     }
                                                 }
                                             }
@@ -341,8 +349,9 @@ public class ProductForm {
                                                 }
                                                 sb.append("\n\nYou should disable dependent module(s) first, then try again.");
                                                 JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+
                                                 src.setSelected(true, true);
-                                                return;
+                                                throw new PCTDataFormatException("");
                                             }
                                             getProduct().delModule(src.getKey());
                                             for (RequireCapacity rc : getProduct().getProduct().getModules().get(src.getKey()).getRequireCapacities().values()) {
@@ -359,17 +368,79 @@ public class ProductForm {
                                             }
                                         }
                                         reloadProductPrice();
+                                    } catch (PCTDataFormatException er) {
+                                        //src.dropOldSelected();
                                     }
-                                });
-                            }
+                                }
+                            });
+                        }
+                    }
+                });
+                if (!"".equals(m.getHint())) {
+                    cg.gridwidth = 1;
+                }
+                mc.setBorder(new EmptyBorder(2, 5, 2, 3));
+                mc.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
+                parent.add((Component) mc, cg);
+                if (modulesGroup.isRadioButtonGroup()) {
+                    if (bg == null) {
+                        bg = new ModuleButtonGroup();
+                    }
+                    bg.add((AbstractButton) mc);
+                }
+                if (!"".equals(m.getHint())) {
+                    cg.weightx = 0;
+                    cg.gridx++;
+                    JLabel hl = new JLabel("<html>[?]</html>");
+                    hl.setBorder(new EmptyBorder(0, 5, 2, 2));
+                    hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    final String about = m.getHint();
+                    hl.addMouseListener(new MouseListener() {
+                        public void mouseClicked(MouseEvent e) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    showHint(about);
+                                }
+                            });
+                        }
+
+                        public void mousePressed(MouseEvent e) {
+                        }
+
+                        public void mouseReleased(MouseEvent e) {
+                        }
+
+                        public void mouseEntered(MouseEvent e) {
+                        }
+
+                        public void mouseExited(MouseEvent e) {
                         }
                     });
+                    parent.add(hl, cg);
+                    cg.weightx = 1.0;
+                    cg.gridwidth = 2;
+                    cg.gridx = 0;
+                }
+                cg.gridy++;
+                addedItems++;
+            }
+        }
+        /*} else {
+            ButtonGroup bg = new ButtonGroup();
+            for (String key : modulesGroup.getModules().keySet()) {
+                Module m = modulesGroup.getModules().get(key);
+                if (!m.isDeprecated() || getProduct().getModules().containsKey(key)) {
+                    final ModuleJRadio mr = new ModuleJRadio(null, getProduct().getModules().containsKey(key), key);
+                    getCheckBoxes().put(key, mr);
+                    ////////////////
+
                     if (!"".equals(m.getHint())) {
                         cg.gridwidth = 1;
                     }
-                    mc.setBorder(new EmptyBorder(2, 5, 2, 3));
-                    mc.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
-                    parent.add(mc, cg);
+                    mr.setBorder(new EmptyBorder(2, 5, 2, 3));
+                    mr.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
+                    parent.add(mr, cg);
+                    bg.add(mr);
                     if (!"".equals(m.getHint())) {
                         cg.weightx = 0;
                         cg.gridx++;
@@ -405,20 +476,11 @@ public class ProductForm {
                     }
                     cg.gridy++;
                     addedItems++;
-                }
-            }
-        } else {
-            ButtonGroup bg = new ButtonGroup();
-            for (String key : modulesGroup.getModules().keySet()) {
-                Module m = modulesGroup.getModules().get(key);
-                if (!m.isDeprecated() || getProduct().getModules().containsKey(key)) {
-                    final ModuleJRadio mr = new ModuleJRadio(null, getProduct().getModules().containsKey(key), key);
-                    getCheckBoxes().put(key, mc);
 
                 }
             }
 
-        }
+        }*/
         boolean first = true;
         for (ModulesGroup g : modulesGroup.getGroups()) {
             JPanel modules = null;
