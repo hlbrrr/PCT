@@ -1,15 +1,15 @@
-package com.compassplus.gui;/*
- * %W% %E%
+/*
+ * @(#)ButtonGroup.java	1.39 05/11/17
  *
- * Copyright (c) 2006, Oracle and/or its affiliates. All rights reserved.
- * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
+package com.compassplus.gui;
 
 import javax.swing.*;
-import java.awt.event.*;
-import java.util.Vector;
-import java.util.Enumeration;
 import java.io.Serializable;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * This class is used to create a multiple-exclusion scope for
@@ -46,7 +46,7 @@ import java.io.Serializable;
  * Please see {@link java.beans.XMLEncoder}.
  *
  * @author Jeff Dinkins
- * @version %I% %G%
+ * @version 1.39 11/17/05
  */
 public class ModuleButtonGroup extends ButtonGroup implements Serializable {
 
@@ -56,14 +56,12 @@ public class ModuleButtonGroup extends ButtonGroup implements Serializable {
     /**
      * The current selection.
      */
-    ModuleToggleButtonModel selection = null;
-    ModuleToggleButtonModel veryOldSelection = null;
+    ButtonModel selection = null;
 
     /**
      * Creates a new <code>ButtonGroup</code>.
      */
     public ModuleButtonGroup() {
-        super();
     }
 
     /**
@@ -79,7 +77,7 @@ public class ModuleButtonGroup extends ButtonGroup implements Serializable {
 
         if (b.isSelected()) {
             if (selection == null) {
-                selection = (ModuleToggleButtonModel) b.getModel();
+                selection = b.getModel();
             } else {
                 b.setSelected(false);
             }
@@ -137,50 +135,24 @@ public class ModuleButtonGroup extends ButtonGroup implements Serializable {
         return selection;
     }
 
-    public void dropOldSelected() {
-        System.out.println("DROP!");
-        veryOldSelection = null;
-    }
-
     /**
      * Sets the selected value for the <code>ButtonModel</code>.
      * Only one button in the group may be selected at a time.
      *
-     * @param mOrig the <code>ButtonModel</code>
-     * @param b     <code>true</code> if this button is to be
-     *              selected, otherwise <code>false</code>
+     * @param m the <code>ButtonModel</code>
+     * @param b <code>true</code> if this button is to be
+     *          selected, otherwise <code>false</code>
      */
-    public void setSelected(ButtonModel mOrig, boolean b, boolean ignoreEvent) {
-        ModuleToggleButtonModel m = (ModuleToggleButtonModel) mOrig;
-        System.out.println(">>>>>>>>>>>>>>>>>>>>" + b);
-        System.out.println("BEG:selection=" + (selection != null ? selection.getActionCommand() : "null"));
-        System.out.println("BEG:veryOldSelection=" + (veryOldSelection != null ? veryOldSelection.getActionCommand() : "null"));
-
-        if (m != null) {
-            if (b && m != selection) {
-                System.out.println("vkl");
-                veryOldSelection = null;
-                ModuleToggleButtonModel oldSelection = selection;
-                selection = m;
-                if (oldSelection != null) {
-                    oldSelection.setSelected(false);
-                }
-                m.setSelected(true);
-                veryOldSelection = oldSelection;
-            } else if (veryOldSelection != null) {
-                System.out.println("vikl");
-                selection = veryOldSelection;
-                veryOldSelection = null;
-                selection.setSelected(true);
-                m.setSelected(false);
-                //veryOldSelection = selection;
+    /*public void setSelected(ButtonModel m, boolean b) {
+        if (b && m != null && m != selection) {
+            ButtonModel oldSelection = selection;
+            selection = m;
+            if (oldSelection != null) {
+                oldSelection.setSelected(false);
             }
+            m.setSelected(true);
         }
-        System.out.println("END:selection=" + (selection != null ? selection.getActionCommand() : "null"));
-        System.out.println("END:veryOldSelection=" + (veryOldSelection != null ? veryOldSelection.getActionCommand() : "null"));
-        System.out.println("<<<<<<<<<<<<<<<<<<<");
-
-    }
+    }*/
 
     /**
      * Returns whether a <code>ButtonModel</code> is selected.
@@ -188,9 +160,9 @@ public class ModuleButtonGroup extends ButtonGroup implements Serializable {
      * @return <code>true</code> if the button is selected,
      *         otherwise returns <code>false</code>
      */
-    public boolean isSelected(ButtonModel m) {
+    /*public boolean isSelected(ButtonModel m) {
         return (m == selection);
-    }
+    }*/
 
     /**
      * Returns the number of buttons in the group.

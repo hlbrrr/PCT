@@ -33,6 +33,7 @@ public class ProductForm {
     private JFrame frame;
     private Map<String, CapacityJSpinner> spinners = new HashMap<String, CapacityJSpinner>();
     private Map<String, ModuleJButton> checkBoxes = new HashMap<String, ModuleJButton>();
+    private ArrayList<ModuleJButton> checkBoxesToCheck = new ArrayList<ModuleJButton>();
     private PCTChangedListener priceChanged;
 
     public ProductForm(Product product, PCTChangedListener priceChanged, DecimalFormat df, JFrame frame) {
@@ -43,6 +44,19 @@ public class ProductForm {
         mainPanel = new ProductJPanel(this);
         mainPanel.setLayout(new GridBagLayout());
         initForm();
+        for (ModuleJButton mjb : checkBoxesToCheck) {
+            boolean groupEmpty = true;
+            for (AbstractButton ab : mjb.getGroup().buttons) {
+                if (ab.isSelected()) {
+                    groupEmpty = false;
+                    break;
+                }
+            }
+            if (groupEmpty) {
+                mjb.setSelected(true, false);
+            }
+        }
+        checkBoxesToCheck.clear();
     }
 
     private Map<String, ModuleJButton> getCheckBoxes() {
@@ -214,6 +228,7 @@ public class ProductForm {
 
         /*if (!modulesGroup.isRadioButtonGroup() || true) {*/
         ButtonGroup bg = null;
+        boolean firstModule = true;
         for (String key : modulesGroup.getModules().keySet()) {
             Module m = modulesGroup.getModules().get(key);
             if (!m.isDeprecated() || getProduct().getModules().containsKey(key)) {
@@ -238,6 +253,36 @@ public class ProductForm {
                                                 src.setSelected(false, true);
                                                 throw new PCTDataFormatException("");
                                             }
+                                            ModuleJButton depMod = null;
+                                            /* проверка на возможность выключения мешающего модуля */
+                                            if (src.getGroup() != null) {
+                                                for (AbstractButton ab : src.getGroup().buttons) {
+                                                    if (ab.isSelected() && ab instanceof ModuleJButton && !((ModuleJButton) ab).getKey().equals(src.getKey())) {
+                                                        depMod = (ModuleJButton) ab;
+                                                        break;
+                                                    }
+                                                }
+                                                if (depMod != null) {
+                                                    ArrayList<String> requireThisKeys = new ArrayList<String>();
+                                                    for (String key : getProduct().getModules().keySet()) {
+                                                        if (getProduct().getProduct().getModules().get(key).getRequireModules().contains(depMod.getKey())) {
+                                                            requireThisKeys.add(key);
+                                                        }
+                                                    }
+                                                    if (requireThisKeys.size() > 0) {
+                                                        StringBuilder sb = new StringBuilder("You are trying to disable module that required by following module(s):");
+                                                        for (String key : requireThisKeys) {
+                                                            sb.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
+                                                        }
+                                                        sb.append("\n\nYou should disable dependent module(s) first, then try again.");
+                                                        JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+
+                                                        src.setSelected(false, true);
+                                                        throw new PCTDataFormatException("");
+                                                    }
+                                                }
+
+                                            }
                                             /* список модулей которые мешают текущему */
                                             ArrayList<String> excludeKeys = new ArrayList<String>(0);
                                             for (String key : getProduct().getProduct().getModules().get(src.getKey()).getExcludeModules()) {
@@ -255,7 +300,7 @@ public class ProductForm {
                                             /* удалили смежные радиобаттоны */
                                             if (src.getGroup() != null) {
                                                 for (AbstractButton mjb : src.getGroup().buttons) {
-                                                    if (mjb != null && mjb instanceof ModuleJButton){
+                                                    if (mjb != null && mjb instanceof ModuleJButton) {
                                                         excludeThisKeys.remove(((ModuleJButton) mjb).getKey());
                                                         excludeKeys.remove(((ModuleJButton) mjb).getKey());
                                                     }
@@ -336,6 +381,23 @@ public class ProductForm {
                                             /* тут теоретически можно включить выбраный модуль , но сначала надо было проверить можно ли безболезненно выключить
                                             * исключаемый модуль, и все остальные проверки производить с учетом того что он выключен
                                             * */
+                                            if (src.getGroup() != null && depMod != null) {
+                                                depMod.setSelected(false, true);
+                                                getProduct().delModule(depMod.getKey());
+                                                for (RequireCapacity rc : getProduct().getProduct().getModules().get(depMod.getKey()).getRequireCapacities().values()) {
+                                                    if (getProduct().getProduct().getCapacities().containsKey(rc.getKey())) {
+                                                        if (rc.isIncremental()) {
+                                                            getSpinners().get(rc.getKey()).delIncr(rc.getValue());
+                                                            if (rc.isFreeOfCharge()) {
+                                                                getSpinners().get(rc.getKey()).delFoc(rc.getValue());
+                                                            }
+                                                        } else {
+                                                            getSpinners().get(rc.getKey()).delMin(rc.getValue());
+                                                        }
+                                                    }
+                                                }
+
+                                            }
                                             getProduct().addModule(getProduct().getProduct().getModules().get(src.getKey()), src.getKey());
                                             for (RequireCapacity rc : getProduct().getProduct().getModules().get(src.getKey()).getRequireCapacities().values()) {
                                                 if (getProduct().getProduct().getCapacities().containsKey(rc.getKey())) {
@@ -404,6 +466,13 @@ public class ProductForm {
                     if (bg == null) {
                         bg = new ModuleButtonGroup();
                     }
+                    if (modulesGroup.getDefaultModuleKey() != null && !modulesGroup.getDefaultModuleKey().equals("")) {
+                        if (key.equals(modulesGroup.getDefaultModuleKey())) {
+                            checkBoxesToCheck.add(mc);
+                        }
+                    } else if (firstModule) {
+                        checkBoxesToCheck.add(mc);
+                    }
                     bg.add((AbstractButton) mc);
                 }
                 if (!"".equals(m.getHint())) {
@@ -442,63 +511,9 @@ public class ProductForm {
                 cg.gridy++;
                 addedItems++;
             }
+            firstModule = false;
         }
-        /*} else {
-            ButtonGroup bg = new ButtonGroup();
-            for (String key : modulesGroup.getModules().keySet()) {
-                Module m = modulesGroup.getModules().get(key);
-                if (!m.isDeprecated() || getProduct().getModules().containsKey(key)) {
-                    final ModuleJRadio mr = new ModuleJRadio(null, getProduct().getModules().containsKey(key), key);
-                    getCheckBoxes().put(key, mr);
-                    ////////////////
 
-                    if (!"".equals(m.getHint())) {
-                        cg.gridwidth = 1;
-                    }
-                    mr.setBorder(new EmptyBorder(2, 5, 2, 3));
-                    mr.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
-                    parent.add(mr, cg);
-                    bg.add(mr);
-                    if (!"".equals(m.getHint())) {
-                        cg.weightx = 0;
-                        cg.gridx++;
-                        JLabel hl = new JLabel("<html>[?]</html>");
-                        hl.setBorder(new EmptyBorder(0, 5, 2, 2));
-                        hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                        final String about = m.getHint();
-                        hl.addMouseListener(new MouseListener() {
-                            public void mouseClicked(MouseEvent e) {
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        showHint(about);
-                                    }
-                                });
-                            }
-
-                            public void mousePressed(MouseEvent e) {
-                            }
-
-                            public void mouseReleased(MouseEvent e) {
-                            }
-
-                            public void mouseEntered(MouseEvent e) {
-                            }
-
-                            public void mouseExited(MouseEvent e) {
-                            }
-                        });
-                        parent.add(hl, cg);
-                        cg.weightx = 1.0;
-                        cg.gridwidth = 2;
-                        cg.gridx = 0;
-                    }
-                    cg.gridy++;
-                    addedItems++;
-
-                }
-            }
-
-        }*/
         boolean first = true;
         for (ModulesGroup g : modulesGroup.getGroups()) {
             JPanel modules = null;

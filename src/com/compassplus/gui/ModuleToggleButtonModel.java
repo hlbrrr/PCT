@@ -13,10 +13,8 @@ import java.awt.event.ItemEvent;
 public class ModuleToggleButtonModel extends JToggleButton.ToggleButtonModel {
 
     private ModuleJButton src;
-    private ProductForm form;
 
-    public ModuleToggleButtonModel(ModuleJButton src, ProductForm form) {
-        this.form = form;
+    public ModuleToggleButtonModel(ModuleJButton src) {
         this.src = src;
     }
 
@@ -25,40 +23,18 @@ public class ModuleToggleButtonModel extends JToggleButton.ToggleButtonModel {
 
     }
 
-   /* public ModuleButtonGroup getGroup() {
-        return (ModuleButtonGroup) getGroup();
-    }*/
-
-    public void dropOldSelected() {
-        ButtonGroup group = getGroup();
-        if (group != null && group instanceof ModuleButtonGroup) {
-            ((ModuleButtonGroup) group).dropOldSelected();
-        }
-
-    }
-
     public void setSelected(boolean b, boolean ignoreEvent) {
-        /*ModuleButtonGroup group = (ModuleButtonGroup) getGroup();
-        if (group != null) {
-            // use the group model instead
-            group.setSelected(this, b, ignoreEvent);
-            b = group.isSelected(this);
-        }*/
-
         if (isSelected() == b) {
             return;
         }
-
         if (b) {
             stateMask |= SELECTED;
         } else {
             stateMask &= ~SELECTED;
         }
         if (!ignoreEvent) {
-            // Send ChangeEvent
             fireStateChanged();
 
-            // Send ItemEvent
             fireItemStateChanged(
                     new ItemEvent(this,
                             ItemEvent.ITEM_STATE_CHANGED,

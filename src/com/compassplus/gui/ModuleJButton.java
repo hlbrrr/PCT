@@ -27,8 +27,6 @@ public interface ModuleJButton {
 
     public void setActionCommand(String actionCommand);
 
-    public void dropOldSelected();
-
     public void repaint();
 
     public ModuleButtonGroup getGroup();
