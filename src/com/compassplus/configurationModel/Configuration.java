@@ -41,6 +41,7 @@ public class Configuration {
     public Double getMaxDiscount() {
         return maxDiscount;
     }
+
     public Double getMaxSupportDiscount() {
         return maxSupportDiscount;
     }
@@ -55,10 +56,42 @@ public class Configuration {
             this.setRegions(xut.getNodes("/root/Regions/Region", initialData));
             this.setCurrencies(xut.getNodes("/root/Currencies/Currency", initialData));
             this.setSupportPlans(xut.getNodes("/root/SupportPlans/SupportPlan", initialData));
+
+            this.setUserName(xut.getNode("/root/Users/User/Name", initialData));
+            this.setMaxDiscount(xut.getNode("/root/Users/User/MaxProductDiscount", initialData));
+            this.setMaxSupportDiscount(xut.getNode("/root/Users/User/MaxSupportDiscount", initialData));
+
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Bad configuration", e.getDetails());
         }
     }
+
+    private void setMaxDiscount(Node maxDiscount) throws PCTDataFormatException {
+        try {
+            this.maxDiscount = xut.getDouble(maxDiscount);
+            this.maxDiscount = this.maxDiscount / 100d;
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("User max product discount is not defined correctly", e.getDetails());
+        }
+    }
+
+    private void setMaxSupportDiscount(Node maxSupportDiscount) throws PCTDataFormatException {
+        try {
+            this.maxSupportDiscount = xut.getDouble(maxSupportDiscount);
+            this.maxSupportDiscount = this.maxSupportDiscount / 100d;
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("User max support discount is not defined correctly", e.getDetails());
+        }
+    }
+
+    private void setUserName(Node userName) throws PCTDataFormatException {
+        try {
+            this.userName = xut.getString(userName);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("User name is not defined correctly", e.getDetails());
+        }
+    }
+
 
     public String getUserName() {
         return userName;

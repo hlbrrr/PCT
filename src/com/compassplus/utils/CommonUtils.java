@@ -18,6 +18,8 @@ import java.text.DecimalFormat;
 public class CommonUtils {
     private static CommonUtils ourInstance = new CommonUtils();
     private static DecimalFormat formatDouble = new DecimalFormat("#");
+    private static final char[] kDigits = {'0', '1', '2', '3', '4', '5', '6',
+            '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     public static CommonUtils getInstance() {
         return ourInstance;
@@ -71,4 +73,6 @@ public class CommonUtils {
     public String formatDouble(Double val) {
         return formatDouble.format(val);
     }
+
+
 }
