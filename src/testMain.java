@@ -40,6 +40,7 @@ public class testMain {
                     config.init(CommonUtils.getInstance().getDocumentFromString(ds.decrypt(FileUtils.readFileToString(new File("config.exml"), defaultEnc))));
                     ds = null;
                     pwd = null;
+
                 } else {
                     throw new Exception("NoPassword");
                 }
