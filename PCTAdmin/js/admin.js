@@ -16,7 +16,7 @@
         format:'xml',
         getConfiguration:function() {
             var pwd = prompt("Provide a password to encrypt your configuration", "");
-            PCT.sendData(PCT.location, 'action=downloadConfig&pwd=' + $().crypt({method:"md5",source:pwd}));
+            PCT.sendData(PCT.location, 'action=downloadConfig&pwd=' + $().md5(pwd));
             pwd = null;
         },
         randomString:function (string_length) {

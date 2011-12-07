@@ -35,15 +35,19 @@ public class testMain {
         try {
             try {
                 String pwd = (String) JOptionPane.showInputDialog(null, "Please enter your password", "PCT", JOptionPane.QUESTION_MESSAGE);
-                if (pwd != null && pwd.length() > 0) {
-                    DesEncrypter ds = new DesEncrypter(pwd, defaultEnc);
+                if (pwd != null) {
+                    DesEncrypter ds = new DesEncrypter(CommonUtils.getInstance().md5(pwd, defaultEnc), defaultEnc);
                     config.init(CommonUtils.getInstance().getDocumentFromString(ds.decrypt(FileUtils.readFileToString(new File("config.exml"), defaultEnc))));
                     ds = null;
                     pwd = null;
+                } else {
+                    throw new Exception("NoPassword");
                 }
             } catch (Exception e) {
                 Logger.getInstance().error(e);
-                JOptionPane.showMessageDialog(null, "Broken or expired configuration", "Error", JOptionPane.ERROR_MESSAGE);
+                if (e.getMessage() == null || !"NoPassword".equals(e.getMessage())) {
+                    JOptionPane.showMessageDialog(null, "Broken or expired configuration", "Error", JOptionPane.ERROR_MESSAGE);
+                }
                 throw e;
             }
 
