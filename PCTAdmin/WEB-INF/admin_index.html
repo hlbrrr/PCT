@@ -3,11 +3,12 @@
 <html>
 <head>
     <title>PCTAdmin</title>
-    <link type="text/css" rel="stylesheet" media="screen" href="css/style.css"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="css/overcast/jquery-ui-1.8.16.custom.css"/>
-    <script type="text/javascript" src="js/jquery-1.6.3.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
-    <script type="text/javascript" src="js/admin.js"></script>
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/style.css"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/overcast/jquery-ui-1.8.16.custom.css"/>
+    <script type="text/javascript" src="/js/jquery-1.6.3.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.crypt.js"></script>
+    <script type="text/javascript" src="/js/admin.js"></script>
     <script type="text/javascript">
         $(function() {
             PCT.init($('body'), $('body'));
@@ -36,6 +37,9 @@
                 </div>
                 <div id="CurrenciesTab" bind="#CurrenciesWrap" class="titleTableCell titleTableCellButton tab">
                     Currencies
+                </div>
+                <div id="UsersTab" bind="#UsersWrap" class="titleTableCell titleTableCellButton tab">
+                    Users
                 </div>
                 <div class="titleTableCell titleTableCellFill">
                 </div>
@@ -86,6 +90,16 @@
                 </div>
             </div>
             <div id="Currencies" class="divModelCurrencies"></div>
+        </div>
+        <div id="UsersWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="AddUser" class="titleTableCell titleTableCellButton">
+                    Add User
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="Users" class="divModelUsers"></div>
         </div>
     </div>
 </template>
@@ -840,6 +854,121 @@
         <div class="divCurrencyRegionTitle">
             <div class="titleTable">
                 <div id="Drag" class="titleTableCell titleTableCellButton currencyRegionDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="user">
+    <div class="divUser" id="Core">
+        <div class="divUserTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton userDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
+                <div id="AddUserRegion" class="titleTableCell titleTableCellButton">
+                    Add Region
+                </div>
+                <div id="Expand" class="titleTableCell titleTableCellButton">
+                    Collapse
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Certificate CN:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="CN" autocomplete="off" class="settingInput validate userCN"
+                                   validclass="unique" unique=".userCN" uniqueroot=".divModelUsers"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate" validclass="mempty"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Email:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Email" autocomplete="off" class="settingInput validate" validclass="mempty"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Max Product Discount (%):
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="MaxProductDiscount" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Max Support Discount (%):
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="MaxSupportDiscount" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow capacitySetting">
+                        <div class="settingsTableCell settingsTitle">
+                            Admin:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="Admin" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow capacitySetting">
+                        <div class="settingsTableCell settingsTitle">
+                            Locked:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="Deprecated" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="UserRegions" class="divUserRegions"></div>
+    </div>
+</template>
+<template id="userRegion">
+    <div class="divUserRegion" id="Core">
+        <div class="divUserRegionTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton userRegionDrag">
                     #
                 </div>
                 <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">

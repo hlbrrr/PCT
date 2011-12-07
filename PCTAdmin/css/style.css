@@ -19,7 +19,7 @@ body, input, select, textarea {
     color: white;
 }
 
-.divProduct, .divRegion, .divSupportPlan, .divCurrency {
+.divProduct, .divRegion, .divSupportPlan, .divCurrency, .divUser {
     border: 1px solid #000;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -28,11 +28,11 @@ body, input, select, textarea {
     background-color: #fff;
 }
 
-.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans {
+.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans, .divModelUsers {
     margin: 10px;
 }
 
-.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divCurrencyTitle {
+.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divCurrencyTitle, .divUserTitle {
     background-color: #444;
     color: white;
 }
@@ -151,7 +151,7 @@ body, input, select, textarea {
     -webkit-border-radius: 5px;
 }
 
-.divSupportPlanRegion, .divCurrencyRegion {
+.divSupportPlanRegion, .divCurrencyRegion, .divUserRegion {
     border: 1px solid #dbd0d0;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -194,7 +194,7 @@ body, input, select, textarea {
     color: black;
 }
 
-.divSupportPlanRegionTitle, .divCurrencyRegionTitle {
+.divSupportPlanRegionTitle, .divCurrencyRegionTitle, .divUserRegionTitle {
     background-color: #e7e6e6;
     color: black;
 }
@@ -227,22 +227,7 @@ body, input, select, textarea {
     padding-top: 5px;
 }
 
-.divDependencies {
-    padding: 10px;
-    padding-bottom: 0;
-}
-
-.divTiers {
-    padding: 10px;
-    padding-bottom: 0;
-}
-
-.divSupportPlanRegions {
-    padding: 10px;
-    padding-bottom: 0;
-}
-
-.divCurrencyRegions {
+.divDependencies, .divTiers, .divSupportPlanRegions, .divCurrencyRegions, .divUserRegions {
     padding: 10px;
     padding-bottom: 0;
 }
@@ -287,7 +272,8 @@ body, input, select, textarea {
 }
 
 .divProductTitle>.titleTable>.titleTableCellButton:hover, .divRegionTitle>.titleTable>.titleTableCellButton:hover,
-.divSupportPlanTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyTitle>.titleTable>.titleTableCellButton:hover {
+.divSupportPlanTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyTitle>.titleTable>.titleTableCellButton:hover,
+.divUserTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #777;
 }
 
@@ -311,7 +297,8 @@ body, input, select, textarea {
     background-color: #dadafc;
 }
 
-.divSupportPlanRegionTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyRegionTitle>.titleTable>.titleTableCellButton:hover {
+.divSupportPlanRegionTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyRegionTitle>.titleTable>.titleTableCellButton:hover,
+.divUserRegionTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #f5f5f5;
 }
 
@@ -407,9 +394,17 @@ body, input, select, textarea {
     margin-left: 0;
 }
 
+.divUserTitle .admin {
+    color: #66ff00;
+}
+
 .deprecated {
     color: #777;
     font-style: italic;
+}
+
+.divUserTitle .deprecated {
+    color: #aaa;
 }
 
 .unclickable {
@@ -483,7 +478,7 @@ input.validate.error, textarea.validate.error {
     background-color: red;
 }
 
-.divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan, .divCurrency {
+.divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan, .divCurrency, .divUser {
     background-color: #fff;
 }
 
