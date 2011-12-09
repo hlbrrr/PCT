@@ -23,8 +23,8 @@
                 <div id="SaveConfiguration" class="titleTableCell titleTableCellButton">
                     Save
                 </div>
-                <div id="DownloadConfiguration" class="titleTableCell titleTableCellButton">
-                    Download
+                <div id="DownloadsTab" bind="#DownloadsWrap" class="titleTableCell titleTableCellButton tab">
+                    Downloads
                 </div>
                 <div id="ProductsTab" bind="#ProductsWrap" class="titleTableCell titleTableCellButton tab">
                     Products
@@ -100,6 +100,21 @@
                 </div>
             </div>
             <div id="Users" class="divModelUsers"></div>
+        </div>
+        <div id="DownloadsWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="Config" class="titleTableCell titleTableCellButton">
+                    Configuration
+                </div>
+                <div class="titleTableCell titleTableCellButton">
+                    PCT.jar
+                </div>
+                <div class="titleTableCell titleTableCellButton">
+                    Certificate
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -915,7 +930,7 @@
                             Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Name" autocomplete="off" class="settingInput validate" validclass="mempty"/>
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">

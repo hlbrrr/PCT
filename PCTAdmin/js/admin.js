@@ -359,8 +359,8 @@
                 _addCurrency:$('#AddCurrency', dom).get(),
                 _addUser:$('#AddUser', dom).get(),
                 _saveConfiguration:$('#SaveConfiguration', dom).get(),
-                _downloadConfiguration:$('#DownloadConfiguration', dom).get(),
                 _core:$('#Core', dom).get(),
+                _getConfig:$('#Config', dom).get(),
                 _tabs:new Array()
             });
             var that = this;
@@ -505,7 +505,7 @@
                     });
                 }
             });
-            $(this._downloadConfiguration).click(function() {
+            $(this._getConfig).click(function() {
                 PCT.getConfiguration();
             });
             $(this._saveConfiguration).click(function() {
