@@ -7,6 +7,7 @@
     <link type="text/css" rel="stylesheet" media="screen" href="/css/overcast/jquery-ui-1.8.16.custom.css"/>
     <script type="text/javascript" src="/js/jquery-1.6.3.js"></script>
     <script type="text/javascript" src="/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script type="text/javascript" src="/js/fileuploader.js"></script>
     <script type="text/javascript" src="/js/jquery.crypt.js"></script>
     <script type="text/javascript" src="/js/admin.js"></script>
     <script type="text/javascript">
@@ -108,6 +109,7 @@
                 </div>
                 <div class="titleTableCell titleTableCellFill">
                 </div>
+                <div id="Uploader" style="width:1px; height:1px; overflow:hidden; visibility: hidden;"></div>
             </div>
             <div id="Files" class="divModelFiles"></div>
         </div>
@@ -249,7 +251,8 @@
                             Hint:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <textarea id="Hint" autocomplete="off" class="settingInput validate" validclass="mempty"></textarea>
+                            <textarea id="Hint" autocomplete="off" class="settingInput validate"
+                                      validclass="mempty"></textarea>
                         </div>
                     </div>
                     <div class="settingsTableRow capacitySetting">
@@ -265,7 +268,8 @@
                             Dafault Module Key:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="DefaultModuleKey" autocomplete="off" class="settingInput validate" validclass="mempty"/>
+                            <input id="DefaultModuleKey" autocomplete="off" class="settingInput validate"
+                                   validclass="mempty"/>
                         </div>
                     </div>
                 </div>
@@ -329,7 +333,8 @@
                             Hint:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <textarea id="Hint" autocomplete="off" class="settingInput validate" validclass="mempty"></textarea>
+                            <textarea id="Hint" autocomplete="off" class="settingInput validate"
+                                      validclass="mempty"></textarea>
                         </div>
                     </div>
                 </div>
@@ -396,7 +401,8 @@
                             Weight:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="Weight" autocomplete="off" class="settingInput validate moduleWeight" validclass="int"/>
+                            <input id="Weight" autocomplete="off" class="settingInput validate moduleWeight"
+                                   validclass="int"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -413,7 +419,8 @@
                             Hint:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <textarea id="Hint" autocomplete="off" class="settingInput validate" validclass="mempty"></textarea>
+                            <textarea id="Hint" autocomplete="off" class="settingInput validate"
+                                      validclass="mempty"></textarea>
                         </div>
                     </div>
                     <!--<div class="settingsTableRow">
@@ -514,7 +521,8 @@
                             Hint:
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <textarea id="Hint" autocomplete="off" class="settingInput validate" validclass="mempty"></textarea>
+                            <textarea id="Hint" autocomplete="off" class="settingInput validate"
+                                      validclass="mempty"></textarea>
                         </div>
                     </div>
                     <div class="settingsTableRow capacitySetting">
@@ -941,7 +949,8 @@
                             Max Product Discount (%):
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="MaxProductDiscount" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                            <input id="MaxProductDiscount" autocomplete="off" class="settingInput validate"
+                                   validclass="summ"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -949,7 +958,8 @@
                             Max Support Discount (%):
                         </div>
                         <div class="settingsTableCell settingsValue">
-                            <input id="MaxSupportDiscount" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                            <input id="MaxSupportDiscount" autocomplete="off" class="settingInput validate"
+                                   validclass="summ"/>
                         </div>
                     </div>
                     <div class="settingsTableRow capacitySetting">
@@ -995,6 +1005,59 @@
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <input id="Key" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="file">
+    <div class="divFile" id="Core">
+        <div class="divFileTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton fileDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate fileKey"/>
+                            <input id="Key" class="fileKey" type="hidden" autocomplete="off"/>
+                        </div>
+                    </div>
+                    <!--<div class="settingsTableRow" id="FileRow">
+                        <div class="settingsTableCell settingsTitle">
+                            File:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input autocomplete="off" class="settingInput" type="file"/>
+                        </div>
+                    </div>-->
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Description:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <textarea id="Hint" autocomplete="off" class="settingInput validate"
+                                      validclass="mempty"></textarea>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            File:
+                        </div>
+                        <div class="settingsTableCell settingsTitle" id="FileName">
                         </div>
                     </div>
                 </div>
