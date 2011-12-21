@@ -24,6 +24,9 @@
                 <div id="SaveConfiguration" class="titleTableCell titleTableCellButton">
                     Save
                 </div>
+                <div id="HomeTab" bind="#HomeWrap" class="titleTableCell titleTableCellButton tab">
+                    Home
+                </div>
                 <div id="DownloadsTab" bind="#DownloadsWrap" class="titleTableCell titleTableCellButton tab">
                     Downloads
                 </div>
@@ -103,15 +106,24 @@
             <div id="Users" class="divModelUsers"></div>
         </div>
         <div id="DownloadsWrap" class="hidden">
-            <div class="titleTable divModelSubTitle">
-                <div id="AddFile" class="titleTableCell titleTableCellButton">
+            <div class="titleTable divModelSubTitle" id="Uploader">
+                <!--<div id="AddFile" class="titleTableCell titleTableCellButton">
                     Add File
                 </div>
                 <div class="titleTableCell titleTableCellFill">
-                </div>
-                <div id="Uploader" style="width:1px; height:1px; overflow:hidden; visibility: hidden;"></div>
+                </div>-->
             </div>
             <div id="Files" class="divModelFiles"></div>
+        </div>
+        <div id="HomeWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="Reload" class="titleTableCell titleTableCellButton">
+                    Reload
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="Home" class="divHome"></div>
         </div>
     </div>
 </template>

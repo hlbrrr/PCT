@@ -42,7 +42,7 @@
         <role-name>pctadmin</role-name>
         </auth-constraint>
         </security-constraint>-->
-        <security-constraint>
+        <!--<security-constraint>
             <display-name>SSL Constraint</display-name>
             <web-resource-collection>
                 <web-resource-name>Protected Area</web-resource-name>
@@ -51,7 +51,7 @@
             <user-data-constraint>
                 <transport-guarantee>CONFIDENTIAL</transport-guarantee>
             </user-data-constraint>
-        </security-constraint>
+        </security-constraint>-->
         <!--<security-role>
         <role-name>pctadmin</role-name>
         </security-role>

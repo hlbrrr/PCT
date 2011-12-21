@@ -19,6 +19,37 @@
             PCT.sendData(PCT.location, 'action=downloadConfig&pwd=' + $().md5(pwd));
             pwd = null;
         },
+        getHome:function(dest, lock) {
+            if (lock) {
+                PCT.lockScreen();
+            }
+            $.ajax({
+                url:PCT.location,
+                type:'POST',
+                data:{
+                    action:'getHome'
+                },
+                success:function(data, textStatus, jqXHR) {
+                    $(dest).empty().html(data);
+                },
+                error:function(jqXHR, textStatus, errorThrown) {
+                    alert('Loading failed: ' + textStatus);
+                },
+                statusCode: {
+                    551: function() {
+                        alert('File reading error.');
+                    },
+                    552: function() {
+                        alert('Config validation error.');
+                    }
+                },
+                complete:function() {
+                    if (lock) {
+                        PCT.unlockScreen();
+                    }
+                }
+            });
+        },
         randomString:function (string_length) {
             var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZ';
             var randomstring = '';
@@ -302,7 +333,6 @@
                     }
                 },
                 complete:function() {
-                    PCT.unlockScreen();
                 }
             });
         },
@@ -359,7 +389,9 @@
                 _addSupportPlan:$('#AddSupportPlan', dom).get(),
                 _addCurrency:$('#AddCurrency', dom).get(),
                 _addUser:$('#AddUser', dom).get(),
-                _addFile:$('#AddFile', dom).get(),
+                /*_addFile:$('#AddFile', dom).get(),*/
+                _home:$('#Home', dom).get(),
+                _reload:$('#Reload', dom).get(),
                 _saveConfiguration:$('#SaveConfiguration', dom).get(),
                 _core:$('#Core', dom).get(),
                 /*_getConfig:$('#Config', dom).get(),*/
@@ -426,9 +458,12 @@
             $(this._addUser).click(function() {
                 that.addUser();
             });
-            $(this._addFile).click(function() {
-                $('#Uploader input', that._core).click();
+            $(this._reload).click(function() {
+                PCT.getHome(that._home, true);
             });
+            /*$(this._addFile).click(function() {
+             $('#Uploader input', that._core).click();
+             });*/
             new qq.FileUploader({
                 element: $('#Uploader', that._core)[0],
                 action: PCT.location,
@@ -436,6 +471,7 @@
                 onSubmit: function(id, fileName) {
                     PCT.lockScreen();
                 },
+                template:'<div class="titleTableCell titleTableCellButton qq-upload-button">Add File</div><div class="titleTableCell titleTableCellFill"></div><div class="qq-upload-list qq-uploader qq-upload-drop-area hidden"></div>',
                 onComplete: function(id, fileName, responseJSON) {
                     PCT.unlockScreen();
                     if (responseJSON && responseJSON.success) {
@@ -443,7 +479,7 @@
                         $('.fileKey', rt).each(function() {
                             $(this).val(fileName).change();
                         });
-                    }else{
+                    } else {
                         alert('fail');
                     }
                 }
@@ -617,6 +653,8 @@
                     $('>Files>File', initialData).each(function() {
                         that.addFile((new PCT.file()).setRoot(that._files).init(this));
                     });
+                    PCT.unlockScreen();
+                    PCT.getHome(this._home, true);
                     return this;
                 },
                 addProduct:function(product) {
