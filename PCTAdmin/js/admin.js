@@ -4,7 +4,11 @@
  * Date: 10/26/11
  * Time: 2:31 PM
  */
-(function($, window) {
+(function($, window, qq) {
+    qq.UploadHandlerXhr.isSupported = function(){
+        return false;
+    };
+
     $.extend(window, {
         PCT:{}
     });
@@ -392,6 +396,7 @@
                 /*_addFile:$('#AddFile', dom).get(),*/
                 _home:$('#Home', dom).get(),
                 _reload:$('#Reload', dom).get(),
+                _edit:$('#Edit', dom).get(),
                 _saveConfiguration:$('#SaveConfiguration', dom).get(),
                 _core:$('#Core', dom).get(),
                 /*_getConfig:$('#Config', dom).get(),*/
@@ -461,6 +466,16 @@
             $(this._reload).click(function() {
                 PCT.getHome(that._home, true);
             });
+            $(this._edit).click(function() {
+                if ($('#Description', that._home).length > 0) {
+                    if($('#Description', that._home).hasClass('hidden')){
+                    }else{
+                        $('#DescriptionHtml', that._home).html($('#Description', that._home).val());
+                    }
+                    $('#Description', that._home).toggleClass('hidden');
+                    $('#DescriptionHtml', that._home).toggleClass('hidden');
+                }
+            });
             /*$(this._addFile).click(function() {
              $('#Uploader input', that._core).click();
              });*/
@@ -480,7 +495,7 @@
                             $(this).val(fileName).change();
                         });
                     } else {
-                        alert('fail');
+                        alert('Uploading failed');
                     }
                 }
             });
@@ -488,6 +503,7 @@
                 getXML:function() {
                     var config = '<root>';
                     config += '<Expiration>' + $(that._expiration).val() + '</Expiration>';
+                    config += '<Description><![CDATA[' + ($('#Description', that._home).length > 0 ? $('#Description', that._home).val() : '') + ']]></Description>';
                     config += '<Products>';
                     $(that._products).children().each(function() {
                         if ($(this).hasClass('divProduct'))
@@ -2387,4 +2403,4 @@
             });
         }
     });
-})(jQuery, window);
+})(jQuery, window, qq);
