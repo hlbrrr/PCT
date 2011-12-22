@@ -226,7 +226,7 @@ public class Product {
         }
 
         Double minPrice = CommonUtils.getInstance().toNextThousand(getProduct().getMinimumPrice() * getProposal().getCurrencyRate());
-        return price > minPrice ? price : minPrice;
+        return (price > minPrice || getSecondarySale()) ? price : minPrice;
     }
 
     public Double getEndUserPrice() {
