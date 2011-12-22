@@ -7,6 +7,7 @@ import com.compassplus.proposalModel.Proposal;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.CellUtil;
 
 import javax.swing.*;
@@ -343,6 +344,12 @@ public class MainForm {
                                                                                 if (settingsSheet == null) {
                                                                                     settingsSheet = wb.createSheet("PCTSettings");
                                                                                 }
+
+                                                                                String regPriceCol = CellReference.convertNumToColString(1 + cellIndex);
+                                                                                String regPriceDiscount = CellReference.convertNumToColString(2 + cellIndex);
+                                                                                String supPriceCol = CellReference.convertNumToColString(4 + cellIndex);
+                                                                                String supPriceDiscount = CellReference.convertNumToColString(5 + cellIndex);
+
                                                                                 for (Product p : getCurrentProposalForm().getProposal().getProducts().values()) {
                                                                                     if (s.getLastRowNum() >= rowIndex + i) {
                                                                                         s.shiftRows(rowIndex + i, s.getLastRowNum(), getCurrentProposalForm().getProposal().getProducts().size());
@@ -363,7 +370,32 @@ public class MainForm {
                                                                                                     " \"" + getCurrentProposalForm().getProposal().getCurrency().getName() + "\"" : "");
                                                                                     cs2.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                                                     c2.setCellStyle(cs2);
-                                                                                    c2.setCellValue(p.getPrice());
+                                                                                    c2.setCellValue(p.getRegionPrice());
+
+                                                                                    Cell c3 = r.createCell(2 + cellIndex);
+                                                                                    CellStyle cs3 = wb.createCellStyle();
+                                                                                    cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%"));
+                                                                                    //cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%;;@"));
+                                                                                    c3.setCellStyle(cs3);
+                                                                                    c3.setCellValue(p.getDiscount());
+
+                                                                                    Cell c4 = r.createCell(3 + cellIndex);
+                                                                                    c4.setCellStyle(cs2);
+                                                                                    int rowIndexTotal = rowIndex + i + 1;
+                                                                                    c4.setCellFormula("CEILING("+regPriceCol + rowIndexTotal + "*(1-" + regPriceDiscount + rowIndexTotal+"),1)");
+
+                                                                                    Cell c5 = r.createCell(4 + cellIndex);
+                                                                                    c5.setCellStyle(cs2);
+                                                                                    c5.setCellValue(p.getSupportPriceUndiscounted());
+
+                                                                                    Cell c6 = r.createCell(5 + cellIndex);
+                                                                                    c6.setCellStyle(cs3);
+                                                                                    c6.setCellValue(p.getSupportDiscount());
+
+                                                                                    Cell c7 = r.createCell(6 + cellIndex);
+                                                                                    c7.setCellStyle(cs2);
+                                                                                    c7.setCellFormula("CEILING("+supPriceCol + rowIndexTotal + "*(1-" + supPriceDiscount + rowIndexTotal+"),1)");
+
                                                                                     i++;
                                                                                 }
                                                                                 Row settingsRow = settingsSheet.getRow(0);

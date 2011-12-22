@@ -238,7 +238,11 @@ public class Product {
     }
 
     public Double getSupportPrice() {
-        return CommonUtils.getInstance().toNextInt(getRegionPrice() * getProposal().getSupportRate() * (1 - getSupportDiscount()));
+        return CommonUtils.getInstance().toNextInt(getSupportPriceUndiscounted() * (1 - getSupportDiscount()));
+    }
+
+    public Double getSupportPriceUndiscounted() {
+        return CommonUtils.getInstance().toNextInt(getRegionPrice() * getProposal().getSupportRate());
     }
 
     public boolean canBeEnabled(String mKey, ArrayList<String> extraKeys) {
