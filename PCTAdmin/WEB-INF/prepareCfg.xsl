@@ -29,4 +29,7 @@
     <xsl:template match="/root/Files">
     </xsl:template>
 
+    <xsl:template match="/root/Description">
+    </xsl:template>
+
 </xsl:stylesheet>
