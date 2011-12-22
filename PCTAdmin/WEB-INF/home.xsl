@@ -8,6 +8,7 @@
                         <title>PCT</title>
                         <script type="text/javascript" src="/js/jquery-1.6.3.js">//</script>
                         <script type="text/javascript" src="/js/jquery.crypt.js">//</script>
+                        <script type="text/javascript" src="/js/fileuploader.js">//</script>
                         <script type="text/javascript" src="/js/admin.js">//</script>
                     </head>
                     <body>
