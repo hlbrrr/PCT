@@ -659,7 +659,7 @@ public class SummaryForm {
                     });
                     {
                         c.gridx++;
-                        final JSpinner sp = new JSpinner(new SpinnerNumberModel((int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1));
+                        final JSpinner sp = new DiscountJSpinner("Maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1);
                         sp.addChangeListener(new ChangeListener() {
                             public void stateChanged(ChangeEvent e) {
                                 final ChangeEvent ev = e;
@@ -718,7 +718,7 @@ public class SummaryForm {
                     });
                     {
                         c.gridx++;
-                        final JSpinner sp = new JSpinner(new SpinnerNumberModel((int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1));
+                        final JSpinner sp = new DiscountJSpinner("Maximum support discount is ",getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1);
                         sp.addChangeListener(new ChangeListener() {
                             public void stateChanged(ChangeEvent e) {
                                 final ChangeEvent ev = e;

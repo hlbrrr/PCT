@@ -1,38 +1,22 @@
 package com.compassplus.gui;
 
-import com.compassplus.configurationModel.Module;
-import com.compassplus.proposalModel.Capacity;
-
 import javax.swing.*;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.NumberFormatter;
 import java.awt.*;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
+import java.io.Serializable;
 
 /**
  * Created by IntelliJ IDEA.
  * User: arudin
- * Date: 10/14/11
- * Time: 1:17 PM
+ * Date: 12/23/11
+ * Time: 1:34 PM
  * To change this template use File | Settings | File Templates.
  */
-public class CapacityJSpinner extends JSpinner {
-    private String key;
-    private JLabel label;
-
-    private class CapacitySpinnerNumberModel extends SpinnerNumberModel {
+public class DiscountJSpinner extends JSpinner {
+    private class DiscountSpinnerNumberModel extends SpinnerNumberModel {
         private Number stepSize, value;
-        private Comparable minimum, maximum;
-        private Boolean isDeprecated;
+        private Comparable minimum, maximum, maximumDiscount;
         private Component parent;
-
-        private String key;
-        private ProductForm form;
-        private ArrayList<Integer> mins = new ArrayList<Integer>(0);
-        private Integer incrs;
-        private Integer focs;
-        private Integer user;
+        private String message = "";
 
         /**
          * Constructs a <code>SpinnerModel</code> that represents
@@ -63,68 +47,23 @@ public class CapacityJSpinner extends JSpinner {
          *                                  <code>null</code> or if the following expression is false:
          *                                  <code>minimum &lt;= value &lt;= maximum</code>
          */
-        public CapacitySpinnerNumberModel(Component parent, boolean isDeprecated, Capacity value, Comparable minimum, Comparable maximum, Number stepSize, String key, ProductForm form) {
-            this.isDeprecated = isDeprecated;
-            this.parent = parent;
-            /*if ((value == null) || (stepSize == null)) {
+        public DiscountSpinnerNumberModel(String message, Component parent, Number value, Comparable minimum, Comparable maximum, Number stepSize) {
+            if (message != null) {
+                this.message = message;
+            }
+            if ((value == null) || (stepSize == null)) {
                 throw new IllegalArgumentException("value and stepSize must be non-null");
             }
             if (!(((minimum == null) || (minimum.compareTo(value) <= 0)) &&
                     ((maximum == null) || (maximum.compareTo(value) >= 0)))) {
                 throw new IllegalArgumentException("(minimum <= value <= maximum) is false");
-            }*/
-            this.minimum = minimum;
-            this.maximum = maximum;
-            this.stepSize = stepSize;
-            this.form = form;
-            this.key = key;
-            this.mins.add(new Integer(0));
-            if (value != null) {
-                this.incrs = value.getIncr();
-                this.focs = value.getFoc();
-                this.user = value.getUser();
-                for (com.compassplus.proposalModel.Module mm : form.getProduct().getModules().values()) {
-                    Module m = form.getProduct().getProduct().getModules().get(mm.getKey());
-                    if (m.getRequireCapacities().containsKey(key) && !m.getRequireCapacities().get(key).isIncremental()) {
-                        this.mins.add(m.getRequireCapacities().get(key).getValue());
-                    }
-                }
-            } else {
-                this.incrs = 0;
-                this.focs = 0;
-                this.user = 0;
             }
-            recalc();
+            this.value = value;
+            this.minimum = minimum;
+            this.maximumDiscount = maximum;
+            this.stepSize = stepSize;
         }
 
-        public void recalc() {
-            Integer ret = this.incrs + this.user;
-            Integer maxmin = mins.get(0);
-            for (Integer i : mins) {
-                if (maxmin < i) {
-                    maxmin = i;
-                }
-            }
-            if (ret < maxmin) {
-                ret = maxmin;
-            }
-            //this.minimum = this.incrs > maxmin ? this.incrs : maxmin;
-            this.value = this.user;
-            if (ret > 0) {
-                if (!form.getProduct().getCapacities().containsKey(key)) {
-                    com.compassplus.configurationModel.Capacity tmpCapacity = form.getProduct().getProduct().getCapacities().get(key);
-                    form.getProduct().addCapacity(tmpCapacity, key);
-                }
-                Capacity tmpCapacity = form.getProduct().getCapacities().get(key);
-                tmpCapacity.setUser(this.user);
-                tmpCapacity.setMin(maxmin);
-                tmpCapacity.setIncr(this.incrs);
-                tmpCapacity.setFoc(this.focs);
-            } else {
-                form.getProduct().delCapacity(key);
-            }
-            fireStateChanged();
-        }
 
         /**
          * Constructs a <code>SpinnerNumberModel</code> with the specified
@@ -138,8 +77,35 @@ public class CapacityJSpinner extends JSpinner {
          * @throws IllegalArgumentException if the following expression is false:
          *                                  <code>minimum &lt;= value &lt;= maximum</code>
          */
-        public CapacitySpinnerNumberModel(Component parent, boolean isDeprecated, Capacity value, int minimum, int maximum, int stepSize, String key, ProductForm form) {
-            this(parent, isDeprecated, value, new Integer(minimum), new Integer(maximum), new Integer(stepSize), key, form);
+        public DiscountSpinnerNumberModel(String message, Component parent, int value, int minimum, int maximum, int stepSize) {
+            this(message, parent, new Integer(value), new Integer(minimum), new Integer(maximum), new Integer(stepSize));
+        }
+
+
+        /**
+         * Constructs a <code>SpinnerNumberModel</code> with the specified
+         * <code>value</code>, <code>minimum</code>/<code>maximum</code> bounds,
+         * and <code>stepSize</code>.
+         *
+         * @param value    the current value of the model
+         * @param minimum  the first number in the sequence
+         * @param maximum  the last number in the sequence
+         * @param stepSize the difference between elements of the sequence
+         * @throws IllegalArgumentException if the following expression is false:
+         *                                  <code>minimum &lt;= value &lt;= maximum</code>
+         */
+        public DiscountSpinnerNumberModel(String message, Component parent, double value, double minimum, double maximum, double stepSize) {
+            this(message, parent, new Double(value), new Double(minimum), new Double(maximum), new Double(stepSize));
+        }
+
+
+        /**
+         * Constructs a <code>SpinnerNumberModel</code> with no
+         * <code>minimum</code> or <code>maximum</code> value,
+         * <code>stepSize</code> equal to one, and an initial value of zero.
+         */
+        public DiscountSpinnerNumberModel(String message, Component parent) {
+            this(message, parent, new Integer(0), null, null, new Integer(1));
         }
 
 
@@ -370,6 +336,7 @@ public class CapacityJSpinner extends JSpinner {
             return value;
         }
 
+
         /**
          * Sets the current value for this sequence.  If <code>value</code> is
          * <code>null</code>, or not a <code>Number</code>, an
@@ -397,102 +364,27 @@ public class CapacityJSpinner extends JSpinner {
          * @see SpinnerModel#addChangeListener
          */
         public void setValue(Object value) {
-            if ((value == null) || !(value instanceof Number) || isDeprecated && !((Integer) value).equals(new Integer(0))) {
-                if (!value.equals(this.value)) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            JOptionPane.showMessageDialog(parent, "Deprecated capacity can't be used. You should set \"0\" here.", "Error", JOptionPane.INFORMATION_MESSAGE);
-                        }
-                    });
-                }
+            if ((value == null) || !(value instanceof Number)) {
                 throw new IllegalArgumentException("illegal value");
             }
             if (!value.equals(this.value)) {
-                setUser((Integer) value);
+                if (maximumDiscount.compareTo(value) < 0) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            JOptionPane.showMessageDialog(parent, message + maximumDiscount.toString() + "%.", "Error", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    });
+                    throw new IllegalArgumentException("illegal value");
+                } else {
+                    this.value = (Number) value;
+                    fireStateChanged();
+                }
             }
         }
-
-        public void addMin(Integer min) {
-            mins.add(min);
-            recalc();
-        }
-
-        public void delMin(Integer min) {
-            mins.remove(min);
-            recalc();
-        }
-
-        public void addIncr(Integer incr) {
-            incrs += incr;
-            recalc();
-        }
-
-        public void delIncr(Integer incr) {
-            incrs -= incr;
-            recalc();
-        }
-
-        public void addFoc(Integer foc) {
-            focs += foc;
-            recalc();
-        }
-
-        public void delFoc(Integer foc) {
-            focs -= foc;
-            recalc();
-        }
-
-        public void setUser(Integer user) {
-            this.user = user;
-            recalc();
-        }
     }
 
-
-    public void addMin(Integer min) {
-        ((CapacitySpinnerNumberModel) this.getModel()).addMin(min);
-    }
-
-    public void delMin(Integer min) {
-        ((CapacitySpinnerNumberModel) this.getModel()).delMin(min);
-    }
-
-    public void addIncr(Integer incr) {
-        ((CapacitySpinnerNumberModel) this.getModel()).addIncr(incr);
-    }
-
-    public void delIncr(Integer incr) {
-        ((CapacitySpinnerNumberModel) this.getModel()).delIncr(incr);
-    }
-
-    public void addFoc(Integer foc) {
-        ((CapacitySpinnerNumberModel) this.getModel()).addFoc(foc);
-    }
-
-    public void delFoc(Integer foc) {
-        ((CapacitySpinnerNumberModel) this.getModel()).delFoc(foc);
-    }
-
-    public void recalc() {
-        ((CapacitySpinnerNumberModel) this.getModel()).recalc();
-    }
-
-    public CapacityJSpinner(Capacity initialCapacity, boolean isDeprecated, String key, ProductForm form, JLabel label) {
+    public DiscountJSpinner(String message, Component parent, int value, int minimum, int maximum, int stepSize) {
         super();
-        this.label = label;
-        setModel(new CapacitySpinnerNumberModel(form.getRoot(), isDeprecated, initialCapacity, 0, Integer.MAX_VALUE, 1, key, form));
-        JFormattedTextField tf = ((JSpinner.DefaultEditor) this.getEditor()).getTextField();
-        DefaultFormatterFactory formatterFactory = (DefaultFormatterFactory) tf.getFormatterFactory();
-        DecimalFormat df = new DecimalFormat();
-        ((NumberFormatter) formatterFactory.getDefaultFormatter()).setFormat(df);
-        this.key = key;
-    }
-
-    public JLabel getLabel() {
-        return label;
-    }
-
-    public String getKey() {
-        return key;
+        setModel(new DiscountSpinnerNumberModel(message, parent, value, minimum, maximum, stepSize));
     }
 }
