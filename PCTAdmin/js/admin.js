@@ -1120,6 +1120,7 @@
                 _secondarySalesPrice:$('#SecondarySalesPrice', dom).get(),
                 _secondarySalesRate:$('#SecondarySalesRate', dom).get(),
                 _deprecated:$('#Deprecated', dom).get(),
+                _hidden:$('#Hidden', dom).get(),
                 _moduleTitle:$('#Title', dom).get(),
                 _settings:$('#Settings', dom).get(),
                 _dependencies:$('#Dependencies', dom).get(),
@@ -1153,6 +1154,7 @@
                     config += '<Rate>' + $(that._secondarySalesRate).val() + '</Rate>';
                     config += '</SecondarySales>';
                     config += '<Deprecated>' + ($(that._deprecated).prop('checked') ? 'true' : 'false') + '</Deprecated>';
+                    config += '<Hidden>' + ($(that._hidden).prop('checked') ? 'true' : 'false') + '</Hidden>';
                     config += '<Dependencies>';
                     $(that._dependencies).children().each(function() {
                         if ($(this).hasClass('requireDependency'))
@@ -1233,6 +1235,7 @@
                     $(this._secondarySalesPrice).val($('>SecondarySales>Price', initialData).text()).change();
                     $(this._secondarySalesRate).val($('>SecondarySales>Rate', initialData).text()).change();
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true')).change();
+                    $(this._hidden).prop('checked', ($('>Hidden', initialData).text() == 'true')).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._dependencies).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -1578,6 +1581,7 @@
                 _type:$('#Type', dom).get(),
                 _key:$('#Key', dom).get(),
                 _deprecated:$('#Deprecated', dom).get(),
+                _hidden:$('#Hidden', dom).get(),
                 _capacityTitle:$('#Title', dom).get(),
                 _addTier:$('#AddTier', dom).get(),
                 _settings:$('#Settings', dom).get(),
@@ -1613,6 +1617,7 @@
                         config += '<MinValue>' + $(that._minValue).val() + '</MinValue>';
                         config += '<Type>' + $(that._type).val() + '</Type>';
                         config += '<Deprecated>' + ($(that._deprecated).prop('checked') ? 'true' : 'false') + '</Deprecated>';
+                        config += '<Hidden>' + ($(that._hidden).prop('checked') ? 'true' : 'false') + '</Hidden>';
                         config += '<Tiers>';
                         $(that._tiers).children().each(function() {
                             if ($(this).hasClass('divTier'))
@@ -1681,6 +1686,7 @@
                         $(this._type).val($('>Type', initialData).text()).change();
                         $(this._minValue).val($('>MinValue', initialData).text()).change();
                         $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true')).change();
+                        $(this._hidden).prop('checked', ($('>Hidden', initialData).text() == 'true')).change();
                         $(this._tiers).addClass('hidden');
                         $(this._expand).html('Expand');
                     }

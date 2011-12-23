@@ -16,6 +16,7 @@ import java.util.ArrayList;
  */
 public class Capacity {
     private Boolean deprecated;
+    private Boolean hidden;
     private String key;
     private String linkKey;
     private String path;
@@ -58,6 +59,7 @@ public class Capacity {
 
             } else {
                 this.setDeprecated(xut.getNode("Deprecated", initialData));
+                this.setHidden(xut.getNode("Hidden", initialData));
                 this.setType(xut.getNode("Type", initialData));
                 this.setMinValue(xut.getNode("MinValue", initialData));
                 this.setTiers(xut.getNodes("Tiers/Tier", initialData));
@@ -68,6 +70,7 @@ public class Capacity {
                     "\nShortName: " + this.getShortName() +
                     "\nLinkKey: " + this.getLinkKey() +
                     "\nDeprecated: " + this.isDeprecated() +
+                    "\nHidden: " + this.isHidden() +
                     "\nMinValue: " + this.getMinValue() +
                     "\nType: " + this.getType());
         } catch (PCTDataFormatException e) {
@@ -89,6 +92,22 @@ public class Capacity {
 
     public Boolean isDeprecated() {
         return this.deprecated != null ? this.deprecated : false;
+    }
+
+    public void setHidden(Boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    private void setHidden(Node hidden) throws PCTDataFormatException {
+        try {
+            this.hidden = xut.getBoolean(hidden, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Module hidden-flag is not defined correctly", e.getDetails());
+        }
+    }
+
+    public Boolean isHidden() {
+        return this.hidden != null ? this.hidden : false;
     }
 
     public String getName() {

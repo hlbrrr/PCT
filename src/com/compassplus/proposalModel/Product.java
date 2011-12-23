@@ -317,10 +317,9 @@ public class Product {
             modulesGroup = getProduct().getModulesRoot();
             appendGroupName = false;
         }
-
         for (String key : modulesGroup.getModules().keySet()) {
-            if (this.getModules().containsKey(key)) {
-                com.compassplus.configurationModel.Module m = modulesGroup.getModules().get(key);
+            com.compassplus.configurationModel.Module m = modulesGroup.getModules().get(key);
+            if (this.getModules().containsKey(key) && !m.isHidden()) {
                 //sb.append(pad);
                 //sb.append("  -");
                 sb.append(m.getShortName().equals("") ? m.getName() : m.getShortName());
@@ -328,7 +327,6 @@ public class Product {
                 //sb.append("\n");
             }
         }
-
         for (ModulesGroup mg : modulesGroup.getGroups()) {
             String tres = getSelectedModulesString(mg, pad + "  ");
             if (tres.length() > 0) {
@@ -368,11 +366,10 @@ public class Product {
             capacitiesGroup = getProduct().getCapacitiesRoot();
             appendGroupName = false;
         }
-
         for (String key : capacitiesGroup.getCapacities().keySet()) {
-            if (this.getCapacities().containsKey(key)) {
-                Capacity cc = this.getCapacities().get(key);
                 com.compassplus.configurationModel.Capacity c = capacitiesGroup.getCapacities().get(key);
+            if (this.getCapacities().containsKey(key) && !c.isHidden()) {
+                Capacity cc = this.getCapacities().get(key);
                 //sb.append(pad);
                 //sb.append("  -");
                 sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
@@ -381,7 +378,6 @@ public class Product {
                 //sb.append("\n");
             }
         }
-
         for (CapacitiesGroup cg : capacitiesGroup.getGroups()) {
             String tres = getSelectedCapacitiesString(cg, pad + "  ");
             if (tres.length() > 0) {

@@ -359,6 +359,8 @@ public class MainForm {
                                                                                     Cell c1 = r.createCell(0 + cellIndex);
                                                                                     CellStyle cs1 = wb.createCellStyle();
                                                                                     cs1.setWrapText(true);
+                                                                                    System.out.println("\n\n");
+                                                                                    System.out.println(p.getDescription());
                                                                                     c1.setCellValue(p.getDescription());
                                                                                     c1.setCellStyle(cs1);
 

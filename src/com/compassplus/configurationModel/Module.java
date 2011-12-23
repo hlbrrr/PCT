@@ -18,6 +18,7 @@ import java.util.HashMap;
  */
 public class Module {
     private Boolean deprecated;
+    private Boolean hidden;
     private boolean isRadioMember = false;
     private String key;
     private String path;
@@ -52,6 +53,7 @@ public class Module {
 
             this.setKey(xut.getNode("Key", initialData));
             this.setDeprecated(xut.getNode("Deprecated", initialData));
+            this.setHidden(xut.getNode("Hidden", initialData));
             this.setName(xut.getNode("Name", initialData));
             this.setShortName(xut.getNode("ShortName", initialData));
             this.setWeight(xut.getNode("Weight", initialData));
@@ -75,6 +77,7 @@ public class Module {
             }
             log.info("Module successfully parsed: \nKey: " + this.getKey() +
                     "\nDeprecated: " + this.isDeprecated() +
+                    "\nHidden: " + this.isHidden() +
                     "\nName: " + this.getName() +
                     "\nShortName: " + this.getShortName() +
                     "\nWeight: " + this.getWeight() +
@@ -93,8 +96,20 @@ public class Module {
         }
     }
 
+    private void setHidden(Node hidden) throws PCTDataFormatException {
+        try {
+            this.hidden = xut.getBoolean(hidden, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Module hidden-flag is not defined correctly", e.getDetails());
+        }
+    }
+
     public Boolean isDeprecated() {
         return this.deprecated != null ? this.deprecated : false;
+    }
+
+    public Boolean isHidden() {
+        return this.hidden != null ? this.hidden : false;
     }
 
     private void setRequireModules(NodeList requireModules) {

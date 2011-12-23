@@ -55,6 +55,7 @@ public class Product {
                         Capacity proto = this.getCapacities().get(c.getLinkKey());
                         c.setType(proto.getType());
                         c.setDeprecated(proto.isDeprecated());
+                        c.setHidden(proto.isHidden());
                         c.setMinValue(proto.getMinValue());
                         c.setTiers(proto.getTiers());
                         c.setLinkKey(null);
@@ -63,7 +64,6 @@ public class Product {
                     }
                 }
             }
-
 
             this.setTotalWeight();
 
