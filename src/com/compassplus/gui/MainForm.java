@@ -9,23 +9,27 @@ import com.compassplus.utils.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.CellUtil;
+import sun.util.resources.CurrencyNames_th_TH;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.SimpleAttributeSet;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.Color;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 /**
@@ -41,11 +45,13 @@ public class MainForm {
     private JMenuBar mainMenu;
     private JMenu fileMenu;
     private JMenu proposalMenu;
+    private JMenu helpMenu;
     private JMenuItem createProposal;
     private JMenuItem openProposal;
     private JMenuItem saveProposal;
     private JMenuItem closeProposal;
     private JMenuItem exit;
+    private JMenuItem about;
 
     private JMenuItem addProduct;
     private JMenuItem delProduct;
@@ -56,13 +62,77 @@ public class MainForm {
 
     private Configuration config;
 
+    private String CURRENT_VERSION = "0.1";
+
 
     public MainForm(Configuration config) {
         this.config = config;
         initFileChoosers();
         initFileMenu();
+        initHelpMenu();
         initProposalMenu();
         initMainPanel();
+
+
+        mainMenu = new JMenuBar();
+        mainMenu.add(fileMenu);
+        mainMenu.add(proposalMenu);
+        mainMenu.add(helpMenu);
+    }
+
+    private void initHelpMenu() {
+        about = new JMenuItem("About");
+        about.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JLabel version = new JLabel("<html><b>PCT Version:</b> " + CURRENT_VERSION + "</html>");
+                version.setAlignmentX(Component.LEFT_ALIGNMENT);
+                JLabel expiration = new JLabel("<html><b>Configuration expires:</b> " + config.getExpirationDateString() + "</html>");
+                expiration.setAlignmentX(Component.LEFT_ALIGNMENT);
+                expiration.setBackground(Color.green);
+
+                JLabel text = new JLabel("Online user service can be found at ");
+                JLabel link = new JLabel("<html><a href=\"#\">pct.compassplus.ru</a></html>");
+                link.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+                link.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent evt) {
+                        JLabel l = (JLabel) evt.getSource();
+                        try {
+                            Desktop desktop = java.awt.Desktop.getDesktop();
+                            URI uri = new java.net.URI("http://pct.compassplus.ru");
+                            desktop.browse(uri);
+                        } catch (URISyntaxException use) {
+                            throw new AssertionError(use);
+                        } catch (IOException ioe) {
+                            ioe.printStackTrace();
+                            JOptionPane.showMessageDialog(null, "Sorry, a problem occurred while trying to open this link in your system's standard browser.", "A problem occured", JOptionPane.ERROR_MESSAGE);
+                        }
+
+                    }
+                });
+
+
+                JPanel msgBottom = new JPanel();
+                msgBottom.setLayout(new FlowLayout(0, 0, 0));
+                msgBottom.add(text);
+                msgBottom.add(link);
+                msgBottom.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                JPanel msg = new JPanel();
+                BoxLayout lt = new BoxLayout(msg, BoxLayout.Y_AXIS);
+                msg.setLayout(lt);
+
+                msg.add(version);
+                msg.add(expiration);
+                msg.add(Box.createRigidArea(new Dimension(0, 10)));
+                msg.add(msgBottom);
+                JOptionPane.showMessageDialog(
+                        null, msg, "About", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        helpMenu = new JMenu("Help");
+        helpMenu.add(about);
     }
 
     private void initFileChoosers() {
@@ -384,7 +454,7 @@ public class MainForm {
                                                                                     Cell c4 = r.createCell(3 + cellIndex);
                                                                                     c4.setCellStyle(cs2);
                                                                                     int rowIndexTotal = rowIndex + i + 1;
-                                                                                    c4.setCellFormula("CEILING("+regPriceCol + rowIndexTotal + "*(1-" + regPriceDiscount + rowIndexTotal+"),1)");
+                                                                                    c4.setCellFormula("CEILING(" + regPriceCol + rowIndexTotal + "*(1-" + regPriceDiscount + rowIndexTotal + "),1)");
 
                                                                                     Cell c5 = r.createCell(4 + cellIndex);
                                                                                     c5.setCellStyle(cs2);
@@ -396,7 +466,7 @@ public class MainForm {
 
                                                                                     Cell c7 = r.createCell(6 + cellIndex);
                                                                                     c7.setCellStyle(cs2);
-                                                                                    c7.setCellFormula("CEILING("+supPriceCol + rowIndexTotal + "*(1-" + supPriceDiscount + rowIndexTotal+"),1)");
+                                                                                    c7.setCellFormula("CEILING(" + supPriceCol + rowIndexTotal + "*(1-" + supPriceDiscount + rowIndexTotal + "),1)");
 
                                                                                     i++;
                                                                                 }
@@ -593,11 +663,6 @@ public class MainForm {
             public void menuCanceled(MenuEvent e) {
             }
         });
-
-        mainMenu = new JMenuBar();
-        mainMenu.add(fileMenu);
-        mainMenu.add(proposalMenu);
-
     }
 
     private JMenuItem getAddProduct() {

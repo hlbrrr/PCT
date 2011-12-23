@@ -30,9 +30,10 @@ public class Configuration {
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
-    private String userName = "test";
-    private Double maxDiscount = 0.25d;
-    private Double maxSupportDiscount = 0.30d;
+    private String userName = "";
+    private Double maxDiscount = 0d;
+    private Double maxSupportDiscount = 0d;
+    private String expDateString;
 
     public static Configuration getInstance() {
         return ourInstance;
@@ -212,10 +213,15 @@ public class Configuration {
             if (!currentDate.before(date)) {
                 throw new PCTDataFormatException("Already expired");
             }
+            this.expDateString = dateString;
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Expiration is not defined correctly", e.getDetails());
         }
 
+    }
+
+    public String getExpirationDateString(){
+        return this.expDateString;
     }
 
 }
