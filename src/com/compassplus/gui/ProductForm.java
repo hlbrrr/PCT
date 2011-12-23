@@ -412,10 +412,11 @@ public class ProductForm {
                                                 }
                                             }
                                         } else {
-                                            if (src.getGroup() != null) {
+                                            // запрет выключения радиобаттона
+                                            /*if (src.getGroup() != null) {
                                                 src.setSelected(true, true);
                                                 throw new PCTDataFormatException("");
-                                            }
+                                            }*/
                                             ArrayList<String> requireThisKeys = new ArrayList<String>();
                                             for (String key : getProduct().getModules().keySet()) {
                                                 if (getProduct().getProduct().getModules().get(key).getRequireModules().contains(src.getKey())) {
