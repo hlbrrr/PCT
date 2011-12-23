@@ -467,13 +467,13 @@ public class ProductForm {
                     if (bg == null) {
                         bg = new ModuleButtonGroup();
                     }
-                    if (modulesGroup.getDefaultModuleKey() != null && !modulesGroup.getDefaultModuleKey().equals("")) {
+                    /*if (modulesGroup.getDefaultModuleKey() != null && !modulesGroup.getDefaultModuleKey().equals("")) {
                         if (key.equals(modulesGroup.getDefaultModuleKey())) {
                             checkBoxesToCheck.add(mc);
                         }
                     } else if (firstModule) {
                         checkBoxesToCheck.add(mc);
-                    }
+                    }*/
                     bg.add((AbstractButton) mc);
                 }
                 if (!"".equals(m.getHint())) {
@@ -659,37 +659,43 @@ public class ProductForm {
                 final CapacityJSpinner cs = new CapacityJSpinner(getProduct().getCapacities().containsKey(key) ? getProduct().getCapacities().get(key) : null, c.isDeprecated(), key, this, cl);
                 cs.setMaximumSize(new Dimension(cs.getMaximumSize().width, cs.getMinimumSize().height));
                 getSpinners().put(key, cs);
+                final PCTChangedListener changeTitles = new PCTChangedListener() {
+                    public void act(Object srcObj) {
+                        CapacityJSpinner src = cs;
+                        cl1.setText("");
+                        cl2.setText("");
+                        cl3.setText("");
+                        if (getProduct().getCapacities().containsKey(src.getKey())) {
+                            com.compassplus.proposalModel.Capacity c = getProduct().getCapacities().get(src.getKey());
+                            if ((c.getVal() - c.getFoc() - c.getUser()) > 0) {
+                                cl1.setText("Required by module(s): " + (c.getVal() - c.getFoc() - c.getUser()));
+                            }
+                            if (c.getFoc() > 0) {
+                                cl2.setText("Free Of Charge: " + c.getFoc());
+                            }
+                            if ((c.getVal() - c.getUser()) > 0) {
+                                cl3.setText("Total: " + c.getVal());
+                            }
+                        }
+                        reloadCapacitiesPrices(cs);
+                    }
+                };
                 ChangeListener changeListener = new ChangeListener() {
                     public void stateChanged(ChangeEvent ev) {
                         if (ev.getSource() == cs) {
                             final ChangeEvent e = ev;
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
-                                    CapacityJSpinner src = (CapacityJSpinner) e.getSource();
-                                    cl1.setText("");
-                                    cl2.setText("");
-                                    cl3.setText("");
-                                    if (getProduct().getCapacities().containsKey(src.getKey())) {
-                                        com.compassplus.proposalModel.Capacity c = getProduct().getCapacities().get(src.getKey());
-                                        if ((c.getVal() - c.getFoc() - c.getUser()) > 0) {
-                                            cl1.setText("Required by module(s): " + (c.getVal() - c.getFoc() - c.getUser()));
-                                        }
-                                        if (c.getFoc() > 0) {
-                                            cl2.setText("Free Of Charge: " + c.getFoc());
-                                        }
-                                        if ((c.getVal() - c.getUser()) > 0) {
-                                            cl3.setText("Total: " + c.getVal());
-                                        }
-                                    }
-                                    reloadCapacitiesPrices(cs);
+                                    changeTitles.act(null);
                                     reloadProductPrice();
                                 }
                             });
                         }
                     }
                 };
-                cs.addChangeListener(changeListener);
                 cs.recalc();
+                changeTitles.act(null);
+                cs.addChangeListener(changeListener);
                 JPanel tmpPanel = new JPanel();
                 {
                     tmpPanel.setLayout(new GridBagLayout());

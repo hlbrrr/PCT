@@ -2,7 +2,6 @@ package com.compassplus.proposalModel;
 
 import com.compassplus.configurationModel.CapacitiesGroup;
 import com.compassplus.configurationModel.ModulesGroup;
-import com.compassplus.configurationModel.SupportPlan;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
@@ -50,6 +49,7 @@ public class Product {
         this.proposal = proposal;
         this.setProduct(product);
         this.setCapacities(product);
+        this.setModules(product);
     }
 
     private void init(Node initialData, Map<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
@@ -141,10 +141,48 @@ public class Product {
         }
     }
 
+    /*if (modulesGroup.getDefaultModuleKey() != null && !modulesGroup.getDefaultModuleKey().equals("")) {
+        if (key.equals(modulesGroup.getDefaultModuleKey())) {
+            checkBoxesToCheck.add(mc);
+        }
+    } else if (firstModule) {
+        checkBoxesToCheck.add(mc);
+    }*/
+    private void setModules(com.compassplus.configurationModel.Product product) {
+        this.getCapacities().clear();
+        setModules(product, product.getModulesRoot());
+    }
+
+    private void setModules(com.compassplus.configurationModel.Product product, ModulesGroup group) {
+        for (ModulesGroup g : group.getGroups()) {
+            setModules(product, g);
+        }
+        if (group.isRadioButtonGroup()) {
+            com.compassplus.configurationModel.Module tmpModule = null;
+            if (group.getDefaultModuleKey() != null && !group.getDefaultModuleKey().equals("")) {
+
+                tmpModule = product.getModules().get(group.getDefaultModuleKey());
+                if (tmpModule != null && tmpModule.isDeprecated()) {
+                    tmpModule = null;
+                }
+            } else {
+                for (com.compassplus.configurationModel.Module m : group.getModules().values()) {
+                    if (!m.isDeprecated()) {
+                        tmpModule = m;
+                        break;
+                    }
+                }
+            }
+            if (tmpModule != null) {
+                this.getModules().put(tmpModule.getKey(), new Module(tmpModule, tmpModule.getKey()));
+            }
+        }
+    }
+
     private void setCapacities(com.compassplus.configurationModel.Product product) {
         this.getCapacities().clear();
         for (com.compassplus.configurationModel.Capacity c : product.getCapacities().values()) {
-            if (c.getMinValue() != null && c.getMinValue() > 0) {
+            if (c.getMinValue() != null && c.getMinValue() > 0 && !c.isDeprecated()) {
                 Capacity tmpCapacity = new Capacity(c, c.getKey());
                 tmpCapacity.setUser(c.getMinValue());
                 this.getCapacities().put(tmpCapacity.getKey(), tmpCapacity);
@@ -367,7 +405,7 @@ public class Product {
             appendGroupName = false;
         }
         for (String key : capacitiesGroup.getCapacities().keySet()) {
-                com.compassplus.configurationModel.Capacity c = capacitiesGroup.getCapacities().get(key);
+            com.compassplus.configurationModel.Capacity c = capacitiesGroup.getCapacities().get(key);
             if (this.getCapacities().containsKey(key) && !c.isHidden()) {
                 Capacity cc = this.getCapacities().get(key);
                 //sb.append(pad);

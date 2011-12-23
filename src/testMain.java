@@ -51,12 +51,21 @@ public class testMain {
                 throw e;
             }
 
-            MainForm main = new MainForm(config);
+            final MainForm main = new MainForm(config);
             final JFrame frame = oframe;
             frame.setTitle("PCT [" + config.getUserName() + "]");
             main.setFrame(frame);
+            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    if(main.checkChanges())
+                    frame.dispose();
+                }
+            });
             main.setExitAction(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
+                    if(main.checkChanges())
                     frame.dispose();
                 }
             });

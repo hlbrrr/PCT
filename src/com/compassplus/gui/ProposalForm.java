@@ -24,6 +24,7 @@ public class ProposalForm {
     private ProductForm currentProductForm;
     private DecimalFormat df = new DecimalFormat();
     private SummaryForm summaryForm;
+    private boolean changed = false;
 
     public ProposalForm(Proposal proposal, JFrame frame) {
         this.frame = frame;
@@ -86,9 +87,24 @@ public class ProposalForm {
                     }
                 }
             }
-        }, df);
+        }, df, new PCTChangedListener() {
+            public void act(Object src) {
+                if (src instanceof SummaryForm) {
+                    changed = true;
+                }
+            }
+        }
+        );
         productsTabs.addTab("Summary", summaryForm.getRoot());
         productsTabs.setSelectedComponent(summaryForm.getRoot());
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+
+    public boolean isChanged() {
+        return this.changed;
     }
 
     public void addProductForm(Product product) {

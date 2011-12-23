@@ -9,16 +9,13 @@ import com.compassplus.utils.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.CellUtil;
-import sun.util.resources.CurrencyNames_th_TH;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.SimpleAttributeSet;
 import java.awt.*;
 import java.awt.Color;
 import java.awt.event.*;
@@ -64,7 +61,6 @@ public class MainForm {
 
     private String CURRENT_VERSION = "0.1";
 
-
     public MainForm(Configuration config) {
         this.config = config;
         initFileChoosers();
@@ -78,6 +74,27 @@ public class MainForm {
         mainMenu.add(fileMenu);
         mainMenu.add(proposalMenu);
         mainMenu.add(helpMenu);
+    }
+
+    public boolean checkChanges() {
+        String proposalName = "";
+        for (Component c : proposalsTabs.getComponents()) {
+            if (c instanceof ProposalJPanel) {
+                ProposalJPanel p = (ProposalJPanel) c;
+                if (p.getParentForm().isChanged() && p.getParentForm().getProposal().getProducts().size() > 0) {
+                    proposalName += "\"" + p.getParentForm().getProposal().getName() + "\", ";
+                }
+            }
+        }
+        if (proposalName.length() > 0) {
+            int choice = JOptionPane.showOptionDialog(getRoot(), "There are unsaved changes in following proposal(s): " + proposalName.substring(0, proposalName.length() - 2) + ". Do you really want to exit?", "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);//Dialog(getRoot(), "Selected excel workbook can't be read", "Error", JOptionPane.ERROR_MESSAGE);
+            if (choice == JOptionPane.YES_OPTION) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void initHelpMenu() {
@@ -237,7 +254,9 @@ public class MainForm {
                                     throw new PCTDataFormatException("Proposal not found");
                                 }
                                 proposal.init(CommonUtils.getInstance().getDocumentFromString(proposalString));
-                                addProposalForm(new ProposalForm(proposal, getFrame()));
+                                ProposalForm tmpForm = new ProposalForm(proposal, getFrame());
+                                addProposalForm(tmpForm);
+                                tmpForm.setChanged(false);
                                 if (proposal.containsDeprecated()) {
                                     JOptionPane.showMessageDialog(getRoot(), "Selected proposal contains deprecated module(s) or capacity(ies).", "Warning", JOptionPane.INFORMATION_MESSAGE);
                                 }
@@ -249,26 +268,6 @@ public class MainForm {
                                 JOptionPane.showMessageDialog(getRoot(), "Can't read proposal from specified file", "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         }
-
-
-                        /*proposalFileChooser.setDialogTitle("Import");
-                   int retVal = proposalFileChooser.showDialog(getRoot(), "Import");
-                   if (retVal == JFileChooser.APPROVE_OPTION) {
-                       try {
-                           Proposal proposal = new Proposal(config);
-                           proposal.init(CommonUtils.getInstance().getDocumentFromFile(proposalFileChooser.getSelectedFile()));
-                           addProposalForm(new ProposalForm(proposal));
-                           if (proposal.containsDeprecated()) {
-                               JOptionPane.showMessageDialog(getRoot(), "Selected proposal contains deprecated module(s) or capacity(ies).", "Warning", JOptionPane.INFORMATION_MESSAGE);
-                           }
-                       } catch (Exception exception) {
-                           exception.printStackTrace();
-                           if (exception instanceof PCTDataFormatException) {
-                               Logger.getInstance().error(exception);
-                           }
-                           JOptionPane.showMessageDialog(getRoot(), "Can't read proposal from specified file", "Error", JOptionPane.ERROR_MESSAGE);
-                       }
-                   }     */
                     }
                 });
             }
@@ -429,8 +428,6 @@ public class MainForm {
                                                                                     Cell c1 = r.createCell(0 + cellIndex);
                                                                                     CellStyle cs1 = wb.createCellStyle();
                                                                                     cs1.setWrapText(true);
-                                                                                    System.out.println("\n\n");
-                                                                                    System.out.println(p.getDescription());
                                                                                     c1.setCellValue(p.getDescription());
                                                                                     c1.setCellStyle(cs1);
 
@@ -483,6 +480,7 @@ public class MainForm {
                                                                                 OutputStream out = new FileOutputStream(xlsFileChooser.getSelectedFile());
                                                                                 wb.write(out);
                                                                                 out.close();
+                                                                                getCurrentProposalForm().setChanged(false);
                                                                                 JOptionPane.showMessageDialog(getRoot(), "Proposal successfully exported", "Result", JOptionPane.INFORMATION_MESSAGE);
                                                                             } catch (Exception exception) {
                                                                                 JOptionPane.showMessageDialog(getRoot(), "Proposal can't be exported", "Error", JOptionPane.ERROR_MESSAGE);
@@ -530,7 +528,20 @@ public class MainForm {
         closeProposal = new JMenuItem("Close proposal");
         closeProposal.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                proposalsTabs.remove(getCurrentProposalForm().getRoot());
+                if (getCurrentProposalForm().getProposal().getProducts().size() > 0 && getCurrentProposalForm().isChanged()) {
+                    final String proposalName = getCurrentProposalForm().getProposal().getName();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            int choice = JOptionPane.showOptionDialog(getRoot(), "Proposal \"" + proposalName + "\" isn't saved, do you really want to close it?", "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);//Dialog(getRoot(), "Selected excel workbook can't be read", "Error", JOptionPane.ERROR_MESSAGE);
+                            if (choice == JOptionPane.YES_OPTION) {
+                                proposalsTabs.remove(getCurrentProposalForm().getRoot());
+                            }
+                        }
+                    });
+
+                } else {
+                    proposalsTabs.remove(getCurrentProposalForm().getRoot());
+                }
             }
         });
 

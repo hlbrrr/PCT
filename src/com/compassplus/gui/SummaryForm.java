@@ -38,11 +38,13 @@ public class SummaryForm {
     private JSpinner planRateField;
     private JComboBox supportPlanField;
     private PCTChangedListener currChanged;
+    private PCTChangedListener updated;
     private JPanel productsTable;
     private DecimalFormat df;
 
-    public SummaryForm(Proposal proposal, PCTChangedListener currChanged, DecimalFormat df) {
+    public SummaryForm(Proposal proposal, PCTChangedListener currChanged, DecimalFormat df, PCTChangedListener updated) {
         this.currChanged = currChanged;
+        this.updated = updated;
         this.df = df;
         this.proposal = proposal;
         mainPanel = new SummaryJPanel(this);
@@ -89,13 +91,16 @@ public class SummaryForm {
         settingsPanelRight.setLayout(new BoxLayout(settingsPanelRight, BoxLayout.Y_AXIS));
         settingsPanelRight.setBorder(new EmptyBorder(4, 4, 4, 4));
         initForm(proposal);
+        curChanged();
     }
 
     private void reloadPrices() {
         currChanged.act(this);
+        updated.act(this);
     }
 
     private void initForm(Proposal proposal) {
+        final SummaryForm that = this;
         {
             JLabel userLabel = new JLabel("Proposal created by");
             userLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -188,6 +193,7 @@ public class SummaryForm {
 
                 public void changed() {
                     getProposal().setClientName(clientNameField.getText());
+                    updated.act(that);
                 }
             });
 
@@ -222,6 +228,7 @@ public class SummaryForm {
 
                 public void changed() {
                     getProposal().setProjectName(projectNameField.getText());
+                    updated.act(that);
                 }
             });
             projectNameField.addActionListener(new ActionListener() {
@@ -296,15 +303,15 @@ public class SummaryForm {
             rateField.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
                     final ChangeEvent ev = e;
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            if (ev.getSource() == rateField) {
-                                getProposal().getCurrency().setRate((Double) rateField.getValue());
-                                getProposal().setCurrencyRate((Double) rateField.getValue());
-                                reloadPrices();
-                            }
-                        }
-                    });
+                    //SwingUtilities.invokeLater(new Runnable() {
+                    // public void run() {
+                    if (ev.getSource() == rateField) {
+                        getProposal().getCurrency().setRate((Double) rateField.getValue());
+                        getProposal().setCurrencyRate((Double) rateField.getValue());
+                        reloadPrices();
+                    }
+                    //  }
+                    //});
                 }
             });
 
@@ -325,11 +332,11 @@ public class SummaryForm {
             currencyField.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     final ActionEvent ev = e;
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            curChanged();
-                        }
-                    });
+                    //SwingUtilities.invokeLater(new Runnable() {
+                    //   public void run() {
+                    curChanged();
+                    //     }
+                    //});
                 }
             });
 
@@ -369,13 +376,14 @@ public class SummaryForm {
             supportPlanField.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     final ActionEvent ev = e;
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            JComboBox src = (JComboBox) ev.getSource();
-                            getProposal().setSupportPlan((SupportPlan) src.getSelectedItem());
-                            initPlanRate();
-                        }
-                    });
+                    //SwingUtilities.invokeLater(new Runnable() {
+                    //public void run() {
+                    JComboBox src = (JComboBox) ev.getSource();
+                    getProposal().setSupportPlan((SupportPlan) src.getSelectedItem());
+                    initPlanRate();
+                    updated.act(that);
+                    //}
+                    //});
                 }
             });
 
@@ -395,17 +403,19 @@ public class SummaryForm {
     }
 
     private void curChanged() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                JComboBox src = currencyField;
-                getProposal().setCurrency((Currency) src.getSelectedItem());
-                rateField.setValue(((Currency) src.getSelectedItem()).getRate());
-                rateLabel.setText("Currency rate (USD/" + ((Currency) src.getSelectedItem()).getName() + ")");
-                reloadPrices();
+        //SwingUtilities.invokeLater(new Runnable() {
+        //public void run() {
+        JComboBox src = currencyField;
+        getProposal().setCurrency((Currency) src.getSelectedItem());
+        if (src.getSelectedItem() != null) {
+            rateField.setValue(((Currency) src.getSelectedItem()).getRate());
+            rateLabel.setText("Currency rate (USD/" + ((Currency) src.getSelectedItem()).getName() + ")");
+            reloadPrices();
 
-                initSupportPlans(getProposal().getSupportPlan());
-            }
-        });
+            initSupportPlans(getProposal().getSupportPlan());
+        }
+        // }
+        //});
     }
 
     private void initCurrency(Object curr) {
@@ -468,10 +478,12 @@ public class SummaryForm {
     public void update() {
         initSupportPlans(null);
         makeProductList();
+        updated.act(this);
     }
 
     private void makeProductList() {
         if (productsTable != null) {
+            final SummaryForm that = this;
             productsTable.removeAll();
             if (getProposal().getProducts().size() > 0) {
                 int size = getProposal().getProducts().size() + 1;
@@ -573,7 +585,7 @@ public class SummaryForm {
                                 price += p.getSupportPrice();
                             }
 
-                            if (getProposal().isPrimarySale() && getProposal().getSupportPlan().getMinPrice() != null && getProposal().getSupportPlan().getMinPrice() > 0
+                            if (getProposal().isPrimarySale() && getProposal().getSupportPlan() != null && getProposal().getSupportPlan().getMinPrice() != null && getProposal().getSupportPlan().getMinPrice() > 0
                                     && price < CommonUtils.getInstance().toNextThousand(getProposal().getSupportPlan().getMinPrice() * getProposal().getCurrencyRate())) {
                                 price = CommonUtils.getInstance().toNextThousand(getProposal().getSupportPlan().getMinPrice() * getProposal().getCurrencyRate());
                                 //panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
@@ -660,6 +672,7 @@ public class SummaryForm {
                     {
                         c.gridx++;
                         final JSpinner sp = new DiscountJSpinner("Maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1);
+
                         sp.addChangeListener(new ChangeListener() {
                             public void stateChanged(ChangeEvent e) {
                                 final ChangeEvent ev = e;
@@ -669,6 +682,7 @@ public class SummaryForm {
                                             prod.setDiscount((Integer) sp.getValue() / 100d);
                                             eulabel.call();
                                             gleulabel.call();
+                                            updated.act(that);
                                         }
                                     }
                                 });
@@ -718,7 +732,7 @@ public class SummaryForm {
                     });
                     {
                         c.gridx++;
-                        final JSpinner sp = new DiscountJSpinner("Maximum support discount is ",getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1);
+                        final JSpinner sp = new DiscountJSpinner("Maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1);
                         sp.addChangeListener(new ChangeListener() {
                             public void stateChanged(ChangeEvent e) {
                                 final ChangeEvent ev = e;
@@ -728,6 +742,7 @@ public class SummaryForm {
                                             prod.setSupportDiscount((Integer) sp.getValue() / 100d);
                                             splabel.call();
                                             glsplabel.call();
+                                            updated.act(that);
                                         }
                                     }
                                 });
