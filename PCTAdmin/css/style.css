@@ -16,16 +16,67 @@ body, input, select, textarea {
     font-family: Arial;
 }
 
-.lockText{
+.lockText {
     text-align: center;
 }
 
-.lockedByYou{
+.lockedByYou {
     color: #66FF00;
 }
 
-.locked{
+.locked {
     color: #ff3300;
+}
+
+.pctTable {
+    border-left: 1px solid #DDDDDD;
+    border-top: 1px solid #DDDDDD;
+}
+
+.pctTable {
+    border-left: 1px solid #DDDDDD;
+    border-top: 1px solid #DDDDDD;
+
+}
+
+.wider {
+    width: 100%;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.pctTable a {
+    color: #ff3300;
+}
+
+.pctTable tr td {
+    border-bottom: 1px solid #DDDDDD;
+    border-right: 1px solid #DDDDDD;
+    padding: 5px;
+    vertical-align: top;
+    text-align: left;
+}
+
+.pctTable .head {
+    text-align: center;
+}
+
+.pctTable .right {
+    text-align: right;
+}
+
+.withLeftMargin {
+    margin-left: 20px;
+}
+
+.backupImages {
+    width: 600px;
+}
+
+.withLeftPadding {
+    padding-left: 20px;
 }
 
 .divModelTitle {

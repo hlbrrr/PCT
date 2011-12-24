@@ -15,6 +15,7 @@
 
     $.extend(PCT, {
         timeout:10000,
+        timer:10000,
         location:'/',
         animation:'blind',
         format:'xml',
@@ -23,7 +24,7 @@
             PCT.sendData(PCT.location, 'action=downloadConfig&pwd=' + $().md5(pwd));
             pwd = null;
         },
-        getHome:function(dest, lock) {
+        getHome:function(dest, lock, callback) {
             if (lock) {
                 PCT.lockScreen();
             }
@@ -51,8 +52,66 @@
                     if (lock) {
                         PCT.unlockScreen();
                     }
+                    if (callback) {
+                        callback();
+                    }
                 }
             });
+        },
+        getSystem:function(dest, lock) {
+            if (lock) {
+                PCT.lockScreen();
+            }
+            $.ajax({
+                url:PCT.location,
+                type:'POST',
+                data:{
+                    action:'imageFiles'
+                },
+                success:function(data, textStatus, jqXHR) {
+                    $(dest).empty().html(data);
+                },
+                error:function(jqXHR, textStatus, errorThrown) {
+                    alert('Loading failed: ' + textStatus);
+                },
+                complete:function() {
+                    if (lock) {
+                        PCT.unlockScreen();
+                    }
+                }
+            });
+        },
+        loadConfig:function(src) {
+            if (PCT.checker) {
+                if (confirm('Do you want to load configuration from ' + $(src).attr('date') + '?')) {
+                    PCT.lockScreen();
+                    PCT.checker(function() {
+                        $.ajax({
+                            url:PCT.location,
+                            type:'POST',
+                            data:{
+                                action:'loadBackup',
+                                file:$(src).attr('cfg')
+                            },
+                            /*success:function(data, textStatus, jqXHR) {
+                             },
+                             error:function(jqXHR, textStatus, errorThrown) {
+                             if (error)error();
+                             },*/
+                            complete:function() {
+                                window.location = '/';
+                            }
+                        });
+                    }, function(name) {
+                        alert("Configuration locked by " + name);
+                        PCT.unlockScreen();
+                    }, function() {
+                    }, function() {
+                        alert("Couldn't connect to server. Try again later.");
+                        PCT.unlockScreen();
+                    });
+                }
+            }
         },
         checkStatus:function(ifLockedByYou, ifLocked, ifNotLocked, complete, error) {
             $.ajax({
@@ -424,7 +483,9 @@
                 _addUser:$('#AddUser', dom).get(),
                 /*_addFile:$('#AddFile', dom).get(),*/
                 _home:$('#Home', dom).get(),
+                _system:$('#System', dom).get(),
                 _reload:$('#Reload', dom).get(),
+                _reloadSystem:$('#ReloadSystem', dom).get(),
                 _edit:$('#Edit', dom).get(),
                 _saveConfiguration:$('#SaveConfiguration', dom).get(),
                 _lockConfiguration:$('#LockConfiguration', dom).get(),
@@ -498,6 +559,9 @@
             $(this._reload).click(function() {
                 PCT.getHome(that._home, true);
             });
+            $(this._reloadSystem).click(function() {
+                PCT.getSystem(that._system, true);
+            });
             $(this._edit).click(function() {
                 if ($('#Description', that._home).length > 0) {
                     if ($('#Description', that._home).hasClass('hidden')) {
@@ -532,9 +596,10 @@
                 }
             });
             $.data($(this._core)[0], 'pct', {
-                getXML:function() {
+                getXML:function(comment) {
                     var config = '<root>';
                     config += '<Expiration>' + $(that._expiration).val() + '</Expiration>';
+                    config += '<Comment>' + (comment ? comment : '') + '</Comment>';
                     config += '<Description><![CDATA[' + ($('#Description', that._home).length > 0 ? $('#Description', that._home).val() : '') + ']]></Description>';
                     config += '<Products>';
                     $(that._products).children().each(function() {
@@ -645,14 +710,13 @@
                         if (message == null)
                             return;
                         PCT.lockScreen();
-                        var config = $.data($(that._core)[0], 'pct').getXML();
+                        var config = $.data($(that._core)[0], 'pct').getXML(message);
                         $.ajax({
                             url:PCT.location,
                             type:'POST',
                             data:{
                                 action:'saveConfig',
-                                config:config,
-                                message:message
+                                config:config
                             },
                             success:function(data, textStatus, jqXHR) {
                                 alert('Configuration saved');
@@ -732,7 +796,7 @@
                             }
                         });
                     }, function(name) {
-                        if (confirm("Configuration locked by " + name +". Do you really want to unlock configuration?")) {
+                        if (confirm("Configuration is locked by " + name + ". Do you really want to unlock configuration?")) {
                             $.ajax({
                                 url:PCT.location,
                                 type:'POST',
@@ -791,7 +855,9 @@
                         that.addFile((new PCT.file()).setRoot(that._files).init(this));
                     });
                     PCT.unlockScreen();
-                    PCT.getHome(this._home, true);
+                    PCT.getHome(that._home, true, function() {
+                        PCT.getSystem(that._system, true);
+                    });
 
                     if (!PCT.checker) {
                         $.extend(PCT, {
@@ -801,14 +867,14 @@
                                     $(that._saveConfiguration).removeClass('hidden');
                                     $(that._lockConfiguration).addClass('hidden');
                                     $(that._unlockConfiguration).removeClass('hidden').addClass('lockedByYou').removeClass('locked');
-                                    $(that._lockMessage).html('Configuration locked by you');
+                                    $(that._lockMessage).html('Configuration is locked by you');
                                     $(that._lockMessage).addClass('lockedByYou').removeClass('locked');
                                     if (successCallback)successCallback();
                                 }, function(name) {
                                     $(that._saveConfiguration).addClass('hidden');
                                     $(that._lockConfiguration).addClass('hidden');
                                     $(that._unlockConfiguration).removeClass('hidden').addClass('locked').removeClass('lockedByYou');
-                                    $(that._lockMessage).html('Configuration locked by ' + name);
+                                    $(that._lockMessage).html('Configuration is locked by ' + name);
                                     $(that._lockMessage).addClass('locked').removeClass('lockedByYou');
                                     if (failCallback)failCallback(name);
                                 }, function() {
@@ -819,7 +885,7 @@
                                     $(that._lockMessage).removeClass('locked').removeClass('lockedByYou');
                                     if (successCallback)successCallback();
                                 }, function() {
-                                    if (!successCallback && !failCallback && !complete && !error)window.setTimeout("PCT.checker()", "5000");
+                                    if (!successCallback && !failCallback && !complete && !error)window.setTimeout("PCT.checker()", PCT.timer);
                                     if (complete)complete();
                                 }, function() {
                                     if (error)error();
