@@ -5,7 +5,7 @@
  * Time: 2:31 PM
  */
 (function($, window, qq) {
-    qq.UploadHandlerXhr.isSupported = function(){
+    qq.UploadHandlerXhr.isSupported = function() {
         return false;
     };
 
@@ -51,6 +51,35 @@
                     if (lock) {
                         PCT.unlockScreen();
                     }
+                }
+            });
+        },
+        checkStatus:function(ifLockedByYou, ifLocked, ifNotLocked, complete, error) {
+            $.ajax({
+                url:PCT.location,
+                type:'POST',
+                data:{
+                    action:'checkStatus'
+                },
+                dataType:'json',
+                success:function(data, textStatus, jqXHR) {
+                    if (!data.locked) {
+                        if (ifNotLocked) {
+                            ifNotLocked();
+                        }
+                    } else {
+                        if (data.by != null) {
+                            if (ifLocked)ifLocked(data.by);
+                        } else {
+                            if (ifLockedByYou)ifLockedByYou();
+                        }
+                    }
+                },
+                error:function(jqXHR, textStatus, errorThrown) {
+                    if (error)error();
+                },
+                complete:function() {
+                    if (complete)complete();
                 }
             });
         },
@@ -398,6 +427,9 @@
                 _reload:$('#Reload', dom).get(),
                 _edit:$('#Edit', dom).get(),
                 _saveConfiguration:$('#SaveConfiguration', dom).get(),
+                _lockConfiguration:$('#LockConfiguration', dom).get(),
+                _lockMessage:$('#LockMessage', dom).get(),
+                _unlockConfiguration:$('#UnlockConfiguration', dom).get(),
                 _core:$('#Core', dom).get(),
                 /*_getConfig:$('#Config', dom).get(),*/
                 _tabs:new Array()
@@ -468,8 +500,8 @@
             });
             $(this._edit).click(function() {
                 if ($('#Description', that._home).length > 0) {
-                    if($('#Description', that._home).hasClass('hidden')){
-                    }else{
+                    if ($('#Description', that._home).hasClass('hidden')) {
+                    } else {
                         $('#DescriptionHtml', that._home).html($('#Description', that._home).val());
                     }
                     $('#Description', that._home).toggleClass('hidden');
@@ -606,37 +638,126 @@
                     alert('There are some errors in configuration. Fix them first, then try again.');
                     return;
                 }
-                var message = prompt("Describe configuration changes that you made", "");
-                if (message == null)
-                    return;
-                PCT.lockScreen();
-                var config = $.data($(that._core)[0], 'pct').getXML();
-                $.ajax({
-                    url:PCT.location,
-                    type:'POST',
-                    data:{
-                        action:'saveConfig',
-                        config:config,
-                        message:message
-                    },
-                    success:function(data, textStatus, jqXHR) {
-                        alert('Configuration saved');
-                    },
-                    error:function(jqXHR, textStatus, errorThrown) {
-                        alert('Configuration can\'t be saved: ' + textStatus);
-                    },
-                    statusCode: {
-                        551: function() {
-                            alert('File writing error.');
-                        },
-                        552: function() {
-                            alert('Config validation error.');
-                        }
-                    },
-                    complete:function() {
+                if (PCT.checker) {
+                    PCT.lockScreen();
+                    PCT.checker(function() {
+                        var message = prompt("Describe configuration changes that you made", "");
+                        if (message == null)
+                            return;
+                        PCT.lockScreen();
+                        var config = $.data($(that._core)[0], 'pct').getXML();
+                        $.ajax({
+                            url:PCT.location,
+                            type:'POST',
+                            data:{
+                                action:'saveConfig',
+                                config:config,
+                                message:message
+                            },
+                            success:function(data, textStatus, jqXHR) {
+                                alert('Configuration saved');
+                            },
+                            error:function(jqXHR, textStatus, errorThrown) {
+                                alert('Configuration can\'t be saved: ' + textStatus);
+                            },
+                            statusCode: {
+                                551: function() {
+                                    alert('File writing error.');
+                                },
+                                552: function() {
+                                    alert('Config validation error.');
+                                }
+                            },
+                            complete:function() {
+                                PCT.unlockScreen();
+                            }
+                        });
+                    }, function(name) {
+                        alert("Configuration locked by " + name);
+                    }, function() {
                         PCT.unlockScreen();
-                    }
-                });
+                    }, function() {
+                        alert("Couldn't connect to server. Try again later.");
+                    });
+                }
+            });
+            $(this._lockConfiguration).click(function() {
+                if (PCT.checker) {
+                    PCT.lockScreen();
+                    PCT.checker(function() {
+                        $.ajax({
+                            url:PCT.location,
+                            type:'POST',
+                            data:{
+                                action:'setStatus',
+                                locked:true
+                            },
+                            complete:function() {
+                                PCT.checker(function() {
+                                }, function() {
+                                }, function() {
+                                    PCT.unlockScreen();
+                                }, function() {
+                                });
+                            }
+                        });
+                    }, function(name) {
+                        alert("Configuration locked by " + name);
+                        PCT.unlockScreen();
+                    }, function() {
+                    }, function() {
+                        alert("Couldn't connect to server. Try again later.");
+                        PCT.unlockScreen();
+                    });
+                }
+            });
+            $(this._unlockConfiguration).click(function() {
+                if (PCT.checker) {
+                    PCT.lockScreen();
+                    PCT.checker(function() {
+                        $.ajax({
+                            url:PCT.location,
+                            type:'POST',
+                            data:{
+                                action:'setStatus',
+                                locked:false
+                            },
+                            complete:function() {
+                                PCT.checker(function() {
+                                }, function() {
+                                }, function() {
+                                    PCT.unlockScreen();
+                                }, function() {
+                                });
+                            }
+                        });
+                    }, function(name) {
+                        if (confrm("Configuration locked by " + name +". Do you really want to unlock configuration?")) {
+                            $.ajax({
+                                url:PCT.location,
+                                type:'POST',
+                                data:{
+                                    action:'setStatus',
+                                    locked:false
+                                },
+                                complete:function() {
+                                    PCT.checker(function() {
+                                    }, function() {
+                                    }, function() {
+                                        PCT.unlockScreen();
+                                    }, function() {
+                                    });
+                                }
+                            });
+                        } else {
+                            PCT.unlockScreen();
+                        }
+                    }, function() {
+                    }, function() {
+                        alert("Couldn't connect to server. Try again later.");
+                        PCT.unlockScreen();
+                    });
+                }
             });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
@@ -671,6 +792,42 @@
                     });
                     PCT.unlockScreen();
                     PCT.getHome(this._home, true);
+
+                    if (!PCT.checker) {
+                        $.extend(PCT, {
+                            checker:function(successCallback, failCallback, complete, error) {
+                                console.log("check");
+                                PCT.checkStatus(function() {
+                                    $(that._saveConfiguration).removeClass('hidden');
+                                    $(that._lockConfiguration).addClass('hidden');
+                                    $(that._unlockConfiguration).removeClass('hidden').addClass('lockedByYou').removeClass('locked');
+                                    $(that._lockMessage).html('Configuration locked by you');
+                                    $(that._lockMessage).addClass('lockedByYou').removeClass('locked');
+                                    if (successCallback)successCallback();
+                                }, function(name) {
+                                    $(that._saveConfiguration).addClass('hidden');
+                                    $(that._lockConfiguration).addClass('hidden');
+                                    $(that._unlockConfiguration).removeClass('hidden').addClass('locked').removeClass('lockedByYou');
+                                    $(that._lockMessage).html('Configuration locked by ' + name);
+                                    $(that._lockMessage).addClass('locked').removeClass('lockedByYou');
+                                    if (failCallback)failCallback(name);
+                                }, function() {
+                                    $(that._saveConfiguration).removeClass('hidden');
+                                    $(that._lockConfiguration).removeClass('hidden');
+                                    $(that._unlockConfiguration).addClass('hidden');
+                                    $(that._lockMessage).empty();
+                                    $(that._lockMessage).removeClass('locked').removeClass('lockedByYou');
+                                    if (successCallback)successCallback();
+                                }, function() {
+                                    if (!successCallback && !failCallback && !complete && !error)window.setTimeout("PCT.checker()", "5000");
+                                    if (complete)complete();
+                                }, function() {
+                                    if (error)error();
+                                });
+                            }
+                        });
+                    }
+                    PCT.checker();
                     return this;
                 },
                 addProduct:function(product) {

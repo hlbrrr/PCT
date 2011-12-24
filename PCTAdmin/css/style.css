@@ -1,17 +1,31 @@
 html {
     overflow-y: scroll;
-    overflow: -moz-scrollbars-vertical;
+    overflow-x: scroll;
+    overflow: -moz-scrollbars-both;
 }
 
 body {
     background-color: #f9f8dd;
     padding: 0;
     margin: 0;
+    min-width: 1000px;
 }
 
 body, input, select, textarea {
     font-size: 12px;
     font-family: Arial;
+}
+
+.lockText{
+    text-align: center;
+}
+
+.lockedByYou{
+    color: #66FF00;
+}
+
+.locked{
+    color: #ff3300;
 }
 
 .divModelTitle {

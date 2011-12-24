@@ -21,8 +21,14 @@
     <div class="divModel" id="Core">
         <div class="divModelTitle">
             <div class="titleTable">
-                <div id="SaveConfiguration" class="titleTableCell titleTableCellButton">
+                <div id="SaveConfiguration" class="titleTableCell titleTableCellButton hidden">
                     Save
+                </div>
+                <div id="LockConfiguration" class="titleTableCell titleTableCellButton hidden">
+                    Lock
+                </div>
+                <div id="UnlockConfiguration" class="titleTableCell titleTableCellButton hidden">
+                    Unlock
                 </div>
                 <div id="HomeTab" bind="#HomeWrap" class="titleTableCell titleTableCellButton tab">
                     Home
@@ -45,7 +51,7 @@
                 <div id="UsersTab" bind="#UsersWrap" class="titleTableCell titleTableCellButton tab">
                     Users
                 </div>
-                <div class="titleTableCell titleTableCellFill">
+                <div class="titleTableCell titleTableCellFill lockText" id="LockMessage">
                 </div>
                 <div class="titleTableCell titleTableCellExpText">
                     Expiration:
