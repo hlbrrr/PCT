@@ -82,7 +82,7 @@ public class MainForm {
             if (c instanceof ProposalJPanel) {
                 ProposalJPanel p = (ProposalJPanel) c;
                 if (p.getParentForm().isChanged() && p.getParentForm().getProposal().getProducts().size() > 0) {
-                    proposalName += "\"" + p.getParentForm().getProposal().getName() + "\", ";
+                    proposalName += "\"" + p.getParentForm().getProposal().getProjectName() + " [" + p.getParentForm().getProposal().getClientName() + "]\", ";
                 }
             }
         }
@@ -171,7 +171,7 @@ public class MainForm {
                 final JTextField proposalNameField = new JTextField();
 
                 final JOptionPane optionPane = new JOptionPane(
-                        new JComponent[]{new JLabel("Proposal name"), proposalNameField},
+                        new JComponent[]{new JLabel("Project name"), proposalNameField},
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.OK_CANCEL_OPTION);
 
@@ -197,18 +197,20 @@ public class MainForm {
                                             int value = (Integer) optionPane.getValue();
                                             if (value == JOptionPane.OK_OPTION) {
                                                 String name = proposalNameField.getText().trim();
-                                                if (name.equals("")) {
+                                                /*if (name.equals("")) {
                                                     JOptionPane.showMessageDialog(getRoot(),
-                                                            "Proposal name shouldn't be empty",
+                                                            "Project name shouldn't be empty",
                                                             "Error",
                                                             JOptionPane.ERROR_MESSAGE);
                                                     proposalNameField.requestFocus();
-                                                } else {
-                                                    dialog.dispose();
-                                                    Proposal proposal = new Proposal(config);
-                                                    proposal.setName(name);
-                                                    addProposalForm(new ProposalForm(proposal, getFrame()));
-                                                }
+                                                } else {*/
+                                                if (name.equals("")) name = "Untitled";
+                                                dialog.dispose();
+                                                Proposal proposal = new Proposal(config);
+                                                proposal.setName(name);
+                                                proposal.setProjectName(name);
+                                                addProposalForm(proposal, getFrame(), false);
+                                                /*}*/
                                             } else if (value == JOptionPane.CANCEL_OPTION) {
                                                 dialog.dispose();
                                             }
@@ -254,9 +256,9 @@ public class MainForm {
                                     throw new PCTDataFormatException("Proposal not found");
                                 }
                                 proposal.init(CommonUtils.getInstance().getDocumentFromString(proposalString));
-                                ProposalForm tmpForm = new ProposalForm(proposal, getFrame());
-                                addProposalForm(tmpForm);
-                                tmpForm.setChanged(false);
+                                //ProposalForm tmpForm = new ProposalForm(proposal, getFrame());
+                                addProposalForm(proposal, getFrame(), true);
+                                //tmpForm.setChanged(false);
                                 if (proposal.containsDeprecated()) {
                                     JOptionPane.showMessageDialog(getRoot(), "Selected proposal contains deprecated module(s) or capacity(ies).", "Warning", JOptionPane.INFORMATION_MESSAGE);
                                 }
@@ -529,7 +531,8 @@ public class MainForm {
         closeProposal.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (getCurrentProposalForm().getProposal().getProducts().size() > 0 && getCurrentProposalForm().isChanged()) {
-                    final String proposalName = getCurrentProposalForm().getProposal().getName();
+                    final String proposalName = getCurrentProposalForm().getProposal().getProjectName() + " [" + getCurrentProposalForm().getProposal().getClientName() + "]";
+
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             int choice = JOptionPane.showOptionDialog(getRoot(), "Proposal \"" + proposalName + "\" isn't saved, do you really want to close it?", "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);//Dialog(getRoot(), "Selected excel workbook can't be read", "Error", JOptionPane.ERROR_MESSAGE);
@@ -726,9 +729,34 @@ public class MainForm {
         exit.addActionListener(actionListener);
     }
 
-    public void addProposalForm(ProposalForm proposalForm) {
+    public void addProposalForm(Proposal proposal, JFrame frame, boolean dropChanged) {
+        ProposalForm proposalForm = new ProposalForm(proposal, getFrame(), new PCTChangedListener() {
+            Object data;
+
+            public void act(Object src) {
+                if (getData() != null) {
+                    try {
+                        com.compassplus.proposalModel.Proposal pp = ((com.compassplus.proposalModel.Proposal) src);
+                        proposalsTabs.setTitleAt(proposalsTabs.indexOfComponent((Component) getData()), pp.getProjectName() + " [" + pp.getClientName() + "]");
+                    } catch (Exception e) {
+                    }
+                }
+            }
+
+            public void setData(Object data) {
+                this.data = data;
+            }
+
+            public Object getData() {
+                return data;
+            }
+        });
         proposalsTabs.addTab(proposalForm.getProposal().getName(), proposalForm.getRoot());
         proposalsTabs.setSelectedComponent(proposalForm.getRoot());
+        if (dropChanged) {
+            proposalForm.setChanged(false);
+        }
+        proposalForm.updateMainTitle();
     }
 
     private JFrame getFrame() {

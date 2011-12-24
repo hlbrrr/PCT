@@ -155,7 +155,7 @@ public class Proposal {
 
     private void setName(Node name) throws PCTDataFormatException {
         try {
-            this.name = xut.getString(name);
+            this.name = xut.getString(name, true);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Proposal name is not defined correctly", e.getDetails());
         }

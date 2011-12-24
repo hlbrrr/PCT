@@ -679,6 +679,14 @@ public class ProductForm {
                         }
                         reloadCapacitiesPrices(cs);
                     }
+
+                    public void setData(Object data) {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public Object getData() {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
                 };
                 ChangeListener changeListener = new ChangeListener() {
                     public void stateChanged(ChangeEvent ev) {

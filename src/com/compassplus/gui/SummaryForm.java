@@ -38,12 +38,14 @@ public class SummaryForm {
     private JSpinner planRateField;
     private JComboBox supportPlanField;
     private PCTChangedListener currChanged;
+    private PCTChangedListener titleUpdater;
     private PCTChangedListener updated;
     private JPanel productsTable;
     private DecimalFormat df;
 
-    public SummaryForm(Proposal proposal, PCTChangedListener currChanged, DecimalFormat df, PCTChangedListener updated) {
+    public SummaryForm(Proposal proposal, PCTChangedListener currChanged, DecimalFormat df, PCTChangedListener updated, PCTChangedListener titleUpdater) {
         this.currChanged = currChanged;
+        this.titleUpdater = titleUpdater;
         this.updated = updated;
         this.df = df;
         this.proposal = proposal;
@@ -92,6 +94,10 @@ public class SummaryForm {
         settingsPanelRight.setBorder(new EmptyBorder(4, 4, 4, 4));
         initForm(proposal);
         curChanged();
+    }
+
+    public void updateMainTitle(){
+        titleUpdater.act(getProposal());
     }
 
     private void reloadPrices() {
@@ -194,6 +200,7 @@ public class SummaryForm {
                 public void changed() {
                     getProposal().setClientName(clientNameField.getText());
                     updated.act(that);
+                    updateMainTitle();
                 }
             });
 
@@ -229,6 +236,7 @@ public class SummaryForm {
                 public void changed() {
                     getProposal().setProjectName(projectNameField.getText());
                     updated.act(that);
+                    updateMainTitle();
                 }
             });
             projectNameField.addActionListener(new ActionListener() {
@@ -576,6 +584,14 @@ public class SummaryForm {
                                 getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (getProposal().getCurrency().getSymbol() == null ?
                                 " " + getProposal().getCurrency().getName() : ""));
                     }
+
+                    public void setData(Object data) {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public Object getData() {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
                 });
                 final CustomJLabel glsplabel = new CustomJLabel(new PCTChangedListener() {
                     public void act(Object src) {
@@ -596,6 +612,14 @@ public class SummaryForm {
                                     getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (getProposal().getCurrency().getSymbol() == null ?
                                     " " + getProposal().getCurrency().getName() : ""));
                         }
+                    }
+
+                    public void setData(Object data) {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public Object getData() {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
                 });
                 for (Product p : getProposal().getProducts().values()) {
@@ -668,6 +692,14 @@ public class SummaryForm {
                                     prod.getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (prod.getProposal().getCurrency().getSymbol() == null ?
                                     " " + prod.getProposal().getCurrency().getName() : ""));
                         }
+
+                        public void setData(Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData() {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
                     });
                     {
                         c.gridx++;
@@ -728,6 +760,14 @@ public class SummaryForm {
                                         prod.getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (prod.getProposal().getCurrency().getSymbol() == null ?
                                         " " + prod.getProposal().getCurrency().getName() : ""));
                             }
+                        }
+
+                        public void setData(Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData() {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
                         }
                     });
                     {

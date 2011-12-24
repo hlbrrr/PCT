@@ -26,7 +26,7 @@ public class ProposalForm {
     private SummaryForm summaryForm;
     private boolean changed = false;
 
-    public ProposalForm(Proposal proposal, JFrame frame) {
+    public ProposalForm(Proposal proposal, JFrame frame, PCTChangedListener titleUpdater) {
         this.frame = frame;
         this.proposal = proposal;
         productsTabs = new JTabbedPane(JTabbedPane.BOTTOM, JTabbedPane.WRAP_TAB_LAYOUT);
@@ -41,18 +41,23 @@ public class ProposalForm {
             }
         });
 
-        addSummaryPage(proposal);
+        addSummaryPage(proposal, titleUpdater);
         for (String key : proposal.getConfig().getProducts().keySet()) {
             if (proposal.getProducts().containsKey(key)) {
                 addProductForm(proposal.getProducts().get(key));
             }
         }
         mainPanel = new ProposalJPanel(new BorderLayout(), this);
+        titleUpdater.setData(mainPanel);
         mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         mainPanel.add(productsTabs, BorderLayout.CENTER);
 
         productsTabs.setSelectedIndex(0);
+    }
+
+    public void updateMainTitle() {
+        summaryForm.updateMainTitle();
     }
 
     private void setCurrentProductForm(ProductForm currentProductForm) {
@@ -76,7 +81,7 @@ public class ProposalForm {
         return proposal;
     }
 
-    private void addSummaryPage(Proposal proposal) {
+    private void addSummaryPage(Proposal proposal, PCTChangedListener titleUpdater) {
         summaryForm = new SummaryForm(proposal, new PCTChangedListener() {
             public void act(Object src) {
                 if (src instanceof SummaryForm) {
@@ -87,13 +92,29 @@ public class ProposalForm {
                     }
                 }
             }
+
+            public void setData(Object data) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public Object getData() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
         }, df, new PCTChangedListener() {
             public void act(Object src) {
                 if (src instanceof SummaryForm) {
                     changed = true;
                 }
             }
-        }
+
+            public void setData(Object data) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public Object getData() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        }, titleUpdater
         );
         productsTabs.addTab("Summary", summaryForm.getRoot());
         productsTabs.setSelectedComponent(summaryForm.getRoot());
@@ -121,6 +142,14 @@ public class ProposalForm {
 
                     }
                 }
+            }
+
+            public void setData(Object data) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public Object getData() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
         }, df, getFrame());
         this.getProposal().addProduct(productForm.getProduct());
