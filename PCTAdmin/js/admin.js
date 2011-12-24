@@ -732,7 +732,7 @@
                             }
                         });
                     }, function(name) {
-                        if (confrm("Configuration locked by " + name +". Do you really want to unlock configuration?")) {
+                        if (confirm("Configuration locked by " + name +". Do you really want to unlock configuration?")) {
                             $.ajax({
                                 url:PCT.location,
                                 type:'POST',
