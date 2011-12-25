@@ -172,7 +172,9 @@ public class ProductForm {
         JPanel modules = new JPanel();
         JPanel capacities = new JPanel();
         JScrollPane modulesScroll = new JScrollPane(modules);
+        modulesScroll.getVerticalScrollBar().setUnitIncrement(16);
         JScrollPane capacitiesScroll = new JScrollPane(capacities);
+        capacitiesScroll.getVerticalScrollBar().setUnitIncrement(16);
         modulesPanel.add(modulesScroll, BorderLayout.CENTER);
         capacitiesPanel.add(capacitiesScroll, BorderLayout.CENTER);
         c = new GridBagConstraints();

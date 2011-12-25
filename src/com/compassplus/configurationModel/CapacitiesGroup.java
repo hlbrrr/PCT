@@ -19,6 +19,7 @@ public class CapacitiesGroup {
     private String name;
     private String shortName;
     private String hint;
+    private Boolean hidden;
 
     private Map<String, Capacity> capacities = new LinkedHashMap<String, Capacity>();
     private ArrayList<CapacitiesGroup> groups = new ArrayList<CapacitiesGroup>();
@@ -30,10 +31,23 @@ public class CapacitiesGroup {
         this.shortName = shortName;
     }
 
-    public CapacitiesGroup(Node name, Node shortName, Node hint) throws PCTDataFormatException {
+    public CapacitiesGroup(Node name, Node shortName, Node hint, Node hidden) throws PCTDataFormatException {
         this.setName(name);
         this.setShortName(shortName);
         this.setHint(hint);
+        this.setHidden(hidden);
+    }
+
+    private void setHidden(Node hidden) throws PCTDataFormatException {
+        try {
+            this.hidden = xut.getBoolean(hidden, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Group hidden-flag is not defined correctly", e.getDetails());
+        }
+    }
+
+    public Boolean isHidden() {
+        return this.hidden != null ? this.hidden : false;
     }
 
     public String getHint() {

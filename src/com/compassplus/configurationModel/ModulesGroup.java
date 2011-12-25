@@ -20,6 +20,7 @@ public class ModulesGroup {
     private String shortName;
     private String defaultModuleKey;
     private Boolean radioButtonGroup;
+    private Boolean hidden;
     private String hint;
 
     private Map<String, Module> modules = new LinkedHashMap<String, Module>();
@@ -32,12 +33,25 @@ public class ModulesGroup {
         this.shortName = shortName;
     }
 
-    public ModulesGroup(Node name, Node shortName, Node hint, Node radioButtonGroup, Node defaultModuleKey) throws PCTDataFormatException {
+    public ModulesGroup(Node name, Node shortName, Node hint, Node radioButtonGroup, Node defaultModuleKey, Node hidden) throws PCTDataFormatException {
         this.setName(name);
         this.setShortName(shortName);
         this.setHint(hint);
+        this.setHidden(hidden);
         this.setRadioButtonGroup(radioButtonGroup);
         this.setDefaultModuleKey(defaultModuleKey);
+    }
+
+    private void setHidden(Node hidden) throws PCTDataFormatException {
+        try {
+            this.hidden = xut.getBoolean(hidden, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Group hidden-flag is not defined correctly", e.getDetails());
+        }
+    }
+
+    public Boolean isHidden() {
+        return this.hidden != null ? this.hidden : false;
     }
 
     public boolean isRadioButtonGroup() {

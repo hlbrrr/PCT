@@ -341,6 +341,7 @@ public class Product {
         if (sb.toString().endsWith("\n")) {
             sb.setLength(sb.length() - 1);
         }
+
         return sb.toString();
     }
 
@@ -355,14 +356,18 @@ public class Product {
             modulesGroup = getProduct().getModulesRoot();
             appendGroupName = false;
         }
+        boolean containsModules = false;
         for (String key : modulesGroup.getModules().keySet()) {
             com.compassplus.configurationModel.Module m = modulesGroup.getModules().get(key);
-            if (this.getModules().containsKey(key) && !m.isHidden()) {
-                //sb.append(pad);
-                //sb.append("  -");
-                sb.append(m.getShortName().equals("") ? m.getName() : m.getShortName());
-                sb.append(", ");
-                //sb.append("\n");
+            if (this.getModules().containsKey(key)) {
+                containsModules = true;
+                if (!m.isHidden()) {
+                    //sb.append(pad);
+                    //sb.append("  -");
+                    sb.append(m.getShortName().equals("") ? m.getName() : m.getShortName());
+                    sb.append(", ");
+                    //sb.append("\n");
+                }
             }
         }
         for (ModulesGroup mg : modulesGroup.getGroups()) {
@@ -373,7 +378,7 @@ public class Product {
         }
 
         if (sb.length() > 0) {
-            if (appendGroupName) {
+            if (appendGroupName && !modulesGroup.isHidden()) {
                 //sb.insert(0, ":\n");
                 sb.insert(0, " (");
                 sb.insert(0, modulesGroup.getShortName().equals("") ? modulesGroup.getName() : modulesGroup.getShortName());
@@ -389,6 +394,10 @@ public class Product {
             }
             return sb.toString();
         } else {
+            if (containsModules && !modulesGroup.isHidden()) {
+                sb.append(modulesGroup.getShortName().equals("") ? modulesGroup.getName() : modulesGroup.getShortName());
+                return sb.toString();
+            }
             return "";
         }
     }
@@ -404,16 +413,20 @@ public class Product {
             capacitiesGroup = getProduct().getCapacitiesRoot();
             appendGroupName = false;
         }
+        boolean containsCapacities = false;
         for (String key : capacitiesGroup.getCapacities().keySet()) {
             com.compassplus.configurationModel.Capacity c = capacitiesGroup.getCapacities().get(key);
-            if (this.getCapacities().containsKey(key) && !c.isHidden()) {
-                Capacity cc = this.getCapacities().get(key);
-                //sb.append(pad);
-                //sb.append("  -");
-                sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
-                sb.append("=").append(df.format(cc.getVal()));
-                sb.append(", ");
-                //sb.append("\n");
+            if (this.getCapacities().containsKey(key)) {
+                containsCapacities = true;
+                if (!c.isHidden()) {
+                    Capacity cc = this.getCapacities().get(key);
+                    //sb.append(pad);
+                    //sb.append("  -");
+                    sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
+                    sb.append("=").append(df.format(cc.getVal()));
+                    sb.append(", ");
+                    //sb.append("\n");
+                }
             }
         }
         for (CapacitiesGroup cg : capacitiesGroup.getGroups()) {
@@ -424,7 +437,7 @@ public class Product {
         }
 
         if (sb.length() > 0) {
-            if (appendGroupName) {
+            if (appendGroupName && !capacitiesGroup.isHidden()) {
                 //sb.insert(0, ":\n");
                 sb.insert(0, " (");
                 sb.insert(0, capacitiesGroup.getShortName().equals("") ? capacitiesGroup.getName() : capacitiesGroup.getShortName());
@@ -440,6 +453,10 @@ public class Product {
             }
             return sb.toString();
         } else {
+            if (containsCapacities && !capacitiesGroup.isHidden()) {
+                sb.append(capacitiesGroup.getShortName().equals("") ? capacitiesGroup.getName() : capacitiesGroup.getShortName());
+                return sb.toString();
+            }
             return "";
         }
     }
