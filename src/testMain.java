@@ -1,10 +1,6 @@
 import com.compassplus.configurationModel.Configuration;
 import com.compassplus.gui.MainForm;
-import com.compassplus.gui.ProposalForm;
-import com.compassplus.proposalModel.Proposal;
-import com.compassplus.utils.CommonUtils;
-import com.compassplus.utils.DesEncrypter;
-import com.compassplus.utils.Logger;
+import com.compassplus.utils.*;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
@@ -15,6 +11,11 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.PrintStream;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
+import java.util.logging.SimpleFormatter;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,8 +25,31 @@ import java.io.File;
  */
 public class testMain {
     private static final String defaultEnc = "UTF8";
+    private static final String logFile = "log.txt";
 
     public static void main(String[] args) {
+        // initialize logging to go to rolling log file
+        LogManager logManager = LogManager.getLogManager();
+        logManager.reset();
+
+        // log file max size 10K, 3 rolling files, append-on-open
+        try {
+            Handler fileHandler = new FileHandler(logFile, false);
+            fileHandler.setFormatter(new SimpleFormatter());
+            java.util.logging.Logger.getLogger("").addHandler(fileHandler);
+        } catch (Exception e) {
+        }
+
+        java.util.logging.Logger logger;
+        logger = java.util.logging.Logger.getLogger("stdout");
+        LoggingOutputStream los;
+        los = new LoggingOutputStream(logger, StdOutErrLevel.STDOUT);
+        System.setOut(new PrintStream(los, true));
+
+        logger = java.util.logging.Logger.getLogger("stderr");
+        los = new LoggingOutputStream(logger, StdOutErrLevel.STDERR);
+        System.setErr(new PrintStream(los, true));
+
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 try {
