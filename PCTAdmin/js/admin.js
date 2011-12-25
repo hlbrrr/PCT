@@ -979,6 +979,7 @@
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
+                _secondarySalesRate:$('#SecondarySalesRate', dom).get(),
                 _clone:$('#Clone', dom).get(),
                 _totalWeight:$('#TotalWeight', dom).get(),
                 _pricePerOne:$('#PricePerOne', dom).get(),
@@ -992,6 +993,7 @@
                     config += '<Name>' + $(that._name).val() + '</Name>';
                     //config += '<Hint>' + $(that._hint).val() + '</Hint>';
                     config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                    config += '<SecondarySalesRate>' + $(that._secondarySalesRate).val() + '</SecondarySalesRate>';
                     config += '<MaximumFunctionalityPrice>' + $(that._maximumFunctionalityPrice).val() + '</MaximumFunctionalityPrice>';
                     config += '<MinimumPrice>' + $(that._minimumPrice).val() + '</MinimumPrice>';
                     $(that._modules).children().each(function() {
@@ -1070,6 +1072,7 @@
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $(this._maximumFunctionalityPrice).val($('>MaximumFunctionalityPrice', initialData).text()).change();
                     $(this._minimumPrice).val($('>MinimumPrice', initialData).text()).change();
+                    $(this._secondarySalesRate).val($('>SecondarySalesRate', initialData).text()).change();
                     this.addModulesRoot((new PCT.modulesGroup()).setRoot(this._modules).init(null, null, null, null, null, $('>Modules', initialData)));
                     this.addCapacitiesRoot((new PCT.capacitiesGroup()).setRoot(this._capacities).init(null, null, null, $('>Capacities', initialData)));
                     $(this._settingsPane).addClass('hidden');
