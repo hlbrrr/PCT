@@ -1073,8 +1073,8 @@
                     $(this._maximumFunctionalityPrice).val($('>MaximumFunctionalityPrice', initialData).text()).change();
                     $(this._minimumPrice).val($('>MinimumPrice', initialData).text()).change();
                     $(this._secondarySalesRate).val($('>SecondarySalesRate', initialData).text()).change();
-                    this.addModulesRoot((new PCT.modulesGroup()).setRoot(this._modules).init(null, null, null, null, null, $('>Modules', initialData)));
-                    this.addCapacitiesRoot((new PCT.capacitiesGroup()).setRoot(this._capacities).init(null, null, null, $('>Capacities', initialData)));
+                    this.addModulesRoot((new PCT.modulesGroup()).setRoot(this._modules).init(null, null, null, null, null, null, $('>Modules', initialData)));
+                    this.addCapacitiesRoot((new PCT.capacitiesGroup()).setRoot(this._capacities).init(null, null, null, null, $('>Capacities', initialData)));
                     $(this._settingsPane).addClass('hidden');
                     $(this._content).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -1120,6 +1120,7 @@
                 _addGroup:$('#AddGroup', dom).get(),
                 _addModule:$('#AddModule', dom).get(),
                 _expand:$('#Expand', dom).get(),
+                _hidden:$('#Hidden', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _core:$('#Core', dom).get(),
                 _clone:$('#Clone', dom).get(),
@@ -1153,7 +1154,7 @@
             $(this._groups, dom).sortable({
                 revert:true,
                 handle: '.groupDrag',
-                connectWith: '.divGroups',
+                connectWith: '.divMGroups',
                 start:function() {
                     that.updateTotal();
                 },
@@ -1168,6 +1169,7 @@
                         config += '<Group>';
                         config += '<Name>' + $(that._name).val() + '</Name>';
                         config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                        config += '<Hidden>' + ($(that._hidden).prop('checked') ? 'true' : 'false') + '</Hidden>';
                         config += '<Hint>' + $(that._hint).val() + '</Hint>';
                         config += '<DefaultModuleKey>' + $(that._defaultModuleKey).val() + '</DefaultModuleKey>';
                         config += '<RadioButtonGroup>' + ($(that._radioButtonGroup).prop('checked') ? 'true' : 'false') + '</RadioButtonGroup>';
@@ -1191,7 +1193,7 @@
             $.data($(this._groups)[0], 'pct', {
                 cloneTree:function(xml) {
                     $('root>Group', xml).each(function() {
-                        var rt = that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>RadioButtonGroup', this).text(), $('>DefaultModuleKey', this).text(), $('>Modules', this)).setIsRoot(false));
+                        var rt = that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>RadioButtonGroup', this).text(), $('>Hidden', this).text(), $('>DefaultModuleKey', this).text(), $('>Modules', this)).setIsRoot(false));
                         $('.moduleKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
@@ -1281,7 +1283,7 @@
                 updateTotal:function() {
                     $.data($(that._core).parents('.divProductModules')[0], 'pct').updateTotal();
                 },
-                init:function(name, shortName, hint, radioButtonGroup, defaultModuleKey, initialData) {
+                init:function(name, shortName, hint, radioButtonGroup, hidden, defaultModuleKey, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
                     }
@@ -1291,6 +1293,9 @@
                     }
                     if (radioButtonGroup) {
                         $(this._radioButtonGroup).prop('checked', (radioButtonGroup == 'true')).change();
+                    }
+                    if (hidden) {
+                        $(this._hidden).prop('checked', (hidden == 'true')).change();
                     }
                     if (defaultModuleKey) {
                         $(this._defaultModuleKey).val(defaultModuleKey).change();
@@ -1302,7 +1307,7 @@
                         that.addModule((new PCT.module()).setRoot(that._modules).init(this));
                     });
                     $('>Group', initialData).each(function() {
-                        that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>RadioButtonGroup', this).text(), $('>DefaultModuleKey', this).text(), $('>Modules', this)).setIsRoot(false));
+                        that.addGroup((new PCT.modulesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>RadioButtonGroup', this).text(), $('>Hidden', this).text(), $('>DefaultModuleKey', this).text(), $('>Modules', this)).setIsRoot(false));
                     });
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -1613,6 +1618,7 @@
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
+                _hidden:$('#Hidden', dom).get(),
                 _core:$('#Core', dom).get(),
                 _clone:$('#Clone', dom).get(),
                 _hint:$('#Hint', dom).get(),
@@ -1627,7 +1633,7 @@
             $(this._groups, dom).sortable({
                 revert:true,
                 handle: '.groupDrag',
-                connectWith: '.divGroups'
+                connectWith: '.divCGroups'
             });
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
@@ -1637,6 +1643,7 @@
                         config += '<Name>' + $(that._name).val() + '</Name>';
                         config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
                         config += '<Hint>' + $(that._hint).val() + '</Hint>';
+                        config += '<Hidden>' + ($(that._hidden).prop('checked') ? 'true' : 'false') + '</Hidden>';
                     }
                     config += '<Capacities>';
                     $(that._capacities).children().each(function() {
@@ -1657,7 +1664,7 @@
             $.data($(this._groups)[0], 'pct', {
                 cloneTree:function(xml) {
                     $('root>Group', xml).each(function() {
-                        var rt = that.addGroup((new PCT.capacitiesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Capacities', this)).setIsRoot(false));
+                        var rt = that.addGroup((new PCT.capacitiesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Hidden', this).text(), $('>Capacities', this)).setIsRoot(false));
                         $('.capacityKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
@@ -1748,7 +1755,7 @@
                 getIsRoot:function() {
                     return $(this._isRoot).val() == 'true';
                 },
-                init:function(name, shortName, hint, initialData) {
+                init:function(name, shortName, hint, hidden, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
                     }
@@ -1759,11 +1766,14 @@
                     if (hint) {
                         $(this._hint).val(hint).change();
                     }
+                    if (hidden) {
+                        $(this._hidden).prop('checked', (hidden == 'true')).change();
+                    }
                     $('>Capacity', initialData).each(function() {
                         that.addCapacity((new PCT.capacity()).setRoot(that._capacities).init(this));
                     });
                     $('>Group', initialData).each(function() {
-                        that.addGroup((new PCT.capacitiesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Capacities', this)).setIsRoot(false));
+                        that.addGroup((new PCT.capacitiesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Hidden', this).text(), $('>Capacities', this)).setIsRoot(false));
                     });
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');

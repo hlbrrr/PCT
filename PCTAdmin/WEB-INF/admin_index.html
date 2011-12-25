@@ -300,6 +300,14 @@
                                       validclass="mempty"></textarea>
                         </div>
                     </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Do not export:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="Hidden" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
                     <div class="settingsTableRow capacitySetting">
                         <div class="settingsTableCell settingsTitle">
                             Radio Button Group:
@@ -323,7 +331,7 @@
         </div>
         <div id="Content">
             <div id="Modules" class="divModules"></div>
-            <div id="Groups" class="divGroups"></div>
+            <div id="Groups" class="divGroups divMGroups"></div>
         </div>
     </div>
 </template>
@@ -382,13 +390,21 @@
                                       validclass="mempty"></textarea>
                         </div>
                     </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Do not export:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="Hidden" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
                 </div>
                 <input id="IsRoot" type="hidden"/>
             </div>
         </div>
         <div id="Content">
             <div id="Capacities" class="divCapacities"></div>
-            <div id="Groups" class="divGroups"></div>
+            <div id="Groups" class="divGroups divCGroups"></div>
         </div>
     </div>
 </template>
