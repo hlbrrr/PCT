@@ -61,6 +61,7 @@ body, input, select, textarea {
 
 .pctTable .head {
     text-align: center;
+    white-space: nowrap;
 }
 
 .pctTable .right {

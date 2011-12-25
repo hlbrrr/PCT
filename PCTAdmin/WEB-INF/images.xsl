@@ -8,6 +8,7 @@
                     <tr>
                         <td class="head">#</td>
                         <td class="head">Date Modified</td>
+                        <td class="head">Saved By</td>
                         <td class="head wider">Comment</td>
                         <td class="head">&#160;</td>
                     </tr>
@@ -20,6 +21,9 @@
                                 </td>
                                 <td class="nowrap">
                                     <xsl:value-of select="Date"/>
+                                </td>
+                                <td class="nowrap">
+                                    <xsl:value-of select="SavedBy"/>
                                 </td>
                                 <td>
                                     <xsl:value-of select="Description"/>

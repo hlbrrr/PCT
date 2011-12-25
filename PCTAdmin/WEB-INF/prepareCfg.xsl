@@ -32,4 +32,10 @@
     <xsl:template match="/root/Description">
     </xsl:template>
 
+    <xsl:template match="/root/Comment">
+    </xsl:template>
+
+    <xsl:template match="/root/SavedBy">
+    </xsl:template>
+
 </xsl:stylesheet>
