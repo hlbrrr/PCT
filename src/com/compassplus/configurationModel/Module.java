@@ -72,9 +72,9 @@ public class Module {
             } catch (PCTDataFormatException e) {
                 log.error(e);
             }
-            if (this.secondarySalesPrice == null && this.secondarySalesRate == null) {
+            /*if (this.secondarySalesPrice == null && this.secondarySalesRate == null) {
                 throw new PCTDataFormatException("Module secondary sales pricing is not defined correctly");
-            }
+            }*/
             log.info("Module successfully parsed: \nKey: " + this.getKey() +
                     "\nDeprecated: " + this.isDeprecated() +
                     "\nHidden: " + this.isHidden() +
@@ -262,8 +262,10 @@ public class Module {
         if (product.getSecondarySale()) {
             if (this.getSecondarySalesPrice() != null) {
                 price = this.getSecondarySalesPrice() * product.getProposal().getCurrencyRate();
-            } else {
+            } else if (this.getSecondarySalesRate() != null) {
                 price *= this.getSecondarySalesRate();
+            } else {
+                price *= product.getProduct().getSecondarySalesRate();
             }
         }
         return CommonUtils.getInstance().toNextThousand(price);

@@ -27,6 +27,7 @@ public class Product {
     private CapacitiesGroup capacitiesRoot = new CapacitiesGroup("Capacities", "");
     private Map<String, Module> modules = new HashMap<String, Module>();
     private Map<String, Capacity> capacities = new HashMap<String, Capacity>();
+    private Double secondarySalesRate;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
@@ -48,6 +49,8 @@ public class Product {
             this.setMinimumPrice(xut.getNode("MinimumPrice", initialData));
             this.setModules(xut.getNode("Modules", initialData));
             this.setCapacities(xut.getNode("Capacities", initialData));
+            this.setSecondarySalesRate(xut.getNode("SecondarySalesRate", initialData));
+
 
             for (Capacity c : this.getCapacities().values()) {
                 if (c.getLinkKey() != null) {
@@ -71,9 +74,22 @@ public class Product {
                     "\nShortName: " + this.getShortName() +
                     "\nMaximumFunctionalityPrice: " + this.getMaximumFunctionalityPrice() +
                     "\nMinimumPrice: " + this.getMinimumPrice() +
+                    "\nSecondarySalesRate: " + this.getSecondarySalesRate() +
                     "\nStructure: \n" + modulesRoot.toString() + "\n" + capacitiesRoot.toString());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Product is not defined correctly", e.getDetails());
+        }
+    }
+
+    public Double getSecondarySalesRate() {
+        return secondarySalesRate;
+    }
+
+    private void setSecondarySalesRate(Node secondarySalesRate) throws PCTDataFormatException {
+        try {
+            this.secondarySalesRate = xut.getDouble(secondarySalesRate);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Product secondary sales rate is not defined correctly", e.getDetails());
         }
     }
 
