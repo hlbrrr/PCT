@@ -8,6 +8,7 @@ import com.compassplus.utils.Logger;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -59,14 +60,14 @@ public class testMain {
             frame.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
-                    if(main.checkChanges())
-                    frame.dispose();
+                    if (main.checkChanges())
+                        frame.dispose();
                 }
             });
             main.setExitAction(new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
-                    if(main.checkChanges())
-                    frame.dispose();
+                    if (main.checkChanges())
+                        frame.dispose();
                 }
             });
             frame.setJMenuBar(main.getMenu());
@@ -82,6 +83,12 @@ public class testMain {
 
     private static void proceed() {
         final JFrame frame = new JFrame();
+
+        java.net.URL imageURL = testMain.class.getResource("images/home.png");
+        if (imageURL != null) {
+            frame.setIconImage(Toolkit.getDefaultToolkit().getImage(imageURL));
+        }
+
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         final JPasswordField pwdField = new JPasswordField();
         final JOptionPane optionPane = new JOptionPane(
