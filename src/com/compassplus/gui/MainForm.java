@@ -62,7 +62,7 @@ public class MainForm {
     private String TEMPLATES_DIR = "templates";
     private ArrayList<XLSTemplate> templatesList;
 
-    private String CURRENT_VERSION = "0.1";
+    private String CURRENT_VERSION = "1.0";
 
     public MainForm(Configuration config) {
         this.config = config;
