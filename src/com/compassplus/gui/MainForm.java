@@ -220,6 +220,7 @@ public class MainForm {
                     Cell cellIndexCell = currentSettingsRow.getCell(2);
                     Cell rowIndexCell = currentSettingsRow.getCell(3);
                     Cell sheetIndexCell = currentSettingsRow.getCell(4);
+
                     if (rowsCountCell != null && rowIndexCell != null && sheetIndexCell != null && cellIndexCell != null) {
                         try {
                             rowsCountInt = Integer.parseInt(rowsCountCell.getStringCellValue());
@@ -234,6 +235,7 @@ public class MainForm {
                         } catch (Exception ex) {
                         }
                     }
+                } else {
                 }
             }
 
@@ -320,6 +322,8 @@ public class MainForm {
                                                     Sheet settingsSheet = wb.getSheet("PCTSettings");
                                                     if (settingsSheet == null) {
                                                         settingsSheet = wb.createSheet("PCTSettings");
+                                                    } else {
+
                                                     }
 
                                                     String regPriceCol = CellReference.convertNumToColString(1 + cellIndex);
@@ -327,9 +331,10 @@ public class MainForm {
                                                     String supPriceCol = CellReference.convertNumToColString(4 + cellIndex);
                                                     String supPriceDiscount = CellReference.convertNumToColString(5 + cellIndex);
 
+
                                                     for (Product p : getCurrentProposalForm().getProposal().getProducts().values()) {
                                                         if (s.getLastRowNum() >= rowIndex + i) {
-                                                            s.shiftRows(rowIndex + i, s.getLastRowNum(), getCurrentProposalForm().getProposal().getProducts().size());
+                                                            s.shiftRows(rowIndex + i, s.getLastRowNum(), 1);
                                                         }
                                                         Row r = s.createRow(rowIndex + i);
 
@@ -869,6 +874,8 @@ public class MainForm {
     private void removeRow(Sheet sheet, int rowIndex) {
         int lastRowNum = sheet.getLastRowNum();
         if (rowIndex >= 0 && rowIndex < lastRowNum) {
+            Row removingRow = sheet.getRow(rowIndex);
+            sheet.removeRow(removingRow);
             sheet.shiftRows(rowIndex + 1, lastRowNum, -1);
         }
         if (rowIndex == lastRowNum) {
