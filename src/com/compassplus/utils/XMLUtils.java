@@ -63,7 +63,7 @@ public class XMLUtils {
         } else if (stringValue.equals("false") || stringValue.equals("")) {
             return false;
         } else {
-            throw new PCTDataFormatException("Node value is not valid boolean");
+            throw new PCTDataFormatException("Node value is not valid boolean :\"" + stringValue + "\"");
         }
 
     }
@@ -81,7 +81,7 @@ public class XMLUtils {
             try {
                 return Double.parseDouble(stringValue);
             } catch (NumberFormatException e) {
-                throw new PCTDataFormatException("Node value is not valid double");
+                throw new PCTDataFormatException("Node value is not valid double :\"" + stringValue + "\"");
             }
         }
 
@@ -100,7 +100,7 @@ public class XMLUtils {
             try {
                 return Integer.parseInt(stringValue);
             } catch (NumberFormatException e) {
-                throw new PCTDataFormatException("Node value is not valid double");
+                throw new PCTDataFormatException("Node value is not valid integer :\"" + stringValue + "\"");
             }
         }
 
