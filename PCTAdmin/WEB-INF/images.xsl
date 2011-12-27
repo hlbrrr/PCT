@@ -10,7 +10,9 @@
                         <td class="head">Date Modified</td>
                         <td class="head">Saved By</td>
                         <td class="head wider">Comment</td>
-                        <td class="head">&#160;</td>
+                        <td class="head">Backup</td>
+                        <td class="head">Config</td>
+                        <td class="head">Release</td>
                     </tr>
                     <xsl:for-each select="/root/File">
                         <xsl:sort select="Sort" order="descending"/>
@@ -34,7 +36,20 @@
                                             <b>current</b>
                                         </xsl:when>
                                         <xsl:otherwise>
-                                            <a href="#" onclick="PCT.loadConfig(this)" date="{Date}" cfg="{Name}">load</a>
+                                            <a href="#" onclick="PCT.loadConfig(this)" date="{Date}" cfg="{Name}">restore</a>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </td>
+                                <td class="nowrap">
+                                    <a href="#" onclick="PCT.getConfiguration($(this).attr('cfg'))" date="{Date}" cfg="{Name}">download</a>
+                                </td>
+                                <td class="nowrap">
+                                    <xsl:choose>
+                                        <xsl:when test="Current">
+                                            <b>current</b>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <a href="#" onclick="PCT.releaseConfig(this)" date="{Date}" cfg="{Name}">set</a>
                                         </xsl:otherwise>
                                     </xsl:choose>
                                 </td>

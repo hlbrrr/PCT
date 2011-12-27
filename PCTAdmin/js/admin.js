@@ -19,10 +19,40 @@
         location:'/',
         animation:'blind',
         format:'xml',
-        getConfiguration:function() {
+        getConfiguration:function(cfg) {
             var pwd = prompt("Provide a password to encrypt your configuration", "");
-            PCT.sendData(PCT.location, 'action=downloadConfig&pwd=' + $().md5(pwd));
+            PCT.sendData(PCT.location, (cfg ? 'file=' + cfg : '') + 'action=downloadConfig&pwd=' + $().md5(pwd));
             pwd = null;
+        },
+        releaseConfig:function(src) {
+            if (PCT.checker) {
+                PCT.lockScreen();
+                PCT.checker(function() {
+                    $.ajax({
+                        url:PCT.location,
+                        type:'POST',
+                        data:{
+                            action:'releaseConfig',
+                            file:$(src).attr('cfg')
+                        },
+                        /*success:function(data, textStatus, jqXHR) {
+                         },
+                         error:function(jqXHR, textStatus, errorThrown) {
+                         if (error)error();
+                         },*/
+                        complete:function() {
+                            window.location = '/';
+                        }
+                    });
+                }, function(name) {
+                    alert("Configuration locked by " + name);
+                    PCT.unlockScreen();
+                }, function() {
+                }, function() {
+                    alert("Couldn't connect to server. Try again later.");
+                    PCT.unlockScreen();
+                });
+            }
         },
         getHome:function(dest, lock, callback) {
             if (lock) {
