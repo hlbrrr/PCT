@@ -6,6 +6,7 @@ import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.transform.Result;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -68,7 +69,9 @@ public class Product {
                 }
             }
 
+            this.checkKeys();
             this.setTotalWeight();
+
 
             log.info("Product successfully parsed: \nName: " + this.getName() +
                     "\nShortName: " + this.getShortName() +
@@ -78,6 +81,33 @@ public class Product {
                     "\nStructure: \n" + modulesRoot.toString() + "\n" + capacitiesRoot.toString());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Product is not defined correctly", e.getDetails());
+        }
+    }
+
+    public void checkKeys() throws PCTDataFormatException {
+        boolean normal = true;
+        for (Module m : this.getModules().values()) {
+            for (String s : m.getExcludeModules()) {
+                if (!this.getModules().containsKey(s)) {
+                    normal = false;
+                    log.error("No such module \"" + s + "\" for " + m.getPath());
+                }
+            }
+            for (String s : m.getRequireModules()) {
+                if (!this.getModules().containsKey(s)) {
+                    normal = false;
+                    log.error("No such module \"" + s + "\" for " + m.getPath());
+                }
+            }
+            for (RequireCapacity c : m.getRequireCapacities().values()) {
+                if (!this.getCapacities().containsKey(c.getKey())) {
+                    normal = false;
+                    log.error("No such capacity \"" + c.getKey() + "\" for " + m.getPath());
+                }
+            }
+        }
+        if (!normal) {
+            throw new PCTDataFormatException("Product modules dependencies contains unknown keys");
         }
     }
 

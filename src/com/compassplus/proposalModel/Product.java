@@ -149,7 +149,7 @@ public class Product {
         checkBoxesToCheck.add(mc);
     }*/
     private void setModules(com.compassplus.configurationModel.Product product) {
-        this.getCapacities().clear();
+        //this.getCapacities().clear();
         setModules(product, product.getModulesRoot());
     }
 
