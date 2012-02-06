@@ -19,9 +19,9 @@
         location:'/',
         animation:'blind',
         format:'xml',
-        getConfiguration:function(cfg) {
+        getConfiguration:function(src) {
             var pwd = prompt("Provide a password to encrypt your configuration", "");
-            PCT.sendData(PCT.location, (cfg ? 'file=' + cfg : '') + 'action=downloadConfig&pwd=' + $().md5(pwd));
+            PCT.sendData(PCT.location, (src ? 'timestamp=' + $(src).attr('cfg') + '&': '') + 'action=downloadConfig&pwd=' + $().md5(pwd));
             pwd = null;
         },
         releaseConfig:function(src) {
@@ -33,7 +33,7 @@
                         type:'POST',
                         data:{
                             action:'releaseConfig',
-                            file:$(src).attr('cfg')
+                            timestamp:$(src).attr('cfg')
                         },
                         /*success:function(data, textStatus, jqXHR) {
                          },
@@ -500,6 +500,7 @@
             dom = $('<div></div>').append(dom);
             $.extend(this, {
                 _expiration:$('#Expiration', dom).get(),
+                _releaseTimestamp:$('#ReleaseTimestamp', dom).get(),
                 _products:$('#Products', dom).get(),
                 _regions:$('#Regions', dom).get(),
                 _supportPlans:$('#SupportPlans', dom).get(),
@@ -628,6 +629,9 @@
             $.data($(this._core)[0], 'pct', {
                 getXML:function(comment) {
                     var config = '<root>';
+                    if($(that._releaseTimestamp).val().length > 0){
+                        config += '<ReleaseTimestamp>' + $(that._releaseTimestamp).val() + '</ReleaseTimestamp>';
+                    }
                     config += '<Expiration>' + $(that._expiration).val() + '</Expiration>';
                     config += '<Comment>' + (comment ? comment : '') + '</Comment>';
                     config += '<Description><![CDATA[' + ($('#Description', that._home).length > 0 ? $('#Description', that._home).val() : '') + ']]></Description>';
@@ -865,6 +869,7 @@
                         }
                     });
                     $(this._expiration).val($('>Expiration', initialData).text()).change();
+                    $(this._releaseTimestamp).val($('>ReleaseTimestamp', initialData).text());
                     var that = this;
                     $('>Products>Product', initialData).each(function() {
                         that.addProduct((new PCT.product()).init(this));

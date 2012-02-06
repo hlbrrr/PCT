@@ -41,15 +41,15 @@
                                     </xsl:choose>
                                 </td>
                                 <td class="nowrap">
-                                    <a href="#" onclick="PCT.getConfiguration($(this).attr('cfg'))" date="{Date}" cfg="{Name}">download</a>
+                                    <a href="#" onclick="PCT.getConfiguration(this)" date="{Date}" cfg="{Timestamp}">download</a>
                                 </td>
                                 <td class="nowrap">
                                     <xsl:choose>
-                                        <xsl:when test="Current">
+                                        <xsl:when test="Release">
                                             <b>current</b>
                                         </xsl:when>
                                         <xsl:otherwise>
-                                            <a href="#" onclick="PCT.releaseConfig(this)" date="{Date}" cfg="{Name}">set</a>
+                                            <a href="#" onclick="PCT.releaseConfig(this)" date="{Date}" cfg="{Timestamp}">release</a>
                                         </xsl:otherwise>
                                     </xsl:choose>
                                 </td>
