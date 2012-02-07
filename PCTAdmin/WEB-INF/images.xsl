@@ -41,15 +41,25 @@
                                     </xsl:choose>
                                 </td>
                                 <td class="nowrap">
-                                    <a href="#" onclick="PCT.getConfiguration(this)" date="{Date}" cfg="{Timestamp}">download</a>
+                                    <xsl:choose>
+                                        <xsl:when test="Timestamp">
+                                            <a href="#" onclick="PCT.getConfiguration(this)" date="{Date}" cfg="{Timestamp}">download</a>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            &#160;
+                                        </xsl:otherwise>
+                                    </xsl:choose>
                                 </td>
                                 <td class="nowrap">
                                     <xsl:choose>
                                         <xsl:when test="Release">
                                             <b>current</b>
                                         </xsl:when>
-                                        <xsl:otherwise>
+                                        <xsl:when test="Timestamp">
                                             <a href="#" onclick="PCT.releaseConfig(this)" date="{Date}" cfg="{Timestamp}">release</a>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            &#160;
                                         </xsl:otherwise>
                                     </xsl:choose>
                                 </td>

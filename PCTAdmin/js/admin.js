@@ -897,7 +897,6 @@
                     if (!PCT.checker) {
                         $.extend(PCT, {
                             checker:function(successCallback, failCallback, complete, error) {
-                                console.log("check");
                                 PCT.checkStatus(function() {
                                     $(that._saveConfiguration).removeClass('hidden');
                                     $(that._lockConfiguration).addClass('hidden');
