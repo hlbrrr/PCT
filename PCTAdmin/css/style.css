@@ -85,7 +85,7 @@ body, input, select, textarea {
     color: white;
 }
 
-.divProduct, .divRegion, .divSupportPlan, .divCurrency, .divUser, .divFile {
+.divProduct, .divRegion, .divSupportPlan, .divCurrency, .divUser, .divFile, .divLicense {
     border: 1px solid #000;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -94,11 +94,11 @@ body, input, select, textarea {
     background-color: #fff;
 }
 
-.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans, .divModelUsers, .divModelFiles {
+.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans, .divModelUsers, .divModelFiles, .divModelLicenses {
     margin: 10px;
 }
 
-.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divCurrencyTitle, .divUserTitle, .divFileTitle {
+.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divCurrencyTitle, .divUserTitle, .divFileTitle, .divLicenseTitle {
     background-color: #444;
     color: white;
 }
@@ -339,7 +339,8 @@ body, input, select, textarea {
 
 .divProductTitle>.titleTable>.titleTableCellButton:hover, .divRegionTitle>.titleTable>.titleTableCellButton:hover,
 .divSupportPlanTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyTitle>.titleTable>.titleTableCellButton:hover,
-.divUserTitle>.titleTable>.titleTableCellButton:hover, .divFileTitle>.titleTable>.titleTableCellButton:hover {
+.divUserTitle>.titleTable>.titleTableCellButton:hover, .divFileTitle>.titleTable>.titleTableCellButton:hover,
+.divLicenseTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #777;
 }
 

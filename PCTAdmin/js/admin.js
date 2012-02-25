@@ -506,12 +506,14 @@
                 _supportPlans:$('#SupportPlans', dom).get(),
                 _currencies:$('#Currencies', dom).get(),
                 _users:$('#Users', dom).get(),
+                _licenses:$('#Licenses', dom).get(),
                 _files:$('#Files', dom).get(),
                 _addProduct:$('#AddProduct', dom).get(),
                 _addRegion:$('#AddRegion', dom).get(),
                 _addSupportPlan:$('#AddSupportPlan', dom).get(),
                 _addCurrency:$('#AddCurrency', dom).get(),
                 _addUser:$('#AddUser', dom).get(),
+                _addLicense:$('#AddLicense', dom).get(),
                 /*_addFile:$('#AddFile', dom).get(),*/
                 _home:$('#Home', dom).get(),
                 _system:$('#System', dom).get(),
@@ -546,6 +548,10 @@
             $(this._users, dom).sortable({
                 revert:true,
                 handle: '.userDrag'
+            });
+            $(this._licenses, dom).sortable({
+                revert:true,
+                handle: '.licenseDrag'
             });
             $(this._files, dom).sortable({
                 revert:true,
@@ -586,6 +592,9 @@
             });
             $(this._addUser).click(function() {
                 that.addUser();
+            });
+            $(this._addLicense).click(function() {
+                that.addLicense();
             });
             $(this._reload).click(function() {
                 PCT.getHome(that._home, true);
@@ -665,6 +674,12 @@
                             config += $.data($(this)[0], 'pct').getXML();
                     });
                     config += '</Users>';
+                    config += '<Licenses>';
+                    $(that._licenses).children().each(function() {
+                        if ($(this).hasClass('divLicense'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Licenses>';
                     config += '<Files>';
                     $(that._files).children().each(function() {
                         if ($(this).hasClass('divFile'))
@@ -718,6 +733,16 @@
                         var rt = that.addUser((new PCT.user()).setRoot(that._users).init(this));
                         $('.userCN', rt).each(function() {
                             $(this).val('').change();
+                        });
+                    });
+                }
+            });
+            $.data($(this._licenses)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>License', xml).each(function() {
+                        var rt = that.addLicense((new PCT.license()).setRoot(that._licenses).init(this));
+                        $('.licenseKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
                         });
                     });
                 }
@@ -886,6 +911,9 @@
                     $('>Users>User', initialData).each(function() {
                         that.addUser((new PCT.user()).setRoot(that._users).init(this));
                     });
+                    $('>Licenses>License', initialData).each(function() {
+                        that.addLicense((new PCT.license()).setRoot(that._licenses).init(this));
+                    });
                     $('>Files>File', initialData).each(function() {
                         that.addFile((new PCT.file()).setRoot(that._files).init(this));
                     });
@@ -978,6 +1006,16 @@
                         return user.getHead();
                     } else {
                         return this.addUser((new PCT.user()).setRoot(that._users));
+                    }
+                },
+                addLicense:function(license) {
+                    if (license) {
+                        $('html, body').animate({
+                            scrollTop: $(license.getHead()).offset().top
+                        }, 200);
+                        return license.getHead();
+                    } else {
+                        return this.addLicense((new PCT.license()).setRoot(that._licenses));
                     }
                 },
                 addFile:function(file) {
@@ -1853,6 +1891,7 @@
                 _deprecated:$('#Deprecated', dom).get(),
                 _hidden:$('#Hidden', dom).get(),
                 _capacityTitle:$('#Title', dom).get(),
+                _licenseKey:$('#LicenseKey', dom).get(),
                 _addTier:$('#AddTier', dom).get(),
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
@@ -1880,6 +1919,7 @@
                     config += '<Name>' + $(that._name).val() + '</Name>';
                     config += '<Hint>' + $(that._hint).val() + '</Hint>';
                     config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                    config += '<LicenseKey>' + $(that._licenseKey).val() + '</LicenseKey>';
                     config += '<Key>' + $(that._key).val() + '</Key>';
                     if (that._isLink) {
                         config += '<LinkKey>' + $(that._linkKey).val() + '</LinkKey>';
@@ -1947,6 +1987,7 @@
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
+                    $(this._licenseKey).val($('>LicenseKey', initialData).text()).change();
                     $(this._hint).val($('>Hint', initialData).text()).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();
                     if ($('>LinkKey', initialData).length > 0) {
@@ -2674,6 +2715,65 @@
                     $(this._remove).addClass('hidden');
                     //$(this._fileRow).remove();
                     var that = this;
+                    return this;
+                }
+            });
+        },
+        license:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('license');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _name:$('#Name', dom).get(),
+                _licenseTitle:$('#Title', dom).get(),
+                _key:$('#Key', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _clone:$('#Clone', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<License>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '</License>';
+                    return config;
+                }
+            });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divModelLicenses')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove model?')) {
+                    if (confirm('Removing model can result in broken backward compatibility. Remove model?')) {
+                        $(that._body).remove();
+                    }
+                }
+            });
+            $(this._name).change(function() {
+                $(that._licenseTitle).html($(this).val());
+            });
+            $(this._key).val(PCT.randomString(15)).change();
+            $(this._licenseTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._key).val('').val($('>Key', initialData).text()).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
                     return this;
                 }
             });

@@ -51,6 +51,9 @@
                 <div id="UsersTab" bind="#UsersWrap" class="titleTableCell titleTableCellButton tab">
                     Users
                 </div>
+                <div id="LicensingTab" bind="#LicensingWrap" class="titleTableCell titleTableCellButton tab">
+                    Licensing
+                </div>
                 <div id="SystemTab" bind="#SystemWrap" class="titleTableCell titleTableCellButton tab">
                     System
                 </div>
@@ -114,6 +117,16 @@
                 </div>
             </div>
             <div id="Users" class="divModelUsers"></div>
+        </div>
+        <div id="LicensingWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="AddLicense" class="titleTableCell titleTableCellButton">
+                    Add Model
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="Licenses" class="divModelLicenses"></div>
         </div>
         <div id="DownloadsWrap" class="hidden">
             <div class="titleTable divModelSubTitle" id="Uploader">
@@ -558,6 +571,14 @@
                     </div>
                     <div class="settingsTableRow">
                         <div class="settingsTableCell settingsTitle">
+                            Licensing Model Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="LicenseKey" autocomplete="off" class="settingInput validate" validclass="mempty"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
                             Key:
                         </div>
                         <div class="settingsTableCell settingsValue">
@@ -775,6 +796,46 @@
                         <div class="settingsTableCell settingsValue">
                             <input id="DefaultCurrency" autocomplete="off" class="settingInput validate"
                                    validclass="mempty"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="license">
+    <div class="divLicense" id="Core">
+        <div class="divLicenseTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton licenseDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate licenseKey"
+                                   validclass="unique" unique=".licenseKey" uniqueroot=".divModelLicenses"/>
                         </div>
                     </div>
                 </div>
