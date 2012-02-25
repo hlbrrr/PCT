@@ -85,6 +85,11 @@ body, input, select, textarea {
     color: white;
 }
 
+.divProductLicenses {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .divProduct, .divRegion, .divSupportPlan, .divCurrency, .divUser, .divFile, .divLicense {
     border: 1px solid #000;
     margin-bottom: 10px;
@@ -94,7 +99,12 @@ body, input, select, textarea {
     background-color: #fff;
 }
 
-.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans, .divModelUsers, .divModelFiles, .divModelLicenses {
+.divLicense {
+    margin-bottom: 0px;
+    margin-top: 10px;
+}
+
+.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans, .divModelUsers, .divModelFiles {
     margin: 10px;
 }
 

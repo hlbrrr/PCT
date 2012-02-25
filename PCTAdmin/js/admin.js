@@ -506,14 +506,12 @@
                 _supportPlans:$('#SupportPlans', dom).get(),
                 _currencies:$('#Currencies', dom).get(),
                 _users:$('#Users', dom).get(),
-                _licenses:$('#Licenses', dom).get(),
                 _files:$('#Files', dom).get(),
                 _addProduct:$('#AddProduct', dom).get(),
                 _addRegion:$('#AddRegion', dom).get(),
                 _addSupportPlan:$('#AddSupportPlan', dom).get(),
                 _addCurrency:$('#AddCurrency', dom).get(),
                 _addUser:$('#AddUser', dom).get(),
-                _addLicense:$('#AddLicense', dom).get(),
                 /*_addFile:$('#AddFile', dom).get(),*/
                 _home:$('#Home', dom).get(),
                 _system:$('#System', dom).get(),
@@ -548,10 +546,6 @@
             $(this._users, dom).sortable({
                 revert:true,
                 handle: '.userDrag'
-            });
-            $(this._licenses, dom).sortable({
-                revert:true,
-                handle: '.licenseDrag'
             });
             $(this._files, dom).sortable({
                 revert:true,
@@ -592,9 +586,6 @@
             });
             $(this._addUser).click(function() {
                 that.addUser();
-            });
-            $(this._addLicense).click(function() {
-                that.addLicense();
             });
             $(this._reload).click(function() {
                 PCT.getHome(that._home, true);
@@ -674,12 +665,6 @@
                             config += $.data($(this)[0], 'pct').getXML();
                     });
                     config += '</Users>';
-                    config += '<Licenses>';
-                    $(that._licenses).children().each(function() {
-                        if ($(this).hasClass('divLicense'))
-                            config += $.data($(this)[0], 'pct').getXML();
-                    });
-                    config += '</Licenses>';
                     config += '<Files>';
                     $(that._files).children().each(function() {
                         if ($(this).hasClass('divFile'))
@@ -733,16 +718,6 @@
                         var rt = that.addUser((new PCT.user()).setRoot(that._users).init(this));
                         $('.userCN', rt).each(function() {
                             $(this).val('').change();
-                        });
-                    });
-                }
-            });
-            $.data($(this._licenses)[0], 'pct', {
-                cloneTree:function(xml) {
-                    $('root>License', xml).each(function() {
-                        var rt = that.addLicense((new PCT.license()).setRoot(that._licenses).init(this));
-                        $('.licenseKey', rt).each(function() {
-                            $(this).val(PCT.randomString(15)).change();
                         });
                     });
                 }
@@ -911,9 +886,6 @@
                     $('>Users>User', initialData).each(function() {
                         that.addUser((new PCT.user()).setRoot(that._users).init(this));
                     });
-                    $('>Licenses>License', initialData).each(function() {
-                        that.addLicense((new PCT.license()).setRoot(that._licenses).init(this));
-                    });
                     $('>Files>File', initialData).each(function() {
                         that.addFile((new PCT.file()).setRoot(that._files).init(this));
                     });
@@ -1008,16 +980,6 @@
                         return this.addUser((new PCT.user()).setRoot(that._users));
                     }
                 },
-                addLicense:function(license) {
-                    if (license) {
-                        $('html, body').animate({
-                            scrollTop: $(license.getHead()).offset().top
-                        }, 200);
-                        return license.getHead();
-                    } else {
-                        return this.addLicense((new PCT.license()).setRoot(that._licenses));
-                    }
-                },
                 addFile:function(file) {
                     if (file) {
                         $('html, body').animate({
@@ -1045,6 +1007,8 @@
                 _minimumPrice:$('#MinimumPrice', dom).get(),
                 _content:$('#Content', dom).get(),
                 _modules:$('#Modules', dom).get(),
+                _licenses:$('#Licenses', dom).get(),
+                _addLicense:$('#AddLicense', dom).get(),
                 _capacities:$('#Capacities', dom).get(),
                 _productTitle:$('#ProductTitle', dom).get(),
                 _settings:$('#Settings', dom).get(),
@@ -1068,6 +1032,12 @@
                     config += '<SecondarySalesRate>' + $(that._secondarySalesRate).val() + '</SecondarySalesRate>';
                     config += '<MaximumFunctionalityPrice>' + $(that._maximumFunctionalityPrice).val() + '</MaximumFunctionalityPrice>';
                     config += '<MinimumPrice>' + $(that._minimumPrice).val() + '</MinimumPrice>';
+                    config += '<Licenses>';
+                    $(that._licenses).children().each(function() {
+                        if ($(this).hasClass('divLicense'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Licenses>';
                     $(that._modules).children().each(function() {
                         if ($(this).hasClass('divModulesGroup'))
                             config += $.data($(this)[0], 'pct').getXML();
@@ -1080,10 +1050,32 @@
                     return config;
                 }
             });
+            $(this._licenses, dom).sortable({
+                revert:true,
+                handle: '.licenseDrag',
+                connectWith: '.divProductLicenses'
+            });
             $.data($(this._modules)[0], 'pct', {
                 updateTotal:function() {
                     that.updateTotal();
                 }
+            });
+            $.data($(this._licenses)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>License', xml).each(function() {
+                        var rt = that.addLicense((new PCT.license()).setRoot(that._licenses).init(this));
+                        $('.licenseKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                }
+            });
+            $(this._addLicense).click(function() {
+                if ($(that._content).hasClass('hidden')) {
+                    $(that._content).removeClass('hidden');
+                    $(that._expand).html('Collapse');
+                }
+                that.addLicense();
             });
             $(this._remove).click(function() {
                 if (confirm('Remove product?')) {
@@ -1142,6 +1134,9 @@
                     $(this._name).val($('>Name', initialData).text()).change();
                     //$(this._hint).val($('>Hint', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
+                    $('>Licenses>License', initialData).each(function() {
+                        that.addLicense((new PCT.license()).setRoot(that._licenses).init(this));
+                    });
                     $(this._maximumFunctionalityPrice).val($('>MaximumFunctionalityPrice', initialData).text()).change();
                     $(this._minimumPrice).val($('>MinimumPrice', initialData).text()).change();
                     $(this._secondarySalesRate).val($('>SecondarySalesRate', initialData).text()).change();
@@ -1161,6 +1156,16 @@
                         this.addModulesRoot((new PCT.modulesGroup()).setIsRoot(true).setRoot(this._modules));
                     }
                     return this;
+                },
+                addLicense:function(license) {
+                    if (license) {
+                        $('html, body').animate({
+                            scrollTop: $(license.getHead()).offset().top
+                        }, 200);
+                        return license.getHead();
+                    } else {
+                        return this.addLicense((new PCT.license()).setRoot(that._licenses));
+                    }
                 },
                 addCapacitiesRoot:function(capacitiesGroup) {
                     if (capacitiesGroup) {
@@ -2747,11 +2752,11 @@
                 }
             });
             $(this._clone).click(function() {
-                $.data($(that._core).parents('.divModelLicenses')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+                $.data($(that._core).parents('.divProductLicenses')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
             });
             $(this._remove).click(function() {
-                if (confirm('Remove model?')) {
-                    if (confirm('Removing model can result in broken backward compatibility. Remove model?')) {
+                if (confirm('Remove licensing model?')) {
+                    if (confirm('Removing licensing model can result in broken backward compatibility. Remove licensing model?')) {
                         $(that._body).remove();
                     }
                 }
