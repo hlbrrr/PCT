@@ -1,6 +1,7 @@
 package com.compassplus.proposalModel;
 
 import com.compassplus.configurationModel.CapacitiesGroup;
+import com.compassplus.configurationModel.License;
 import com.compassplus.configurationModel.ModulesGroup;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.CommonUtils;
@@ -35,6 +36,7 @@ public class Product {
     private Double discount;
     private Proposal proposal;
     private Double supportDiscount;
+    private License license;
 
     public Proposal getProposal() {
         return this.proposal;
@@ -43,6 +45,7 @@ public class Product {
     public Product(Node initialData, Map<String, com.compassplus.configurationModel.Product> allowedProducts, Proposal proposal) throws PCTDataFormatException {
         this.proposal = proposal;
         init(initialData, allowedProducts);
+        setDefaultLicense();
     }
 
     public Product(com.compassplus.configurationModel.Product product, Proposal proposal) {
@@ -50,6 +53,7 @@ public class Product {
         this.setProduct(product);
         this.setCapacities(product);
         this.setModules(product);
+        this.setDefaultLicense();
     }
 
     private void init(Node initialData, Map<String, com.compassplus.configurationModel.Product> allowedProducts) throws PCTDataFormatException {
@@ -60,15 +64,32 @@ public class Product {
             this.setDiscount(xut.getNode("Discount", initialData));
             this.setSupportDiscount(xut.getNode("SupportDiscount", initialData));
             this.setSecondarySale(xut.getNode("SecondarySale", initialData));
+            this.setLicense(xut.getNode("LicenseKey", initialData));
             this.setModules(xut.getNodes("Modules/Module", initialData));
             this.setCapacities(xut.getNodes("Capacities/Capacity", initialData));
 
             log.info("Product successfully parsed: \nName: " + this.getName() +
                     "\nDiscount: " + this.getDiscount() +
                     "\nSupportDiscount: " + this.getSupportDiscount() +
+                    "\nLicenseKey: " + (this.getLicense() != null ? this.getLicense().getKey() : "") +
                     "\nSecondarySale: " + this.getSecondarySale());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Product is not defined correctly", e.getDetails());
+        }
+    }
+
+    private void setDefaultLicense() {
+        if (this.license == null && getProduct().getLicenses().size() > 0) {
+            this.license = (License) getProduct().getLicenses().values().toArray()[0];
+        }
+    }
+
+    private void setLicense(Node license) throws PCTDataFormatException {
+        try {
+            String licenseKey = xut.getString(license, true);
+            this.license = getProduct().getLicenses().get(licenseKey);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Product license key is not defined correctly", e.getDetails());
         }
     }
 
@@ -203,6 +224,9 @@ public class Product {
         sb.append("<Discount>").append(this.getDiscount()).append("</Discount>");
         sb.append("<SupportDiscount>").append(this.getSupportDiscount()).append("</SupportDiscount>");
         sb.append("<SecondarySale>").append(this.getSecondarySale()).append("</SecondarySale>");
+        if (getLicense() != null) {
+            sb.append("<LicenseKey>").append(this.getLicense().getKey()).append("</LicenseKey>");
+        }
         if (this.getModules() != null && this.getModules().size() > 0) {
             sb.append("<Modules>");
             for (Module m : this.getModules().values()) {
@@ -260,7 +284,10 @@ public class Product {
         }
 
         for (Capacity c : this.getCapacities().values()) {
-            price += c.getPrice(this);
+            String licenseKey = getProduct().getCapacities().get(c.getKey()).getLicenseKey();
+            if (licenseKey.equals("") || getLicense() != null && licenseKey.equals(getLicense().getKey())) {
+                price += c.getPrice(this);
+            }
         }
 
         Double minPrice = CommonUtils.getInstance().toNextThousand(getProduct().getMinimumPrice() * getProposal().getCurrencyRate());
@@ -422,9 +449,12 @@ public class Product {
                     Capacity cc = this.getCapacities().get(key);
                     //sb.append(pad);
                     //sb.append("  -");
-                    sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
-                    sb.append("=").append(df.format(cc.getVal()));
-                    sb.append(", ");
+                    String licenseKey = c.getLicenseKey();
+                    if (licenseKey.equals("") ||  getLicense() != null && licenseKey.equals(getLicense().getKey())) {
+                        sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
+                        sb.append("=").append(df.format(cc.getVal()));
+                        sb.append(", ");
+                    }
                     //sb.append("\n");
                 }
             }
@@ -483,5 +513,13 @@ public class Product {
 
     public void setSupportDiscount(Double supportDiscount) {
         this.supportDiscount = supportDiscount;
+    }
+
+    public void setLicense(License license) {
+        this.license = license;
+    }
+
+    public License getLicense() {
+        return this.license;
     }
 }

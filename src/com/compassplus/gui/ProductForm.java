@@ -10,10 +10,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +27,7 @@ public class ProductForm {
     private Product product;
     private JPanel mainPanel;
     private JCheckBox primaryCheckBox;
+    private JComboBox licenseModel;
     private JFrame frame;
     private Map<String, CapacityJSpinner> spinners = new HashMap<String, CapacityJSpinner>();
     private Map<String, ModuleJButton> checkBoxes = new HashMap<String, ModuleJButton>();
@@ -135,13 +133,36 @@ public class ProductForm {
                 reloadProductPrice();
             }
         });
+
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 0;
-        c.gridwidth = 2;
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 1.0;
+        c.insets = new Insets(5, 5, 1, 5);
         mainPanel.add(primaryCheckBox, c);
+        final JPanel capacitiesC = new JPanel();
+        if (getProduct().getLicense() != null) {
+            licenseModel = new JComboBox(product.getProduct().getLicenses().values().toArray());
+            licenseModel.setSelectedItem(getProduct().getLicense());
+            licenseModel.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ev) {
+                    final ActionEvent e = ev;
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            JComboBox src = (JComboBox) e.getSource();
+                            getProduct().setLicense((License) src.getSelectedItem());
+                            capacitiesC.removeAll();
+                            getFormFromCapacitiesGroup(capacitiesC);
+                            capacitiesC.updateUI();
+                            reloadModulesPrices();
+                            reloadProductPrice();
+                        }
+                    });
+                }
+            });
+            c.gridx = 1;
+            mainPanel.add(licenseModel, c);
+        }
 
         JPanel modulesPanel = new JPanel();
         modulesPanel.setLayout(new BorderLayout());
@@ -186,7 +207,6 @@ public class ProductForm {
         modules.setLayout(new GridBagLayout());
         capacities.setLayout(new GridBagLayout());
         JPanel modulesC = new JPanel();
-        JPanel capacitiesC = new JPanel();
         modules.add(modulesC, c);
         capacities.add(capacitiesC, c);
         c.gridy++;
@@ -196,7 +216,6 @@ public class ProductForm {
         getFormFromModulesGroup(modulesC);
 
         getFormFromCapacitiesGroup(capacitiesC);
-
         reloadModulesPrices();
     }
 
@@ -624,6 +643,7 @@ public class ProductForm {
 
     private void getFormFromCapacitiesGroup(JPanel parent) {
         try {
+            getSpinners().clear();
             getFormFromCapacitiesGroup(parent, null);
         } catch (PCTDataFormatException e) {
 
@@ -762,9 +782,12 @@ public class ProductForm {
                     cc.gridy++;
                     tmpPanel.add(cs, cc);
                 }
-                parent.add(tmpPanel, cg);
-                cg.gridy++;
-                addedItems++;
+                String licenseKey = getProduct().getProduct().getCapacities().get(c.getKey()).getLicenseKey();
+                if (licenseKey.equals("") || getProduct().getLicense() != null && licenseKey.equals(getProduct().getLicense().getKey())) {
+                    parent.add(tmpPanel, cg);
+                    cg.gridy++;
+                    addedItems++;
+                }
             }
         }
         boolean first = true;

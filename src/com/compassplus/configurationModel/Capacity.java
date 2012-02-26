@@ -19,6 +19,7 @@ public class Capacity {
     private Boolean hidden;
     private String key;
     private String linkKey;
+    private String licenseKey;
     private String path;
     private String name;
     private String shortName;
@@ -49,6 +50,7 @@ public class Capacity {
             this.setName(xut.getNode("Name", initialData));
             this.setHint(xut.getNode("Hint", initialData));
             this.setShortName(xut.getNode("ShortName", initialData));
+            this.setLicenseKey(xut.getNode("LicenseKey", initialData));
             boolean linkKeyPresent = true;
             try {
                 this.setLinkKey(xut.getNode("LinkKey", initialData));
@@ -68,6 +70,7 @@ public class Capacity {
             log.info("Capacity successfully parsed: \nKey: " + this.getKey() +
                     "\nName: " + this.getName() +
                     "\nShortName: " + this.getShortName() +
+                    "\nLicenseKey: " + this.getLicenseKey() +
                     "\nLinkKey: " + this.getLinkKey() +
                     "\nDeprecated: " + this.isDeprecated() +
                     "\nHidden: " + this.isHidden() +
@@ -171,6 +174,18 @@ public class Capacity {
             this.shortName = xut.getString(shortName, true);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity short name is not defined correctly", e.getDetails());
+        }
+    }
+
+    public String getLicenseKey() {
+        return licenseKey;
+    }
+
+    private void setLicenseKey(Node licenseKey) throws PCTDataFormatException {
+        try {
+            this.licenseKey = xut.getString(licenseKey, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Capacity license key is not defined correctly", e.getDetails());
         }
     }
 

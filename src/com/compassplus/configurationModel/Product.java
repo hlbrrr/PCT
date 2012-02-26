@@ -9,6 +9,7 @@ import org.w3c.dom.NodeList;
 import javax.xml.transform.Result;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -24,6 +25,7 @@ public class Product {
 
     private Double totalWeight;
     private Double minimumPrice;
+    private Map<String, License> licenses = new LinkedHashMap<String, License>(0);
     private ModulesGroup modulesRoot = new ModulesGroup("Modules", "");
     private CapacitiesGroup capacitiesRoot = new CapacitiesGroup("Capacities", "");
     private Map<String, Module> modules = new HashMap<String, Module>();
@@ -46,6 +48,7 @@ public class Product {
 
             this.setName(xut.getNode("Name", initialData));
             this.setShortName(xut.getNode("ShortName", initialData));
+            this.setLicenses(xut.getNodes("Licenses/License", initialData));
             this.setMaximumFunctionalityPrice(xut.getNode("MaximumFunctionalityPrice", initialData));
             this.setMinimumPrice(xut.getNode("MinimumPrice", initialData));
             this.setModules(xut.getNode("Modules", initialData));
@@ -72,7 +75,6 @@ public class Product {
             this.checkKeys();
             this.setTotalWeight();
 
-
             log.info("Product successfully parsed: \nName: " + this.getName() +
                     "\nShortName: " + this.getShortName() +
                     "\nMaximumFunctionalityPrice: " + this.getMaximumFunctionalityPrice() +
@@ -81,6 +83,26 @@ public class Product {
                     "\nStructure: \n" + modulesRoot.toString() + "\n" + capacitiesRoot.toString());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Product is not defined correctly", e.getDetails());
+        }
+    }
+
+    public Map<String, License> getLicenses() {
+        return this.licenses;
+    }
+
+    private void setLicenses(NodeList licenses) throws PCTDataFormatException {
+        this.getLicenses().clear();
+        if (licenses.getLength() > 0) {
+            log.info("Found " + licenses.getLength() + " license(s)");
+            for (int i = 0; i < licenses.getLength(); i++) {
+                try {
+                    License tmpLicense = new License(licenses.item(i));
+                    this.getLicenses().put(tmpLicense.getKey(), tmpLicense);
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getLicenses().size() + " license(s)");
         }
     }
 
