@@ -36,6 +36,7 @@ public class Product {
     private Double discount;
     private Proposal proposal;
     private Double supportDiscount;
+    private Double markUp;
     private License license;
 
     public Proposal getProposal() {
@@ -65,12 +66,14 @@ public class Product {
             this.setSupportDiscount(xut.getNode("SupportDiscount", initialData));
             this.setSecondarySale(xut.getNode("SecondarySale", initialData));
             this.setLicense(xut.getNode("LicenseKey", initialData));
+            this.setMarkUp(xut.getNode("MarkUp", initialData));
             this.setModules(xut.getNodes("Modules/Module", initialData));
             this.setCapacities(xut.getNodes("Capacities/Capacity", initialData));
 
             log.info("Product successfully parsed: \nName: " + this.getName() +
                     "\nDiscount: " + this.getDiscount() +
                     "\nSupportDiscount: " + this.getSupportDiscount() +
+                    "\nMarkUp: " + this.getMarkUp() +
                     "\nLicenseKey: " + (this.getLicense() != null ? this.getLicense().getKey() : "") +
                     "\nSecondarySale: " + this.getSecondarySale());
         } catch (PCTDataFormatException e) {
@@ -223,6 +226,7 @@ public class Product {
         sb.append("<Name>").append(this.getName()).append("</Name>");
         sb.append("<Discount>").append(this.getDiscount()).append("</Discount>");
         sb.append("<SupportDiscount>").append(this.getSupportDiscount()).append("</SupportDiscount>");
+        sb.append("<MarkUp>").append(this.getMarkUp()).append("</MarkUp>");
         sb.append("<SecondarySale>").append(this.getSecondarySale()).append("</SecondarySale>");
         if (getLicense() != null) {
             sb.append("<LicenseKey>").append(this.getLicense().getKey()).append("</LicenseKey>");
@@ -295,19 +299,28 @@ public class Product {
     }
 
     public Double getEndUserPrice() {
-        return getRegionPrice() * (1 - getDiscount());
+        return getRegionPrice() - getRegionPrice(true) * getDiscount();
+    }
+
+    public Double getRegionPrice(boolean clean) {
+        return getPrice() * getProposal().getRegion().getRate() * (clean ? 1 : getMarkUp());
     }
 
     public Double getRegionPrice() {
-        return getPrice() * getProposal().getRegion().getRate();
+        return getRegionPrice(false);
     }
 
     public Double getSupportPrice() {
-        return CommonUtils.getInstance().toNextInt(getSupportPriceUndiscounted() * (1 - getSupportDiscount()));
+        return CommonUtils.getInstance().toNextInt(getSupportPriceUndiscounted() -
+                getSupportPriceUndiscounted(true) * getSupportDiscount());
     }
 
     public Double getSupportPriceUndiscounted() {
-        return CommonUtils.getInstance().toNextInt(getRegionPrice() * getProposal().getSupportRate());
+        return getSupportPriceUndiscounted(false);
+    }
+
+    public Double getSupportPriceUndiscounted(boolean clean) {
+        return CommonUtils.getInstance().toNextInt(getRegionPrice(clean) * getProposal().getSupportRate());
     }
 
     public boolean canBeEnabled(String mKey, ArrayList<String> extraKeys) {
@@ -450,7 +463,7 @@ public class Product {
                     //sb.append(pad);
                     //sb.append("  -");
                     String licenseKey = c.getLicenseKey();
-                    if (licenseKey.equals("") ||  getLicense() != null && licenseKey.equals(getLicense().getKey())) {
+                    if (licenseKey.equals("") || getLicense() != null && licenseKey.equals(getLicense().getKey())) {
                         sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
                         sb.append("=").append(df.format(cc.getVal()));
                         sb.append(", ");
@@ -513,6 +526,22 @@ public class Product {
 
     public void setSupportDiscount(Double supportDiscount) {
         this.supportDiscount = supportDiscount;
+    }
+
+    public void setMarkUp(Double markUp) {
+        this.markUp = markUp;
+    }
+
+    private void setMarkUp(Node markUp) throws PCTDataFormatException {
+        try {
+            this.markUp = xut.getDouble(markUp, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Product mark up is not defined correctly", e.getDetails());
+        }
+    }
+
+    public Double getMarkUp() {
+        return this.markUp != null ? this.markUp : 1d;
     }
 
     public void setLicense(License license) {
