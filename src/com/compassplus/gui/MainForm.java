@@ -364,7 +364,8 @@ public class MainForm {
                                                         Cell c4 = r.createCell(3 + cellIndex);
                                                         c4.setCellStyle(cs2);
                                                         int rowIndexTotal = rowIndex + i + 1;
-                                                        c4.setCellFormula("CEILING(" + regPriceCol + rowIndexTotal + "*(1-" + regPriceDiscount + rowIndexTotal + "),1)");
+                                                        c4.setCellValue(p.getEndUserPrice());
+                                                        //c4.setCellFormula("CEILING(" + regPriceCol + rowIndexTotal + "*(1-" + regPriceDiscount + rowIndexTotal + "),1)");
 
                                                         Cell c5 = r.createCell(4 + cellIndex);
                                                         c5.setCellStyle(cs2);
@@ -376,7 +377,8 @@ public class MainForm {
 
                                                         Cell c7 = r.createCell(6 + cellIndex);
                                                         c7.setCellStyle(cs2);
-                                                        c7.setCellFormula("CEILING(" + supPriceCol + rowIndexTotal + "*(1-" + supPriceDiscount + rowIndexTotal + "),1)");
+                                                        c7.setCellValue(p.getSupportPrice());
+                                                        //c7.setCellFormula("CEILING(" + supPriceCol + rowIndexTotal + "*(1-" + supPriceDiscount + rowIndexTotal + "),1)");
 
                                                         i++;
                                                     }
