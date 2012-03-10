@@ -137,7 +137,7 @@ public class ProposalForm {
                     Integer ti = productsTabs.indexOfComponent(pf.getRoot());
                     if (ti >= 0) {
                         productsTabs.setTitleAt(ti, pf.getProduct().getName() + " (" + (getProposal().getCurrency().getSymbol() != null ?
-                                getProposal().getCurrency().getSymbol() + " " : "") + "" + df.format(pf.getProduct().getPrice()) + (getProposal().getCurrency().getSymbol() == null ?
+                                getProposal().getCurrency().getSymbol() + " " : "") + "" + df.format(pf.getProduct().getRegionPrice()) + (getProposal().getCurrency().getSymbol() == null ?
                                 " " + getProposal().getCurrency().getName() : "") + ")");
 
                     }

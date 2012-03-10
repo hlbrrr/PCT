@@ -257,7 +257,7 @@ public class Module {
         }
     }
 
-    public Double getPrice(com.compassplus.proposalModel.Product product) {
+    Double getCleanPrice(com.compassplus.proposalModel.Product product){
         Double price = product.getProduct().getMaximumFunctionalityPrice() * product.getProposal().getCurrencyRate() * this.getWeight() / product.getProduct().getTotalWeight(); // primary sales price
         if (product.getSecondarySale()) {
             if (this.getSecondarySalesPrice() != null) {
@@ -268,7 +268,15 @@ public class Module {
                 price *= product.getProduct().getSecondarySalesRate();
             }
         }
-        return CommonUtils.getInstance().toNextThousand(price);
+        return price;
+    }
+
+    public Double getPrice(com.compassplus.proposalModel.Product product) {
+        return CommonUtils.getInstance().toNextThousand(getCleanPrice(product));
+    }
+
+    public Double getRegionalPrice(com.compassplus.proposalModel.Product product){
+        return CommonUtils.getInstance().toNextThousand(getCleanPrice(product))*product.getProposal().getRegion().getRate();
     }
 
     public void setIsRadioMember(boolean isRadioMember) {

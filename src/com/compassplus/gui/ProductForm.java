@@ -81,7 +81,7 @@ public class ProductForm {
                 sb.append(product.getProposal().getCurrency().getSymbol());
                 sb.append(" ");
             }
-            sb.append(df.format(m.getPrice(getProduct())));
+            sb.append(df.format(m.getRegionalPrice(getProduct())));
             if (product.getProposal().getCurrency().getSymbol() == null) {
                 sb.append(" ");
                 sb.append(product.getProposal().getCurrency().getName());
@@ -104,7 +104,7 @@ public class ProductForm {
         Capacity c = getProduct().getProduct().getCapacities().get(cas.getKey());
         com.compassplus.proposalModel.Capacity cP = getProduct().getCapacities().get(cas.getKey());
         if (cP != null) {
-            newPrice = cP.getPrice(getProduct());
+            newPrice = cP.getRegionalPrice(getProduct());
         }
         StringBuilder sb = new StringBuilder();
         sb.append(c.isDeprecated() ? "[DEPRECATED] " : "");

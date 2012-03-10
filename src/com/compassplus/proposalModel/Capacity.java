@@ -175,7 +175,7 @@ public class Capacity {
         return this.getVal() - this.getFoc();
     }
 
-    public Double getPrice(Product product) {
+    public Double getCleanPrice(Product product){
         Double price = 0d;
         if (this.getCapacity().getType().equals(1)) { // packet
             for (Tier t : this.getCapacity().getTiers()) {
@@ -185,7 +185,7 @@ public class Capacity {
                     price = t.getPrice() * product.getProposal().getCurrencyRate();
                 }
             }
-            price = CommonUtils.getInstance().toNextThousand(price * this.getChargeable());
+            price = price * this.getChargeable();
         } else if (this.getCapacity().getType().equals(2)) { // level
             Integer used = 0;
             for (Tier t : this.getCapacity().getTiers()) {
@@ -199,10 +199,16 @@ public class Capacity {
                     break;
                 }
             }
-            price = CommonUtils.getInstance().toNextThousand(price);
         }
-
         return price;
+    }
+
+    public Double getPrice(Product product) {
+        return CommonUtils.getInstance().toNextThousand(getCleanPrice(product));
+    }
+
+    public Double getRegionalPrice(Product product) {
+        return CommonUtils.getInstance().toNextThousand(getCleanPrice(product))*product.getProposal().getRegion().getRate();
     }
     /*public Double getPrice() {
         Double price = 0d;
