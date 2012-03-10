@@ -19,7 +19,7 @@ public class Capacity {
     private Boolean hidden;
     private String key;
     private String linkKey;
-    private String licenseKey;
+    private ArrayList<String> licenseKeys = new ArrayList<String>(0);
     private String path;
     private String name;
     private String shortName;
@@ -70,7 +70,6 @@ public class Capacity {
             log.info("Capacity successfully parsed: \nKey: " + this.getKey() +
                     "\nName: " + this.getName() +
                     "\nShortName: " + this.getShortName() +
-                    "\nLicenseKey: " + this.getLicenseKey() +
                     "\nLinkKey: " + this.getLinkKey() +
                     "\nDeprecated: " + this.isDeprecated() +
                     "\nHidden: " + this.isHidden() +
@@ -177,13 +176,20 @@ public class Capacity {
         }
     }
 
-    public String getLicenseKey() {
-        return licenseKey;
+    public boolean checkLicenseKey(String key) {
+        return licenseKeys.size() == 0 || key!=null && licenseKeys.contains(key);
     }
 
     private void setLicenseKey(Node licenseKey) throws PCTDataFormatException {
         try {
-            this.licenseKey = xut.getString(licenseKey, true);
+            licenseKeys.clear();
+            String licenseKeyString = xut.getString(licenseKey, true);
+            if (licenseKeyString != null && licenseKeyString.trim().length() > 0) {
+                String keys[] = licenseKeyString.split("\\s+");
+                for (int i = 0; i < keys.length; i++) {
+                    licenseKeys.add(keys[i]);
+                }
+            }
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Capacity license key is not defined correctly", e.getDetails());
         }

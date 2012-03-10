@@ -782,8 +782,10 @@ public class ProductForm {
                     cc.gridy++;
                     tmpPanel.add(cs, cc);
                 }
-                String licenseKey = getProduct().getProduct().getCapacities().get(c.getKey()).getLicenseKey();
-                if (licenseKey.equals("") || getProduct().getLicense() != null && licenseKey.equals(getProduct().getLicense().getKey())) {
+                //String licenseKey = getProduct().getProduct().getCapacities().get(c.getKey()).getLicenseKey();
+
+                //if (licenseKey.equals("") || getProduct().getLicense() != null && licenseKey.equals(getProduct().getLicense().getKey())) {
+                if(getProduct().getProduct().getCapacities().get(c.getKey()).checkLicenseKey(getProduct().getLicense()!=null?getProduct().getLicense().getKey():null)){
                     parent.add(tmpPanel, cg);
                     cg.gridy++;
                     addedItems++;

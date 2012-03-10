@@ -288,8 +288,9 @@ public class Product {
         }
 
         for (Capacity c : this.getCapacities().values()) {
-            String licenseKey = getProduct().getCapacities().get(c.getKey()).getLicenseKey();
-            if (licenseKey.equals("") || getLicense() != null && licenseKey.equals(getLicense().getKey())) {
+            //String licenseKey = getProduct().getCapacities().get(c.getKey()).getLicence;
+            //if (licenseKey.equals("") || getLicense() != null && licenseKey.equals(getLicense().getKey())) {
+            if(getProduct().getCapacities().get(c.getKey()).checkLicenseKey(getLicense()!=null?getLicense().getKey():null)){
                 price += c.getPrice(this);
             }
         }
@@ -462,8 +463,8 @@ public class Product {
                     Capacity cc = this.getCapacities().get(key);
                     //sb.append(pad);
                     //sb.append("  -");
-                    String licenseKey = c.getLicenseKey();
-                    if (licenseKey.equals("") || getLicense() != null && licenseKey.equals(getLicense().getKey())) {
+                    //String licenseKey = c.getLicenseKey();
+                    if (c.checkLicenseKey(getLicense()!=null?getLicense().getKey():null)) {
                         sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
                         sb.append("=").append(df.format(cc.getVal()));
                         sb.append(", ");
