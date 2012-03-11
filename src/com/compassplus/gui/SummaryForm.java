@@ -42,6 +42,8 @@ public class SummaryForm {
     private PCTChangedListener updated;
     private JPanel productsTable;
     private DecimalFormat df;
+    private JSpinner productDiscount;
+    private JSpinner supportDiscount;
 
     public SummaryForm(Proposal proposal, PCTChangedListener currChanged, DecimalFormat df, PCTChangedListener updated, PCTChangedListener titleUpdater) {
         this.currChanged = currChanged;
@@ -794,6 +796,8 @@ public class SummaryForm {
                                             glmuplabel.call();
                                             muplabel.call();
                                             updated.act(that);
+                                            productDiscount.setValue(productDiscount.getValue());
+                                            supportDiscount.setValue(supportDiscount.getValue());
                                         }
                                     }
                                 });
@@ -832,15 +836,16 @@ public class SummaryForm {
                     }
                     {
                         c.gridx++;
-                        final JSpinner sp = new DiscountJSpinner("Maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1);
+                        //final JSpinner sp = new DiscountJSpinner("Maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1);
+                        productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1, prod, false);
 
-                        sp.addChangeListener(new ChangeListener() {
+                        productDiscount.addChangeListener(new ChangeListener() {
                             public void stateChanged(ChangeEvent e) {
                                 final ChangeEvent ev = e;
                                 SwingUtilities.invokeLater(new Runnable() {
                                     public void run() {
-                                        if (ev.getSource() == sp) {
-                                            prod.setDiscount((Integer) sp.getValue() / 100d);
+                                        if (ev.getSource() == productDiscount) {
+                                            prod.setDiscount((Integer) productDiscount.getValue() / 100d);
                                             eulabel.call();
                                             gleulabel.call();
                                             updated.act(that);
@@ -849,19 +854,19 @@ public class SummaryForm {
                                 });
                             }
                         });
-                        sp.setMaximumSize(new Dimension(sp.getMaximumSize().width, sp.getMinimumSize().height));
+                        productDiscount.setMaximumSize(new Dimension(productDiscount.getMaximumSize().width, productDiscount.getMinimumSize().height));
 
                         JPanel panelW = new JPanel();
                         panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
                         panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
-                        panelW.add(sp);
+                        panelW.add(productDiscount);
                         panelW.setBackground(Color.white);
 
                         JPanel panel = new JPanel();
                         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                         panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
 
-                        sp.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        productDiscount.setAlignmentX(Component.RIGHT_ALIGNMENT);
                         panel.setPreferredSize(new Dimension(0, 32));
                         panel.add(panelW);
                         panel.setBorder(border);
@@ -882,14 +887,14 @@ public class SummaryForm {
                     }
                     {
                         c.gridx++;
-                        final JSpinner sp = new DiscountJSpinner("Maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1);
-                        sp.addChangeListener(new ChangeListener() {
+                        supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
+                        supportDiscount.addChangeListener(new ChangeListener() {
                             public void stateChanged(ChangeEvent e) {
                                 final ChangeEvent ev = e;
                                 SwingUtilities.invokeLater(new Runnable() {
                                     public void run() {
-                                        if (ev.getSource() == sp) {
-                                            prod.setSupportDiscount((Integer) sp.getValue() / 100d);
+                                        if (ev.getSource() == supportDiscount) {
+                                            prod.setSupportDiscount((Integer) supportDiscount.getValue() / 100d);
                                             splabel.call();
                                             glsplabel.call();
                                             updated.act(that);
@@ -898,19 +903,19 @@ public class SummaryForm {
                                 });
                             }
                         });
-                        sp.setMaximumSize(new Dimension(sp.getMaximumSize().width, sp.getMinimumSize().height));
+                        supportDiscount.setMaximumSize(new Dimension(supportDiscount.getMaximumSize().width, supportDiscount.getMinimumSize().height));
 
                         JPanel panelW = new JPanel();
                         panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
                         panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
-                        panelW.add(sp);
+                        panelW.add(supportDiscount);
                         panelW.setBackground(Color.white);
 
                         JPanel panel = new JPanel();
                         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                         panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
 
-                        sp.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        supportDiscount.setAlignmentX(Component.RIGHT_ALIGNMENT);
                         panel.setPreferredSize(new Dimension(0, 32));
                         panel.add(panelW);
                         panel.setBorder(border);

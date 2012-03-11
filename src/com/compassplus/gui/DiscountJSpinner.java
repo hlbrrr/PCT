@@ -1,5 +1,8 @@
 package com.compassplus.gui;
 
+import com.compassplus.proposalModel.Product;
+import com.compassplus.proposalModel.Proposal;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
@@ -17,6 +20,8 @@ public class DiscountJSpinner extends JSpinner {
         private Comparable minimum, maximum, maximumDiscount;
         private Component parent;
         private String message = "";
+        private Product product;
+        private boolean isSupport;
 
         /**
          * Constructs a <code>SpinnerModel</code> that represents
@@ -47,7 +52,7 @@ public class DiscountJSpinner extends JSpinner {
          *                                  <code>null</code> or if the following expression is false:
          *                                  <code>minimum &lt;= value &lt;= maximum</code>
          */
-        public DiscountSpinnerNumberModel(String message, Component parent, Number value, Comparable minimum, Comparable maximum, Number stepSize) {
+        public DiscountSpinnerNumberModel(String message, Component parent, Number value, Comparable minimum, Comparable maximum, Number stepSize, Product product, boolean isSupport) {
             if (message != null) {
                 this.message = message;
             }
@@ -62,6 +67,8 @@ public class DiscountJSpinner extends JSpinner {
             this.minimum = minimum;
             this.maximumDiscount = maximum;
             this.stepSize = stepSize;
+            this.product = product;
+            this.isSupport = isSupport;
         }
 
 
@@ -77,8 +84,8 @@ public class DiscountJSpinner extends JSpinner {
          * @throws IllegalArgumentException if the following expression is false:
          *                                  <code>minimum &lt;= value &lt;= maximum</code>
          */
-        public DiscountSpinnerNumberModel(String message, Component parent, int value, int minimum, int maximum, int stepSize) {
-            this(message, parent, new Integer(value), new Integer(minimum), new Integer(maximum), new Integer(stepSize));
+        public DiscountSpinnerNumberModel(String message, Component parent, int value, int minimum, int maximum, int stepSize, Product product, boolean isSupport) {
+            this(message, parent, new Integer(value), new Integer(minimum), new Integer(maximum), new Integer(stepSize), product, isSupport);
         }
 
 
@@ -94,8 +101,8 @@ public class DiscountJSpinner extends JSpinner {
          * @throws IllegalArgumentException if the following expression is false:
          *                                  <code>minimum &lt;= value &lt;= maximum</code>
          */
-        public DiscountSpinnerNumberModel(String message, Component parent, double value, double minimum, double maximum, double stepSize) {
-            this(message, parent, new Double(value), new Double(minimum), new Double(maximum), new Double(stepSize));
+        public DiscountSpinnerNumberModel(String message, Component parent, double value, double minimum, double maximum, double stepSize, Product product, boolean isSupport) {
+            this(message, parent, new Double(value), new Double(minimum), new Double(maximum), new Double(stepSize), product, isSupport);
         }
 
 
@@ -104,8 +111,8 @@ public class DiscountJSpinner extends JSpinner {
          * <code>minimum</code> or <code>maximum</code> value,
          * <code>stepSize</code> equal to one, and an initial value of zero.
          */
-        public DiscountSpinnerNumberModel(String message, Component parent) {
-            this(message, parent, new Integer(0), null, null, new Integer(1));
+        public DiscountSpinnerNumberModel(String message, Component parent, Product product, boolean isSupport) {
+            this(message, parent, new Integer(0), null, null, new Integer(1), product, isSupport);
         }
 
 
@@ -367,24 +374,31 @@ public class DiscountJSpinner extends JSpinner {
             if ((value == null) || !(value instanceof Number)) {
                 throw new IllegalArgumentException("illegal value");
             }
-            if (!value.equals(this.value)) {
-                if (maximumDiscount.compareTo(value) < 0) {
+            Double maximumDiscountSum = ((Number) maximumDiscount).doubleValue() / 100d * (isSupport ? product.getSupportPriceUndiscounted(true) : product.getRegionPrice(true));
+
+            final Integer newMax = (int)((100d * maximumDiscountSum) / (isSupport ? product.getSupportPriceUndiscounted() : product.getRegionPrice()));
+
+            //if (!value.equals(this.value)) {
+                if (newMax.compareTo(((Number) value).intValue()) < 0) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            JOptionPane.showMessageDialog(parent, message + maximumDiscount.toString() + "%.", "Error", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(parent, message + newMax.toString() + "%.", "Error", JOptionPane.INFORMATION_MESSAGE);
                         }
                     });
-                    throw new IllegalArgumentException("illegal value");
+
+                    this.value = (Number) newMax;
+                    fireStateChanged();
+                    //throw new IllegalArgumentException("illegal value");
                 } else {
                     this.value = (Number) value;
                     fireStateChanged();
                 }
-            }
+            //}
         }
     }
 
-    public DiscountJSpinner(String message, Component parent, int value, int minimum, int maximum, int stepSize) {
+    public DiscountJSpinner(String message, Component parent, int value, int minimum, int maximum, int stepSize, Product product, boolean isSupport) {
         super();
-        setModel(new DiscountSpinnerNumberModel(message, parent, value, minimum, maximum, stepSize));
+        setModel(new DiscountSpinnerNumberModel(message, parent, value, minimum, maximum, stepSize, product, isSupport));
     }
 }

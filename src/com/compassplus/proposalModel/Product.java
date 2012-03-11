@@ -31,7 +31,7 @@ public class Product {
     private Boolean secondarySale = false;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
-    private CommonUtils cut = CommonUtils.getInstance();
+    //private CommonUtils cut = CommonUtils.getInstance();
     private static DecimalFormat df = new DecimalFormat("#,##0");
     private Double discount;
     private Proposal proposal;
@@ -300,7 +300,8 @@ public class Product {
     }
 
     public Double getEndUserPrice() {
-        return getRegionPrice() - getRegionPrice(true) * getDiscount();
+        //return getRegionPrice() - getRegionPrice(true) * getDiscount();
+        return getRegionPrice() - getRegionPrice() * getDiscount();
     }
 
     public Double getRegionPrice(boolean clean) {
@@ -312,8 +313,10 @@ public class Product {
     }
 
     public Double getSupportPrice() {
+        /*return CommonUtils.getInstance().toNextInt(getSupportPriceUndiscounted() -
+                getSupportPriceUndiscounted(true) * getSupportDiscount());*/
         return CommonUtils.getInstance().toNextInt(getSupportPriceUndiscounted() -
-                getSupportPriceUndiscounted(true) * getSupportDiscount());
+                getSupportPriceUndiscounted() * getSupportDiscount());
     }
 
     public Double getSupportPriceUndiscounted() {
