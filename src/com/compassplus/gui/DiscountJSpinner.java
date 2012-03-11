@@ -374,25 +374,25 @@ public class DiscountJSpinner extends JSpinner {
             if ((value == null) || !(value instanceof Number)) {
                 throw new IllegalArgumentException("illegal value");
             }
-            Double maximumDiscountSum = ((Number) maximumDiscount).doubleValue() / 100d * (isSupport ? product.getSupportPriceUndiscounted(true) : product.getRegionPrice(true));
+            Double maximumDiscountedSum = (1 - ((Number) maximumDiscount).doubleValue() / 100d) * (isSupport ? product.getSupportPriceUndiscounted(true) : product.getRegionPrice(true));
 
-            final Integer newMax = (int)((100d * maximumDiscountSum) / (isSupport ? product.getSupportPriceUndiscounted() : product.getRegionPrice()));
+            final Integer newMax = (int) (Math.round(10000d * (1 - maximumDiscountedSum / (isSupport ? product.getSupportPriceUndiscounted() : product.getRegionPrice()))) / 100d);
 
             //if (!value.equals(this.value)) {
-                if (newMax.compareTo(((Number) value).intValue()) < 0) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            JOptionPane.showMessageDialog(parent, message + newMax.toString() + "%.", "Error", JOptionPane.INFORMATION_MESSAGE);
-                        }
-                    });
+            if (newMax.compareTo(((Number) value).intValue()) < 0) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        JOptionPane.showMessageDialog(parent, message + newMax.toString() + "%.", "Error", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                });
 
-                    this.value = (Number) newMax;
-                    fireStateChanged();
-                    //throw new IllegalArgumentException("illegal value");
-                } else {
-                    this.value = (Number) value;
-                    fireStateChanged();
-                }
+                this.value = (Number) newMax;
+                fireStateChanged();
+                //throw new IllegalArgumentException("illegal value");
+            } else {
+                this.value = (Number) value;
+                fireStateChanged();
+            }
             //}
         }
     }
