@@ -61,7 +61,7 @@ public class DiscountJSpinner extends JSpinner {
             }
             if (!(((minimum == null) || (minimum.compareTo(value) <= 0)) &&
                     ((maximum == null) || (maximum.compareTo(value) >= 0)))) {
-                throw new IllegalArgumentException("(minimum <= value <= maximum) is false");
+                //throw new IllegalArgumentException("(minimum <= value <= maximum) is false");
             }
             this.value = value;
             this.minimum = minimum;
