@@ -212,6 +212,7 @@ public class MainForm {
             Integer cellIndexInt = null;
             Integer rowIndexInt = null;
             String sheetIndexStr = null;
+            Integer sheetIndexInt = null;
             Sheet settingsSheet = wb.getSheet("PCTSettings");
             if (settingsSheet != null) {
                 Row currentSettingsRow = settingsSheet.getRow(0);
@@ -226,12 +227,16 @@ public class MainForm {
                             rowsCountInt = Integer.parseInt(rowsCountCell.getStringCellValue());
                             cellIndexInt = Integer.parseInt(cellIndexCell.getStringCellValue());
                             rowIndexInt = Integer.parseInt(rowIndexCell.getStringCellValue());
-                            sheetIndexStr = sheetIndexCell.getStringCellValue();
-                            for (int j = 0; j < rowsCountInt; j++) {
-                                removeRow(wb.getSheet(sheetIndexStr), rowIndexInt);
-                            }
                             rowIndexInt++;
                             cellIndexInt++;
+                            //sheetIndexInt = Integer.parseInt(sheetIndexCell.getStringCellValue());
+                            sheetIndexStr = sheetIndexCell.getStringCellValue();
+                            if(wb.getSheet(sheetIndexStr)!=null){
+                                //sheetIndexStr = wb.getSheetAt(sheetIndexInt).getSheetName();
+                                for (int j = 0; j < rowsCountInt; j++) {
+                                    removeRow(wb.getSheet(sheetIndexStr), rowIndexInt-1);
+                                }
+                            }
                         } catch (Exception ex) {
                         }
                     }
