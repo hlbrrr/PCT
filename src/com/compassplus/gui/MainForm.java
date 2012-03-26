@@ -8,7 +8,6 @@ import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.CellUtil;
 
 import javax.swing.*;
@@ -214,6 +213,7 @@ public class MainForm {
             String sheetIndexStr = null;
             Integer sheetIndexInt = null;
             Sheet settingsSheet = wb.getSheet("PCTSettings");
+            final RowStyle rowStyle = new RowStyle();
             if (settingsSheet != null) {
                 Row currentSettingsRow = settingsSheet.getRow(0);
                 if (currentSettingsRow != null) {
@@ -231,10 +231,11 @@ public class MainForm {
                             cellIndexInt++;
                             //sheetIndexInt = Integer.parseInt(sheetIndexCell.getStringCellValue());
                             sheetIndexStr = sheetIndexCell.getStringCellValue();
-                            if(wb.getSheet(sheetIndexStr)!=null){
+                            if (wb.getSheet(sheetIndexStr) != null) {
                                 //sheetIndexStr = wb.getSheetAt(sheetIndexInt).getSheetName();
+                                rowStyle.init(wb.getSheet(sheetIndexStr).getRow(rowIndexInt - 1));
                                 for (int j = 0; j < rowsCountInt; j++) {
-                                    removeRow(wb.getSheet(sheetIndexStr), rowIndexInt-1);
+                                    removeRow(wb.getSheet(sheetIndexStr), rowIndexInt - 1);
                                 }
                             }
                         } catch (Exception ex) {
@@ -330,27 +331,30 @@ public class MainForm {
                                                     } else {
 
                                                     }
-
-                                                    String regPriceCol = CellReference.convertNumToColString(1 + cellIndex);
-                                                    String regPriceDiscount = CellReference.convertNumToColString(2 + cellIndex);
-                                                    String supPriceCol = CellReference.convertNumToColString(4 + cellIndex);
-                                                    String supPriceDiscount = CellReference.convertNumToColString(5 + cellIndex);
-
-
+                                                    if (rowStyle.getLast() == -1) {
+                                                        rowStyle.init(s.getRow(rowIndex));
+                                                    }
                                                     for (Product p : getCurrentProposalForm().getProposal().getProducts().values()) {
                                                         if (s.getLastRowNum() >= rowIndex + i) {
                                                             s.shiftRows(rowIndex + i, s.getLastRowNum(), 1);
                                                         }
                                                         Row r = s.createRow(rowIndex + i);
+                                                        for (int y = rowStyle.getFirst(); y < 0 + cellIndex; y++) {
+                                                            CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                            if (tcs != null) {
+                                                                Cell tc = r.createCell(y);
+                                                                tc.setCellStyle(tcs);
+                                                            }
+                                                        }
 
                                                         Cell c1 = r.createCell(0 + cellIndex);
-                                                        CellStyle cs1 = wb.createCellStyle();
+                                                        CellStyle cs1 = rowStyle.getCellStyle(0 + cellIndex, wb.createCellStyle());
                                                         cs1.setWrapText(true);
                                                         c1.setCellValue(p.getDescription());
                                                         c1.setCellStyle(cs1);
 
                                                         Cell c2 = r.createCell(1 + cellIndex);
-                                                        CellStyle cs2 = wb.createCellStyle();
+                                                        CellStyle cs2 = rowStyle.getCellStyle(1 + cellIndex, wb.createCellStyle());
                                                         String format = (getCurrentProposalForm().getProposal().getCurrency().getSymbol() != null ?
                                                                 "\"" + getCurrentProposalForm().getProposal().getCurrency().getSymbol() + "\" " : "") + "#,##0" +
                                                                 (getCurrentProposalForm().getProposal().getCurrency().getSymbol() == null ?
@@ -360,31 +364,46 @@ public class MainForm {
                                                         c2.setCellValue(p.getRegionPrice());
 
                                                         Cell c3 = r.createCell(2 + cellIndex);
-                                                        CellStyle cs3 = wb.createCellStyle();
+                                                        CellStyle cs3 = rowStyle.getCellStyle(2 + cellIndex, wb.createCellStyle());
                                                         cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%"));
                                                         //cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%;;@"));
                                                         c3.setCellStyle(cs3);
                                                         c3.setCellValue(p.getDiscount());
 
                                                         Cell c4 = r.createCell(3 + cellIndex);
-                                                        c4.setCellStyle(cs2);
+                                                        CellStyle cs4 = rowStyle.getCellStyle(3 + cellIndex, wb.createCellStyle());
+                                                        cs4.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
+                                                        c4.setCellStyle(cs4);
                                                         int rowIndexTotal = rowIndex + i + 1;
                                                         c4.setCellValue(p.getEndUserPrice());
                                                         //c4.setCellFormula("CEILING(" + regPriceCol + rowIndexTotal + "*(1-" + regPriceDiscount + rowIndexTotal + "),1)");
 
                                                         Cell c5 = r.createCell(4 + cellIndex);
-                                                        c5.setCellStyle(cs2);
+                                                        CellStyle cs5 = rowStyle.getCellStyle(4 + cellIndex, wb.createCellStyle());
+                                                        cs5.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
+                                                        c5.setCellStyle(cs5);
                                                         c5.setCellValue(p.getSupportPriceUndiscounted());
 
                                                         Cell c6 = r.createCell(5 + cellIndex);
-                                                        c6.setCellStyle(cs3);
+                                                        CellStyle cs6 = rowStyle.getCellStyle(5 + cellIndex, wb.createCellStyle());
+                                                        cs6.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%"));
+                                                        c6.setCellStyle(cs6);
                                                         c6.setCellValue(p.getSupportDiscount());
 
                                                         Cell c7 = r.createCell(6 + cellIndex);
-                                                        c7.setCellStyle(cs2);
+                                                        CellStyle cs7 = rowStyle.getCellStyle(6 + cellIndex, wb.createCellStyle());
+                                                        cs7.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
+                                                        c7.setCellStyle(cs7);
                                                         c7.setCellValue(p.getSupportPrice());
                                                         //c7.setCellFormula("CEILING(" + supPriceCol + rowIndexTotal + "*(1-" + supPriceDiscount + rowIndexTotal + "),1)");
 
+                                                        for (int y = 7 + cellIndex; y <= rowStyle.getLast(); y++) {
+                                                            CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                            if (tcs != null) {
+                                                                Cell tc = r.createCell(y);
+                                                                tc.setCellStyle(tcs);
+                                                            }
+                                                        }
                                                         i++;
                                                     }
                                                     Row settingsRow = settingsSheet.getRow(0);
