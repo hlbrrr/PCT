@@ -715,8 +715,26 @@ public class MainForm {
             StringBuilder sbDependencies = new StringBuilder();
             for (String key : p.getModules().keySet()) {
                 for (String rkey : p.getProduct().getModules().get(key).getRequireModules()) {
-                    if (!p.getModules().containsKey(rkey)) {
-                        sbDependencies.append("\nModule \"").append(p.getProduct().getModules().get(key).getPath()).append("\" requires disabled module \"").append(p.getProduct().getModules().get(rkey).getPath()).append("\"");
+                    String rkeys[] = rkey.split("\\s+");
+                    boolean contains = false;
+                    for (int i = 0; i < rkeys.length; i++) {
+                        if (p.getModules().containsKey(rkeys[i])) {
+                            contains = true;
+                            break;
+                        }
+                    }
+                    if (!contains) {
+                        if (rkeys.length == 1) {
+                            sbDependencies.append("\nModule \"").append(p.getProduct().getModules().get(key).getPath()).append("\" requires disabled module \"").append(p.getProduct().getModules().get(rkey).getPath()).append("\"");
+                        } else if (rkeys.length > 1) {
+                            sbDependencies.append("\nModule \"").append(p.getProduct().getModules().get(key).getPath()).append("\" requires one of disabled modules: ");
+                            for(int i = 0; i < rkeys.length; i++){
+                                if(i>0){
+                                   sbDependencies.append(" or ");
+                                }
+                                sbDependencies.append("\"").append(p.getProduct().getModules().get(rkeys[i]).getPath()).append("\"");
+                            }
+                        }
                     }
                 }
                 for (String rkey : p.getProduct().getModules().get(key).getExcludeModules()) {

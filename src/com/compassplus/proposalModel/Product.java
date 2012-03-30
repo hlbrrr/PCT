@@ -290,7 +290,7 @@ public class Product {
         for (Capacity c : this.getCapacities().values()) {
             //String licenseKey = getProduct().getCapacities().get(c.getKey()).getLicence;
             //if (licenseKey.equals("") || getLicense() != null && licenseKey.equals(getLicense().getKey())) {
-            if(getProduct().getCapacities().get(c.getKey()).checkLicenseKey(getLicense()!=null?getLicense().getKey():null)){
+            if (getProduct().getCapacities().get(c.getKey()).checkLicenseKey(getLicense() != null ? getLicense().getKey() : null)) {
                 price += c.getPrice(this);
             }
         }
@@ -358,7 +358,7 @@ public class Product {
         }
         for (String key : extraKeys) {
             if (!key.equals(mKey)) {
-                if (getProduct().getModules().get(key).isRadioMember()) {
+                if (key.split("\\s+").length > 0 || getProduct().getModules().get(key).isRadioMember()) {
                     return false;
                 }
             }
@@ -467,7 +467,7 @@ public class Product {
                     //sb.append(pad);
                     //sb.append("  -");
                     //String licenseKey = c.getLicenseKey();
-                    if (c.checkLicenseKey(getLicense()!=null?getLicense().getKey():null)) {
+                    if (c.checkLicenseKey(getLicense() != null ? getLicense().getKey() : null)) {
                         sb.append(c.getShortName().equals("") ? c.getName() : c.getShortName());
                         sb.append("=").append(df.format(cc.getVal()));
                         sb.append(", ");

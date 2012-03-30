@@ -286,8 +286,21 @@ public class ProductForm {
                                                 if (depMod != null) {
                                                     ArrayList<String> requireThisKeys = new ArrayList<String>();
                                                     for (String key : getProduct().getModules().keySet()) {
-                                                        if (getProduct().getProduct().getModules().get(key).getRequireModules().contains(depMod.getKey())) {
-                                                            requireThisKeys.add(key);
+                                                        for (String rkey : getProduct().getProduct().getModules().get(key).getRequireModules()) {
+                                                            String rkeys[] = rkey.split("\\s+");
+                                                            boolean req = false;
+                                                            boolean hasAnother = false;
+                                                            for (int i = 0; i < rkeys.length; i++) {
+                                                                if (depMod.getKey().equals(rkeys[i])) {
+                                                                    req = true;
+                                                                } else if (getProduct().getModules().containsKey(rkeys[i])) {
+                                                                    hasAnother = true;
+                                                                }
+                                                            }
+                                                            if(req && !hasAnother){
+                                                                requireThisKeys.add(key);
+                                                                break;
+                                                            }
                                                         }
                                                     }
                                                     if (requireThisKeys.size() > 0) {
@@ -345,14 +358,30 @@ public class ProductForm {
                                             } else {
                                                 ArrayList<String> requireKeys = new ArrayList<String>(0);
                                                 for (String key : getProduct().getProduct().getModules().get(src.getKey()).getRequireModules()) {
-                                                    if (!getProduct().getModules().containsKey(key) && getProduct().getProduct().getModules().containsKey(key)) {
+                                                    String keys[] = key.split("\\s+");
+                                                    boolean contains = false;
+                                                    for (int i = 0; i < keys.length; i++) {
+                                                        if (getProduct().getModules().containsKey(keys[i]) && getProduct().getProduct().getModules().containsKey(keys[i])) {
+                                                            contains = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (!contains) {
                                                         requireKeys.add(key);
                                                     }
                                                 }
                                                 if (requireKeys.size() > 0) {
                                                     StringBuilder sb = new StringBuilder("Selected module requires following module(s):");
                                                     for (String key : requireKeys) {
-                                                        sb.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
+                                                        String keys[] = key.split("\\s+");
+                                                        for (int i = 0; i < keys.length; i++) {
+                                                            if (i == 0) {
+                                                                sb.append("\n");
+                                                            } else {
+                                                                sb.append(" or ");
+                                                            }
+                                                            sb.append(getProduct().getProduct().getModules().get(keys[i]).getPath());
+                                                        }
                                                     }
                                                     sb.append("\n\nWe will try to automatically resolve conflict");
                                                     int ret = JOptionPane.showOptionDialog(getRoot(), sb.toString(), "Error", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
@@ -360,14 +389,22 @@ public class ProductForm {
                                                         requireKeys.add(src.getKey());
                                                         ArrayList<String> cantBeEnabled = new ArrayList<String>(0);
                                                         for (String key : requireKeys) {
-                                                            if (!getProduct().canBeEnabled(key, requireKeys)) {
+                                                            if (key.split("\\s+").length > 1 || !getProduct().canBeEnabled(key, requireKeys)) {
                                                                 cantBeEnabled.add(key);
                                                             }
                                                         }
                                                         if (cantBeEnabled.size() > 0) {
                                                             StringBuilder sbm = new StringBuilder("Automatic resolution failed. Following module(s) can't be enabled because of complicated dependencies:");
                                                             for (String key : cantBeEnabled) {
-                                                                sbm.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
+                                                                String keys[] = key.split("\\s+");
+                                                                for (int i = 0; i < keys.length; i++) {
+                                                                    if (i == 0) {
+                                                                        sbm.append("\n");
+                                                                    } else {
+                                                                        sbm.append(" or ");
+                                                                    }
+                                                                    sbm.append(getProduct().getProduct().getModules().get(keys[i]).getPath());
+                                                                }
                                                             }
                                                             sbm.append("\n\nYou should enable required module(s) manually, then try again.");
                                                             JOptionPane.showMessageDialog(getRoot(), sbm.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
@@ -440,8 +477,21 @@ public class ProductForm {
                                             }*/
                                             ArrayList<String> requireThisKeys = new ArrayList<String>();
                                             for (String key : getProduct().getModules().keySet()) {
-                                                if (getProduct().getProduct().getModules().get(key).getRequireModules().contains(src.getKey())) {
-                                                    requireThisKeys.add(key);
+                                                for (String rkey : getProduct().getProduct().getModules().get(key).getRequireModules()) {
+                                                    String rkeys[] = rkey.split("\\s+");
+                                                    boolean req = false;
+                                                    boolean hasAnother = false;
+                                                    for (int i = 0; i < rkeys.length; i++) {
+                                                        if (src.getKey().equals(rkeys[i])) {
+                                                            req = true;
+                                                        } else if (getProduct().getModules().containsKey(rkeys[i])) {
+                                                            hasAnother = true;
+                                                        }
+                                                    }
+                                                    if(req && !hasAnother){
+                                                        requireThisKeys.add(key);
+                                                        break;
+                                                    }
                                                 }
                                             }
                                             if (requireThisKeys.size() > 0) {
@@ -785,7 +835,7 @@ public class ProductForm {
                 //String licenseKey = getProduct().getProduct().getCapacities().get(c.getKey()).getLicenseKey();
 
                 //if (licenseKey.equals("") || getProduct().getLicense() != null && licenseKey.equals(getProduct().getLicense().getKey())) {
-                if(getProduct().getProduct().getCapacities().get(c.getKey()).checkLicenseKey(getProduct().getLicense()!=null?getProduct().getLicense().getKey():null)){
+                if (getProduct().getProduct().getCapacities().get(c.getKey()).checkLicenseKey(getProduct().getLicense() != null ? getProduct().getLicense().getKey() : null)) {
                     parent.add(tmpPanel, cg);
                     cg.gridy++;
                     addedItems++;

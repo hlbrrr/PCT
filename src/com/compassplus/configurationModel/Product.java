@@ -116,9 +116,12 @@ public class Product {
                 }
             }
             for (String s : m.getRequireModules()) {
-                if (!this.getModules().containsKey(s)) {
-                    normal = false;
-                    log.error("No such module \"" + s + "\" for " + m.getPath());
+                String keys[] = s.split("\\s+");
+                for (int i = 0; i < keys.length; i++) {
+                    if (!this.getModules().containsKey(keys[i])) {
+                        normal = false;
+                        log.error("No such module \"" + keys[i] + "\" for " + m.getPath());
+                    }
                 }
             }
             for (RequireCapacity c : m.getRequireCapacities().values()) {
