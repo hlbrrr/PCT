@@ -1589,7 +1589,8 @@
                 _type:$('#Type', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _remove:$('#Remove', dom).get(),
-                _core:$('#DependencyBody', dom).get()
+                _core:$('#DependencyBody', dom).get(),
+                _keyTitle:$('#KeyTitle', dom).get()
             });
             var that = this;
             $.data($(this._core)[0], 'pct', {
@@ -1628,13 +1629,16 @@
                 if ($(this).val() == 'require') {
                     $(that._dependencyBody).addClass('requireDependency');
                     $(that._dependencyBody).removeClass('excludeDependency').removeClass('requireCapacityDependency');
+                    $(that._keyTitle).html('Key(s):');
                     $(that._value).removeClass('validate').change();
                 } else if ($(this).val() == 'exclude') {
                     $(that._dependencyBody).addClass('excludeDependency');
                     $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency');
+                    $(that._keyTitle).html('Key:');
                     $(that._value).removeClass('validate').change();
                 } else if ($(this).val() == 'capacity') {
                     $(that._dependencyBody).addClass('requireCapacityDependency');
+                    $(that._keyTitle).html('Key:');
                     $(that._value).addClass('validate').change();
                     $(that._dependencyBody).removeClass('requireDependency').removeClass('excludeDependency');
                 }
