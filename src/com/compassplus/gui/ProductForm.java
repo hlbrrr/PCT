@@ -293,7 +293,7 @@ public class ProductForm {
                                                             for (int i = 0; i < rkeys.length; i++) {
                                                                 if (depMod.getKey().equals(rkeys[i])) {
                                                                     req = true;
-                                                                } else if (getProduct().getModules().containsKey(rkeys[i])) {
+                                                                } else if (getProduct().getModules().containsKey(rkeys[i]) || src.getKey().equals(rkeys[i])) {
                                                                     hasAnother = true;
                                                                 }
                                                             }
