@@ -42,8 +42,6 @@ public class SummaryForm {
     private PCTChangedListener updated;
     private JPanel productsTable;
     private DecimalFormat df;
-    private JSpinner productDiscount;
-    private JSpinner supportDiscount;
 
     public SummaryForm(Proposal proposal, PCTChangedListener currChanged, DecimalFormat df, PCTChangedListener updated, PCTChangedListener titleUpdater) {
         this.currChanged = currChanged;
@@ -778,6 +776,8 @@ public class SummaryForm {
                             return null;  //To change body of implemented methods use File | Settings | File Templates.
                         }
                     });
+                    final JSpinner productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1, prod, false);
+                    final JSpinner supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
                     {
                         c.gridx++;
                         final JSpinner sp = new JSpinner(new SpinnerNumberModel((int) ((prod.getMarkUp() - 1) * 100), 0, 100, 1));
@@ -837,7 +837,7 @@ public class SummaryForm {
                     {
                         c.gridx++;
                         //final JSpinner sp = new DiscountJSpinner("Maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1);
-                        productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1, prod, false);
+                        //productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1, prod, false);
 
                         productDiscount.addChangeListener(new ChangeListener() {
                             public void stateChanged(ChangeEvent e) {
@@ -887,7 +887,7 @@ public class SummaryForm {
                     }
                     {
                         c.gridx++;
-                        supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
+                        //supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
                         supportDiscount.addChangeListener(new ChangeListener() {
                             public void stateChanged(ChangeEvent e) {
                                 final ChangeEvent ev = e;
