@@ -8,6 +8,7 @@ import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.CellUtil;
 
 import javax.swing.*;
@@ -334,6 +335,11 @@ public class MainForm {
                                                     if (rowStyle.getLast() == -1) {
                                                         rowStyle.init(s.getRow(rowIndex));
                                                     }
+                                                    String regPriceCol = CellReference.convertNumToColString(1 + cellIndex);
+                                                    String regPriceDiscount = CellReference.convertNumToColString(2 + cellIndex);
+                                                    String supPriceCol = CellReference.convertNumToColString(4 + cellIndex);
+                                                    String supPriceDiscount = CellReference.convertNumToColString(5 + cellIndex);
+
                                                     for (Product p : getCurrentProposalForm().getProposal().getProducts().values()) {
                                                         if (s.getLastRowNum() >= rowIndex + i) {
                                                             s.shiftRows(rowIndex + i, s.getLastRowNum(), 1);
@@ -375,8 +381,8 @@ public class MainForm {
                                                         cs4.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                         c4.setCellStyle(cs4);
                                                         int rowIndexTotal = rowIndex + i + 1;
-                                                        c4.setCellValue(p.getEndUserPrice());
-                                                        //c4.setCellFormula("CEILING(" + regPriceCol + rowIndexTotal + "*(1-" + regPriceDiscount + rowIndexTotal + "),1)");
+                                                        //c4.setCellValue(p.getEndUserPrice());
+                                                        c4.setCellFormula("CEILING(" + regPriceCol + rowIndexTotal + "*(1-" + regPriceDiscount + rowIndexTotal + "),1)");
 
                                                         Cell c5 = r.createCell(4 + cellIndex);
                                                         CellStyle cs5 = rowStyle.getCellStyle(4 + cellIndex, wb.createCellStyle());
@@ -394,8 +400,8 @@ public class MainForm {
                                                         CellStyle cs7 = rowStyle.getCellStyle(6 + cellIndex, wb.createCellStyle());
                                                         cs7.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                         c7.setCellStyle(cs7);
-                                                        c7.setCellValue(p.getSupportPrice());
-                                                        //c7.setCellFormula("CEILING(" + supPriceCol + rowIndexTotal + "*(1-" + supPriceDiscount + rowIndexTotal + "),1)");
+                                                        //c7.setCellValue(p.getSupportPrice());
+                                                        c7.setCellFormula("CEILING(" + supPriceCol + rowIndexTotal + "*(1-" + supPriceDiscount + rowIndexTotal + "),1)");
 
                                                         for (int y = 7 + cellIndex; y <= rowStyle.getLast(); y++) {
                                                             CellStyle tcs = rowStyle.getCellStyle(y, null);
