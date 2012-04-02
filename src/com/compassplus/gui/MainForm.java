@@ -216,13 +216,25 @@ public class MainForm {
             Integer sheetIndexInt = null;
             Sheet settingsSheet = wb.getSheet("PCTSettings");
             final List<RowStyle> rowStyles = new ArrayList<RowStyle>();
+            boolean sameCurrency = false;
             if (settingsSheet != null) {
                 Row currentSettingsRow = settingsSheet.getRow(0);
                 if (currentSettingsRow != null) {
+                    Cell oldProposalCell = currentSettingsRow.getCell(0);
                     Cell rowsCountCell = currentSettingsRow.getCell(1);
                     Cell cellIndexCell = currentSettingsRow.getCell(2);
                     Cell rowIndexCell = currentSettingsRow.getCell(3);
                     Cell sheetIndexCell = currentSettingsRow.getCell(4);
+                    try {
+                        Proposal oldProposal = new Proposal(config);
+                        String proposalString = oldProposalCell.getStringCellValue();
+                        if (proposalString != null) {
+                            oldProposal.init(CommonUtils.getInstance().getDocumentFromString(proposalString));
+                            sameCurrency = getCurrentProposalForm().getProposal().getCurrency().getName().equals(oldProposal.getCurrency().getName());
+                        }
+                    } catch (Exception e) {
+
+                    }
 
                     if (rowsCountCell != null && rowIndexCell != null && sheetIndexCell != null && cellIndexCell != null) {
                         try {
@@ -279,6 +291,7 @@ public class MainForm {
             dialog.setContentPane(optionPane);
             dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
+            final boolean fSameCurrency = sameCurrency;
             optionPane.addPropertyChangeListener(
                     new PropertyChangeListener() {
                         public void propertyChange(PropertyChangeEvent e) {
@@ -372,7 +385,8 @@ public class MainForm {
                                                                 "\"" + getCurrentProposalForm().getProposal().getCurrency().getSymbol() + "\" " : "") + "#,##0" +
                                                                 (getCurrentProposalForm().getProposal().getCurrency().getSymbol() == null ?
                                                                         " \"" + getCurrentProposalForm().getProposal().getCurrency().getName() + "\"" : "");
-                                                        cs2.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
+                                                        if (!fSameCurrency)
+                                                            cs2.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                         c2.setCellStyle(cs2);
                                                         c2.setCellValue(p.getRegionPrice());
 
@@ -385,7 +399,8 @@ public class MainForm {
 
                                                         Cell c4 = r.createCell(3 + cellIndex);
                                                         CellStyle cs4 = rowStyle.getCellStyle(3 + cellIndex, wb.createCellStyle());
-                                                        cs4.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
+                                                        if (!fSameCurrency)
+                                                            cs4.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                         c4.setCellStyle(cs4);
                                                         int rowIndexTotal = rowIndex + i + 1;
                                                         //c4.setCellValue(p.getEndUserPrice());
@@ -393,7 +408,8 @@ public class MainForm {
 
                                                         Cell c5 = r.createCell(4 + cellIndex);
                                                         CellStyle cs5 = rowStyle.getCellStyle(4 + cellIndex, wb.createCellStyle());
-                                                        cs5.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
+                                                        if (!fSameCurrency)
+                                                            cs5.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                         c5.setCellStyle(cs5);
                                                         c5.setCellValue(p.getSupportPriceUndiscounted());
 
@@ -405,7 +421,8 @@ public class MainForm {
 
                                                         Cell c7 = r.createCell(6 + cellIndex);
                                                         CellStyle cs7 = rowStyle.getCellStyle(6 + cellIndex, wb.createCellStyle());
-                                                        cs7.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
+                                                        if (!fSameCurrency)
+                                                            cs7.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                         c7.setCellStyle(cs7);
                                                         //c7.setCellValue(p.getSupportPrice());
                                                         c7.setCellFormula("CEILING(" + supPriceCol + rowIndexTotal + "*(1-" + supPriceDiscount + rowIndexTotal + "),1)");
