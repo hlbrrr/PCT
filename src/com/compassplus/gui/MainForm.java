@@ -27,6 +27,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -214,7 +215,7 @@ public class MainForm {
             String sheetIndexStr = null;
             Integer sheetIndexInt = null;
             Sheet settingsSheet = wb.getSheet("PCTSettings");
-            final RowStyle rowStyle = new RowStyle();
+            final List<RowStyle> rowStyles = new ArrayList<RowStyle>();
             if (settingsSheet != null) {
                 Row currentSettingsRow = settingsSheet.getRow(0);
                 if (currentSettingsRow != null) {
@@ -234,8 +235,10 @@ public class MainForm {
                             sheetIndexStr = sheetIndexCell.getStringCellValue();
                             if (wb.getSheet(sheetIndexStr) != null) {
                                 //sheetIndexStr = wb.getSheetAt(sheetIndexInt).getSheetName();
-                                rowStyle.init(wb.getSheet(sheetIndexStr).getRow(rowIndexInt - 1));
                                 for (int j = 0; j < rowsCountInt; j++) {
+                                    RowStyle rowStyle = new RowStyle();
+                                    rowStyle.init(wb.getSheet(sheetIndexStr).getRow(rowIndexInt - 1));
+                                    rowStyles.add(rowStyle);
                                     removeRow(wb.getSheet(sheetIndexStr), rowIndexInt - 1);
                                 }
                             }
@@ -332,18 +335,22 @@ public class MainForm {
                                                     } else {
 
                                                     }
-                                                    if (rowStyle.getLast() == -1) {
+                                                    if (rowStyles.size() == 0) {
+                                                        RowStyle rowStyle = new RowStyle();
                                                         rowStyle.init(s.getRow(rowIndex));
+                                                        rowStyles.add(rowStyle);
                                                     }
                                                     String regPriceCol = CellReference.convertNumToColString(1 + cellIndex);
                                                     String regPriceDiscount = CellReference.convertNumToColString(2 + cellIndex);
                                                     String supPriceCol = CellReference.convertNumToColString(4 + cellIndex);
                                                     String supPriceDiscount = CellReference.convertNumToColString(5 + cellIndex);
-
+                                                    int currentRowIndex = 0;
                                                     for (Product p : getCurrentProposalForm().getProposal().getProducts().values()) {
                                                         if (s.getLastRowNum() >= rowIndex + i) {
                                                             s.shiftRows(rowIndex + i, s.getLastRowNum(), 1);
                                                         }
+                                                        RowStyle rowStyle = rowStyles.get((int) (currentRowIndex - rowStyles.size() * Math.floor(currentRowIndex / rowStyles.size())));
+                                                        currentRowIndex++;
                                                         Row r = s.createRow(rowIndex + i);
                                                         for (int y = rowStyle.getFirst(); y < 0 + cellIndex; y++) {
                                                             CellStyle tcs = rowStyle.getCellStyle(y, null);
@@ -734,9 +741,9 @@ public class MainForm {
                             sbDependencies.append("\nModule \"").append(p.getProduct().getModules().get(key).getPath()).append("\" requires disabled module \"").append(p.getProduct().getModules().get(rkey).getPath()).append("\"");
                         } else if (rkeys.length > 1) {
                             sbDependencies.append("\nModule \"").append(p.getProduct().getModules().get(key).getPath()).append("\" requires one of disabled modules: ");
-                            for(int i = 0; i < rkeys.length; i++){
-                                if(i>0){
-                                   sbDependencies.append(" or ");
+                            for (int i = 0; i < rkeys.length; i++) {
+                                if (i > 0) {
+                                    sbDependencies.append(" or ");
                                 }
                                 sbDependencies.append("\"").append(p.getProduct().getModules().get(rkeys[i]).getPath()).append("\"");
                             }
