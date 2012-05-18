@@ -199,6 +199,13 @@ public class Capacity {
                     break;
                 }
             }
+            if(used < this.getChargeable()){
+                Double lastTierPrice = 0d;
+                for (Tier t : this.getCapacity().getTiers()) {
+                    lastTierPrice = t.getPrice();
+                }
+                price += lastTierPrice * product.getProposal().getCurrencyRate() * (this.getChargeable() - used);
+            }
         }
         return price;
     }
