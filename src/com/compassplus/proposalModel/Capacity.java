@@ -188,7 +188,9 @@ public class Capacity {
             price = price * this.getChargeable();
         } else if (this.getCapacity().getType().equals(2)) { // level
             Integer used = 0;
+            Double lastTierPrice = 0d;
             for (Tier t : this.getCapacity().getTiers()) {
+                lastTierPrice = t.getPrice();
                 Integer current = t.getBound() - used;
                 if (t.getBound() > this.getChargeable()) {
                     current = this.getChargeable() - used;
@@ -200,10 +202,6 @@ public class Capacity {
                 }
             }
             if(used < this.getChargeable()){
-                Double lastTierPrice = 0d;
-                for (Tier t : this.getCapacity().getTiers()) {
-                    lastTierPrice = t.getPrice();
-                }
                 price += lastTierPrice * product.getProposal().getCurrencyRate() * (this.getChargeable() - used);
             }
         }

@@ -358,7 +358,7 @@ public class Product {
         }
         for (String key : extraKeys) {
             if (!key.equals(mKey)) {
-                if (key.split("\\s+").length > 0 || getProduct().getModules().get(key).isRadioMember()) {
+                if (key.split("\\s+").length > 1 || getProduct().getModules().get(key).isRadioMember()) {
                     return false;
                 }
             }
