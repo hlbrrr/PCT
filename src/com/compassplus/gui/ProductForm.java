@@ -733,6 +733,7 @@ public class ProductForm {
                 getSpinners().put(key, cs);
                 final PCTChangedListener changeTitles = new PCTChangedListener() {
                     public void act(Object srcObj) {
+                        //System.out.println("z");
                         CapacityJSpinner src = cs;
                         cl1.setText("");
                         cl2.setText("");
@@ -745,9 +746,9 @@ public class ProductForm {
                             if (c.getFoc() > 0) {
                                 cl2.setText("Free Of Charge: " + c.getFoc());
                             }
-                            if ((c.getVal() - c.getUser()) > 0) {
+                            /*if ((c.getVal() - c.getUser()) > 0) {
                                 cl3.setText("Total: " + c.getVal());
-                            }
+                            }*/
                         }
                         reloadCapacitiesPrices(cs);
                     }

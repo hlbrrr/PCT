@@ -13,6 +13,7 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/stax-api-1.0.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/xmlbeans-2.3.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-io-1.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/filedrop.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

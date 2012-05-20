@@ -109,7 +109,7 @@ public class CapacityJSpinner extends JSpinner {
                 ret = maxmin;
             }
             //this.minimum = this.incrs > maxmin ? this.incrs : maxmin;
-            this.value = this.user;
+            this.value = this.user + this.incrs > maxmin ? this.user + this.incrs : maxmin;
             if (ret > 0) {
                 if (!form.getProduct().getCapacities().containsKey(key)) {
                     com.compassplus.configurationModel.Capacity tmpCapacity = form.getProduct().getProduct().getCapacities().get(key);
@@ -120,8 +120,10 @@ public class CapacityJSpinner extends JSpinner {
                 tmpCapacity.setMin(maxmin);
                 tmpCapacity.setIncr(this.incrs);
                 tmpCapacity.setFoc(this.focs);
+                this.setMinimum(maxmin > this.incrs ? maxmin : this.incrs);
             } else {
                 form.getProduct().delCapacity(key);
+                this.setMinimum(0);
             }
             fireStateChanged();
         }
@@ -408,7 +410,7 @@ public class CapacityJSpinner extends JSpinner {
                 throw new IllegalArgumentException("illegal value");
             }
             if (!value.equals(this.value)) {
-                setUser((Integer) value);
+                setUser((Integer) value - this.incrs);
             }
         }
 
