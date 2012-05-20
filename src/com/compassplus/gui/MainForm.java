@@ -6,6 +6,7 @@ import com.compassplus.proposalModel.Product;
 import com.compassplus.proposalModel.Proposal;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
+import net.iharder.dnd.FileDrop;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
@@ -498,6 +499,42 @@ public class MainForm {
         xlsFileChooser.setFileFilter(new FileNameExtensionFilter("Excel documents", "xls", "xlsx"));
     }
 
+    private void openFile(File file){                //xlsFileChooser.getSelectedFile()
+        try {
+            Proposal proposal = new Proposal(config);
+            FileInputStream inp = new FileInputStream(file);
+            final Workbook wb = WorkbookFactory.create(inp);
+            inp.close();
+            Sheet s = wb.getSheet("PCTSettings");
+            String proposalString = null;
+            if (s != null) {
+                Row r = s.getRow(0);
+                if (r != null) {
+                    Cell c = r.getCell(0);
+                    if (c != null) {
+                        proposalString = c.getStringCellValue();
+                    }
+                }
+            }
+            if (proposalString == null) {
+                throw new PCTDataFormatException("Proposal not found");
+            }
+            proposal.init(CommonUtils.getInstance().getDocumentFromString(proposalString));
+            //ProposalForm tmpForm = new ProposalForm(proposal, getFrame());
+            addProposalForm(proposal, getFrame(), true);
+            //tmpForm.setChanged(false);
+            if (proposal.containsDeprecated()) {
+                JOptionPane.showMessageDialog(getRoot(), "Selected proposal contains deprecated module(s) or capacity(ies).", "Warning", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception exception) {
+            //exception.printStackTrace();
+            if (exception instanceof PCTDataFormatException) {
+                Logger.getInstance().error(exception);
+            }
+            JOptionPane.showMessageDialog(getRoot(), "Can't read proposal from specified file", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void initFileMenu() {
         createProposal = new JMenuItem("Create proposal");
         createProposal.addActionListener(new ActionListener() {
@@ -569,40 +606,7 @@ public class MainForm {
                         xlsFileChooser.setDialogTitle("Import");
                         int retVal = xlsFileChooser.showDialog(getRoot(), "Import");
                         if (retVal == JFileChooser.APPROVE_OPTION) {
-                            try {
-                                Proposal proposal = new Proposal(config);
-
-                                FileInputStream inp = new FileInputStream(xlsFileChooser.getSelectedFile());
-                                final Workbook wb = WorkbookFactory.create(inp);
-                                inp.close();
-                                Sheet s = wb.getSheet("PCTSettings");
-                                String proposalString = null;
-                                if (s != null) {
-                                    Row r = s.getRow(0);
-                                    if (r != null) {
-                                        Cell c = r.getCell(0);
-                                        if (c != null) {
-                                            proposalString = c.getStringCellValue();
-                                        }
-                                    }
-                                }
-                                if (proposalString == null) {
-                                    throw new PCTDataFormatException("Proposal not found");
-                                }
-                                proposal.init(CommonUtils.getInstance().getDocumentFromString(proposalString));
-                                //ProposalForm tmpForm = new ProposalForm(proposal, getFrame());
-                                addProposalForm(proposal, getFrame(), true);
-                                //tmpForm.setChanged(false);
-                                if (proposal.containsDeprecated()) {
-                                    JOptionPane.showMessageDialog(getRoot(), "Selected proposal contains deprecated module(s) or capacity(ies).", "Warning", JOptionPane.INFORMATION_MESSAGE);
-                                }
-                            } catch (Exception exception) {
-                                exception.printStackTrace();
-                                if (exception instanceof PCTDataFormatException) {
-                                    Logger.getInstance().error(exception);
-                                }
-                                JOptionPane.showMessageDialog(getRoot(), "Can't read proposal from specified file", "Error", JOptionPane.ERROR_MESSAGE);
-                            }
+                            openFile(xlsFileChooser.getSelectedFile());
                         }
                     }
                 });
@@ -872,6 +876,14 @@ public class MainForm {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
         mainPanel.add(proposalsTabs, BorderLayout.CENTER);
+
+        new FileDrop(mainPanel, new FileDrop.Listener() {
+            public void filesDropped(java.io.File[] files) {
+                for (int i = 0; i < files.length; i++) {
+                    openFile(files[i]);
+                }
+            }
+        });
     }
 
     private ProposalForm getCurrentProposalForm() {
