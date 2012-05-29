@@ -124,11 +124,23 @@ public class ProductForm {
     }
 
     private void initForm() {
+        final ProductForm that = this;
         primaryCheckBox = new JCheckBox("Primary sale", !getProduct().getSecondarySale());
         primaryCheckBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 JCheckBox src = (JCheckBox) e.getSource();
                 getProduct().setSecondarySale(!src.isSelected());
+
+                if (!src.isSelected()) {
+                    for (ModuleJButton mb : that.getCheckBoxes().values()) {
+                        mb.setSelected(false, false);
+                    }
+                    for (CapacityJSpinner cs : that.getSpinners().values()) {
+                        cs.setValue(0);
+                    }
+                }
+
+
                 reloadModulesPrices();
                 reloadProductPrice();
             }
@@ -297,7 +309,7 @@ public class ProductForm {
                                                                     hasAnother = true;
                                                                 }
                                                             }
-                                                            if(req && !hasAnother){
+                                                            if (req && !hasAnother) {
                                                                 requireThisKeys.add(key);
                                                                 break;
                                                             }
@@ -488,7 +500,7 @@ public class ProductForm {
                                                             hasAnother = true;
                                                         }
                                                     }
-                                                    if(req && !hasAnother){
+                                                    if (req && !hasAnother) {
                                                         requireThisKeys.add(key);
                                                         break;
                                                     }

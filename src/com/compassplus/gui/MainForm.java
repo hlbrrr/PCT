@@ -745,49 +745,7 @@ public class MainForm {
     private boolean checkForConsistence() {
         StringBuilder sb = new StringBuilder();
         for (Product p : getCurrentProposalForm().getProposal().getProducts().values()) {
-            StringBuilder sbDeprecated = new StringBuilder();
-            StringBuilder sbDependencies = new StringBuilder();
-            for (String key : p.getModules().keySet()) {
-                for (String rkey : p.getProduct().getModules().get(key).getRequireModules()) {
-                    String rkeys[] = rkey.split("\\s+");
-                    boolean contains = false;
-                    for (int i = 0; i < rkeys.length; i++) {
-                        if (p.getModules().containsKey(rkeys[i])) {
-                            contains = true;
-                            break;
-                        }
-                    }
-                    if (!contains) {
-                        if (rkeys.length == 1) {
-                            sbDependencies.append("\nModule \"").append(p.getProduct().getModules().get(key).getPath()).append("\" requires disabled module \"").append(p.getProduct().getModules().get(rkey).getPath()).append("\"");
-                        } else if (rkeys.length > 1) {
-                            sbDependencies.append("\nModule \"").append(p.getProduct().getModules().get(key).getPath()).append("\" requires one of disabled modules: ");
-                            for (int i = 0; i < rkeys.length; i++) {
-                                if (i > 0) {
-                                    sbDependencies.append(" or ");
-                                }
-                                sbDependencies.append("\"").append(p.getProduct().getModules().get(rkeys[i]).getPath()).append("\"");
-                            }
-                        }
-                    }
-                }
-                for (String rkey : p.getProduct().getModules().get(key).getExcludeModules()) {
-                    if (p.getModules().containsKey(rkey)) {
-                        sbDependencies.append("\nModule \"").append(p.getProduct().getModules().get(key).getPath()).append("\" conflicts with module \"").append(p.getProduct().getModules().get(rkey).getPath()).append("\"");
-                    }
-                }
-                if (p.getProduct().getModules().get(key).isDeprecated()) {
-                    sbDeprecated.append("\nDeprecated module \"").append(p.getProduct().getModules().get(key).getPath()).append("\"");
-                }
-            }
-            for (String key : p.getCapacities().keySet()) {
-                if (p.getProduct().getCapacities().get(key).isDeprecated()) {
-                    sbDeprecated.append("\nDeprecated capacity \"").append(p.getProduct().getCapacities().get(key).getPath()).append("\"");
-                }
-            }
-            if (sbDependencies.length() > 0 || sbDeprecated.length() > 0) {
-                sb.append("\nProduct ").append(p.getName()).append(" contains following error(s):").append(sbDependencies).append(sbDeprecated);
-            }
+            sb.append(p.checkForConsistence());
         }
         if (sb.length() > 0) {
             sb.append("\n\nYou should fix error(s) first, then try again.");
