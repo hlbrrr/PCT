@@ -745,7 +745,9 @@ public class MainForm {
     private boolean checkForConsistence() {
         StringBuilder sb = new StringBuilder();
         for (Product p : getCurrentProposalForm().getProposal().getProducts().values()) {
-            sb.append(p.checkForConsistence());
+            if(!p.getSecondarySale()){
+                sb.append(p.checkForConsistence());
+            }
         }
         if (sb.length() > 0) {
             sb.append("\n\nYou should fix error(s) first, then try again.");

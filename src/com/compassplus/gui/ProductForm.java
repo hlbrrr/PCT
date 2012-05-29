@@ -124,25 +124,42 @@ public class ProductForm {
     }
 
     private void initForm() {
-        final ProductForm that = this;
         primaryCheckBox = new JCheckBox("Primary sale", !getProduct().getSecondarySale());
         primaryCheckBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                JCheckBox src = (JCheckBox) e.getSource();
-                getProduct().setSecondarySale(!src.isSelected());
+                final JCheckBox src = (JCheckBox) e.getSource();
+                final boolean secondary = !src.isSelected();
 
-                if (!src.isSelected()) {
-                    for (ModuleJButton mb : that.getCheckBoxes().values()) {
-                        mb.setSelected(false, false);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        if (secondary) {
+                            if (JOptionPane.showOptionDialog(getRoot(), "Current product configuration will be lost. Do you really want to continue?", "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null) == JOptionPane.YES_OPTION) {
+                                getProduct().setSecondarySale(secondary);
+                                for (ModuleJButton mb : getCheckBoxes().values()) {
+                                    mb.setSelected(false, false);
+                                }
+                                for (CapacityJSpinner cs : getSpinners().values()) {
+                                    cs.setValue(0);
+                                }
+                            } else {
+                                src.setSelected(true);
+                            }
+                        } else {
+                            getProduct().setSecondarySale(secondary);
+                            final String cons = getProduct().checkForConsistence();
+                            if (cons.length() > 0) {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        JOptionPane.showMessageDialog(getRoot(), "Current product configuration is not suitable for primary sale: " + cons, "Warning", JOptionPane.WARNING_MESSAGE);
+                                    }
+                                });
+
+                            }
+                        }
+                        reloadModulesPrices();
+                        reloadProductPrice();
                     }
-                    for (CapacityJSpinner cs : that.getSpinners().values()) {
-                        cs.setValue(0);
-                    }
-                }
-
-
-                reloadModulesPrices();
-                reloadProductPrice();
+                });
             }
         });
 
@@ -295,7 +312,7 @@ public class ProductForm {
                                                         break;
                                                     }
                                                 }
-                                                if (depMod != null) {
+                                                if (depMod != null && !getProduct().getSecondarySale()) {
                                                     ArrayList<String> requireThisKeys = new ArrayList<String>();
                                                     for (String key : getProduct().getModules().keySet()) {
                                                         for (String rkey : getProduct().getProduct().getModules().get(key).getRequireModules()) {
@@ -329,122 +346,127 @@ public class ProductForm {
                                                 }
 
                                             }
-                                            /* список модулей которые мешают текущему */
-                                            ArrayList<String> excludeKeys = new ArrayList<String>(0);
-                                            for (String key : getProduct().getProduct().getModules().get(src.getKey()).getExcludeModules()) {
-                                                if (getProduct().getModules().containsKey(key) && getProduct().getProduct().getModules().containsKey(key)) {
-                                                    excludeKeys.add(key);
-                                                }
-                                            }
-                                            /* список модулей которым мешает текущий */
-                                            ArrayList<String> excludeThisKeys = new ArrayList<String>(0);
-                                            for (String key : getProduct().getModules().keySet()) {
-                                                if (getProduct().getProduct().getModules().get(key).getExcludeModules().contains(src.getKey())) {
-                                                    excludeThisKeys.add(key);
-                                                }
-                                            }
-                                            /* удалили смежные радиобаттоны */
-                                            if (src.getGroup() != null) {
-                                                for (AbstractButton mjb : src.getGroup().buttons) {
-                                                    if (mjb != null && mjb instanceof ModuleJButton) {
-                                                        excludeThisKeys.remove(((ModuleJButton) mjb).getKey());
-                                                        excludeKeys.remove(((ModuleJButton) mjb).getKey());
+
+                                            if (!getProduct().getSecondarySale()) {
+                                                /* список модулей которые мешают текущему */
+                                                ArrayList<String> excludeKeys = new ArrayList<String>(0);
+                                                for (String key : getProduct().getProduct().getModules().get(src.getKey()).getExcludeModules()) {
+                                                    if (getProduct().getModules().containsKey(key) && getProduct().getProduct().getModules().containsKey(key)) {
+                                                        excludeKeys.add(key);
                                                     }
                                                 }
-                                            }
-                                            if (excludeKeys.size() > 0 || excludeThisKeys.size() > 0) {
-                                                StringBuilder sb = new StringBuilder("Selected module can't be enabled at the same time with following module(s):");
-                                                for (String key : excludeKeys) {
-                                                    sb.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
+                                                /* список модулей которым мешает текущий */
+                                                ArrayList<String> excludeThisKeys = new ArrayList<String>(0);
+                                                for (String key : getProduct().getModules().keySet()) {
+                                                    if (getProduct().getProduct().getModules().get(key).getExcludeModules().contains(src.getKey())) {
+                                                        excludeThisKeys.add(key);
+                                                    }
                                                 }
-                                                for (String key : excludeThisKeys) {
-                                                    if (!excludeKeys.contains(key)) {
+                                                /* удалили смежные радиобаттоны */
+                                                if (src.getGroup() != null) {
+                                                    for (AbstractButton mjb : src.getGroup().buttons) {
+                                                        if (mjb != null && mjb instanceof ModuleJButton) {
+                                                            excludeThisKeys.remove(((ModuleJButton) mjb).getKey());
+                                                            excludeKeys.remove(((ModuleJButton) mjb).getKey());
+                                                        }
+                                                    }
+                                                }
+                                                if (excludeKeys.size() > 0 || excludeThisKeys.size() > 0) {
+                                                    StringBuilder sb = new StringBuilder("Selected module can't be enabled at the same time with following module(s):");
+                                                    for (String key : excludeKeys) {
                                                         sb.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
                                                     }
-                                                }
-                                                sb.append("\n\nYou should disable conflict module(s) first, then try again.");
-                                                JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+                                                    for (String key : excludeThisKeys) {
+                                                        if (!excludeKeys.contains(key)) {
+                                                            sb.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
+                                                        }
+                                                    }
+                                                    sb.append("\n\nYou should disable conflict module(s) first, then try again.");
+                                                    JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
 
-                                                src.setSelected(false, true);
-                                                throw new PCTDataFormatException("");
-                                            } else {
-                                                ArrayList<String> requireKeys = new ArrayList<String>(0);
-                                                for (String key : getProduct().getProduct().getModules().get(src.getKey()).getRequireModules()) {
-                                                    String keys[] = key.split("\\s+");
-                                                    boolean contains = false;
-                                                    for (int i = 0; i < keys.length; i++) {
-                                                        if (getProduct().getModules().containsKey(keys[i]) && getProduct().getProduct().getModules().containsKey(keys[i])) {
-                                                            contains = true;
-                                                            break;
-                                                        }
+                                                    src.setSelected(false, true);
+                                                    throw new PCTDataFormatException("");
+                                                } else {
+                                                    ArrayList<String> requireKeys = new ArrayList<String>(0);
+                                                    if (!getProduct().getSecondarySale()) {
                                                     }
-                                                    if (!contains) {
-                                                        requireKeys.add(key);
-                                                    }
-                                                }
-                                                if (requireKeys.size() > 0) {
-                                                    StringBuilder sb = new StringBuilder("Selected module requires following module(s):");
-                                                    for (String key : requireKeys) {
+                                                    for (String key : getProduct().getProduct().getModules().get(src.getKey()).getRequireModules()) {
                                                         String keys[] = key.split("\\s+");
+                                                        boolean contains = false;
                                                         for (int i = 0; i < keys.length; i++) {
-                                                            if (i == 0) {
-                                                                sb.append("\n");
-                                                            } else {
-                                                                sb.append(" or ");
+                                                            if (getProduct().getModules().containsKey(keys[i]) && getProduct().getProduct().getModules().containsKey(keys[i])) {
+                                                                contains = true;
+                                                                break;
                                                             }
-                                                            sb.append(getProduct().getProduct().getModules().get(keys[i]).getPath());
+                                                        }
+                                                        if (!contains) {
+                                                            requireKeys.add(key);
                                                         }
                                                     }
-                                                    sb.append("\n\nWe will try to automatically resolve conflict");
-                                                    int ret = JOptionPane.showOptionDialog(getRoot(), sb.toString(), "Error", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
-                                                    if (ret == JOptionPane.OK_OPTION) {
-                                                        requireKeys.add(src.getKey());
-                                                        ArrayList<String> cantBeEnabled = new ArrayList<String>(0);
+                                                    if (requireKeys.size() > 0) {
+                                                        StringBuilder sb = new StringBuilder("Selected module requires following module(s):");
                                                         for (String key : requireKeys) {
-                                                            if (key.split("\\s+").length > 1 || !getProduct().canBeEnabled(key, requireKeys)) {
-                                                                cantBeEnabled.add(key);
+                                                            String keys[] = key.split("\\s+");
+                                                            for (int i = 0; i < keys.length; i++) {
+                                                                if (i == 0) {
+                                                                    sb.append("\n");
+                                                                } else {
+                                                                    sb.append(" or ");
+                                                                }
+                                                                sb.append(getProduct().getProduct().getModules().get(keys[i]).getPath());
                                                             }
                                                         }
-                                                        if (cantBeEnabled.size() > 0) {
-                                                            StringBuilder sbm = new StringBuilder("Automatic resolution failed. Following module(s) can't be enabled because of complicated dependencies:");
-                                                            for (String key : cantBeEnabled) {
-                                                                String keys[] = key.split("\\s+");
-                                                                for (int i = 0; i < keys.length; i++) {
-                                                                    if (i == 0) {
-                                                                        sbm.append("\n");
-                                                                    } else {
-                                                                        sbm.append(" or ");
-                                                                    }
-                                                                    sbm.append(getProduct().getProduct().getModules().get(keys[i]).getPath());
+                                                        sb.append("\n\nWe will try to automatically resolve conflict");
+                                                        int ret = JOptionPane.showOptionDialog(getRoot(), sb.toString(), "Error", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+                                                        if (ret == JOptionPane.OK_OPTION) {
+                                                            requireKeys.add(src.getKey());
+                                                            ArrayList<String> cantBeEnabled = new ArrayList<String>(0);
+                                                            for (String key : requireKeys) {
+                                                                if (key.split("\\s+").length > 1 || !getProduct().canBeEnabled(key, requireKeys)) {
+                                                                    cantBeEnabled.add(key);
                                                                 }
                                                             }
-                                                            sbm.append("\n\nYou should enable required module(s) manually, then try again.");
-                                                            JOptionPane.showMessageDialog(getRoot(), sbm.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
-                                                            src.setSelected(false, true);
-                                                            throw new PCTDataFormatException("");
-                                                        } else {
-                                                            for (String key : requireKeys) {
-                                                                if (!key.equals(src.getKey())) {
-                                                                    getProduct().addModule(getProduct().getProduct().getModules().get(key), key);
-                                                                    for (RequireCapacity rc : getProduct().getProduct().getModules().get(key).getRequireCapacities().values()) {
-                                                                        if (getProduct().getProduct().getCapacities().containsKey(rc.getKey())) {
-                                                                            if (rc.isIncremental()) {
-                                                                                getSpinners().get(rc.getKey()).addIncr(rc.getValue());
-                                                                                if (rc.isFreeOfCharge()) {
-                                                                                    getSpinners().get(rc.getKey()).addFoc(rc.getValue());
+                                                            if (cantBeEnabled.size() > 0) {
+                                                                StringBuilder sbm = new StringBuilder("Automatic resolution failed. Following module(s) can't be enabled because of complicated dependencies:");
+                                                                for (String key : cantBeEnabled) {
+                                                                    String keys[] = key.split("\\s+");
+                                                                    for (int i = 0; i < keys.length; i++) {
+                                                                        if (i == 0) {
+                                                                            sbm.append("\n");
+                                                                        } else {
+                                                                            sbm.append(" or ");
+                                                                        }
+                                                                        sbm.append(getProduct().getProduct().getModules().get(keys[i]).getPath());
+                                                                    }
+                                                                }
+                                                                sbm.append("\n\nYou should enable required module(s) manually, then try again.");
+                                                                JOptionPane.showMessageDialog(getRoot(), sbm.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+                                                                src.setSelected(false, true);
+                                                                throw new PCTDataFormatException("");
+                                                            } else {
+                                                                for (String key : requireKeys) {
+                                                                    if (!key.equals(src.getKey())) {
+                                                                        getProduct().addModule(getProduct().getProduct().getModules().get(key), key);
+                                                                        for (RequireCapacity rc : getProduct().getProduct().getModules().get(key).getRequireCapacities().values()) {
+                                                                            if (getProduct().getProduct().getCapacities().containsKey(rc.getKey())) {
+                                                                                if (rc.isIncremental()) {
+                                                                                    getSpinners().get(rc.getKey()).addIncr(rc.getValue());
+                                                                                    if (rc.isFreeOfCharge()) {
+                                                                                        getSpinners().get(rc.getKey()).addFoc(rc.getValue());
+                                                                                    }
+                                                                                } else {
+                                                                                    getSpinners().get(rc.getKey()).addMin(rc.getValue());
                                                                                 }
-                                                                            } else {
-                                                                                getSpinners().get(rc.getKey()).addMin(rc.getValue());
                                                                             }
                                                                         }
+                                                                        getCheckBoxes().get(key).setSelected(true, true);
                                                                     }
-                                                                    getCheckBoxes().get(key).setSelected(true, true);
                                                                 }
                                                             }
+                                                        } else {
+                                                            src.setSelected(false, true);
+                                                            throw new PCTDataFormatException("");
                                                         }
-                                                    } else {
-                                                        src.setSelected(false, true);
-                                                        throw new PCTDataFormatException("");
                                                     }
                                                 }
                                             }
@@ -487,35 +509,37 @@ public class ProductForm {
                                                 src.setSelected(true, true);
                                                 throw new PCTDataFormatException("");
                                             }*/
-                                            ArrayList<String> requireThisKeys = new ArrayList<String>();
-                                            for (String key : getProduct().getModules().keySet()) {
-                                                for (String rkey : getProduct().getProduct().getModules().get(key).getRequireModules()) {
-                                                    String rkeys[] = rkey.split("\\s+");
-                                                    boolean req = false;
-                                                    boolean hasAnother = false;
-                                                    for (int i = 0; i < rkeys.length; i++) {
-                                                        if (src.getKey().equals(rkeys[i])) {
-                                                            req = true;
-                                                        } else if (getProduct().getModules().containsKey(rkeys[i])) {
-                                                            hasAnother = true;
+                                            if (!getProduct().getSecondarySale()) {
+                                                ArrayList<String> requireThisKeys = new ArrayList<String>();
+                                                for (String key : getProduct().getModules().keySet()) {
+                                                    for (String rkey : getProduct().getProduct().getModules().get(key).getRequireModules()) {
+                                                        String rkeys[] = rkey.split("\\s+");
+                                                        boolean req = false;
+                                                        boolean hasAnother = false;
+                                                        for (int i = 0; i < rkeys.length; i++) {
+                                                            if (src.getKey().equals(rkeys[i])) {
+                                                                req = true;
+                                                            } else if (getProduct().getModules().containsKey(rkeys[i])) {
+                                                                hasAnother = true;
+                                                            }
+                                                        }
+                                                        if (req && !hasAnother) {
+                                                            requireThisKeys.add(key);
+                                                            break;
                                                         }
                                                     }
-                                                    if (req && !hasAnother) {
-                                                        requireThisKeys.add(key);
-                                                        break;
+                                                }
+                                                if (requireThisKeys.size() > 0) {
+                                                    StringBuilder sb = new StringBuilder("You are trying to disable module that required by following module(s):");
+                                                    for (String key : requireThisKeys) {
+                                                        sb.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
                                                     }
-                                                }
-                                            }
-                                            if (requireThisKeys.size() > 0) {
-                                                StringBuilder sb = new StringBuilder("You are trying to disable module that required by following module(s):");
-                                                for (String key : requireThisKeys) {
-                                                    sb.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
-                                                }
-                                                sb.append("\n\nYou should disable dependent module(s) first, then try again.");
-                                                JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+                                                    sb.append("\n\nYou should disable dependent module(s) first, then try again.");
+                                                    JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
 
-                                                src.setSelected(true, true);
-                                                throw new PCTDataFormatException("");
+                                                    src.setSelected(true, true);
+                                                    throw new PCTDataFormatException("");
+                                                }
                                             }
                                             getProduct().delModule(src.getKey());
                                             for (RequireCapacity rc : getProduct().getProduct().getModules().get(src.getKey()).getRequireCapacities().values()) {
