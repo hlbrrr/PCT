@@ -292,7 +292,7 @@ public class ProductForm {
         }
         if(empty){
             for(Capacity c : capacitiesGroup.getCapacities().values()){
-                empty = empty && !getProduct().getCapacities().containsKey(c.getKey());
+                empty = empty && !(getProduct().getCapacities().containsKey(c.getKey()) && c.checkLicenseKey(getProduct().getLicense().getKey()));
                 if(!empty){
                     break;
                 }
