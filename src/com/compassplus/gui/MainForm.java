@@ -44,6 +44,7 @@ public class MainForm {
     private JMenu fileMenu;
     private JMenu proposalMenu;
     private JMenu helpMenu;
+    private JMenu viewMenu;
     private JMenuItem createProposal;
     private JMenuItem openProposal;
     private JMenuItem saveProposal;
@@ -51,6 +52,7 @@ public class MainForm {
     private JMenuItem closeProposal;
     private JMenuItem exit;
     private JMenuItem about;
+    private JMenuItem rollUp;
 
     private JMenuItem addProduct;
     private JMenuItem delProduct;
@@ -72,11 +74,12 @@ public class MainForm {
         initFileMenu();
         initHelpMenu();
         initProposalMenu();
+        initViewMenu();
         initMainPanel();
-
 
         mainMenu = new JMenuBar();
         mainMenu.add(fileMenu);
+        mainMenu.add(viewMenu);
         mainMenu.add(proposalMenu);
         mainMenu.add(helpMenu);
     }
@@ -102,7 +105,36 @@ public class MainForm {
         return true;
     }
 
-    private void initHelpMenu() {
+    private void initViewMenu() {
+        rollUp = new JMenuItem("Roll-up empty sections");
+        rollUp.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (getCurrentProposalForm() != null && getCurrentProposalForm().getCurrentProductForm()!=null) {
+                     getCurrentProposalForm().getCurrentProductForm().rollUp();
+                }
+            }
+        });
+
+        viewMenu = new JMenu("View");
+        viewMenu.addMenuListener(new MenuListener() {
+            public void menuSelected(MenuEvent e) {
+                if (getCurrentProposalForm() != null && getCurrentProposalForm().getCurrentProductForm()!=null) {
+                    rollUp.setEnabled(true);
+                } else {
+                    rollUp.setEnabled(false);
+                }
+            }
+
+            public void menuDeselected(MenuEvent e) {
+            }
+
+            public void menuCanceled(MenuEvent e) {
+            }
+        });
+        viewMenu.add(rollUp);
+    }
+
+        private void initHelpMenu() {
         about = new JMenuItem("About");
         about.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

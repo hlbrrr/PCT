@@ -31,6 +31,8 @@ public class ProductForm {
     private JFrame frame;
     private Map<String, CapacityJSpinner> spinners = new HashMap<String, CapacityJSpinner>();
     private Map<String, ModuleJButton> checkBoxes = new HashMap<String, ModuleJButton>();
+    private Map<ModulesGroup, LnkPanel> modulesGroupsLinks = new HashMap<ModulesGroup, LnkPanel>();
+    private Map<CapacitiesGroup, LnkPanel> capacitiesGroupsLinks = new HashMap<CapacitiesGroup, LnkPanel>();
     private ArrayList<ModuleJButton> checkBoxesToCheck = new ArrayList<ModuleJButton>();
     private PCTChangedListener priceChanged;
 
@@ -123,13 +125,17 @@ public class ProductForm {
         cas.getLabel().setText(sb.toString());
     }
 
+    public void rollUp(){
+        hideUnusedModules();
+        hideUnusedCapacities();
+    }
+
     private void initForm() {
         primaryCheckBox = new JCheckBox("Primary sale", !getProduct().getSecondarySale());
         primaryCheckBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 final JCheckBox src = (JCheckBox) e.getSource();
                 final boolean secondary = !src.isSelected();
-
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         if (secondary) {
@@ -253,6 +259,54 @@ public class ProductForm {
             getFormFromModulesGroup(parent, null);
         } catch (PCTDataFormatException e) {
         }
+    }
+
+    private boolean hideUnusedModules(ModulesGroup modulesGroup){
+        boolean empty = true;
+        for(ModulesGroup g : modulesGroup.getGroups()){
+            empty = hideUnusedModules(g) && empty;
+        }
+        if(empty){
+            for(Module m : modulesGroup.getModules().values()){
+                empty = empty && !getProduct().getModules().containsKey(m.getKey());
+                if(!empty){
+                    break;
+                }
+            }
+        }
+        if(empty && modulesGroupsLinks.containsKey(modulesGroup) && modulesGroupsLinks.get(modulesGroup).getPanel().isVisible()){
+            modulesGroupsLinks.get(modulesGroup).getPanel().setVisible(false);
+            modulesGroupsLinks.get(modulesGroup).getLabel().setText("<html><b>[+]</b></html>\"");
+        }
+        return empty;
+    }
+
+    private boolean hideUnusedModules(){
+       return hideUnusedModules(getProduct().getProduct().getModulesRoot());
+    }
+
+    private boolean hideUnusedCapacities(CapacitiesGroup capacitiesGroup){
+        boolean empty = true;
+        for(CapacitiesGroup g : capacitiesGroup.getGroups()){
+            empty =  hideUnusedCapacities(g) && empty;
+        }
+        if(empty){
+            for(Capacity c : capacitiesGroup.getCapacities().values()){
+                empty = empty && !getProduct().getCapacities().containsKey(c.getKey());
+                if(!empty){
+                    break;
+                }
+            }
+        }
+        if(empty && capacitiesGroupsLinks.containsKey(capacitiesGroup) && capacitiesGroupsLinks.get(capacitiesGroup).getPanel().isVisible()){
+            capacitiesGroupsLinks.get(capacitiesGroup).getPanel().setVisible(false);
+            capacitiesGroupsLinks.get(capacitiesGroup).getLabel().setText("<html><b>[+]</b></html>\"");
+        }
+        return empty;
+    }
+
+    private boolean hideUnusedCapacities(){
+       return hideUnusedCapacities(getProduct().getProduct().getCapacitiesRoot());
     }
 
     private void getFormFromModulesGroup(JPanel parent, ModulesGroup modulesGroup) throws PCTDataFormatException {
@@ -635,6 +689,7 @@ public class ProductForm {
                 GridBagConstraints c = new GridBagConstraints();
 
                 JLabel mm = new JLabel("<html><b>[~]</b></html>\"");
+                modulesGroupsLinks.put(g, new LnkPanel(modules, mm));
                 mm.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 mm.setBorder(new EmptyBorder(0, 4, 2, 2));
                 final JPanel lnk = modules;
@@ -893,6 +948,7 @@ public class ProductForm {
                 GridBagConstraints c = new GridBagConstraints();
 
                 JLabel mm = new JLabel("<html><b>[~]</b></html>\"");
+                capacitiesGroupsLinks.put(g, new LnkPanel(capacities, mm));
                 mm.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 mm.setBorder(new EmptyBorder(0, 4, 2, 2));
                 final JPanel lnk = capacities;
