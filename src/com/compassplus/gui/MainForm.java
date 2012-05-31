@@ -44,7 +44,7 @@ public class MainForm {
     private JMenu fileMenu;
     private JMenu proposalMenu;
     private JMenu helpMenu;
-    private JMenu viewMenu;
+    //private JMenu viewMenu;
     private JMenuItem createProposal;
     private JMenuItem openProposal;
     private JMenuItem saveProposal;
@@ -74,12 +74,12 @@ public class MainForm {
         initFileMenu();
         initHelpMenu();
         initProposalMenu();
-        initViewMenu();
+        // initViewMenu();
         initMainPanel();
 
         mainMenu = new JMenuBar();
         mainMenu.add(fileMenu);
-        mainMenu.add(viewMenu);
+        //mainMenu.add(viewMenu);
         mainMenu.add(proposalMenu);
         mainMenu.add(helpMenu);
     }
@@ -105,36 +105,8 @@ public class MainForm {
         return true;
     }
 
-    private void initViewMenu() {
-        rollUp = new JMenuItem("Roll-up empty sections");
-        rollUp.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (getCurrentProposalForm() != null && getCurrentProposalForm().getCurrentProductForm()!=null) {
-                     getCurrentProposalForm().getCurrentProductForm().rollUp();
-                }
-            }
-        });
 
-        viewMenu = new JMenu("View");
-        viewMenu.addMenuListener(new MenuListener() {
-            public void menuSelected(MenuEvent e) {
-                if (getCurrentProposalForm() != null && getCurrentProposalForm().getCurrentProductForm()!=null) {
-                    rollUp.setEnabled(true);
-                } else {
-                    rollUp.setEnabled(false);
-                }
-            }
-
-            public void menuDeselected(MenuEvent e) {
-            }
-
-            public void menuCanceled(MenuEvent e) {
-            }
-        });
-        viewMenu.add(rollUp);
-    }
-
-        private void initHelpMenu() {
+    private void initHelpMenu() {
         about = new JMenuItem("About");
         about.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -791,6 +763,19 @@ public class MainForm {
     }
 
     private void initProposalMenu() {
+        rollUp = new JMenuItem("Roll-up empty sections");
+        rollUp.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (getCurrentProposalForm() != null) {
+                     for(Component c:getCurrentProposalForm().getProductsTabs().getComponents()){
+                        if(c instanceof ProductJPanel){
+                            ProductJPanel pjpc = (ProductJPanel)c;
+                            pjpc.getParentForm().rollUp();
+                        }
+                     }
+                }
+            }
+        });
         addProduct = new JMenuItem("Add product");
         addProduct.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -826,6 +811,7 @@ public class MainForm {
         proposalMenu.setEnabled(false);
         proposalMenu.add(addProduct);
         proposalMenu.add(delProduct);
+        proposalMenu.add(rollUp);
         proposalMenu.addMenuListener(new MenuListener() {
             public void menuSelected(MenuEvent e) {
                 if (getCurrentProposalForm() != null && getCurrentProposalForm().getProposal().getProducts().size() < getCurrentProposalForm().getProposal().getConfig().getProducts().size()) {
@@ -838,6 +824,13 @@ public class MainForm {
                     getDelProduct().setEnabled(true);
                 } else {
                     getDelProduct().setEnabled(false);
+                }
+
+
+                if (getCurrentProposalForm() != null && getCurrentProposalForm().getProposal().getProducts().size()>0) {
+                    rollUp.setEnabled(true);
+                } else {
+                    rollUp.setEnabled(false);
                 }
             }
 
