@@ -17,7 +17,7 @@ public class Logger {
     }
 
     public void info(String message) {
-        System.out.println("[I] " + message);
+        //System.out.println("[I] " + message);
     }
 
     public void error(Exception exception) {
