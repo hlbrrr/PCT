@@ -34,6 +34,11 @@ public class Configuration {
     private Double maxDiscount = 0d;
     private Double maxSupportDiscount = 0d;
     private String expDateString;
+    private Boolean salesSupport;
+
+    public boolean isSalesSupport(){
+        return salesSupport != null ? salesSupport : false;
+    }
 
     public static Configuration getInstance() {
         return ourInstance;
@@ -61,6 +66,7 @@ public class Configuration {
             this.setUserName(xut.getNode("/root/Users/User/Name", initialData));
             this.setMaxDiscount(xut.getNode("/root/Users/User/MaxProductDiscount", initialData));
             this.setMaxSupportDiscount(xut.getNode("/root/Users/User/MaxSupportDiscount", initialData));
+            this.setSalesSupport(xut.getNode("/root/Users/User/SalesSupport", initialData));
 
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Bad configuration", e.getDetails());
@@ -90,6 +96,14 @@ public class Configuration {
             this.userName = xut.getString(userName);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("User name is not defined correctly", e.getDetails());
+        }
+    }
+
+    private void setSalesSupport(Node salesSupport) throws PCTDataFormatException {
+        try {
+            this.salesSupport = xut.getBoolean(salesSupport, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("SalesSupport flag is not defined correctly", e.getDetails());
         }
     }
 

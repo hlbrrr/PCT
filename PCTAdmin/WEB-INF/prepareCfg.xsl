@@ -8,7 +8,7 @@
 
 
     <xsl:template match="/root/Regions/Region">
-        <xsl:if test="Key = /root/Users/User[CN=/root/cn]/Regions/Region/Key">
+        <xsl:if test="Key = /root/Users/User[CN=/root/cn]/Regions/Region/Key or /root/Users/User[CN=/root/cn]/SalesSupport = 'true'">
             <xsl:copy>
                 <xsl:apply-templates select="@*|node()"/>
             </xsl:copy>

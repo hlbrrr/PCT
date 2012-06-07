@@ -393,14 +393,14 @@ public class MainForm {
                                                         if (!fSameCurrency)
                                                             cs2.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                         c2.setCellStyle(cs2);
-                                                        c2.setCellValue(p.getRegionPrice());
+                                                        c2.setCellValue(p.getProposal().getConfig().isSalesSupport()?0:p.getRegionPrice());
 
                                                         Cell c3 = r.createCell(2 + cellIndex);
                                                         CellStyle cs3 = rowStyle.getCellStyle(2 + cellIndex, wb.createCellStyle());
                                                         cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%"));
                                                         //cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%;;@"));
                                                         c3.setCellStyle(cs3);
-                                                        c3.setCellValue(p.getDiscount());
+                                                        c3.setCellValue(p.getProposal().getConfig().isSalesSupport()?0:p.getDiscount());
 
                                                         Cell c4 = r.createCell(3 + cellIndex);
                                                         CellStyle cs4 = rowStyle.getCellStyle(3 + cellIndex, wb.createCellStyle());
@@ -416,13 +416,13 @@ public class MainForm {
                                                         if (!fSameCurrency)
                                                             cs5.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                         c5.setCellStyle(cs5);
-                                                        c5.setCellValue(p.getSupportPriceUndiscounted());
+                                                        c5.setCellValue(p.getProposal().getConfig().isSalesSupport()?0:p.getSupportPriceUndiscounted());
 
                                                         Cell c6 = r.createCell(5 + cellIndex);
                                                         CellStyle cs6 = rowStyle.getCellStyle(5 + cellIndex, wb.createCellStyle());
                                                         cs6.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%"));
                                                         c6.setCellStyle(cs6);
-                                                        c6.setCellValue(p.getSupportDiscount());
+                                                        c6.setCellValue(p.getProposal().getConfig().isSalesSupport()?0:p.getSupportDiscount());
 
                                                         Cell c7 = r.createCell(6 + cellIndex);
                                                         CellStyle cs7 = rowStyle.getCellStyle(6 + cellIndex, wb.createCellStyle());

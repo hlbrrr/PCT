@@ -176,8 +176,10 @@ public class SummaryForm {
             }*/
 
 
-            settingsPanelCenter.add(tmpPanel);
-            settingsPanelRight.add(tmpPanel2);
+            if (!getProposal().getConfig().isSalesSupport()) {
+                settingsPanelCenter.add(tmpPanel);
+                settingsPanelRight.add(tmpPanel2);
+            }
         }
         {
             JLabel clientNameLabel = new JLabel("Client name");
@@ -356,8 +358,12 @@ public class SummaryForm {
             tmpPanel2.setBorder(new EmptyBorder(4, 4, 4, 4));
             tmpPanel2.add(currencyLabel);
             tmpPanel2.add(currencyField);
+
             settingsPanelCenter.add(tmpPanel2);
-            settingsPanelRight.add(tmpPanel);
+
+            if (!getProposal().getConfig().isSalesSupport()) {
+                settingsPanelRight.add(tmpPanel);
+            }
         }
 
 
@@ -403,8 +409,10 @@ public class SummaryForm {
             tmpPanel2.setBorder(new EmptyBorder(4, 4, 4, 4));
             tmpPanel2.add(supportPlanLabel);
             tmpPanel2.add(supportPlanField);
-            settingsPanelLeft.add(tmpPanel2);
-            settingsPanelCenter.add(tmpPanel);
+            if (!getProposal().getConfig().isSalesSupport()) {
+                settingsPanelLeft.add(tmpPanel2);
+                settingsPanelCenter.add(tmpPanel);
+            }
         }
         //maxDiscountField.setMaximumSize(new Dimension(planRateField.getMaximumSize().width, planRateField.getMinimumSize().height));
         initCurrency(getProposal().getCurrency());
@@ -517,80 +525,86 @@ public class SummaryForm {
                     JPanel panel = new JPanel();
                     panel.add(label);
                     panel.setBorder(border);
+                    if (getProposal().getConfig().isSalesSupport()) {
+                        panel.setBorder(lborder);
+                    }
                     panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
                     productsTable.add(panel, c);
                 }
-                {
-                    c.gridx++;
-                    JLabel label = new JLabel("Global list price");
-                    JPanel panel = new JPanel();
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                    productsTable.add(panel, c);
-                }
-                if (getProposal().getRegion().getRate() != 1d) {
-                    c.gridx++;
-                    JLabel label = new JLabel("Regional list price");
-                    JPanel panel = new JPanel();
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JLabel label = new JLabel("Mark-up (%)");
-                    JPanel panel = new JPanel();
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JLabel label = new JLabel("Marked-up price");
-                    JPanel panel = new JPanel();
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JLabel label = new JLabel("Prod. disc. (%)");
-                    JPanel panel = new JPanel();
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JLabel label = new JLabel("End user price");
-                    JPanel panel = new JPanel();
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JLabel label = new JLabel("Sup. disc. (%)");
-                    JPanel panel = new JPanel();
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JLabel label = new JLabel("Support price");
-                    JPanel panel = new JPanel();
-                    panel.add(label);
-                    panel.setBorder(lborder);
-                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                    productsTable.add(panel, c);
+
+                if (!getProposal().getConfig().isSalesSupport()) {
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("Global list price");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        productsTable.add(panel, c);
+                    }
+                    if (getProposal().getRegion().getRate() != 1d) {
+                        c.gridx++;
+                        JLabel label = new JLabel("Regional list price");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("Mark-up (%)");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("Marked-up price");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("Prod. disc. (%)");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("End user price");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("Sup. disc. (%)");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("Support price");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(lborder);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        productsTable.add(panel, c);
+                    }
                 }
                 final CustomJLabel glmuplabel = new CustomJLabel(new PCTChangedListener() {
                     public void act(Object src) {
@@ -659,7 +673,13 @@ public class SummaryForm {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
                 });
+                int lastProductIndex = 0;
                 for (Product p : getProposal().getProducts().values()) {
+                    lastProductIndex++;
+                    if(getProposal().getConfig().isSalesSupport() && lastProductIndex==getProposal().getProducts().values().size()){
+                        border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
+                        lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
+                    }
                     c.gridy++;
                     {
                         c.gridx = 0;
@@ -684,29 +704,18 @@ public class SummaryForm {
                         panel.setPreferredSize(new Dimension(0, 32));
                         panel.add(label);
                         panel.setBorder(border);
+                        if (getProposal().getConfig().isSalesSupport()) {
+                            panel.setBorder(lborder);
+                        }
                         panel.setBackground(Color.white);
                         productsTable.add(panel, c);
                     }
-                    {
-                        c.gridx++;
-                        JLabel label = new JLabel((p.getProposal().getCurrency().getSymbol() != null ?
-                                p.getProposal().getCurrency().getSymbol() + " " : "") + df.format(p.getPrice()) + (p.getProposal().getCurrency().getSymbol() == null ?
-                                " " + p.getProposal().getCurrency().getName() : ""));
-                        JPanel panel = new JPanel();
-                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                        panel.setPreferredSize(new Dimension(0, 32));
-                        panel.add(label);
-                        panel.setBorder(border);
-                        panel.setBackground(Color.white);
-                        productsTable.add(panel, c);
-                    }
-                    if (getProposal().getRegion().getRate() != 1d) {
+
+                    if (!getProposal().getConfig().isSalesSupport()) {
                         {
                             c.gridx++;
                             JLabel label = new JLabel((p.getProposal().getCurrency().getSymbol() != null ?
-                                    p.getProposal().getCurrency().getSymbol() + " " : "") + df.format(p.getRegionPrice(true)) + (p.getProposal().getCurrency().getSymbol() == null ?
+                                    p.getProposal().getCurrency().getSymbol() + " " : "") + df.format(p.getPrice()) + (p.getProposal().getCurrency().getSymbol() == null ?
                                     " " + p.getProposal().getCurrency().getName() : ""));
                             JPanel panel = new JPanel();
                             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -718,373 +727,392 @@ public class SummaryForm {
                             panel.setBackground(Color.white);
                             productsTable.add(panel, c);
                         }
-                    }
-                    final Product prod = p;
-                    final CustomJLabel eulabel = new CustomJLabel(new PCTChangedListener() {
-                        public void act(Object src) {
-                            Double price = 0d;
-                            price = prod.getEndUserPrice();
-
-                            ((CustomJLabel) src).setText((prod.getProposal().getCurrency().getSymbol() != null ?
-                                    prod.getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (prod.getProposal().getCurrency().getSymbol() == null ?
-                                    " " + prod.getProposal().getCurrency().getName() : ""));
+                        if (getProposal().getRegion().getRate() != 1d) {
+                            {
+                                c.gridx++;
+                                JLabel label = new JLabel((p.getProposal().getCurrency().getSymbol() != null ?
+                                        p.getProposal().getCurrency().getSymbol() + " " : "") + df.format(p.getRegionPrice(true)) + (p.getProposal().getCurrency().getSymbol() == null ?
+                                        " " + p.getProposal().getCurrency().getName() : ""));
+                                JPanel panel = new JPanel();
+                                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                                label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                                label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                                panel.setPreferredSize(new Dimension(0, 32));
+                                panel.add(label);
+                                panel.setBorder(border);
+                                panel.setBackground(Color.white);
+                                productsTable.add(panel, c);
+                            }
                         }
-
-                        public void setData(Object data) {
-                            //To change body of implemented methods use File | Settings | File Templates.
-                        }
-
-                        public Object getData() {
-                            return null;  //To change body of implemented methods use File | Settings | File Templates.
-                        }
-                    });
-
-                    final CustomJLabel muplabel = new CustomJLabel(new PCTChangedListener() {
-                        public void act(Object src) {
-                            Double price = 0d;
-                            price = prod.getRegionPrice();
-
-                            ((CustomJLabel) src).setText((prod.getProposal().getCurrency().getSymbol() != null ?
-                                    prod.getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (prod.getProposal().getCurrency().getSymbol() == null ?
-                                    " " + prod.getProposal().getCurrency().getName() : ""));
-                        }
-
-                        public void setData(Object data) {
-                            //To change body of implemented methods use File | Settings | File Templates.
-                        }
-
-                        public Object getData() {
-                            return null;  //To change body of implemented methods use File | Settings | File Templates.
-                        }
-                    });
-                    final CustomJLabel splabel = new CustomJLabel(new PCTChangedListener() {
-                        public void act(Object src) {
-                            if (planRateField != null) {
-                                Double price = prod.getSupportPrice();
+                        final Product prod = p;
+                        final CustomJLabel eulabel = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                Double price = 0d;
+                                price = prod.getEndUserPrice();
 
                                 ((CustomJLabel) src).setText((prod.getProposal().getCurrency().getSymbol() != null ?
                                         prod.getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (prod.getProposal().getCurrency().getSymbol() == null ?
                                         " " + prod.getProposal().getCurrency().getName() : ""));
                             }
-                        }
 
-                        public void setData(Object data) {
-                            //To change body of implemented methods use File | Settings | File Templates.
-                        }
+                            public void setData(Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
 
-                        public Object getData() {
-                            return null;  //To change body of implemented methods use File | Settings | File Templates.
-                        }
-                    });
-                    final JSpinner productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1, prod, false);
-                    final JSpinner supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
-                    {
-                        c.gridx++;
-                        final JSpinner sp = new JSpinner(new SpinnerNumberModel((int) ((prod.getMarkUp() - 1) * 100), 0, 100, 1));
-
-                        sp.addChangeListener(new ChangeListener() {
-                            public void stateChanged(ChangeEvent e) {
-                                final ChangeEvent ev = e;
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        if (ev.getSource() == sp) {
-                                            prod.setMarkUp(1d + (Integer) sp.getValue() / 100d);
-                                            eulabel.call();
-                                            gleulabel.call();
-                                            splabel.call();
-                                            glsplabel.call();
-                                            glmuplabel.call();
-                                            muplabel.call();
-                                            updated.act(that);
-                                            productDiscount.setValue(productDiscount.getValue());
-                                            supportDiscount.setValue(supportDiscount.getValue());
-                                        }
-                                    }
-                                });
+                            public Object getData() {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
                             }
                         });
-                        sp.setMaximumSize(new Dimension(sp.getMaximumSize().width, sp.getMinimumSize().height));
 
-                        JPanel panelW = new JPanel();
-                        panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
-                        panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
-                        panelW.add(sp);
-                        panelW.setBackground(Color.white);
+                        final CustomJLabel muplabel = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                Double price = 0d;
+                                price = prod.getRegionPrice();
 
-                        JPanel panel = new JPanel();
-                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                        panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+                                ((CustomJLabel) src).setText((prod.getProposal().getCurrency().getSymbol() != null ?
+                                        prod.getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (prod.getProposal().getCurrency().getSymbol() == null ?
+                                        " " + prod.getProposal().getCurrency().getName() : ""));
+                            }
 
-                        sp.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                        panel.setPreferredSize(new Dimension(0, 32));
-                        panel.add(panelW);
-                        panel.setBorder(border);
-                        panel.setBackground(Color.white);
-                        productsTable.add(panel, c);
-                    }
-                    {
-                        c.gridx++;
-                        JPanel panel = new JPanel();
-                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                        muplabel.setBorder(new EmptyBorder(4, 4, 4, 4));
-                        muplabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                        panel.setPreferredSize(new Dimension(0, 32));
-                        panel.add(muplabel);
-                        panel.setBorder(border);
-                        panel.setBackground(Color.white);
-                        productsTable.add(panel, c);
-                    }
-                    {
-                        c.gridx++;
-                        //final JSpinner sp = new DiscountJSpinner("Maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1);
-                        //productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1, prod, false);
+                            public void setData(Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
 
-                        productDiscount.addChangeListener(new ChangeListener() {
-                            public void stateChanged(ChangeEvent e) {
-                                final ChangeEvent ev = e;
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        if (ev.getSource() == productDiscount) {
-                                            prod.setDiscount((Integer) productDiscount.getValue() / 100d);
-                                            eulabel.call();
-                                            gleulabel.call();
-                                            updated.act(that);
-                                        }
-                                    }
-                                });
+                            public Object getData() {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
                             }
                         });
-                        productDiscount.setMaximumSize(new Dimension(productDiscount.getMaximumSize().width, productDiscount.getMinimumSize().height));
+                        final CustomJLabel splabel = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                if (planRateField != null) {
+                                    Double price = prod.getSupportPrice();
 
-                        JPanel panelW = new JPanel();
-                        panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
-                        panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
-                        panelW.add(productDiscount);
-                        panelW.setBackground(Color.white);
+                                    ((CustomJLabel) src).setText((prod.getProposal().getCurrency().getSymbol() != null ?
+                                            prod.getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (prod.getProposal().getCurrency().getSymbol() == null ?
+                                            " " + prod.getProposal().getCurrency().getName() : ""));
+                                }
+                            }
 
-                        JPanel panel = new JPanel();
-                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                        panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+                            public void setData(Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
 
-                        productDiscount.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                        panel.setPreferredSize(new Dimension(0, 32));
-                        panel.add(panelW);
-                        panel.setBorder(border);
-                        panel.setBackground(Color.white);
-                        productsTable.add(panel, c);
-                    }
-                    {
-                        c.gridx++;
-                        JPanel panel = new JPanel();
-                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                        eulabel.setBorder(new EmptyBorder(4, 4, 4, 4));
-                        eulabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                        panel.setPreferredSize(new Dimension(0, 32));
-                        panel.add(eulabel);
-                        panel.setBorder(border);
-                        panel.setBackground(Color.white);
-                        productsTable.add(panel, c);
-                    }
-                    {
-                        c.gridx++;
-                        //supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
-                        supportDiscount.addChangeListener(new ChangeListener() {
-                            public void stateChanged(ChangeEvent e) {
-                                final ChangeEvent ev = e;
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        if (ev.getSource() == supportDiscount) {
-                                            prod.setSupportDiscount((Integer) supportDiscount.getValue() / 100d);
-                                            splabel.call();
-                                            glsplabel.call();
-                                            updated.act(that);
-                                        }
-                                    }
-                                });
+                            public Object getData() {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
                             }
                         });
-                        supportDiscount.setMaximumSize(new Dimension(supportDiscount.getMaximumSize().width, supportDiscount.getMinimumSize().height));
+                        final JSpinner productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1, prod, false);
+                        final JSpinner supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
+                        {
+                            c.gridx++;
+                            final JSpinner sp = new JSpinner(new SpinnerNumberModel((int) ((prod.getMarkUp() - 1) * 100), 0, 100, 1));
 
-                        JPanel panelW = new JPanel();
-                        panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
-                        panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
-                        panelW.add(supportDiscount);
-                        panelW.setBackground(Color.white);
+                            sp.addChangeListener(new ChangeListener() {
+                                public void stateChanged(ChangeEvent e) {
+                                    final ChangeEvent ev = e;
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        public void run() {
+                                            if (ev.getSource() == sp) {
+                                                prod.setMarkUp(1d + (Integer) sp.getValue() / 100d);
+                                                eulabel.call();
+                                                gleulabel.call();
+                                                splabel.call();
+                                                glsplabel.call();
+                                                glmuplabel.call();
+                                                muplabel.call();
+                                                updated.act(that);
+                                                productDiscount.setValue(productDiscount.getValue());
+                                                supportDiscount.setValue(supportDiscount.getValue());
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            sp.setMaximumSize(new Dimension(sp.getMaximumSize().width, sp.getMinimumSize().height));
 
+                            JPanel panelW = new JPanel();
+                            panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                            panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            panelW.add(sp);
+                            panelW.setBackground(Color.white);
+
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                            sp.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(panelW);
+                            panel.setBorder(border);
+                            panel.setBackground(Color.white);
+                            productsTable.add(panel, c);
+                        }
+                        {
+                            c.gridx++;
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            muplabel.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            muplabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(muplabel);
+                            panel.setBorder(border);
+                            panel.setBackground(Color.white);
+                            productsTable.add(panel, c);
+                        }
+                        {
+                            c.gridx++;
+                            //final JSpinner sp = new DiscountJSpinner("Maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1);
+                            //productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1, prod, false);
+
+                            productDiscount.addChangeListener(new ChangeListener() {
+                                public void stateChanged(ChangeEvent e) {
+                                    final ChangeEvent ev = e;
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        public void run() {
+                                            if (ev.getSource() == productDiscount) {
+                                                prod.setDiscount((Integer) productDiscount.getValue() / 100d);
+                                                eulabel.call();
+                                                gleulabel.call();
+                                                updated.act(that);
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            productDiscount.setMaximumSize(new Dimension(productDiscount.getMaximumSize().width, productDiscount.getMinimumSize().height));
+
+                            JPanel panelW = new JPanel();
+                            panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                            panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            panelW.add(productDiscount);
+                            panelW.setBackground(Color.white);
+
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                            productDiscount.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(panelW);
+                            panel.setBorder(border);
+                            panel.setBackground(Color.white);
+                            productsTable.add(panel, c);
+                        }
+                        {
+                            c.gridx++;
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            eulabel.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            eulabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(eulabel);
+                            panel.setBorder(border);
+                            panel.setBackground(Color.white);
+                            productsTable.add(panel, c);
+                        }
+                        {
+                            c.gridx++;
+                            //supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
+                            supportDiscount.addChangeListener(new ChangeListener() {
+                                public void stateChanged(ChangeEvent e) {
+                                    final ChangeEvent ev = e;
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        public void run() {
+                                            if (ev.getSource() == supportDiscount) {
+                                                prod.setSupportDiscount((Integer) supportDiscount.getValue() / 100d);
+                                                splabel.call();
+                                                glsplabel.call();
+                                                updated.act(that);
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            supportDiscount.setMaximumSize(new Dimension(supportDiscount.getMaximumSize().width, supportDiscount.getMinimumSize().height));
+
+                            JPanel panelW = new JPanel();
+                            panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                            panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            panelW.add(supportDiscount);
+                            panelW.setBackground(Color.white);
+
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                            supportDiscount.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(panelW);
+                            panel.setBorder(border);
+                            panel.setBackground(Color.white);
+                            productsTable.add(panel, c);
+                        }
+                        {
+                            c.gridx++;
+                            /*if (planRateField != null) {
+                                label.setText((p.getProposal().getCurrency().getSymbol() != null ?
+                                        p.getProposal().getCurrency().getSymbol() + " " : "") + df.format(p.getPrice() * getProposal().getRegion().getRate() * ((Integer) planRateField.getValue() / 100d)) + (p.getProposal().getCurrency().getSymbol() == null ?
+                                        " " + p.getProposal().getCurrency().getName() : ""));
+                            }*/
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            splabel.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            splabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(splabel);
+                            panel.setBorder(lborder);
+                            panel.setBackground(Color.white);
+                            productsTable.add(panel, c);
+                        }
+                        eulabel.call();
+                        splabel.call();
+                        muplabel.call();
+                    }
+                }
+
+                if (!getProposal().getConfig().isSalesSupport()) {
+                    c.gridy++;
+                    c.weightx = 1;
+                    c.fill = GridBagConstraints.HORIZONTAL;
+                    c.anchor = GridBagConstraints.PAGE_START;
+                    border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
+                    lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
+                    {
+                        c.gridx = 0;
+                        JLabel label = new JLabel("");
                         JPanel panel = new JPanel();
                         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                        panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
-
-                        supportDiscount.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
                         panel.setPreferredSize(new Dimension(0, 32));
-                        panel.add(panelW);
+                        panel.add(label);
                         panel.setBorder(border);
                         panel.setBackground(Color.white);
                         productsTable.add(panel, c);
                     }
                     {
                         c.gridx++;
-                        /*if (planRateField != null) {
-                            label.setText((p.getProposal().getCurrency().getSymbol() != null ?
-                                    p.getProposal().getCurrency().getSymbol() + " " : "") + df.format(p.getPrice() * getProposal().getRegion().getRate() * ((Integer) planRateField.getValue() / 100d)) + (p.getProposal().getCurrency().getSymbol() == null ?
-                                    " " + p.getProposal().getCurrency().getName() : ""));
-                        }*/
+                        JLabel label = new JLabel("");
                         JPanel panel = new JPanel();
                         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                        splabel.setBorder(new EmptyBorder(4, 4, 4, 4));
-                        splabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
                         panel.setPreferredSize(new Dimension(0, 32));
-                        panel.add(splabel);
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel((getProposal().getCurrency().getSymbol() != null ?
+                                getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPrice()) + (getProposal().getCurrency().getSymbol() == null ?
+                                " " + getProposal().getCurrency().getName() : ""));
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        productsTable.add(panel, c);
+                    }
+                    if (getProposal().getRegion().getRate() != 1d) {
+                        c.gridx++;
+                        JLabel label = new JLabel((getProposal().getCurrency().getSymbol() != null ?
+                                getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPrice() * getProposal().getRegion().getRate()) + (getProposal().getCurrency().getSymbol() == null ?
+                                " " + getProposal().getCurrency().getName() : ""));
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("");
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        glmuplabel.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        glmuplabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(glmuplabel);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("");
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        gleulabel.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        gleulabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(gleulabel);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("");
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        productsTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JPanel panel = new JPanel();
+
+                        panel.setBackground(Color.white);
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        glsplabel.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        glsplabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(glsplabel);
                         panel.setBorder(lborder);
-                        panel.setBackground(Color.white);
                         productsTable.add(panel, c);
                     }
-                    eulabel.call();
-                    splabel.call();
-                    muplabel.call();
+                    gleulabel.call();
+                    glsplabel.call();
+                    glmuplabel.call();
                 }
-                c.gridy++;
-                c.weightx = 1;
-                c.fill = GridBagConstraints.HORIZONTAL;
-                c.anchor = GridBagConstraints.PAGE_START;
-                border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
-                lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
-                {
-                    c.gridx = 0;
-                    JLabel label = new JLabel("");
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JLabel label = new JLabel("");
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JLabel label = new JLabel((getProposal().getCurrency().getSymbol() != null ?
-                            getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPrice()) + (getProposal().getCurrency().getSymbol() == null ?
-                            " " + getProposal().getCurrency().getName() : ""));
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }
-                if (getProposal().getRegion().getRate() != 1d) {
-                    c.gridx++;
-                    JLabel label = new JLabel((getProposal().getCurrency().getSymbol() != null ?
-                            getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPrice() * getProposal().getRegion().getRate()) + (getProposal().getCurrency().getSymbol() == null ?
-                            " " + getProposal().getCurrency().getName() : ""));
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JLabel label = new JLabel("");
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    glmuplabel.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    glmuplabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(glmuplabel);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JLabel label = new JLabel("");
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    gleulabel.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    gleulabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(gleulabel);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JLabel label = new JLabel("");
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    JPanel panel = new JPanel();
-
-                    panel.setBackground(Color.white);
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    glsplabel.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    glsplabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(glsplabel);
-                    panel.setBorder(lborder);
-                    productsTable.add(panel, c);
-                }
-                gleulabel.call();
-                glsplabel.call();
-                glmuplabel.call();
-
                 JLabel em = new JLabel("");
                 c.weighty = 1.0;   //request any extra vertical space
                 c.anchor = GridBagConstraints.PAGE_END; //bottom of space

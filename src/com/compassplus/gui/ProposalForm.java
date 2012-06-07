@@ -136,9 +136,9 @@ public class ProposalForm {
                     summaryForm.update();
                     Integer ti = productsTabs.indexOfComponent(pf.getRoot());
                     if (ti >= 0) {
-                        productsTabs.setTitleAt(ti, pf.getProduct().getName() + " (" + (getProposal().getCurrency().getSymbol() != null ?
+                        productsTabs.setTitleAt(ti, pf.getProduct().getName() + (!getProposal().getConfig().isSalesSupport()?(" (" + (getProposal().getCurrency().getSymbol() != null ?
                                 getProposal().getCurrency().getSymbol() + " " : "") + "" + df.format(pf.getProduct().getRegionPrice()) + (getProposal().getCurrency().getSymbol() == null ?
-                                " " + getProposal().getCurrency().getName() : "") + ")");
+                                " " + getProposal().getCurrency().getName() : "") + ")"):""));
 
                     }
                 }

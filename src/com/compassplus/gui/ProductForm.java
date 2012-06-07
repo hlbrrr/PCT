@@ -78,17 +78,19 @@ public class ProductForm {
             sb.setLength(0);
             sb.append(m.isDeprecated() ? "[DEPRECATED] " : "");
             sb.append(m.getName());
-            sb.append(" (");
-            if (product.getProposal().getCurrency().getSymbol() != null) {
-                sb.append(product.getProposal().getCurrency().getSymbol());
-                sb.append(" ");
+            if (!product.getProposal().getConfig().isSalesSupport()) {
+                sb.append(" (");
+                if (product.getProposal().getCurrency().getSymbol() != null) {
+                    sb.append(product.getProposal().getCurrency().getSymbol());
+                    sb.append(" ");
+                }
+                sb.append(df.format(m.getRegionalPrice(getProduct())));
+                if (product.getProposal().getCurrency().getSymbol() == null) {
+                    sb.append(" ");
+                    sb.append(product.getProposal().getCurrency().getName());
+                }
+                sb.append(")");
             }
-            sb.append(df.format(m.getRegionalPrice(getProduct())));
-            if (product.getProposal().getCurrency().getSymbol() == null) {
-                sb.append(" ");
-                sb.append(product.getProposal().getCurrency().getName());
-            }
-            sb.append(")");
             cb.setText(sb.toString());
             cb.setActionCommand(sb.toString());
         }
@@ -111,21 +113,23 @@ public class ProductForm {
         StringBuilder sb = new StringBuilder();
         sb.append(c.isDeprecated() ? "[DEPRECATED] " : "");
         sb.append(c.getName());
-        sb.append(" (");
-        if (product.getProposal().getCurrency().getSymbol() != null) {
-            sb.append(product.getProposal().getCurrency().getSymbol());
-            sb.append(" ");
+        if (!product.getProposal().getConfig().isSalesSupport()) {
+            sb.append(" (");
+            if (product.getProposal().getCurrency().getSymbol() != null) {
+                sb.append(product.getProposal().getCurrency().getSymbol());
+                sb.append(" ");
+            }
+            sb.append(df.format(newPrice));
+            if (product.getProposal().getCurrency().getSymbol() == null) {
+                sb.append(" ");
+                sb.append(product.getProposal().getCurrency().getName());
+            }
+            sb.append(")");
         }
-        sb.append(df.format(newPrice));
-        if (product.getProposal().getCurrency().getSymbol() == null) {
-            sb.append(" ");
-            sb.append(product.getProposal().getCurrency().getName());
-        }
-        sb.append(")");
         cas.getLabel().setText(sb.toString());
     }
 
-    public void rollUp(){
+    public void rollUp() {
         hideUnusedModules();
         hideUnusedCapacities();
     }
@@ -261,52 +265,52 @@ public class ProductForm {
         }
     }
 
-    private boolean hideUnusedModules(ModulesGroup modulesGroup){
+    private boolean hideUnusedModules(ModulesGroup modulesGroup) {
         boolean empty = true;
-        for(ModulesGroup g : modulesGroup.getGroups()){
+        for (ModulesGroup g : modulesGroup.getGroups()) {
             empty = hideUnusedModules(g) && empty;
         }
-        if(empty){
-            for(Module m : modulesGroup.getModules().values()){
+        if (empty) {
+            for (Module m : modulesGroup.getModules().values()) {
                 empty = empty && !getProduct().getModules().containsKey(m.getKey());
-                if(!empty){
+                if (!empty) {
                     break;
                 }
             }
         }
-        if(empty && modulesGroupsLinks.containsKey(modulesGroup) && modulesGroupsLinks.get(modulesGroup).getPanel().isVisible()){
+        if (empty && modulesGroupsLinks.containsKey(modulesGroup) && modulesGroupsLinks.get(modulesGroup).getPanel().isVisible()) {
             modulesGroupsLinks.get(modulesGroup).getPanel().setVisible(false);
             modulesGroupsLinks.get(modulesGroup).getLabel().setText("<html><b>[+]</b></html>\"");
         }
         return empty;
     }
 
-    private boolean hideUnusedModules(){
-       return hideUnusedModules(getProduct().getProduct().getModulesRoot());
+    private boolean hideUnusedModules() {
+        return hideUnusedModules(getProduct().getProduct().getModulesRoot());
     }
 
-    private boolean hideUnusedCapacities(CapacitiesGroup capacitiesGroup){
+    private boolean hideUnusedCapacities(CapacitiesGroup capacitiesGroup) {
         boolean empty = true;
-        for(CapacitiesGroup g : capacitiesGroup.getGroups()){
-            empty =  hideUnusedCapacities(g) && empty;
+        for (CapacitiesGroup g : capacitiesGroup.getGroups()) {
+            empty = hideUnusedCapacities(g) && empty;
         }
-        if(empty){
-            for(Capacity c : capacitiesGroup.getCapacities().values()){
-                empty = empty && !(getProduct().getCapacities().containsKey(c.getKey()) && getProduct().getLicense()!=null && c.checkLicenseKey(getProduct().getLicense().getKey()));
-                if(!empty){
+        if (empty) {
+            for (Capacity c : capacitiesGroup.getCapacities().values()) {
+                empty = empty && !(getProduct().getCapacities().containsKey(c.getKey()) && getProduct().getLicense() != null && c.checkLicenseKey(getProduct().getLicense().getKey()));
+                if (!empty) {
                     break;
                 }
             }
         }
-        if(empty && capacitiesGroupsLinks.containsKey(capacitiesGroup) && capacitiesGroupsLinks.get(capacitiesGroup).getPanel().isVisible()){
+        if (empty && capacitiesGroupsLinks.containsKey(capacitiesGroup) && capacitiesGroupsLinks.get(capacitiesGroup).getPanel().isVisible()) {
             capacitiesGroupsLinks.get(capacitiesGroup).getPanel().setVisible(false);
             capacitiesGroupsLinks.get(capacitiesGroup).getLabel().setText("<html><b>[+]</b></html>\"");
         }
         return empty;
     }
 
-    private boolean hideUnusedCapacities(){
-       return hideUnusedCapacities(getProduct().getProduct().getCapacitiesRoot());
+    private boolean hideUnusedCapacities() {
+        return hideUnusedCapacities(getProduct().getProduct().getCapacitiesRoot());
     }
 
     private void getFormFromModulesGroup(JPanel parent, ModulesGroup modulesGroup) throws PCTDataFormatException {
