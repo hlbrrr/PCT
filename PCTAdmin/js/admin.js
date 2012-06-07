@@ -2506,6 +2506,7 @@
                 _clone:$('#Clone', dom).get(),
                 _deprecated:$('#Deprecated', dom).get(),
                 _admin:$('#Admin', dom).get(),
+                _salesSupport:$('#SalesSupport', dom).get(),
                 _core:$('#Core', dom).get()
             });
             var that = this;
@@ -2524,6 +2525,7 @@
                     config += '<Email>' + $(that._email).val() + '</Email>';
                     config += '<Deprecated>' + ($(that._deprecated).prop('checked') ? 'true' : 'false') + '</Deprecated>';
                     config += '<Admin>' + ($(that._admin).prop('checked') ? 'true' : 'false') + '</Admin>';
+                    config += '<SalesSupport>' + ($(that._salesSupport).prop('checked') ? 'true' : 'false') + '</SalesSupport>';
                     config += '<Regions>';
                     $(that._userRegions).children().each(function() {
                         if ($(this).hasClass('divUserRegion'))
@@ -2596,6 +2598,7 @@
                     $(this._userRegions).addClass('hidden');
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true')).change();
                     $(this._admin).prop('checked', ($('>Admin', initialData).text() == 'true')).change();
+                    $(this._salesSupport).prop('checked', ($('>SalesSupport', initialData).text() == 'true')).change();
                     $(this._expand).html('Expand');
                     $(this._remove).addClass('hidden');
                     var that = this;
