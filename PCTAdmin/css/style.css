@@ -179,6 +179,20 @@ body, input, select, textarea {
     margin-bottom: 5px;
 }
 
+.divCapacityDependencies{
+    padding-top: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.divCapacityDependencies .divDependency:first-child {
+    margin-top: 5px;
+}
+
+.divCapacityDependencies .divDependency:last-child {
+    margin-bottom: 5px;
+}
+
 .divGroups .divModulesGroup:first-child {
     margin-top: 0;
 }
@@ -200,6 +214,15 @@ body, input, select, textarea {
 }
 
 .divGroups .divCapacitiesGroup:last-child {
+    margin-top: 0;
+}
+
+
+
+.divTiers .divTier:last-child {
+    margin-top: 0;
+}
+.divTiers .divTier:first-child {
     margin-top: 0;
 }
 
@@ -306,6 +329,10 @@ body, input, select, textarea {
 .divDependencies, .divTiers, .divSupportPlanRegions, .divCurrencyRegions, .divUserRegions {
     padding: 10px;
     padding-bottom: 0;
+}
+
+.divTiers {
+    padding-top: 5px;
 }
 
 .titleTable {

@@ -535,6 +535,9 @@
                 <div id="Clone" class="titleTableCell titleTableCellButton">
                     Clone
                 </div>
+                <div id="AddDependency" class="titleTableCell titleTableCellButton">
+                    Add Dependency
+                </div>
                 <div id="AddTier" class="titleTableCell titleTableCellButton">
                     Add Tier
                 </div>
@@ -634,6 +637,7 @@
                 </div>
             </div>
         </div>
+        <div id="Dependencies" class="divCapacityDependencies"></div>
         <div id="Tiers" class="divTiers"></div>
     </div>
 </template>
@@ -666,6 +670,70 @@
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <input id="Price" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="capacityDependency">
+    <div class="divDependency" id="DependencyBody">
+        <div class="divDependencyTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton dependencyDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle" id="KeyTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Type:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <select id="Type" autocomplete="off" class="settingInput" disabled="true">
+                                <option value="require">Require Module</option>
+                                <!--<option value="exclude">Exclude Module</option>
+                                <option value="capacity">Require Capacity</option>   -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow hidden" id="divValue">
+                        <div class="settingsTableCell settingsTitle">
+                            Value:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Value" autocomplete="off" class="settingInput validate" validclass="int"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow hidden" id="divIncremental">
+                        <div class="settingsTableCell settingsTitle">
+                            Incremental:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="Incremental" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow hidden" id="divFreeOfCharge">
+                        <div class="settingsTableCell settingsTitle">
+                            Free Of Charge:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="FreeOfCharge" autocomplete="off" type="checkbox"/>
                         </div>
                     </div>
                 </div>

@@ -1903,6 +1903,8 @@
                 _licenseKey:$('#LicenseKey', dom).get(),
                 _addTier:$('#AddTier', dom).get(),
                 _settings:$('#Settings', dom).get(),
+                _dependencies:$('#Dependencies', dom).get(),
+                _addDependency:$('#AddDependency', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _tiers:$('#Tiers', dom).get(),
                 _expand:$('#Expand', dom).get(),
@@ -1915,6 +1917,11 @@
                 _isLink:false
             });
             var that = this;
+            $(this._dependencies, dom).sortable({
+                revert:true,
+                handle: '.dependencyDrag',
+                connectWith: '.divCapacityDependencies'
+            });
             $(this._tiers, dom).sortable({
                 revert:true,
                 handle: '.tierDrag',
@@ -1943,6 +1950,16 @@
                                 config += $.data($(this)[0], 'pct').getXML();
                         });
                         config += '</Tiers>';
+                        config += '<Dependencies>';
+                        $(that._dependencies).children().each(function() {
+                            if ($(this).hasClass('requireDependency'))
+                                config += '<Require>' + $.data($(this)[0], 'pct').getXML() + '</Require>';
+                        });
+                        $(that._dependencies).children().each(function() {
+                            if ($(this).hasClass('requireCapacityDependency'))
+                                config += '<RequireCapacity' + $.data($(this)[0], 'pct').getAttributesString() + '>' + $.data($(this)[0], 'pct').getXML() + '</RequireCapacity>';
+                        });
+                        config += '</Dependencies>';
                     }
                     config += '</Capacity>';
                     return config;
@@ -1961,9 +1978,18 @@
             $(this._name).change(function() {
                 $(that._capacityTitle).html($(this).val());
             });
+            $(this._addDependency).click(function() {
+                if ($(that._dependencies).hasClass('hidden')) {
+                    $(that._dependencies).removeClass('hidden');
+                    $(that._tiers).removeClass('hidden');
+                    $(that._expand).html('Collapse');
+                }
+                that.addDependency();
+            });
             $(this._key).val(PCT.randomString(15)).change();
             $(this._expand).click(function(arg) {
                 $(that._tiers).toggleClass('hidden');
+                $(that._dependencies).toggleClass('hidden');
                 if ($(that._tiers).hasClass('hidden')) {
                     $(that._expand).html('Expand');
                 } else {
@@ -1980,6 +2006,7 @@
             $(this._addTier).click(function() {
                 if ($(that._tiers).hasClass('hidden')) {
                     $(that._tiers).removeClass('hidden');
+                    $(that._dependencies).removeClass('hidden');
                     $(that._expand).html('Collapse');
                 }
                 that.addTier();
@@ -2008,11 +2035,18 @@
                         $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true')).change();
                         $(this._hidden).prop('checked', ($('>Hidden', initialData).text() == 'true')).change();
                         $(this._tiers).addClass('hidden');
+                        $(this._dependencies).addClass('hidden');
                         $(this._expand).html('Expand');
                     }
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
                     var that = this;
+                    $('>Dependencies>Require', initialData).each(function() {
+                        that.addDependency((new PCT.capacityDependency()).setRoot(that._dependencies).setType('require').init($(this).text()));
+                    });
+                    $('>Dependencies>RequireCapacity', initialData).each(function() {
+                        that.addDependency((new PCT.capacityDependency()).setRoot(that._dependencies).setType('capacity').setValue($(this).attr('value')).setIncremental($(this).attr('incremental') == 'true').setFreeOfCharge($(this).attr('freeofcharge') == 'true').init($(this).text()));
+                    });
                     $('>Tiers>Tier', initialData).each(function() {
                         that.addTier((new PCT.tier()).setRoot(that._tiers).init(this));
                     });
@@ -2037,6 +2071,15 @@
                         }, 000);
                     } else {
                         this.addTier((new PCT.tier()).setRoot(this._tiers));
+                    }
+                },
+                addDependency:function(dependency) {
+                    if (dependency) {
+                        $('html, body').animate({
+                            scrollTop: $(dependency.getHead()).offset().top
+                        }, 000);
+                    } else {
+                        this.addDependency((new PCT.capacityDependency()).setRoot(this._dependencies).setType('require'));
                     }
                 }
             });
@@ -2092,6 +2135,112 @@
                     $(this._price).val($('>Price', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
+                    return this;
+                }
+            });
+        },
+        capacityDependency:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('capacityDependency');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _key:$('#Key', dom).get(),
+                _value:$('#Value', dom).get(),
+                _incremental:$('#Incremental', dom).get(),
+                _freeOfCharge:$('#FreeOfCharge', dom).get(),
+                _dependencyBody:$('#DependencyBody', dom).get(),
+                _dependencyTitle:$('#Title', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _type:$('#Type', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _core:$('#DependencyBody', dom).get(),
+                _keyTitle:$('#KeyTitle', dom).get()
+            });
+            var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    return $(that._key).val();
+                },
+                getAttributesString:function() {
+                    var rets = '';
+                    rets += ' value="' + $(that._value).val() + '"';
+                    if ($(that._incremental).prop('checked')) {
+                        rets += ' incremental="true"';
+                        if ($(that._freeOfCharge).prop('checked')) {
+                            rets += ' freeofcharge="true"';
+                        }
+                    }
+                    return rets;
+                }
+            });
+            $(this._incremental).change(function() {
+                if ($(this).prop('checked')) {
+                    $(that._dependencyBody).addClass('incremental');
+                } else {
+                    $(that._dependencyBody).removeClass('incremental');
+                }
+            });
+            $(this._remove).click(
+                function() {
+                    if (confirm('Remove dependency?')) {
+                        $(that._body).remove();
+                    }
+                });
+            $(this._key).change(function() {
+                $(that._dependencyTitle).html($(this).val());
+            });
+            $(this._type).change(function() {
+                if ($(this).val() == 'require') {
+                    $(that._dependencyBody).addClass('requireDependency');
+                    $(that._dependencyBody).removeClass('excludeDependency').removeClass('requireCapacityDependency');
+                    $(that._keyTitle).html('Key(s):');
+                    $(that._value).removeClass('validate').change();
+                } else if ($(this).val() == 'exclude') {
+                    $(that._dependencyBody).addClass('excludeDependency');
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency');
+                    $(that._keyTitle).html('Key:');
+                    $(that._value).removeClass('validate').change();
+                } else if ($(this).val() == 'capacity') {
+                    $(that._dependencyBody).addClass('requireCapacityDependency');
+                    $(that._keyTitle).html('Key:');
+                    $(that._value).addClass('validate').change();
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('excludeDependency');
+                }
+            });
+            $(this._dependencyTitle).click(
+                function() {
+                    $(that._remove).toggleClass('hidden');
+                    $(that._settingsPane).toggleClass('hidden');
+                });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._key).val(initialData).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
+                    return this;
+                },
+                setType:function(type) {
+                    $(this._type).val(type).change();
+                    return this;
+                },
+                setValue:function(value) {
+                    $(this._value).val(value).change();
+                    return this;
+                },
+                setIncremental:function(incremental) {
+                    $(this._incremental).prop('checked', incremental).change();
+                    return this;
+                },
+                setFreeOfCharge:function(freeOfCharge) {
+                    $(this._freeOfCharge).prop('checked', freeOfCharge).change();
                     return this;
                 }
             });
