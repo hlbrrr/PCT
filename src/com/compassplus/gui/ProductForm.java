@@ -401,6 +401,39 @@ public class ProductForm {
                                                         src.setSelected(false, true);
                                                         throw new PCTDataFormatException("");
                                                     }
+
+
+
+                                                    ArrayList<String> requireThisKeysCapacity = new ArrayList<String>();
+                                                    for (String key : getProduct().getCapacities().keySet()) {
+                                                        for (String rkey : getProduct().getProduct().getCapacities().get(key).getRequireModules()) {
+                                                            String rkeys[] = rkey.split("\\s+");
+                                                            boolean req = false;
+                                                            boolean hasAnother = false;
+                                                            for (int i = 0; i < rkeys.length; i++) {
+                                                                if (depMod.getKey().equals(rkeys[i])) {
+                                                                    req = true;
+                                                                } else if (getProduct().getModules().containsKey(rkeys[i]) || src.getKey().equals(rkeys[i])) {
+                                                                    hasAnother = true;
+                                                                }
+                                                            }
+                                                            if (req && !hasAnother) {
+                                                                requireThisKeysCapacity.add(key);
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                    if (requireThisKeysCapacity.size() > 0) {
+                                                        StringBuilder sb = new StringBuilder("You are trying to disable module that required by following capacity(ies):");
+                                                        for (String key : requireThisKeysCapacity) {
+                                                            sb.append("\n").append(getProduct().getProduct().getCapacities().get(key).getPath());
+                                                        }
+                                                        sb.append("\n\nYou should disable dependent capacity(ies) first, then try again.");
+                                                        JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+
+                                                        src.setSelected(false, true);
+                                                        throw new PCTDataFormatException("");
+                                                    }
                                                 }
 
                                             }
@@ -593,6 +626,39 @@ public class ProductForm {
                                                         sb.append("\n").append(getProduct().getProduct().getModules().get(key).getPath());
                                                     }
                                                     sb.append("\n\nYou should disable dependent module(s) first, then try again.");
+                                                    JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+
+                                                    src.setSelected(true, true);
+                                                    throw new PCTDataFormatException("");
+                                                }
+
+
+
+                                                ArrayList<String> requireThisKeysCapacities = new ArrayList<String>();
+                                                for (String key : getProduct().getCapacities().keySet()) {
+                                                    for (String rkey : getProduct().getProduct().getCapacities().get(key).getRequireModules()) {
+                                                        String rkeys[] = rkey.split("\\s+");
+                                                        boolean req = false;
+                                                        boolean hasAnother = false;
+                                                        for (int i = 0; i < rkeys.length; i++) {
+                                                            if (src.getKey().equals(rkeys[i])) {
+                                                                req = true;
+                                                            } else if (getProduct().getModules().containsKey(rkeys[i])) {
+                                                                hasAnother = true;
+                                                            }
+                                                        }
+                                                        if (req && !hasAnother) {
+                                                            requireThisKeysCapacities.add(key);
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                if (requireThisKeysCapacities.size() > 0) {
+                                                    StringBuilder sb = new StringBuilder("You are trying to disable module that required by following capacity(ies):");
+                                                    for (String key : requireThisKeysCapacities) {
+                                                        sb.append("\n").append(getProduct().getProduct().getCapacities().get(key).getPath());
+                                                    }
+                                                    sb.append("\n\nYou should disable dependent capacity(ies) first, then try again.");
                                                     JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
 
                                                     src.setSelected(true, true);

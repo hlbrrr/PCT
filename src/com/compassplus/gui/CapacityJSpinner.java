@@ -409,6 +409,47 @@ public class CapacityJSpinner extends JSpinner {
                 }
                 throw new IllegalArgumentException("illegal value");
             }
+
+            if (((value == null) || !(value instanceof Number) || !((Integer) value).equals(new Integer(0))) && !form.getProduct().getSecondarySale()) {
+                ArrayList<String> requireKeys = new ArrayList<String>(0);
+                for(String mkey:form.getProduct().getProduct().getCapacities().get(key).getRequireModules()){
+                    String keys[] = mkey.split("\\s+");
+                    boolean contains = false;
+                    for (int i = 0; i < keys.length; i++) {
+                        if (form.getProduct().getModules().containsKey(keys[i]) && form.getProduct().getProduct().getModules().containsKey(keys[i])) {
+                            contains = true;
+                            break;
+                        }
+                    }
+                    if (!contains) {
+                        requireKeys.add(mkey);
+                    }
+                }
+                if (requireKeys.size() > 0) {
+                    final StringBuilder sb = new StringBuilder("Selected capacity requires following module(s):");
+                    for (String mkey : requireKeys) {
+                        String keys[] = mkey.split("\\s+");
+                        for (int i = 0; i < keys.length; i++) {
+                            if (i == 0) {
+                                sb.append("\n");
+                            } else {
+                                sb.append(" or ");
+                            }
+                            sb.append(form.getProduct().getProduct().getModules().get(keys[i]).getPath());
+                        }
+                    }
+                    sb.append("\n\nYou should enable required module(s) first, then try again. Also, you may set \"0\" here.");
+                    if (!value.equals(this.value)) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                JOptionPane.showMessageDialog(parent, sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        });
+                    }
+                    throw new IllegalArgumentException("illegal value");
+                }
+            }
+
             if (!value.equals(this.value)) {
                 setUser((Integer) value - this.incrs);
             }

@@ -595,6 +595,29 @@ public class Product {
             }
         }
         for (String key : p.getCapacities().keySet()) {
+            for (String rkey : p.getProduct().getCapacities().get(key).getRequireModules()) {
+                String rkeys[] = rkey.split("\\s+");
+                boolean contains = false;
+                for (int i = 0; i < rkeys.length; i++) {
+                    if (p.getModules().containsKey(rkeys[i])) {
+                        contains = true;
+                        break;
+                    }
+                }
+                if (!contains) {
+                    if (rkeys.length == 1) {
+                        sbDependencies.append("\nCapacity \"").append(p.getProduct().getCapacities().get(key).getPath()).append("\" requires disabled module \"").append(p.getProduct().getModules().get(rkey).getPath()).append("\"");
+                    } else if (rkeys.length > 1) {
+                        sbDependencies.append("\nCapacity \"").append(p.getProduct().getCapacities().get(key).getPath()).append("\" requires one of disabled modules: ");
+                        for (int i = 0; i < rkeys.length; i++) {
+                            if (i > 0) {
+                                sbDependencies.append(" or ");
+                            }
+                            sbDependencies.append("\"").append(p.getProduct().getModules().get(rkeys[i]).getPath()).append("\"");
+                        }
+                    }
+                }
+            }
             if (p.getProduct().getCapacities().get(key).isDeprecated()) {
                 sbDeprecated.append("\nDeprecated capacity \"").append(p.getProduct().getCapacities().get(key).getPath()).append("\"");
             }

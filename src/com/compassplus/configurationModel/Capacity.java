@@ -26,6 +26,7 @@ public class Capacity {
     private Integer minValue;
     private String hint;
     private Integer type;
+    private ArrayList<String> requireModules = new ArrayList<String>(0);
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
     private ArrayList<Tier> tiers = new ArrayList<Tier>();
@@ -65,6 +66,7 @@ public class Capacity {
                 this.setType(xut.getNode("Type", initialData));
                 this.setMinValue(xut.getNode("MinValue", initialData));
                 this.setTiers(xut.getNodes("Tiers/Tier", initialData));
+                this.setRequireModules(xut.getNodes("Dependencies/Require", initialData));
             }
 
             log.info("Capacity successfully parsed: \nKey: " + this.getKey() +
@@ -106,6 +108,26 @@ public class Capacity {
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Module hidden-flag is not defined correctly", e.getDetails());
         }
+    }
+
+    private void setRequireModules(NodeList requireModules) {
+        this.getRequireModules().clear();
+        if (requireModules.getLength() > 0) {
+
+            log.info("Found " + requireModules.getLength() + " \"require\" module(s)");
+            for (int i = 0; i < requireModules.getLength(); i++) {
+                try {
+                    this.getRequireModules().add(xut.getString(requireModules.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getRequireModules().size() + " \"require\" module(s)");
+        }
+    }
+
+    public ArrayList<String> getRequireModules() {
+        return requireModules;
     }
 
     public Boolean isHidden() {
