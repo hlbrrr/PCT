@@ -438,7 +438,7 @@ public class CapacityJSpinner extends JSpinner {
                             sb.append(form.getProduct().getProduct().getModules().get(keys[i]).getPath());
                         }
                     }
-                    sb.append("\n\nYou should enable required module(s) first, then try again. Also, you may set \"0\" here.");
+                    sb.append("\n\nYou should enable required module(s) first, then try again. Also, you may try to set \"0\" here.");
                     if (!value.equals(this.value)) {
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {

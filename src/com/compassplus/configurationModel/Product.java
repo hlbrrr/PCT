@@ -131,8 +131,20 @@ public class Product {
                 }
             }
         }
+        for (Capacity c : this.getCapacities().values()) {
+            for (String s : c.getRequireModules()) {
+                String keys[] = s.split("\\s+");
+                for (int i = 0; i < keys.length; i++) {
+                    if (!this.getModules().containsKey(keys[i])) {
+                        normal = false;
+                        log.error("No such module \"" + keys[i] + "\" for " + c.getPath());
+                    }
+                }
+            }
+        }
+
         if (!normal) {
-            throw new PCTDataFormatException("Product modules dependencies contains unknown keys");
+            throw new PCTDataFormatException("Product modules/capacities dependencies contains unknown keys");
         }
     }
 

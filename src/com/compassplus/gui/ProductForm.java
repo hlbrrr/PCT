@@ -428,11 +428,49 @@ public class ProductForm {
                                                         for (String key : requireThisKeysCapacity) {
                                                             sb.append("\n").append(getProduct().getProduct().getCapacities().get(key).getPath());
                                                         }
-                                                        sb.append("\n\nYou should disable dependent capacity(ies) first, then try again.");
-                                                        JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+                                                        //sb.append("\n\nYou should disable dependent capacity(ies) first, then try again.");
+                                                        //JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
 
-                                                        src.setSelected(false, true);
-                                                        throw new PCTDataFormatException("");
+                                                        sb.append("\n\nWe will try to automatically resolve conflict and set dependent capacity(ies) to \"0\"");
+                                                        int ret = JOptionPane.showOptionDialog(getRoot(), sb.toString(), "Error", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+                                                        if (ret == JOptionPane.OK_OPTION) {
+
+                                                            ArrayList<String> cantBeDisabled = new ArrayList<String>(0);
+                                                            for (String key : requireThisKeysCapacity) {
+                                                                if (key.split("\\s+").length > 1 || !getProduct().canBeSwitchedToZero(key, src.getKey())) {
+                                                                    cantBeDisabled.add(key);
+                                                                }
+                                                            }
+
+                                                            if (cantBeDisabled.size() > 0) {
+                                                                StringBuilder sbm = new StringBuilder("Automatic resolution failed. Following capacity(ies) can't be disabled because of complicated dependencies:");
+                                                                for (String key : cantBeDisabled) {
+                                                                    String keys[] = key.split("\\s+");
+                                                                    for (int i = 0; i < keys.length; i++) {
+                                                                        if (i == 0) {
+                                                                            sbm.append("\n");
+                                                                        } else {
+                                                                            sbm.append(" or ");
+                                                                        }
+                                                                        sbm.append(getProduct().getProduct().getCapacities().get(keys[i]).getPath());
+                                                                    }
+                                                                }
+                                                                sbm.append("\n\nYou should disable dependent capacity(ies) manually, then try again.");
+                                                                JOptionPane.showMessageDialog(getRoot(), sbm.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+                                                                src.setSelected(true, true);
+                                                                throw new PCTDataFormatException("");
+                                                            } else {
+                                                                for (String key : requireThisKeysCapacity) {
+                                                                    getSpinners().get(key).setValue(0);
+                                                                }
+                                                            }
+                                                        } else {
+                                                            src.setSelected(true, true);
+                                                            throw new PCTDataFormatException("");
+                                                        }
+
+                                                        //src.setSelected(false, true);
+                                                        //throw new PCTDataFormatException("");
                                                     }
                                                 }
 
@@ -658,11 +696,48 @@ public class ProductForm {
                                                     for (String key : requireThisKeysCapacities) {
                                                         sb.append("\n").append(getProduct().getProduct().getCapacities().get(key).getPath());
                                                     }
-                                                    sb.append("\n\nYou should disable dependent capacity(ies) first, then try again.");
-                                                    JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+                                                    //sb.append("\n\nYou should disable dependent capacity(ies) first, then try again.");
+                                                    sb.append("\n\nWe will try to automatically resolve conflict and set dependent capacity(ies) to \"0\"");
+                                                    int ret = JOptionPane.showOptionDialog(getRoot(), sb.toString(), "Error", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+                                                    if (ret == JOptionPane.OK_OPTION) {
 
-                                                    src.setSelected(true, true);
-                                                    throw new PCTDataFormatException("");
+                                                        ArrayList<String> cantBeDisabled = new ArrayList<String>(0);
+                                                        for (String key : requireThisKeysCapacities) {
+                                                            if (key.split("\\s+").length > 1 || !getProduct().canBeSwitchedToZero(key, src.getKey())) {
+                                                                cantBeDisabled.add(key);
+                                                            }
+                                                        }
+
+                                                        if (cantBeDisabled.size() > 0) {
+                                                            StringBuilder sbm = new StringBuilder("Automatic resolution failed. Following capacity(ies) can't be disabled because of complicated dependencies:");
+                                                            for (String key : cantBeDisabled) {
+                                                                String keys[] = key.split("\\s+");
+                                                                for (int i = 0; i < keys.length; i++) {
+                                                                    if (i == 0) {
+                                                                        sbm.append("\n");
+                                                                    } else {
+                                                                        sbm.append(" or ");
+                                                                    }
+                                                                    sbm.append(getProduct().getProduct().getCapacities().get(keys[i]).getPath());
+                                                                }
+                                                            }
+                                                            sbm.append("\n\nYou should disable dependent capacity(ies) manually, then try again.");
+                                                            JOptionPane.showMessageDialog(getRoot(), sbm.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+                                                            src.setSelected(true, true);
+                                                            throw new PCTDataFormatException("");
+                                                        } else {
+                                                            for (String key : requireThisKeysCapacities) {
+                                                                getSpinners().get(key).setValue(0);
+                                                            }
+                                                        }
+                                                    } else {
+                                                        src.setSelected(true, true);
+                                                        throw new PCTDataFormatException("");
+                                                    }
+                                                    //JOptionPane.showMessageDialog(getRoot(), sb.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
+
+                                                    //src.setSelected(true, true);
+                                                    //throw new PCTDataFormatException("");
                                                 }
                                             }
                                             getProduct().delModule(src.getKey());

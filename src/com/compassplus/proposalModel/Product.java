@@ -327,6 +327,15 @@ public class Product {
         return CommonUtils.getInstance().toNextInt(getRegionPrice(clean) * getProposal().getSupportRate());
     }
 
+    public boolean canBeSwitchedToZero(String mKey, String extraKey) {
+        for(Module m:getModules().values()){
+            if(!m.getKey().equals(extraKey) && getProduct().getModules().get(m.getKey()).getRequireCapacities().containsKey(mKey)){
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean canBeEnabled(String mKey, ArrayList<String> extraKeys) {
         if (getProduct().getModules().get(mKey).isDeprecated()) {
             return false;
