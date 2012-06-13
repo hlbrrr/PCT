@@ -244,4 +244,14 @@ public class Capacity {
 
         return price;
     }*/
+
+    public void addIncr(Integer value) {
+        this.setIncr(this.getIncr() + value);
+    }
+    public void addFoc(Integer value) {
+        this.setFoc(this.getFoc() + value);
+    }
+    public void addMin(Integer value) {
+        this.setMin(this.getMin() + value);
+    }
 }

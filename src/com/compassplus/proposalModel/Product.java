@@ -3,6 +3,7 @@ package com.compassplus.proposalModel;
 import com.compassplus.configurationModel.CapacitiesGroup;
 import com.compassplus.configurationModel.License;
 import com.compassplus.configurationModel.ModulesGroup;
+import com.compassplus.configurationModel.RequireCapacity;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
@@ -67,8 +68,8 @@ public class Product {
             this.setSecondarySale(xut.getNode("SecondarySale", initialData));
             this.setLicense(xut.getNode("LicenseKey", initialData));
             this.setMarkUp(xut.getNode("MarkUp", initialData));
-            this.setModules(xut.getNodes("Modules/Module", initialData));
             this.setCapacities(xut.getNodes("Capacities/Capacity", initialData));
+            this.setModules(xut.getNodes("Modules/Module", initialData));
 
             log.info("Product successfully parsed: \nName: " + this.getName() +
                     "\nDiscount: " + this.getDiscount() +
@@ -199,6 +200,19 @@ public class Product {
             }
             if (tmpModule != null) {
                 this.getModules().put(tmpModule.getKey(), new Module(tmpModule, tmpModule.getKey()));
+                for(RequireCapacity rc : tmpModule.getRequireCapacities().values()){
+                    if(!getCapacities().containsKey(rc.getKey())){
+                        addCapacity(getProduct().getCapacities().get(rc.getKey()), rc.getKey());
+                    }
+                    if (rc.isIncremental()) {
+                        getCapacities().get(rc.getKey()).addIncr(rc.getValue());
+                        if (rc.isFreeOfCharge()) {
+                            getCapacities().get(rc.getKey()).addFoc(rc.getValue());
+                        }
+                    } else {
+                        getCapacities().get(rc.getKey()).addMin(rc.getValue());
+                    }
+                }
             }
         }
     }
