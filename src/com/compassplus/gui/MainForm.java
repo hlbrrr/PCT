@@ -1,6 +1,8 @@
 package com.compassplus.gui;
 
+import com.compassplus.configurationModel.Capacity;
 import com.compassplus.configurationModel.Configuration;
+import com.compassplus.configurationModel.Module;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.proposalModel.Product;
 import com.compassplus.proposalModel.Proposal;
@@ -12,6 +14,8 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.CellUtil;
 
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -38,6 +42,9 @@ import java.util.List;
  */
 public class MainForm {
     //private JFileChooser proposalFileChooser;
+
+    private static short __REMOVE = 1;
+    private static short __INSERT = 2;
     private JFileChooser xlsFileChooser;
     private JPanel mainPanel;
     private JMenuBar mainMenu;
@@ -393,14 +400,14 @@ public class MainForm {
                                                         if (!fSameCurrency)
                                                             cs2.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                         c2.setCellStyle(cs2);
-                                                        c2.setCellValue(p.getProposal().getConfig().isSalesSupport()?0:p.getRegionPrice());
+                                                        c2.setCellValue(p.getProposal().getConfig().isSalesSupport() ? 0 : p.getRegionPrice());
 
                                                         Cell c3 = r.createCell(2 + cellIndex);
                                                         CellStyle cs3 = rowStyle.getCellStyle(2 + cellIndex, wb.createCellStyle());
                                                         cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%"));
                                                         //cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%;;@"));
                                                         c3.setCellStyle(cs3);
-                                                        c3.setCellValue(p.getProposal().getConfig().isSalesSupport()?0:p.getDiscount());
+                                                        c3.setCellValue(p.getProposal().getConfig().isSalesSupport() ? 0 : p.getDiscount());
 
                                                         Cell c4 = r.createCell(3 + cellIndex);
                                                         CellStyle cs4 = rowStyle.getCellStyle(3 + cellIndex, wb.createCellStyle());
@@ -416,13 +423,13 @@ public class MainForm {
                                                         if (!fSameCurrency)
                                                             cs5.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                         c5.setCellStyle(cs5);
-                                                        c5.setCellValue(p.getProposal().getConfig().isSalesSupport()?0:p.getSupportPriceUndiscounted());
+                                                        c5.setCellValue(p.getProposal().getConfig().isSalesSupport() ? 0 : p.getSupportPriceUndiscounted());
 
                                                         Cell c6 = r.createCell(5 + cellIndex);
                                                         CellStyle cs6 = rowStyle.getCellStyle(5 + cellIndex, wb.createCellStyle());
                                                         cs6.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%"));
                                                         c6.setCellStyle(cs6);
-                                                        c6.setCellValue(p.getProposal().getConfig().isSalesSupport()?0:p.getSupportDiscount());
+                                                        c6.setCellValue(p.getProposal().getConfig().isSalesSupport() ? 0 : p.getSupportDiscount());
 
                                                         Cell c7 = r.createCell(6 + cellIndex);
                                                         CellStyle cs7 = rowStyle.getCellStyle(6 + cellIndex, wb.createCellStyle());
@@ -441,6 +448,24 @@ public class MainForm {
                                                         }
                                                         i++;
                                                     }
+                                                    ArrayList<Integer> rowsToRemove = new ArrayList();
+                                                    for (int si = 0; si < wb.getNumberOfSheets(); si++) {
+                                                        Sheet sis = wb.getSheetAt(si);
+                                                        while (sis.rowIterator().hasNext()) {
+                                                            Row row = sis.rowIterator().next();
+                                                            while (row.cellIterator().hasNext()) {
+                                                                Cell cell = row.cellIterator().next();
+                                                                if (analyzeCell(row, cell)) {
+                                                                    rowsToRemove.add(row.getRowNum());
+                                                                }
+                                                            }
+                                                        }
+                                                        for (int ri : rowsToRemove) {
+                                                            removeRow(sis, ri);
+                                                        }
+                                                        rowsToRemove.clear();
+                                                    }
+
                                                     Row settingsRow = settingsSheet.getRow(0);
                                                     if (settingsRow == null) {
                                                         settingsRow = settingsSheet.createRow(0);
@@ -503,7 +528,7 @@ public class MainForm {
         xlsFileChooser.setFileFilter(new FileNameExtensionFilter("Excel documents", "xls", "xlsx"));
     }
 
-    private void openFile(File file){                //xlsFileChooser.getSelectedFile()
+    private void openFile(File file) {                //xlsFileChooser.getSelectedFile()
         try {
             Proposal proposal = new Proposal(config);
             FileInputStream inp = new FileInputStream(file);
@@ -749,7 +774,7 @@ public class MainForm {
     private boolean checkForConsistence() {
         StringBuilder sb = new StringBuilder();
         for (Product p : getCurrentProposalForm().getProposal().getProducts().values()) {
-            if(!p.getSecondarySale()){
+            if (!p.getSecondarySale()) {
                 sb.append(p.checkForConsistence());
             }
         }
@@ -767,12 +792,12 @@ public class MainForm {
         rollUp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (getCurrentProposalForm() != null) {
-                     for(Component c:getCurrentProposalForm().getProductsTabs().getComponents()){
-                        if(c instanceof ProductJPanel){
-                            ProductJPanel pjpc = (ProductJPanel)c;
+                    for (Component c : getCurrentProposalForm().getProductsTabs().getComponents()) {
+                        if (c instanceof ProductJPanel) {
+                            ProductJPanel pjpc = (ProductJPanel) c;
                             pjpc.getParentForm().rollUp();
                         }
-                     }
+                    }
                 }
             }
         });
@@ -827,7 +852,7 @@ public class MainForm {
                 }
 
 
-                if (getCurrentProposalForm() != null && getCurrentProposalForm().getProposal().getProducts().size()>0) {
+                if (getCurrentProposalForm() != null && getCurrentProposalForm().getProposal().getProducts().size() > 0) {
                     rollUp.setEnabled(true);
                 } else {
                     rollUp.setEnabled(false);
@@ -959,6 +984,66 @@ public class MainForm {
 
     public JMenuItem getCloseProposal() {
         return closeProposal;
+    }
+
+    private Bindings getBindings(Proposal proposal, ScriptEngine engine) {
+        Bindings b = engine.createBindings();
+        b.put("VAR$CUSTOMER-NAME", proposal.getClientName());
+        b.put("VAR$PROJECT-NAME", proposal.getProjectName());
+        b.put("VAR$SALES-MANAGER", proposal.getUserName());
+        b.put("VAR$SUPPORT-RATE", proposal.getSupportRate());
+        b.put("VAR$SUPPORT-PLAN", proposal.getSupportPlan().getName());
+        for (Product p : proposal.getProducts().values()) {
+            for (Capacity c : p.getProduct().getCapacities().values()) {
+                String key = "CAP$" + c.getKey();
+                b.put(key, p.getCapacities().containsKey(c.getKey()) ? "true" : "false");
+                b.put(key + "$PRICE", p.getCapacities().containsKey(c.getKey()) ?
+                        p.getCapacities().get(c.getKey()).getPrice(p) : 0);
+                b.put(key + "$VALUE", p.getCapacities().containsKey(c.getKey()) ?
+                        p.getCapacities().get(c.getKey()).getVal() : 0);
+                b.put(key + "$NAME", c.getShortName() != null ? c.getShortName() : c.getName());
+            }
+            for (Module m : p.getProduct().getModules().values()) {
+                String key = "MOD$" + m.getKey();
+                b.put(key, p.getModules().containsKey(m.getKey()) ? "true" : "false");
+                b.put(key + "$PRICE", p.getModules().containsKey(m.getKey()) ?
+                        p.getModules().get(m.getKey()).getPrice(p) : 0);
+                b.put(key + "$NAME", m.getShortName() != null ? m.getShortName() : m.getName());
+            }
+            b.put("VAR$" + p.getName().replaceAll("\\s", "_") + "$PRIMARY-MODE", !p.getSecondarySale());
+        }
+        return b;
+    }
+
+    private boolean analyzeCell(Row row, Cell cell, ScriptEngine engine, Bindings bindings) {
+        try {
+            String expr = cell.getStringCellValue();
+            short type = 0;
+            if (expr.contains("__REMOVE")) {
+                type = __REMOVE;
+            } else if (expr.contains("__INSERT")) {
+                type = __INSERT;
+            }
+            if (type > 0) {
+                try {
+                    expr = expr.substring(expr.indexOf("(") + 1);
+                    expr = expr.substring(0, expr.lastIndexOf(")"));
+                    expr = expr.replaceAll("\\s", "");
+
+                    if (type == __REMOVE) {
+
+                    } else if (type == __INSERT) {
+
+                    }
+
+                } catch (Exception e) {
+                    cell.setCellValue("");
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return false;
     }
 
 }
