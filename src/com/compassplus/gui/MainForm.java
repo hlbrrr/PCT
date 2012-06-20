@@ -1000,25 +1000,26 @@ public class MainForm {
         b.put("VAR$SALES_MANAGER", proposal.getUserName());
         b.put("VAR$SUPPORT_RATE", proposal.getSupportRate());
         b.put("VAR$SUPPORT_PLAN", proposal.getSupportPlan().getName());
-        for (Product p : proposal.getProducts().values()) {
-            for (Capacity c : p.getProduct().getCapacities().values()) {
+
+        for (com.compassplus.configurationModel.Product prod : proposal.getConfig().getProducts().values()) {
+            Product p = proposal.getProducts().get(prod.getName());
+            for (Capacity c : prod.getCapacities().values()) {
                 String key = "CAP$" + c.getKey().replace("-", "_");
-                b.put(key, p.getCapacities().containsKey(c.getKey()) ? true : false);
-                b.put(key + "$PRICE", p.getCapacities().containsKey(c.getKey()) ?
+                b.put(key, (p!=null && p.getCapacities().containsKey(c.getKey())) ? true : false);
+                b.put(key + "$PRICE", (p!=null && p.getCapacities().containsKey(c.getKey())) ?
                         p.getCapacities().get(c.getKey()).getPrice(p) : 0);
-                b.put(key + "$VALUE", p.getCapacities().containsKey(c.getKey()) ?
+                b.put(key + "$VALUE", (p!=null && p.getCapacities().containsKey(c.getKey())) ?
                         p.getCapacities().get(c.getKey()).getVal() : 0);
                 b.put(key + "$NAME", c.getShortName() != null ? c.getShortName() : c.getName());
             }
-            for (Module m : p.getProduct().getModules().values()) {
+            for (Module m : prod.getModules().values()) {
                 String key = "MOD$" + m.getKey().replace("-", "_");
-                System.out.println(key);
-                b.put(key, p.getModules().containsKey(m.getKey()) ? true : false);
-                b.put(key + "$PRICE", p.getModules().containsKey(m.getKey()) ?
+                b.put(key, (p!=null && p.getModules().containsKey(m.getKey())) ? true : false);
+                b.put(key + "$PRICE", (p!=null && p.getModules().containsKey(m.getKey())) ?
                         p.getModules().get(m.getKey()).getPrice(p) : 0);
                 b.put(key + "$NAME", m.getShortName() != null ? m.getShortName() : m.getName());
             }
-            b.put("VAR$" + p.getName().replaceAll("\\s", "_") + "$PRIMARY_MODE", !p.getSecondarySale());
+            b.put("VAR$" + prod.getName().replaceAll("\\s", "_") + "$PRIMARY_MODE", (p!=null && !p.getSecondarySale()));
         }
         return b;
     }
