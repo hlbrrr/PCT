@@ -16,6 +16,7 @@ import org.apache.poi.ss.util.CellUtil;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -32,6 +33,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -449,13 +451,18 @@ public class MainForm {
                                                         i++;
                                                     }
                                                     ArrayList<Integer> rowsToRemove = new ArrayList();
+                                                    ScriptEngineManager factory = new ScriptEngineManager();
+                                                    ScriptEngine engine = factory.getEngineByName("JavaScript");
+                                                    Bindings bindings = getBindings(getCurrentProposalForm().getProposal(), engine);
                                                     for (int si = 0; si < wb.getNumberOfSheets(); si++) {
                                                         Sheet sis = wb.getSheetAt(si);
-                                                        while (sis.rowIterator().hasNext()) {
-                                                            Row row = sis.rowIterator().next();
-                                                            while (row.cellIterator().hasNext()) {
-                                                                Cell cell = row.cellIterator().next();
-                                                                if (analyzeCell(row, cell)) {
+                                                        Iterator<Row> riter = sis.rowIterator();
+                                                        while (riter.hasNext()) {
+                                                            Row row = riter.next();
+                                                            Iterator<Cell> citer = row.cellIterator();
+                                                            while (citer.hasNext()) {
+                                                                Cell cell = citer.next();
+                                                                if (analyzeCell(row, cell, engine, bindings)) {
                                                                     rowsToRemove.add(row.getRowNum());
                                                                 }
                                                             }
@@ -988,15 +995,15 @@ public class MainForm {
 
     private Bindings getBindings(Proposal proposal, ScriptEngine engine) {
         Bindings b = engine.createBindings();
-        b.put("VAR$CUSTOMER-NAME", proposal.getClientName());
-        b.put("VAR$PROJECT-NAME", proposal.getProjectName());
-        b.put("VAR$SALES-MANAGER", proposal.getUserName());
-        b.put("VAR$SUPPORT-RATE", proposal.getSupportRate());
-        b.put("VAR$SUPPORT-PLAN", proposal.getSupportPlan().getName());
+        b.put("VAR$CUSTOMER_NAME", proposal.getClientName());
+        b.put("VAR$PROJECT_NAME", proposal.getProjectName());
+        b.put("VAR$SALES_MANAGER", proposal.getUserName());
+        b.put("VAR$SUPPORT_RATE", proposal.getSupportRate());
+        b.put("VAR$SUPPORT_PLAN", proposal.getSupportPlan().getName());
         for (Product p : proposal.getProducts().values()) {
             for (Capacity c : p.getProduct().getCapacities().values()) {
-                String key = "CAP$" + c.getKey();
-                b.put(key, p.getCapacities().containsKey(c.getKey()) ? "true" : "false");
+                String key = "CAP$" + c.getKey().replace("-", "_");
+                b.put(key, p.getCapacities().containsKey(c.getKey()) ? true : false);
                 b.put(key + "$PRICE", p.getCapacities().containsKey(c.getKey()) ?
                         p.getCapacities().get(c.getKey()).getPrice(p) : 0);
                 b.put(key + "$VALUE", p.getCapacities().containsKey(c.getKey()) ?
@@ -1004,13 +1011,14 @@ public class MainForm {
                 b.put(key + "$NAME", c.getShortName() != null ? c.getShortName() : c.getName());
             }
             for (Module m : p.getProduct().getModules().values()) {
-                String key = "MOD$" + m.getKey();
-                b.put(key, p.getModules().containsKey(m.getKey()) ? "true" : "false");
+                String key = "MOD$" + m.getKey().replace("-", "_");
+                System.out.println(key);
+                b.put(key, p.getModules().containsKey(m.getKey()) ? true : false);
                 b.put(key + "$PRICE", p.getModules().containsKey(m.getKey()) ?
                         p.getModules().get(m.getKey()).getPrice(p) : 0);
                 b.put(key + "$NAME", m.getShortName() != null ? m.getShortName() : m.getName());
             }
-            b.put("VAR$" + p.getName().replaceAll("\\s", "_") + "$PRIMARY-MODE", !p.getSecondarySale());
+            b.put("VAR$" + p.getName().replaceAll("\\s", "_") + "$PRIMARY_MODE", !p.getSecondarySale());
         }
         return b;
     }
@@ -1031,7 +1039,14 @@ public class MainForm {
                     expr = expr.replaceAll("\\s", "");
 
                     if (type == __REMOVE) {
-
+                        cell.setCellValue("");
+                        Object val = null;
+                        val = engine.eval(expr, bindings);
+                        if(val instanceof Boolean){
+                            return (Boolean)val;
+                        }else{
+                            throw new Exception("result is not boolean");
+                        }
                     } else if (type == __INSERT) {
 
                     }
@@ -1041,7 +1056,6 @@ public class MainForm {
                 }
             }
         } catch (Exception e) {
-
         }
         return false;
     }
