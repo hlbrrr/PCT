@@ -466,10 +466,10 @@ public class MainForm {
                                                             while (citer.hasNext()) {
                                                                 Cell cell = citer.next();
                                                                 if (analyzeCell(wb, sis, row, cell, engine, bindings)) {
-                                                                    if(sis.getSheetName()==s.getSheetName() && row.getRowNum() < rowIndex){
+                                                                    if (sis.getSheetName() == s.getSheetName() && row.getRowNum() < rowIndex) {
                                                                         dec++;
                                                                     }
-                                                                    if(!rowsToRemove.contains(row)){
+                                                                    if (!rowsToRemove.contains(row)) {
                                                                         rowsToRemove.add(row);
                                                                     }
                                                                 }
@@ -480,7 +480,7 @@ public class MainForm {
                                                         }
                                                         rowsToRemove.clear();
                                                     }
-                                                    rowIndex=rowIndex-dec;
+                                                    rowIndex = rowIndex - dec;
 
                                                     Row settingsRow = settingsSheet.getRow(0);
                                                     if (settingsRow == null) {
@@ -985,25 +985,24 @@ public class MainForm {
 
     private void removeRow(Sheet sheet, int rowIndex) {
         boolean inRange = false;
-        do{
-            int i=0;
+        do {
+            int i = 0;
             inRange = false;
-            for(; i < sheet.getNumMergedRegions(); i++){
+            for (; i < sheet.getNumMergedRegions(); i++) {
                 CellRangeAddress cra = sheet.getMergedRegion(i);
-                if(rowIndex>=cra.getFirstRow() && rowIndex<=cra.getLastRow()){
+                if (rowIndex >= cra.getFirstRow() && rowIndex <= cra.getLastRow()) {
                     inRange = true;
                     break;
                 }
             }
-            if(inRange){
+            if (inRange) {
                 sheet.removeMergedRegion(i);
             }
-        }while (inRange);
+        } while (inRange);
 
         int lastRowNum = sheet.getLastRowNum();
         if (rowIndex >= 0 && rowIndex < lastRowNum) {
             Row removingRow = sheet.getRow(rowIndex);
-
 
 
             sheet.removeRow(removingRow);
@@ -1037,7 +1036,7 @@ public class MainForm {
                 String key = "CAP$" + c.getKey().replace("-", "_");
                 b.put(key, (p != null && p.getCapacities().containsKey(c.getKey())) ? true : false);
                 b.put(key + "$PRICE", (p != null && p.getCapacities().containsKey(c.getKey())) ?
-                        p.getCapacities().get(c.getKey()).getPrice(p) : "");
+                        (!proposal.getConfig().isSalesSupport() ? p.getCapacities().get(c.getKey()).getPrice(p) : 0) : "");
                 b.put(key + "$VALUE", (p != null && p.getCapacities().containsKey(c.getKey())) ?
                         p.getCapacities().get(c.getKey()).getVal() : "");
                 b.put(key + "$NAME", (p != null && p.getCapacities().containsKey(c.getKey())) ?
@@ -1047,7 +1046,7 @@ public class MainForm {
                 String key = "MOD$" + m.getKey().replace("-", "_");
                 b.put(key, (p != null && p.getModules().containsKey(m.getKey())) ? true : false);
                 b.put(key + "$PRICE", (p != null && p.getModules().containsKey(m.getKey())) ?
-                        p.getModules().get(m.getKey()).getPrice(p) : "");
+                        (!proposal.getConfig().isSalesSupport() ? p.getModules().get(m.getKey()).getPrice(p) : 0) : "");
                 b.put(key + "$NAME", (p != null && p.getModules().containsKey(m.getKey())) ?
                         (m.getShortName() != null ? m.getShortName() : m.getName()) : "");
             }
