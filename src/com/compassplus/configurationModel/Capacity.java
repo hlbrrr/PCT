@@ -78,7 +78,7 @@ public class Capacity {
                     "\nMinValue: " + this.getMinValue() +
                     "\nType: " + this.getType());
         } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Capacity is not defined correctly", e.getDetails());
+            throw new PCTDataFormatException("Capacity is not defined correctly: \nKey: " + this.getKey(), e.getDetails());
         }
     }
 

@@ -84,7 +84,7 @@ public class Module {
                     "\nSecondarySalesPrice: " + this.getSecondarySalesPrice() +
                     "\nSecondarySalesRate: " + this.getSecondarySalesRate());
         } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Module is not defined correctly", e.getDetails());
+            throw new PCTDataFormatException("Module is not defined correctly: \nKey: " + this.getKey(), e.getDetails());
         }
     }
 

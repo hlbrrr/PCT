@@ -2,6 +2,7 @@ package com.compassplus.gui;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import java.util.HashMap;
 
@@ -18,7 +19,7 @@ public class RowStyle {
     public RowStyle() {
     }
 
-    public void init(Row row) {
+    public void init(Workbook wb, Row row) {
         styles.clear();
         if (row != null) {
             int from = row.getFirstCellNum();
@@ -27,7 +28,10 @@ public class RowStyle {
             first = new Integer(from);
             for (; from <= to; from++) {
                 try {
-                    styles.put(from, row.getCell(from).getCellStyle());
+                    CellStyle cs = wb.createCellStyle();
+                    CellStyle d = row.getCell(from).getCellStyle();
+                    cs.cloneStyleFrom(d);
+                    styles.put(from, cs);
                 } catch (Exception e) {
 
                 }

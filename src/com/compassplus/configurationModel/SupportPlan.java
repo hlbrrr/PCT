@@ -47,7 +47,7 @@ public class SupportPlan {
                     "\nDefault: " + this.isDefault() +
                     "\nMinPrice: " + this.getMinPrice());
         } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Support plan is not defined correctly", e.getDetails());
+            throw new PCTDataFormatException("Support plan is not defined correctly: \nName: " + this.getName(), e.getDetails());
         }
     }
 

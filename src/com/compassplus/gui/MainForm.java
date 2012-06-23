@@ -11,6 +11,7 @@ import com.compassplus.utils.Logger;
 import net.iharder.dnd.FileDrop;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.CellUtil;
 
@@ -44,6 +45,7 @@ import java.util.List;
  */
 public class MainForm {
     //private JFileChooser proposalFileChooser;
+    private Logger log = Logger.getInstance();
 
     private static short __REMOVE = 1;
     private static short __INSERT = 2;
@@ -263,7 +265,7 @@ public class MainForm {
                                 //sheetIndexStr = wb.getSheetAt(sheetIndexInt).getSheetName();
                                 for (int j = 0; j < rowsCountInt; j++) {
                                     RowStyle rowStyle = new RowStyle();
-                                    rowStyle.init(wb.getSheet(sheetIndexStr).getRow(rowIndexInt - 1));
+                                    rowStyle.init(wb, wb.getSheet(sheetIndexStr).getRow(rowIndexInt - 1));
                                     rowStyles.add(rowStyle);
                                     removeRow(wb.getSheet(sheetIndexStr), rowIndexInt - 1);
                                 }
@@ -364,7 +366,7 @@ public class MainForm {
                                                     }
                                                     if (rowStyles.size() == 0) {
                                                         RowStyle rowStyle = new RowStyle();
-                                                        rowStyle.init(s.getRow(rowIndex));
+                                                        rowStyle.init(wb, s.getRow(rowIndex));
                                                         rowStyles.add(rowStyle);
                                                     }
                                                     String regPriceCol = CellReference.convertNumToColString(1 + cellIndex);
@@ -450,10 +452,11 @@ public class MainForm {
                                                         }
                                                         i++;
                                                     }
-                                                    ArrayList<Integer> rowsToRemove = new ArrayList();
+                                                    ArrayList<Row> rowsToRemove = new ArrayList();
                                                     ScriptEngineManager factory = new ScriptEngineManager();
                                                     ScriptEngine engine = factory.getEngineByName("JavaScript");
                                                     Bindings bindings = getBindings(getCurrentProposalForm().getProposal(), engine);
+                                                    int dec = 0;
                                                     for (int si = 0; si < wb.getNumberOfSheets(); si++) {
                                                         Sheet sis = wb.getSheetAt(si);
                                                         Iterator<Row> riter = sis.rowIterator();
@@ -462,16 +465,22 @@ public class MainForm {
                                                             Iterator<Cell> citer = row.cellIterator();
                                                             while (citer.hasNext()) {
                                                                 Cell cell = citer.next();
-                                                                if (analyzeCell(row, cell, engine, bindings)) {
-                                                                    rowsToRemove.add(row.getRowNum());
+                                                                if (analyzeCell(wb, sis, row, cell, engine, bindings)) {
+                                                                    if(sis.getSheetName()==s.getSheetName() && row.getRowNum() < rowIndex){
+                                                                        dec++;
+                                                                    }
+                                                                    if(!rowsToRemove.contains(row)){
+                                                                        rowsToRemove.add(row);
+                                                                    }
                                                                 }
                                                             }
                                                         }
-                                                        for (int ri : rowsToRemove) {
-                                                            removeRow(sis, ri);
+                                                        for (Row ri : rowsToRemove) {
+                                                            removeRow(sis, ri.getRowNum());
                                                         }
                                                         rowsToRemove.clear();
                                                     }
+                                                    rowIndex=rowIndex-dec;
 
                                                     Row settingsRow = settingsSheet.getRow(0);
                                                     if (settingsRow == null) {
@@ -975,14 +984,34 @@ public class MainForm {
     }
 
     private void removeRow(Sheet sheet, int rowIndex) {
+        boolean inRange = false;
+        do{
+            int i=0;
+            inRange = false;
+            for(; i < sheet.getNumMergedRegions(); i++){
+                CellRangeAddress cra = sheet.getMergedRegion(i);
+                if(rowIndex>=cra.getFirstRow() && rowIndex<=cra.getLastRow()){
+                    inRange = true;
+                    break;
+                }
+            }
+            if(inRange){
+                sheet.removeMergedRegion(i);
+            }
+        }while (inRange);
+
         int lastRowNum = sheet.getLastRowNum();
         if (rowIndex >= 0 && rowIndex < lastRowNum) {
             Row removingRow = sheet.getRow(rowIndex);
+
+
+
             sheet.removeRow(removingRow);
             sheet.shiftRows(rowIndex + 1, lastRowNum, -1);
         }
         if (rowIndex == lastRowNum) {
             Row removingRow = sheet.getRow(rowIndex);
+
             if (removingRow != null) {
                 sheet.removeRow(removingRow);
             }
@@ -1000,31 +1029,34 @@ public class MainForm {
         b.put("VAR$SALES_MANAGER", proposal.getUserName());
         b.put("VAR$SUPPORT_RATE", proposal.getSupportRate());
         b.put("VAR$SUPPORT_PLAN", proposal.getSupportPlan().getName());
+        b.put("VAR$MAN-DAY-RATE", 0);
 
         for (com.compassplus.configurationModel.Product prod : proposal.getConfig().getProducts().values()) {
             Product p = proposal.getProducts().get(prod.getName());
             for (Capacity c : prod.getCapacities().values()) {
                 String key = "CAP$" + c.getKey().replace("-", "_");
-                b.put(key, (p!=null && p.getCapacities().containsKey(c.getKey())) ? true : false);
-                b.put(key + "$PRICE", (p!=null && p.getCapacities().containsKey(c.getKey())) ?
-                        p.getCapacities().get(c.getKey()).getPrice(p) : 0);
-                b.put(key + "$VALUE", (p!=null && p.getCapacities().containsKey(c.getKey())) ?
-                        p.getCapacities().get(c.getKey()).getVal() : 0);
-                b.put(key + "$NAME", c.getShortName() != null ? c.getShortName() : c.getName());
+                b.put(key, (p != null && p.getCapacities().containsKey(c.getKey())) ? true : false);
+                b.put(key + "$PRICE", (p != null && p.getCapacities().containsKey(c.getKey())) ?
+                        p.getCapacities().get(c.getKey()).getPrice(p) : "");
+                b.put(key + "$VALUE", (p != null && p.getCapacities().containsKey(c.getKey())) ?
+                        p.getCapacities().get(c.getKey()).getVal() : "");
+                b.put(key + "$NAME", (p != null && p.getCapacities().containsKey(c.getKey())) ?
+                        (c.getShortName() != null ? c.getShortName() : c.getName()) : "");
             }
             for (Module m : prod.getModules().values()) {
                 String key = "MOD$" + m.getKey().replace("-", "_");
-                b.put(key, (p!=null && p.getModules().containsKey(m.getKey())) ? true : false);
-                b.put(key + "$PRICE", (p!=null && p.getModules().containsKey(m.getKey())) ?
-                        p.getModules().get(m.getKey()).getPrice(p) : 0);
-                b.put(key + "$NAME", m.getShortName() != null ? m.getShortName() : m.getName());
+                b.put(key, (p != null && p.getModules().containsKey(m.getKey())) ? true : false);
+                b.put(key + "$PRICE", (p != null && p.getModules().containsKey(m.getKey())) ?
+                        p.getModules().get(m.getKey()).getPrice(p) : "");
+                b.put(key + "$NAME", (p != null && p.getModules().containsKey(m.getKey())) ?
+                        (m.getShortName() != null ? m.getShortName() : m.getName()) : "");
             }
-            b.put("VAR$" + prod.getName().replaceAll("\\s", "_") + "$PRIMARY_MODE", (p!=null && !p.getSecondarySale()));
+            b.put("VAR$" + prod.getName().replaceAll("\\s", "_") + "$PRIMARY_MODE", p != null ? !p.getSecondarySale() : "");
         }
         return b;
     }
 
-    private boolean analyzeCell(Row row, Cell cell, ScriptEngine engine, Bindings bindings) {
+    private boolean analyzeCell(Workbook wb, Sheet sheet, Row row, Cell cell, ScriptEngine engine, Bindings bindings) {
         try {
             String expr = cell.getStringCellValue();
             short type = 0;
@@ -1043,16 +1075,46 @@ public class MainForm {
                         cell.setCellValue("");
                         Object val = null;
                         val = engine.eval(expr, bindings);
-                        if(val instanceof Boolean){
-                            return (Boolean)val;
-                        }else{
+                        if (val instanceof Boolean) {
+                            return (Boolean) val;
+                        } else {
                             throw new Exception("result is not boolean");
                         }
                     } else if (type == __INSERT) {
+                        cell.setCellValue("");
+                        Object val = null;
+                        val = engine.eval(expr, bindings);
 
+                        if (!(val instanceof String && ((String) val).equals(""))) {
+                            CellStyle cs = wb.createCellStyle();
+                            CellStyle csT = cell.getCellStyle();
+                            cs.cloneStyleFrom(csT);
+                            String format = (getCurrentProposalForm().getProposal().getCurrency().getSymbol() != null ?
+                                    "\"" + getCurrentProposalForm().getProposal().getCurrency().getSymbol() + "\" " : "") + "#,##0" +
+                                    (getCurrentProposalForm().getProposal().getCurrency().getSymbol() == null ?
+                                            " \"" + getCurrentProposalForm().getProposal().getCurrency().getName() + "\"" : "");
+                            if (expr.contains("$PRICE") || expr.contains("$MAN-DAY-RATE")) {
+                                cs.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(format));
+                            } else if (expr.contains("$SUPPORT_RATE")) {
+                                cs.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat("0%;-0%"));
+                            } else if (expr.contains("$VALUE")) {
+                                cs.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat("#,##0"));
+                            }
+                            cell.setCellStyle(cs);
+                        }
+                        if (val instanceof Boolean) {
+                            cell.setCellValue((Boolean) val);
+                        } else if (val instanceof Number) {
+                            cell.setCellValue(((Number) val).doubleValue());
+                        } else if (val instanceof String) {
+                            cell.setCellValue((String) val);
+                        } else {
+                            throw new Exception("result type is unknown");
+                        }
                     }
 
                 } catch (Exception e) {
+                    log.error("Bad" + (type == __REMOVE ? " __REMOVE" : (type == __INSERT ? " __INSERT" : "")) + " expression: " + expr);
                     cell.setCellValue("");
                 }
             }

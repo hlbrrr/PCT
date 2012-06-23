@@ -38,7 +38,7 @@ public class Region {
                     "\nDefaultCurrency: " + this.getDefaultCurrencyName() +
                     "\nRate: " + this.getRate());
         } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Region is not defined correctly", e.getDetails());
+            throw new PCTDataFormatException("Region is not defined correctly: \nName: " + this.getName(), e.getDetails());
         }
     }
 

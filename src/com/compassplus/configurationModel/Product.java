@@ -82,7 +82,7 @@ public class Product {
                     "\nSecondarySalesRate: " + this.getSecondarySalesRate() +
                     "\nStructure: \n" + modulesRoot.toString() + "\n" + capacitiesRoot.toString());
         } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Product is not defined correctly", e.getDetails());
+            throw new PCTDataFormatException("Product is not defined correctly: \nName: " + this.getName(), e.getDetails());
         }
     }
 

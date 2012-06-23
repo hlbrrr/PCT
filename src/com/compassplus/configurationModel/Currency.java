@@ -41,7 +41,7 @@ public class Currency {
                     "\nSymbol: " + this.getSymbol() +
                     "\nRate: " + this.getRate());
         } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Currency is not defined correctly", e.getDetails());
+            throw new PCTDataFormatException("Currency is not defined correctly: \nName: " + this.getName(), e.getDetails());
         }
     }
 
