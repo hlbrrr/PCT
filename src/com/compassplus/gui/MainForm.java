@@ -9,11 +9,17 @@ import com.compassplus.proposalModel.Proposal;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import net.iharder.dnd.FileDrop;
+import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.CellUtil;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
@@ -267,7 +273,7 @@ public class MainForm {
                                     RowStyle rowStyle = new RowStyle();
                                     rowStyle.init(wb, wb.getSheet(sheetIndexStr).getRow(rowIndexInt - 1));
                                     rowStyles.add(rowStyle);
-                                    removeRow(wb.getSheet(sheetIndexStr), rowIndexInt - 1);
+                                    removeRow(wb.getSheet(sheetIndexStr), rowIndexInt - 1, wb);
                                 }
                             }
                         } catch (Exception ex) {
@@ -476,7 +482,7 @@ public class MainForm {
                                                             }
                                                         }
                                                         for (Row ri : rowsToRemove) {
-                                                            removeRow(sis, ri.getRowNum());
+                                                            removeRow(sis, ri.getRowNum(), wb);
                                                         }
                                                         rowsToRemove.clear();
                                                     }
@@ -498,6 +504,9 @@ public class MainForm {
                                                     getCurrentProposalForm().setChanged(false);
                                                     JOptionPane.showMessageDialog(getRoot(), "Proposal successfully exported", "Result", JOptionPane.INFORMATION_MESSAGE);
                                                 } catch (Exception exception) {
+                                                    System.out.println(exception);
+                                                    exception.printStackTrace();
+
                                                     JOptionPane.showMessageDialog(getRoot(), "Proposal can't be exported", "Error", JOptionPane.ERROR_MESSAGE);
                                                 }
                                             } else if (value == JOptionPane.CANCEL_OPTION) {
@@ -983,28 +992,32 @@ public class MainForm {
         return delProduct;
     }
 
-    private void removeRow(Sheet sheet, int rowIndex) {
-        boolean inRange = false;
-        do {
-            int i = 0;
-            inRange = false;
-            for (; i < sheet.getNumMergedRegions(); i++) {
-                CellRangeAddress cra = sheet.getMergedRegion(i);
-                if (rowIndex >= cra.getFirstRow() && rowIndex <= cra.getLastRow()) {
-                    inRange = true;
-                    break;
-                }
-            }
-            if (inRange) {
-                sheet.removeMergedRegion(i);
-            }
-        } while (inRange);
-
+    private void removeRow(Sheet sheet, int rowIndex, Workbook wb) {
+        ArrayList<CellRangeAddress> cras = new ArrayList<CellRangeAddress>();
+        for(int i=0; i<sheet.getNumMergedRegions(); i++){
+            cras.add(sheet.getMergedRegion(i));
+        }
+        while(sheet.getNumMergedRegions()>0){
+            sheet.removeMergedRegion(0);
+        }
         int lastRowNum = sheet.getLastRowNum();
+
+        FormulaEvaluator fe;
+        if(sheet instanceof XSSFSheet){
+            fe = new XSSFFormulaEvaluator((XSSFWorkbook)wb);
+        }else {
+            fe = new HSSFFormulaEvaluator((HSSFWorkbook)wb);
+        }
+        //fe.clearAllCachedResultValues();
+
         if (rowIndex >= 0 && rowIndex < lastRowNum) {
             Row removingRow = sheet.getRow(rowIndex);
 
-
+            Iterator<Cell> ci = removingRow.iterator();
+            while(ci.hasNext()){
+                Cell nx = ci.next();
+                fe.notifyDeleteCell(nx);
+            }
             sheet.removeRow(removingRow);
             sheet.shiftRows(rowIndex + 1, lastRowNum, -1);
         }
@@ -1013,6 +1026,18 @@ public class MainForm {
 
             if (removingRow != null) {
                 sheet.removeRow(removingRow);
+            }
+        }
+        for(CellRangeAddress cra:cras){
+            if(rowIndex>=cra.getFirstRow() && rowIndex<=cra.getLastRow() && cra.getFirstRow()!=cra.getLastRow()){
+                cra.setLastRow(cra.getLastRow()-1);
+                sheet.addMergedRegion(cra);
+            }else if(rowIndex<cra.getFirstRow()){
+                cra.setFirstRow(cra.getFirstRow() - 1);
+                cra.setLastRow(cra.getLastRow() - 1);
+                sheet.addMergedRegion(cra);
+            }else if(rowIndex>cra.getLastRow()){
+                sheet.addMergedRegion(cra);
             }
         }
     }
