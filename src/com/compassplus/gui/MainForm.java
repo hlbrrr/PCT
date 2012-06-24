@@ -40,6 +40,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -484,6 +485,7 @@ public class MainForm {
                                                         for (Row ri : rowsToRemove) {
                                                             removeRow(sis, ri.getRowNum(), wb);
                                                         }
+
                                                         rowsToRemove.clear();
                                                     }
                                                     rowIndex = rowIndex - dec;
@@ -994,6 +996,27 @@ public class MainForm {
 
     private void removeRow(Sheet sheet, int rowIndex, Workbook wb) {
         ArrayList<CellRangeAddress> cras = new ArrayList<CellRangeAddress>();
+        /*HashMap<Cell, String> cellFormulas = new HashMap<Cell, String>();
+        for (Row row : sheet) {
+          for (Cell cell : row) {
+            try{
+                String formula = cell.getCellFormula();
+                cellFormulas.put(cell, formula);
+            }catch(Exception e){
+
+            }
+          }
+        }*/
+        for (Row row : sheet) {
+          for (Cell cell : row) {
+            try{
+                String formula = cell.getCellFormula();
+                cell.setCellFormula(formula);
+            }catch(Exception e){
+
+            }
+          }
+        }
         for(int i=0; i<sheet.getNumMergedRegions(); i++){
             cras.add(sheet.getMergedRegion(i));
         }
@@ -1002,22 +1025,16 @@ public class MainForm {
         }
         int lastRowNum = sheet.getLastRowNum();
 
-        FormulaEvaluator fe;
-        if(sheet instanceof XSSFSheet){
-            fe = new XSSFFormulaEvaluator((XSSFWorkbook)wb);
-        }else {
-            fe = new HSSFFormulaEvaluator((HSSFWorkbook)wb);
-        }
-        //fe.clearAllCachedResultValues();
+
 
         if (rowIndex >= 0 && rowIndex < lastRowNum) {
             Row removingRow = sheet.getRow(rowIndex);
 
-            Iterator<Cell> ci = removingRow.iterator();
+           /* Iterator<Cell> ci = removingRow.iterator();
             while(ci.hasNext()){
                 Cell nx = ci.next();
                 fe.notifyDeleteCell(nx);
-            }
+            }*/
             sheet.removeRow(removingRow);
             sheet.shiftRows(rowIndex + 1, lastRowNum, -1);
         }
@@ -1040,6 +1057,27 @@ public class MainForm {
                 sheet.addMergedRegion(cra);
             }
         }
+        /*for (Row row : sheet) {
+          for (Cell cell : row) {
+            try{
+                System.out.println(cellFormulas.containsKey(cell));
+                if(cellFormulas.containsKey(cell)){
+                    cell.setCellFormula(cellFormulas.get(cell));
+                }
+            }catch(Exception e){
+
+            }
+          }
+        }*/
+
+        /*FormulaEvaluator fe;
+        if(sheet instanceof XSSFSheet){
+            fe = new XSSFFormulaEvaluator((XSSFWorkbook)wb);
+            fe.evaluateAll();
+        }else {
+            fe = new HSSFFormulaEvaluator((HSSFWorkbook)wb);
+            fe.evaluateAll();
+        }*/
     }
 
     public JMenuItem getCloseProposal() {
