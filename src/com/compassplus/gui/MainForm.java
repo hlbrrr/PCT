@@ -1007,16 +1007,14 @@ public class MainForm {
             }
           }
         }*/
-        for (Row row : sheet) {
+        /*for (Row row : sheet) {
           for (Cell cell : row) {
             try{
-                String formula = cell.getCellFormula();
-                cell.setCellFormula(formula);
             }catch(Exception e){
 
             }
           }
-        }
+        }*/
         for(int i=0; i<sheet.getNumMergedRegions(); i++){
             cras.add(sheet.getMergedRegion(i));
         }
@@ -1119,6 +1117,10 @@ public class MainForm {
     }
 
     private boolean analyzeCell(Workbook wb, Sheet sheet, Row row, Cell cell, ScriptEngine engine, Bindings bindings) {
+        try{
+            String formula = cell.getCellFormula();
+            cell.setCellFormula(formula);
+        }catch(Exception e){}
         try {
             String expr = cell.getStringCellValue();
             short type = 0;
