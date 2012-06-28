@@ -66,8 +66,8 @@ public class Capacity {
                 this.setType(xut.getNode("Type", initialData));
                 this.setMinValue(xut.getNode("MinValue", initialData));
                 this.setTiers(xut.getNodes("Tiers/Tier", initialData));
-                this.setRequireModules(xut.getNodes("Dependencies/Require", initialData));
             }
+            this.setRequireModules(xut.getNodes("Dependencies/Require", initialData));
 
             log.info("Capacity successfully parsed: \nKey: " + this.getKey() +
                     "\nName: " + this.getName() +
