@@ -1950,17 +1950,17 @@
                                 config += $.data($(this)[0], 'pct').getXML();
                         });
                         config += '</Tiers>';
-                        config += '<Dependencies>';
-                        $(that._dependencies).children().each(function() {
-                            if ($(this).hasClass('requireDependency'))
-                                config += '<Require>' + $.data($(this)[0], 'pct').getXML() + '</Require>';
-                        });
-                        $(that._dependencies).children().each(function() {
-                            if ($(this).hasClass('requireCapacityDependency'))
-                                config += '<RequireCapacity' + $.data($(this)[0], 'pct').getAttributesString() + '>' + $.data($(this)[0], 'pct').getXML() + '</RequireCapacity>';
-                        });
-                        config += '</Dependencies>';
                     }
+                    config += '<Dependencies>';
+                    $(that._dependencies).children().each(function() {
+                        if ($(this).hasClass('requireDependency'))
+                            config += '<Require>' + $.data($(this)[0], 'pct').getXML() + '</Require>';
+                    });
+                    $(that._dependencies).children().each(function() {
+                        if ($(this).hasClass('requireCapacityDependency'))
+                            config += '<RequireCapacity' + $.data($(this)[0], 'pct').getAttributesString() + '>' + $.data($(this)[0], 'pct').getXML() + '</RequireCapacity>';
+                    });
+                    config += '</Dependencies>';
                     config += '</Capacity>';
                     return config;
                 }
@@ -2034,10 +2034,10 @@
                         $(this._minValue).val($('>MinValue', initialData).text()).change();
                         $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true')).change();
                         $(this._hidden).prop('checked', ($('>Hidden', initialData).text() == 'true')).change();
-                        $(this._tiers).addClass('hidden');
-                        $(this._dependencies).addClass('hidden');
-                        $(this._expand).html('Expand');
                     }
+                    $(this._tiers).addClass('hidden');
+                    $(this._dependencies).addClass('hidden');
+                    $(this._expand).html('Expand');
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
                     var that = this;
@@ -2054,9 +2054,9 @@
                 },
                 setLink:function() {
                     this._isLink = true;
-                    $(this._expand).addClass('hidden');
+                    //$(this._expand).addClass('hidden');
                     $(this._addTier).addClass('hidden');
-                    $(this._tiers).addClass('hidden');
+                    //$(this._tiers).addClass('hidden');
 
                     $('.capacitySetting .validate', this._settingsPane).removeClass('validate').change();
                     $('.capacitySetting', this._settingsPane).addClass('hidden');
