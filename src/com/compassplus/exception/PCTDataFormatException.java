@@ -27,6 +27,10 @@ public class PCTDataFormatException extends Exception {
         return result.toString();
     }
 
+    public String getCleanMessage() {
+        return messages.getFirst();
+    }
+
     public void addDetails(String message) {
         this.messages.add(message);
     }

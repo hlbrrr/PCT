@@ -69,6 +69,9 @@ public class Configuration {
             this.setSalesSupport(xut.getNode("/root/Users/User/SalesSupport", initialData));
 
         } catch (PCTDataFormatException e) {
+            if("Expired".equals(e.getCleanMessage())){
+                throw e;
+            }
             throw new PCTDataFormatException("Bad configuration", e.getDetails());
         }
     }
@@ -225,10 +228,13 @@ public class Configuration {
             Date currentDate = new Date();
 
             if (!currentDate.before(date)) {
-                throw new PCTDataFormatException("Already expired");
+                throw new PCTDataFormatException("Expired");
             }
             this.expDateString = dateString;
         } catch (PCTDataFormatException e) {
+            if("Expired".equals(e.getCleanMessage())){
+                throw e;
+            }
             throw new PCTDataFormatException("Expiration is not defined correctly", e.getDetails());
         }
 

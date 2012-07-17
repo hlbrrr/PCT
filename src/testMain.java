@@ -71,7 +71,8 @@ public class testMain {
                 pwd = null;
             } catch (Exception e) {
                 Logger.getInstance().error(e);
-                JOptionPane.showMessageDialog(null, "Broken or expired configuration", "Error", JOptionPane.ERROR_MESSAGE);
+                String msg = "Bad data format: Expired".equals(e.getMessage())?"Expired configuration":"Broken configuration";
+                JOptionPane.showMessageDialog(null, msg, "Error", JOptionPane.ERROR_MESSAGE);
                 oframe.dispose();
                 throw e;
             }
