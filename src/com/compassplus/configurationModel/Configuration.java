@@ -7,11 +7,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,9 +35,11 @@ public class Configuration {
     private Double maxDiscount = 0d;
     private Double maxSupportDiscount = 0d;
     private String expDateString;
+    private Integer minBuild;
+    private Integer build;
     private Boolean salesSupport;
 
-    public boolean isSalesSupport(){
+    public boolean isSalesSupport() {
         return salesSupport != null ? salesSupport : false;
     }
 
@@ -57,6 +60,7 @@ public class Configuration {
 
     public void init(Document initialData) throws PCTDataFormatException {
         try {
+            this.checkMinBuild(xut.getNode("/root/MinBuild", initialData));
             this.checkExpiration(xut.getNode("/root/Expiration", initialData));
             this.setProducts(xut.getNodes("/root/Products/Product", initialData));
             this.setRegions(xut.getNodes("/root/Regions/Region", initialData));
@@ -69,7 +73,7 @@ public class Configuration {
             this.setSalesSupport(xut.getNode("/root/Users/User/SalesSupport", initialData));
 
         } catch (PCTDataFormatException e) {
-            if("Expired".equals(e.getCleanMessage())){
+            if ("Expired".equals(e.getCleanMessage()) || "BadBuild".equals(e.getCleanMessage())) {
                 throw e;
             }
             throw new PCTDataFormatException("Bad configuration", e.getDetails());
@@ -215,9 +219,51 @@ public class Configuration {
         }
     }
 
+    public Integer getBuild(){
+        if(this.build==null){
+            try{
+                InputStream is = this.getClass().getResourceAsStream("build.properties");
+                BufferedReader d = new BufferedReader(new InputStreamReader(is));
+                String buildNumberString = d.readLine();
+                build = Integer.parseInt(buildNumberString);
+                d.close();
+                is.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return this.build;
+    }
+
+    public Integer getMinBuild(){
+        return this.minBuild;
+    }
+
+    private void checkMinBuild(Node minBuild) throws PCTDataFormatException {
+        try {
+            Integer minBuildInt = xut.getInteger(minBuild, true);
+            if (minBuildInt != null) {
+                if (minBuildInt > this.getBuild()) {
+                    throw new PCTDataFormatException("BadBuild");
+                }
+            }
+            this.minBuild = minBuildInt;
+        } catch (PCTDataFormatException e) {
+            if ("BadBuild".equals(e.getCleanMessage())) {
+                throw e;
+            }
+            throw new PCTDataFormatException("Minimum build number is not defined correctly", e.getDetails());
+        }
+
+    }
+
     private void checkExpiration(Node expiration) throws PCTDataFormatException {
         try {
             String dateString = xut.getString(expiration);
+
+            if (dateString.startsWith("Expiration=")) {
+                dateString = dateString.substring("Expiration=".length());
+            }
             SimpleDateFormat sdf = new SimpleDateFormat(this.expirationFormat);
             Date date;
             try {
@@ -232,7 +278,7 @@ public class Configuration {
             }
             this.expDateString = dateString;
         } catch (PCTDataFormatException e) {
-            if("Expired".equals(e.getCleanMessage())){
+            if ("Expired".equals(e.getCleanMessage())) {
                 throw e;
             }
             throw new PCTDataFormatException("Expiration is not defined correctly", e.getDetails());
@@ -240,7 +286,7 @@ public class Configuration {
 
     }
 
-    public String getExpirationDateString(){
+    public String getExpirationDateString() {
         return this.expDateString;
     }
 

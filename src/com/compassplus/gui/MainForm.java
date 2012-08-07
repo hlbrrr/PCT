@@ -84,7 +84,7 @@ public class MainForm {
     private String TEMPLATES_DIR = "templates";
     private ArrayList<XLSTemplate> templatesList;
 
-    private String CURRENT_VERSION = "1.0";
+    private String CURRENT_VERSION = "1.1";
 
     public MainForm(Configuration config) {
         this.config = config;
@@ -128,11 +128,14 @@ public class MainForm {
         about = new JMenuItem("About");
         about.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JLabel version = new JLabel("<html><b>PCT Version:</b> " + CURRENT_VERSION + "</html>");
+                JLabel version = new JLabel("<html><b>PCT version:</b> " + CURRENT_VERSION + "</html>");
                 version.setAlignmentX(Component.LEFT_ALIGNMENT);
+                JLabel build = new JLabel("<html><b>Build number:</b> " + config.getBuild() + "</html>");
+                build.setAlignmentX(Component.LEFT_ALIGNMENT);
+                JLabel minBuild = new JLabel("<html><b>Minimal build number required by current configuration:</b> " + config.getMinBuild() + "</html>");
+                minBuild.setAlignmentX(Component.LEFT_ALIGNMENT);
                 JLabel expiration = new JLabel("<html><b>Configuration expires:</b> " + config.getExpirationDateString() + "</html>");
                 expiration.setAlignmentX(Component.LEFT_ALIGNMENT);
-                expiration.setBackground(Color.green);
 
                 JLabel text = new JLabel("Online user service can be found at ");
                 JLabel link = new JLabel("<html><a href=\"#\">pct.compassplus.ru</a></html>");
@@ -167,6 +170,10 @@ public class MainForm {
                 msg.setLayout(lt);
 
                 msg.add(version);
+                msg.add(build);
+                if(config.getMinBuild()!=null){
+                    msg.add(minBuild);
+                }
                 msg.add(expiration);
                 msg.add(Box.createRigidArea(new Dimension(0, 10)));
                 msg.add(msgBottom);

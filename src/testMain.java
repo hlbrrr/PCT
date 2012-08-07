@@ -66,12 +66,20 @@ public class testMain {
         try {
             try {
                 DesEncrypter ds = new DesEncrypter(CommonUtils.getInstance().md5(pwd, defaultEnc), defaultEnc);
+                //System.out.println(ds.decrypt(FileUtils.readFileToString(new File("config.exml"), defaultEnc)));
                 config.init(CommonUtils.getInstance().getDocumentFromString(ds.decrypt(FileUtils.readFileToString(new File("config.exml"), defaultEnc))));
                 ds = null;
                 pwd = null;
             } catch (Exception e) {
                 Logger.getInstance().error(e);
-                String msg = "Bad data format: Expired".equals(e.getMessage())?"Expired configuration":"Broken configuration";
+                String msg = "";
+                if ("Bad data format: Expired".equals(e.getMessage())) {
+                    msg = "Expired configuration";
+                } else if ("Bad data format: BadBuild".equals(e.getMessage())) {
+                    msg = "PCT version is not supported by configuration file";
+                } else {
+                    msg = "Broken configuration";
+                }
                 JOptionPane.showMessageDialog(null, msg, "Error", JOptionPane.ERROR_MESSAGE);
                 oframe.dispose();
                 throw e;

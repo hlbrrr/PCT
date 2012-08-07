@@ -500,6 +500,7 @@
             dom = $('<div></div>').append(dom);
             $.extend(this, {
                 _expiration:$('#Expiration', dom).get(),
+                _minBuild:$('#MinBuild', dom).get(),
                 _releaseTimestamp:$('#ReleaseTimestamp', dom).get(),
                 _products:$('#Products', dom).get(),
                 _regions:$('#Regions', dom).get(),
@@ -633,6 +634,7 @@
                         config += '<ReleaseTimestamp>' + $(that._releaseTimestamp).val() + '</ReleaseTimestamp>';
                     }
                     config += '<Expiration>' + $(that._expiration).val() + '</Expiration>';
+                    config += '<MinBuild>' + $(that._minBuild).val() + '</MinBuild>';
                     config += '<Comment>' + (comment ? comment : '') + '</Comment>';
                     config += '<Description><![CDATA[' + ($('#Description', that._home).length > 0 ? $('#Description', that._home).val() : '') + ']]></Description>';
                     config += '<Products>';
@@ -869,6 +871,7 @@
                         }
                     });
                     $(this._expiration).val($('>Expiration', initialData).text()).change();
+                    $(this._minBuild).val($('>MinBuild', initialData).text()).change();
                     $(this._releaseTimestamp).val($('>ReleaseTimestamp', initialData).text());
                     var that = this;
                     $('>Products>Product', initialData).each(function() {

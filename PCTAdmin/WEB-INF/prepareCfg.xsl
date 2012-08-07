@@ -23,6 +23,20 @@
         </xsl:if>
     </xsl:template>
 
+
+    <xsl:template match="/root/Expiration">
+        <xsl:choose>
+            <xsl:when test="not(/root/MinBuild) or /root/MinBuild=''">
+                <xsl:copy>
+                    <xsl:apply-templates select="@*|node()"/>
+                </xsl:copy>
+            </xsl:when>
+            <xsl:otherwise>
+                <Expiration>Expiration=<xsl:value-of select="/root/Expiration"/></Expiration>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <xsl:template match="/root/cn">
     </xsl:template>
 
