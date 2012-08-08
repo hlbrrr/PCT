@@ -682,3 +682,9 @@ input.validate.error, textarea.validate.error {
 .qq-upload-fail .qq-upload-failed-text {
     display: inline;
 }
+
+.headerField {
+    border: 0 none;
+    margin: 0;
+    padding: 2px;
+}
