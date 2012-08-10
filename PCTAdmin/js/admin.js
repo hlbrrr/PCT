@@ -505,12 +505,14 @@
                 _products:$('#Products', dom).get(),
                 _regions:$('#Regions', dom).get(),
                 _supportPlans:$('#SupportPlans', dom).get(),
+                _authLevels:$('#AuthLevels', dom).get(),
                 _currencies:$('#Currencies', dom).get(),
                 _users:$('#Users', dom).get(),
                 _files:$('#Files', dom).get(),
                 _addProduct:$('#AddProduct', dom).get(),
                 _addRegion:$('#AddRegion', dom).get(),
                 _addSupportPlan:$('#AddSupportPlan', dom).get(),
+                _addAuthLevel:$('#AddAuthLevel', dom).get(),
                 _addCurrency:$('#AddCurrency', dom).get(),
                 _addUser:$('#AddUser', dom).get(),
                 /*_addFile:$('#AddFile', dom).get(),*/
@@ -539,6 +541,10 @@
             $(this._supportPlans, dom).sortable({
                 revert:true,
                 handle: '.supportPlanDrag'
+            });
+            $(this._authLevels, dom).sortable({
+                revert:true,
+                handle: '.authLevelDrag'
             });
             $(this._currencies, dom).sortable({
                 revert:true,
@@ -581,6 +587,9 @@
             });
             $(this._addSupportPlan).click(function() {
                 that.addSupportPlan();
+            });
+            $(this._addAuthLevel).click(function() {
+                that.addAuthLevel();
             });
             $(this._addCurrency).click(function() {
                 that.addCurrency();
@@ -655,6 +664,12 @@
                             config += $.data($(this)[0], 'pct').getXML();
                     });
                     config += '</SupportPlans>';
+                    config += '<AuthLevels>';
+                    $(that._authLevels).children().each(function() {
+                        if ($(this).hasClass('divAuthLevel'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</AuthLevels>';
                     config += '<Currencies>';
                     $(that._currencies).children().each(function() {
                         if ($(this).hasClass('divCurrency'))
@@ -699,6 +714,16 @@
                     $('root>SupportPlan', xml).each(function() {
                         var rt = that.addSupportPlan((new PCT.supportPlan()).setRoot(that._supportPlans).init(this));
                         $('.supportPlanKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                }
+            });
+            $.data($(this._authLevels)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>AuthLevel', xml).each(function() {
+                        var rt = that.addAuthLevel((new PCT.authLevel()).setRoot(that._authLevels).init(this));
+                        $('.authLevelKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
                     });
@@ -883,6 +908,9 @@
                     $('>SupportPlans>SupportPlan', initialData).each(function() {
                         that.addSupportPlan((new PCT.supportPlan()).setRoot(that._supportPlans).init(this));
                     });
+                    $('>AuthLevels>AuthLevel', initialData).each(function() {
+                        that.addAuthLevel((new PCT.authLevel()).setRoot(that._authLevels).init(this));
+                    });
                     $('>Currencies>Currency', initialData).each(function() {
                         that.addCurrency((new PCT.currency()).setRoot(that._currencies).init(this));
                     });
@@ -961,6 +989,16 @@
                         return supportPlan.getHead();
                     } else {
                         return this.addSupportPlan((new PCT.supportPlan()).setRoot(that._supportPlans));
+                    }
+                },
+                addAuthLevel:function(authLevel) {
+                    if (authLevel) {
+                        $('html, body').animate({
+                            scrollTop: $(authLevel.getHead()).offset().top
+                        }, 200);
+                        return authLevel.getHead();
+                    } else {
+                        return this.addAuthLevel((new PCT.authLevel()).setRoot(that._authLevels));
                     }
                 },
                 addCurrency:function(currency) {
@@ -2478,6 +2516,188 @@
                 }
             });
         },
+        authLevel:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('authLevel');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _name:$('#Name', dom).get(),
+                _description:$('#Description', dom).get(),
+                _key:$('#Key', dom).get(),
+                _authLevelTitle:$('#Title', dom).get(),
+                _addAuthLevelLevel:$('#AddAuthLevelLevel', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _authLevelLevels:$('#AuthLevelLevels', dom).get(),
+                _expand:$('#Expand', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _clone:$('#Clone', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $(this._authLevelLevels, dom).sortable({
+                revert:true,
+                handle: '.authLevelLevelDrag',
+                connectWith: '.divAuthLevelLevels'
+            });
+            $.data($(this._authLevelLevels)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Level', xml).each(function() {
+                        var rt = that.addAuthLevelLevel((new PCT.authLevelLevel()).setRoot(that._authLevelLevels).init(this));
+                        //var rt = that.addGroup((new PCT.capacitiesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Hidden', this).text(), $('>Capacities', this)).setIsRoot(false));
+                        $('.authLevelLevelKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                }
+            });
+            $(this._minPrice).val(0).change();
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<AuthLevel>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<Description>' + $(that._description).val() + '</Description>';
+                    config += '<Levels>';
+                    $(that._authLevelLevels).children().each(function() {
+                        if ($(this).hasClass('divAuthLevelLevel'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Levels>';
+                    config += '</AuthLevel>';
+                    return config;
+                }
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove authority level?')) {
+                    if (confirm('Removing authority level can result in broken backward compatibility. Remove authority level?')) {
+                        $(that._body).remove();
+                    }
+                }
+            });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divModelAuthLevels')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+            $(this._name).change(function() {
+                $(that._authLevelTitle).html($(this).val());
+            });
+            $(this._key).val(PCT.randomString(15)).change();
+            $(this._expand).click(function(arg) {
+                $(that._authLevelLevels).toggleClass('hidden');
+                if ($(that._authLevelLevels).hasClass('hidden')) {
+                    $(that._expand).html('Expand');
+                } else {
+                    $(that._expand).html('Collapse');
+                }
+            });
+            $(this._addAuthLevelLevel).click(function() {
+                if ($(that._authLevelLevels).hasClass('hidden')) {
+                    $(that._authLevelLevels).removeClass('hidden');
+                    $(that._expand).html('Collapse');
+                }
+                that.addAuthLevelLevel();
+            });
+            $(this._authLevelTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._description).val($('>Description', initialData).text()).change();
+                    $(this._key).val('').val($('>Key', initialData).text()).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._authLevelLevels).addClass('hidden');
+                    $(this._expand).html('Expand');
+                    $(this._remove).addClass('hidden');
+                    var that = this;
+                    $('>Levels>Level', initialData).each(function() {
+                        that.addAuthLevelLevel((new PCT.authLevelLevel()).setRoot(that._authLevelLevels).init(this));
+                    });
+                    return this;
+                },
+                addAuthLevelLevel:function(level) {
+                    if (level) {
+                        $('html, body').animate({
+                            scrollTop: $(level.getHead()).offset().top
+                        }, 000);
+                        return level.getHead();
+                    } else {
+                        return this.addAuthLevelLevel((new PCT.authLevelLevel()).setRoot(this._authLevelLevels));
+                    }
+                }
+            });
+        },
+        authLevelLevel:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('authLevelLevel');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _key:$('#Key', dom).get(),
+                _priority:$('#Priority', dom).get(),
+                _description:$('#Description', dom).get(),
+                _authLevelLevelTitle:$('#Title', dom).get(),
+                _clone:$('#Clone', dom).get(),
+                _name:$('#Name', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divAuthLevelLevels')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Level>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<Description>' + $(that._description).val() + '</Description>';
+                    config += '<Priority>' + $(that._priority).val() + '</Priority>';
+                    config += '</Level>';
+                    return config;
+                }
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove level?')) {
+                    $(that._body).remove();
+                }
+            });
+            $(this._name).change(function() {
+                $(that._authLevelLevelTitle).html($(this).val());
+            });
+            $(this._key).val(PCT.randomString(15)).change();
+            $(this._authLevelLevelTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._description).val($('>Description', initialData).text()).change();
+                    $(this._key).val($('>Key', initialData).text()).change();
+                    $(this._priority).val($('>Priority', initialData).text()).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
+                    return this;
+                }
+            });
+        },
         currency:function(dom) {
             if (!dom) {
                 dom = PCT.getTemplate('currency');
@@ -2646,9 +2866,11 @@
                 _cn:$('#CN', dom).get(),
                 _userTitle:$('#Title', dom).get(),
                 _addUserRegion:$('#AddUserRegion', dom).get(),
+                _addUserAuthLevel:$('#AddUserAuthLevel', dom).get(),
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _userRegions:$('#UserRegions', dom).get(),
+                _userAuthLevels:$('#UserAuthLevels', dom).get(),
                 _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _maxProductDiscount:$('#MaxProductDiscount', dom).get(),
@@ -2667,6 +2889,11 @@
                 handle: '.userRegionDrag',
                 connectWith: '.divUserRegions'
             });
+            $(this._userAuthLevels, dom).sortable({
+                revert:true,
+                handle: '.userAuthLevelDrag',
+                connectWith: '.divUserAuthLevels'
+            });
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
                     var config = '<User>';
@@ -2684,6 +2911,12 @@
                             config += $.data($(this)[0], 'pct').getXML();
                     });
                     config += '</Regions>';
+                    config += '<Levels>';
+                    $(that._userAuthLevels).children().each(function() {
+                        if ($(this).hasClass('divUserAuthLevel'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Levels>';
                     config += '</User>';
                     return config;
                 }
@@ -2716,8 +2949,10 @@
                 $(that._userTitle).html($(this).val());
             });
             $(this._cn).val('').change();
+
             $(this._expand).click(function(arg) {
                 $(that._userRegions).toggleClass('hidden');
+                $(that._userAuthLevels).toggleClass('hidden');
                 if ($(that._userRegions).hasClass('hidden')) {
                     $(that._expand).html('Expand');
                 } else {
@@ -2727,9 +2962,18 @@
             $(this._addUserRegion).click(function() {
                 if ($(that._userRegions).hasClass('hidden')) {
                     $(that._userRegions).removeClass('hidden');
+                    $(that._userAuthLevels).removeClass('hidden');
                     $(that._expand).html('Collapse');
                 }
                 that.addUserRegion();
+            });
+            $(this._addUserAuthLevel).click(function() {
+                if ($(that._userAuthLevels).hasClass('hidden')) {
+                    $(that._userRegions).removeClass('hidden');
+                    $(that._userAuthLevels).removeClass('hidden');
+                    $(that._expand).html('Collapse');
+                }
+                that.addUserAuthLevel();
             });
             $(this._userTitle).click(function() {
                 $(that._remove).toggleClass('hidden');
@@ -2748,6 +2992,7 @@
                     $(this._email).val($('>Email', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._userRegions).addClass('hidden');
+                    $(this._userAuthLevels).addClass('hidden');
                     $(this._deprecated).prop('checked', ($('>Deprecated', initialData).text() == 'true')).change();
                     $(this._admin).prop('checked', ($('>Admin', initialData).text() == 'true')).change();
                     $(this._salesSupport).prop('checked', ($('>SalesSupport', initialData).text() == 'true')).change();
@@ -2756,6 +3001,9 @@
                     var that = this;
                     $('>Regions>Region', initialData).each(function() {
                         that.addUserRegion((new PCT.userRegion()).setRoot(that._userRegions).init(this));
+                    });
+                    $('>Levels>Level', initialData).each(function() {
+                        that.addUserAuthLevel((new PCT.userAuthLevel()).setRoot(that._userAuthLevels).init(this));
                     });
                     return this;
                 },
@@ -2766,6 +3014,15 @@
                         }, 000);
                     } else {
                         this.addUserRegion((new PCT.userRegion()).setRoot(this._userRegions));
+                    }
+                },
+                addUserAuthLevel:function(level) {
+                    if (level) {
+                        $('html, body').animate({
+                            scrollTop: $(level.getHead()).offset().top
+                        }, 000);
+                    } else {
+                        this.addUserAuthLevel((new PCT.userAuthLevel()).setRoot(this._userAuthLevels));
                     }
                 }
             });
@@ -2813,6 +3070,61 @@
                 },
                 init:function(initialData) {
                     $(this._key).val($('>Key', initialData).text()).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
+                    return this;
+                }
+            });
+        },
+        userAuthLevel:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('userAuthLevel');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _key:$('#Key', dom).get(),
+                _subkey:$('#SubKey', dom).get(),
+                _userAuthLevelTitle:$('#Title', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Level>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<SubKey>' + $(that._subkey).val() + '</SubKey>';
+                    config += '</Level>';
+                    return config;
+                }
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove authority level?')) {
+                    $(that._body).remove();
+                }
+            });
+            $(this._key).change(function() {
+                $(that._userAuthLevelTitle).html($(this).val() + ' = ' + $(that._subkey).val());
+            });
+            $(this._subkey).change(function() {
+                $(that._userAuthLevelTitle).html($(that._key).val() + ' = ' + $(this).val());
+            });
+            $(this._userAuthLevelTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._key).val($('>Key', initialData).text()).change();
+                    $(this._subkey).val($('>SubKey', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
                     return this;

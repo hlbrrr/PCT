@@ -43,7 +43,7 @@
                     Regions
                 </div>
                 <div id="SupportPlansTab" bind="#SupportPlansWrap" class="titleTableCell titleTableCellButton tab">
-                    Support Plans
+                    Sup. Plans
                 </div>
                 <div id="CurrenciesTab" bind="#CurrenciesWrap" class="titleTableCell titleTableCellButton tab">
                     Currencies
@@ -51,20 +51,23 @@
                 <div id="UsersTab" bind="#UsersWrap" class="titleTableCell titleTableCellButton tab">
                     Users
                 </div>
+                <div id="AuthLevelsTab" bind="#AuthLevelsWrap" class="titleTableCell titleTableCellButton tab">
+                    Auth. Levels
+                </div>
                 <div id="SystemTab" bind="#SystemWrap" class="titleTableCell titleTableCellButton tab">
                     System
                 </div>
                 <div class="titleTableCell titleTableCellFill lockText" id="LockMessage">
                 </div>
                 <div class="titleTableCell titleTableCellExpText">
-                    Expiration:
+                    Exp.:
                 </div>
                 <div class="titleTableCell titleTableCellExpDate">
                     <input id="Expiration" class="validate" validclass="date"/>
                     <input id="ReleaseTimestamp" type="hidden"/>
                 </div>
                 <div class="titleTableCell titleTableCellExpText">
-                    Min.&#160;build&#160;number:
+                    Min.&#160;build:
                 </div>
                 <div class="titleTableCell titleTableCellExpDate">
                     <input id="MinBuild" class="validate headerField" validclass="int mempty"/>
@@ -143,6 +146,16 @@
                 </div>
             </div>
             <div id="Home" class="divHome"></div>
+        </div>
+        <div id="AuthLevelsWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="AddAuthLevel" class="titleTableCell titleTableCellButton">
+                    Add Authority Level
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="AuthLevels" class="divModelAuthLevels"></div>
         </div>
         <div id="SystemWrap" class="hidden">
             <div class="titleTable divModelSubTitle">
@@ -1117,6 +1130,9 @@
                 <div id="AddUserRegion" class="titleTableCell titleTableCellButton">
                     Add Region
                 </div>
+                <div id="AddUserAuthLevel" class="titleTableCell titleTableCellButton">
+                    Add AL
+                </div>
                 <div id="Expand" class="titleTableCell titleTableCellButton">
                     Collapse
                 </div>
@@ -1194,6 +1210,7 @@
             </div>
         </div>
         <div id="UserRegions" class="divUserRegions"></div>
+        <div id="UserAuthLevels" class="divUserAuthLevels"></div>
     </div>
 </template>
 <template id="userRegion">
@@ -1281,6 +1298,153 @@
     <div>
         <div class="lockDiv" id="lockDiv">
             <div class="animation">Loading...</div>
+        </div>
+    </div>
+</template>
+<template id="authLevel">
+    <div class="divAuthLevel" id="Core">
+        <div class="divAuthLevelTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton authLevelDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
+                <div id="AddAuthLevelLevel" class="titleTableCell titleTableCellButton">
+                    Add Level
+                </div>
+                <div id="Expand" class="titleTableCell titleTableCellButton">
+                    Collapse
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate authLevelKey"
+                                   validclass="unique" unique=".authLevelKey" uniqueroot=".divModelAuthLevels"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Description:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <textarea id="Description" autocomplete="off" class="settingInput validate" validclass="mempty"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="AuthLevelLevels" class="divAuthLevelLevels"></div>
+    </div>
+</template>
+<template id="authLevelLevel">
+    <div class="divAuthLevelLevel" id="Core">
+        <div class="divAuthLevelLevelTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton authLevelLevelDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate authLevelLevelKey"
+                                   validclass="unique" unique=".authLevelLevelKey" uniqueroot=".divAuthLevelLevels"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Description:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <textarea id="Description" autocomplete="off" class="settingInput validate" validclass="mempty"></textarea>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Priority:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Priority" autocomplete="off" class="settingInput validate" validclass="int"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="userAuthLevel">
+    <div class="divUserAuthLevel" id="Core">
+        <div class="divUserAuthLevelTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton userAuthLevelDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            AL Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Level Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="SubKey" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>

@@ -8,7 +8,7 @@ body {
     background-color: #f9f8dd;
     padding: 0;
     margin: 0;
-    min-width: 1000px;
+    min-width: 1200px;
 }
 
 body, input, select, textarea {
@@ -90,7 +90,7 @@ body, input, select, textarea {
     padding-right: 10px;
 }
 
-.divProduct, .divRegion, .divSupportPlan, .divCurrency, .divUser, .divFile, .divLicense {
+.divProduct, .divRegion, .divSupportPlan, .divAuthLevel, .divCurrency, .divUser, .divFile, .divLicense {
     border: 1px solid #000;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -104,11 +104,11 @@ body, input, select, textarea {
     margin-top: 10px;
 }
 
-.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans, .divModelUsers, .divModelFiles {
+.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans, .divModelAuthLevels, .divModelUsers, .divModelFiles {
     margin: 10px;
 }
 
-.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divCurrencyTitle, .divUserTitle, .divFileTitle, .divLicenseTitle {
+.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divAuthLevelTitle, .divCurrencyTitle, .divUserTitle, .divFileTitle, .divLicenseTitle {
     background-color: #444;
     color: white;
 }
@@ -179,7 +179,7 @@ body, input, select, textarea {
     margin-bottom: 5px;
 }
 
-.divCapacityDependencies{
+.divCapacityDependencies, .divUserRegions{
     padding-top: 5px;
     padding-left: 10px;
     padding-right: 10px;
@@ -190,6 +190,14 @@ body, input, select, textarea {
 }
 
 .divCapacityDependencies .divDependency:last-child {
+    margin-bottom: 5px;
+}
+
+.divUserRegions .divUserRegion:first-child {
+    margin-top: 5px;
+}
+
+.divUserRegions .divUserRegion:last-child {
     margin-bottom: 5px;
 }
 
@@ -217,12 +225,17 @@ body, input, select, textarea {
     margin-top: 0;
 }
 
-
-
 .divTiers .divTier:last-child {
     margin-top: 0;
 }
 .divTiers .divTier:first-child {
+    margin-top: 0;
+}
+
+.divUserAuthLevels .divUserAuthLevel:last-child {
+    margin-top: 0;
+}
+.divUserAuthLevels .divUserAuthLevel:first-child {
     margin-top: 0;
 }
 
@@ -242,7 +255,7 @@ body, input, select, textarea {
     -webkit-border-radius: 5px;
 }
 
-.divTier {
+.divTier, .divUserAuthLevel {
     border: 1px solid #a3a3f4;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -250,7 +263,7 @@ body, input, select, textarea {
     -webkit-border-radius: 5px;
 }
 
-.divSupportPlanRegion, .divCurrencyRegion, .divUserRegion {
+.divSupportPlanRegion, .divAuthLevelLevel, .divCurrencyRegion, .divUserRegion {
     border: 1px solid #dbd0d0;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -288,12 +301,12 @@ body, input, select, textarea {
     color: black;
 }
 
-.divTierTitle {
+.divTierTitle, .divUserAuthLevel {
     background-color: #c1c1ff;
     color: black;
 }
 
-.divSupportPlanRegionTitle, .divCurrencyRegionTitle, .divUserRegionTitle {
+.divSupportPlanRegionTitle, .divAuthLevelLevelTitle, .divCurrencyRegionTitle, .divUserRegionTitle {
     background-color: #e7e6e6;
     color: black;
 }
@@ -326,12 +339,12 @@ body, input, select, textarea {
     padding-top: 5px;
 }
 
-.divDependencies, .divTiers, .divSupportPlanRegions, .divCurrencyRegions, .divUserRegions {
+.divDependencies, .divTiers, .divUserAuthLevels, .divSupportPlanRegions, .divAuthLevelLevels, .divCurrencyRegions {
     padding: 10px;
     padding-bottom: 0;
 }
 
-.divTiers {
+.divTiers, .divUserAuthLevels {
     padding-top: 5px;
 }
 
@@ -375,7 +388,8 @@ body, input, select, textarea {
 }
 
 .divProductTitle>.titleTable>.titleTableCellButton:hover, .divRegionTitle>.titleTable>.titleTableCellButton:hover,
-.divSupportPlanTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyTitle>.titleTable>.titleTableCellButton:hover,
+.divSupportPlanTitle>.titleTable>.titleTableCellButton:hover, .divAuthLevelTitle>.titleTable>.titleTableCellButton:hover,
+.divCurrencyTitle>.titleTable>.titleTableCellButton:hover,
 .divUserTitle>.titleTable>.titleTableCellButton:hover, .divFileTitle>.titleTable>.titleTableCellButton:hover,
 .divLicenseTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #777;
@@ -397,11 +411,12 @@ body, input, select, textarea {
     background-color: #f5f5f5;
 }
 
-.divTierTitle>.titleTable>.titleTableCellButton:hover {
+.divTierTitle>.titleTable>.titleTableCellButton:hover, .divUserAuthLevelTitle>.titleTable>.titleTableCellButton:hover{
     background-color: #dadafc;
 }
 
-.divSupportPlanRegionTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyRegionTitle>.titleTable>.titleTableCellButton:hover,
+.divSupportPlanRegionTitle>.titleTable>.titleTableCellButton:hover, .divAuthLevelLevelTitle>.titleTable>.titleTableCellButton:hover,
+.divCurrencyRegionTitle>.titleTable>.titleTableCellButton:hover,
 .divUserRegionTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #f5f5f5;
 }
@@ -418,7 +433,7 @@ body, input, select, textarea {
     background-color: #feb5b5;
 }
 
-.moduleDrag:hover, .capacityDrag:hover, .groupDrag:hover, .tierDrag:hover, .dependencyDrag:hover, .productDrag:hover {
+.moduleDrag:hover, .capacityDrag:hover, .groupDrag:hover, .userAuthLevelDrag:hover, .tierDrag:hover, .dependencyDrag:hover, .productDrag:hover {
     background-color: inherit !important;
     cursor: move;
 }
@@ -582,7 +597,7 @@ input.validate.error, textarea.validate.error {
     background-color: red;
 }
 
-.divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan, .divCurrency, .divUser, .divFile {
+.divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan, .divAuthLevel, .divCurrency, .divUser, .divFile {
     background-color: #fff;
 }
 
