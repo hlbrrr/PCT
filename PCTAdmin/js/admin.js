@@ -2875,6 +2875,9 @@
                 _remove:$('#Remove', dom).get(),
                 _maxProductDiscount:$('#MaxProductDiscount', dom).get(),
                 _maxSupportDiscount:$('#MaxSupportDiscount', dom).get(),
+                _mdrDiscount:$('#MDRDiscount', dom).get(),
+                _psDiscount:$('#PSDiscount', dom).get(),
+                _trainingDiscount:$('#TrainingDiscount', dom).get(),
                 _name:$('#Name', dom).get(),
                 _email:$('#Email', dom).get(),
                 _clone:$('#Clone', dom).get(),
@@ -2900,6 +2903,9 @@
                     config += '<CN>' + $(that._cn).val() + '</CN>';
                     config += '<MaxProductDiscount>' + $(that._maxProductDiscount).val() + '</MaxProductDiscount>';
                     config += '<MaxSupportDiscount>' + $(that._maxSupportDiscount).val() + '</MaxSupportDiscount>';
+                    config += '<MDRDiscount>' + $(that._mdrDiscount).val() + '</MDRDiscount>';
+                    config += '<PSDiscount>' + $(that._psDiscount).val() + '</PSDiscount>';
+                    config += '<TrainingDiscount>' + $(that._trainingDiscount).val() + '</TrainingDiscount>';
                     config += '<Name>' + $(that._name).val() + '</Name>';
                     config += '<Email>' + $(that._email).val() + '</Email>';
                     config += '<Deprecated>' + ($(that._deprecated).prop('checked') ? 'true' : 'false') + '</Deprecated>';
@@ -2988,6 +2994,9 @@
                     $(this._cn).val($('>CN', initialData).text()).change();
                     $(this._maxProductDiscount).val($('>MaxProductDiscount', initialData).text()).change();
                     $(this._maxSupportDiscount).val($('>MaxSupportDiscount', initialData).text()).change();
+                    $(this._mdrDiscount).val($('>MDRDiscount', initialData).text()).change();
+                    $(this._psDiscount).val($('>PSDiscount', initialData).text()).change();
+                    $(this._trainingDiscount).val($('>TrainingDiscount', initialData).text()).change();
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._email).val($('>Email', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
