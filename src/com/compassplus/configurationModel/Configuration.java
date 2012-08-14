@@ -8,7 +8,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
@@ -26,6 +25,10 @@ public class Configuration {
     private Map<String, Currency> currencies = new LinkedHashMap<String, Currency>();
     private Map<String, Region> regions = new LinkedHashMap<String, Region>();
     private Map<String, SupportPlan> supportPlans = new LinkedHashMap<String, SupportPlan>();
+    private Map<String, AuthLevel> authLevels = new LinkedHashMap<String, AuthLevel>();
+
+    private Map<String, UserLevel> userLevels = new HashMap<String, UserLevel>();
+
     private Map<String, Product> products = new LinkedHashMap<String, Product>();
     private ArrayList<SupportRate> supportRates = new ArrayList<SupportRate>();
     private Logger log = Logger.getInstance();
@@ -40,6 +43,7 @@ public class Configuration {
     private Boolean salesSupport;
 
     public boolean isSalesSupport() {
+        //return true;
         return salesSupport != null ? salesSupport : false;
     }
 
@@ -66,6 +70,9 @@ public class Configuration {
             this.setRegions(xut.getNodes("/root/Regions/Region", initialData));
             this.setCurrencies(xut.getNodes("/root/Currencies/Currency", initialData));
             this.setSupportPlans(xut.getNodes("/root/SupportPlans/SupportPlan", initialData));
+            this.setAuthLevels(xut.getNodes("/root/AuthLevels/AuthLevel", initialData));
+
+            this.setUserLevels(xut.getNodes("/root/Users/User/Levels/Level", initialData));
 
             this.setUserName(xut.getNode("/root/Users/User/Name", initialData));
             this.setMaxDiscount(xut.getNode("/root/Users/User/MaxProductDiscount", initialData));
@@ -148,6 +155,10 @@ public class Configuration {
         return this.supportPlans;
     }
 
+    public Map<String, AuthLevel> getAuthLevels() {
+        return this.authLevels;
+    }
+
     private void setSupportPlans(NodeList supportPlans) throws PCTDataFormatException {
         this.getSupportPlans().clear();
         if (supportPlans.getLength() > 0) {
@@ -166,6 +177,52 @@ public class Configuration {
         }
         if (this.getSupportPlans().size() == 0) {
             throw new PCTDataFormatException("Support plans are not defined correctly");
+        }
+    }
+
+    public Map<String, UserLevel> getUserLevels() {
+        return this.userLevels;
+    }
+
+    private void setUserLevels(NodeList levels) throws PCTDataFormatException {
+        this.getUserLevels().clear();
+        if (levels.getLength() > 0) {
+            log.info("Found " + levels.getLength() + " user level(s)");
+            for (int i = 0; i < levels.getLength(); i++) {
+                try {
+                    UserLevel tmpUserLevel = new UserLevel(levels.item(i));
+                    if (this.getAuthLevels().containsKey(tmpUserLevel.getKey())
+                            && this.getAuthLevels().get(tmpUserLevel.getKey()).getLevels().containsKey(tmpUserLevel.getSubKey())) {
+                        this.getUserLevels().put(tmpUserLevel.getKey(), tmpUserLevel);
+                    } else {
+                        throw new PCTDataFormatException("No such auth level: \nKey: " + tmpUserLevel.getKey() + "\nSubKey: " + tmpUserLevel.getSubKey());
+                    }
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getUserLevels().size() + " user levels(s)");
+        }
+    }
+
+    private void setAuthLevels(NodeList authLevels) throws PCTDataFormatException {
+        this.getAuthLevels().clear();
+        if (authLevels.getLength() > 0) {
+            log.info("Found " + authLevels.getLength() + " authority level(s)");
+            for (int i = 0; i < authLevels.getLength(); i++) {
+                try {
+                    AuthLevel tmpAuthLevel = new AuthLevel(authLevels.item(i));
+                    this.getAuthLevels().put(tmpAuthLevel.getKey(), tmpAuthLevel);
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getAuthLevels().size() + " authority levels(s)");
+        } else {
+            throw new PCTDataFormatException("No authority levels defined");
+        }
+        if (this.getAuthLevels().size() == 0) {
+            throw new PCTDataFormatException("Authority levels are not defined correctly");
         }
     }
 
@@ -219,23 +276,23 @@ public class Configuration {
         }
     }
 
-    public Integer getBuild(){
-        if(this.build==null){
-            try{
+    public Integer getBuild() {
+        if (this.build == null) {
+            try {
                 InputStream is = this.getClass().getResourceAsStream("build.properties");
                 BufferedReader d = new BufferedReader(new InputStreamReader(is));
                 String buildNumberString = d.readLine();
                 build = Integer.parseInt(buildNumberString);
                 d.close();
                 is.close();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return this.build;
     }
 
-    public Integer getMinBuild(){
+    public Integer getMinBuild() {
         return this.minBuild;
     }
 

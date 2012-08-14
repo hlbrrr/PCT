@@ -24,6 +24,7 @@ public class ProposalForm {
     private ProductForm currentProductForm;
     private DecimalFormat df = new DecimalFormat();
     private SummaryForm summaryForm;
+    private AuthLevelsForm authForm;
     private boolean changed = false;
 
     public ProposalForm(Proposal proposal, JFrame frame, PCTChangedListener titleUpdater) {
@@ -42,6 +43,7 @@ public class ProposalForm {
         });
 
         addSummaryPage(proposal, titleUpdater);
+        addAuthPage(proposal);
         for (String key : proposal.getConfig().getProducts().keySet()) {
             if (proposal.getProducts().containsKey(key)) {
                 addProductForm(proposal.getProducts().get(key));
@@ -79,6 +81,12 @@ public class ProposalForm {
 
     public Proposal getProposal() {
         return proposal;
+    }
+
+
+    private void addAuthPage(Proposal proposal) {
+        authForm = new AuthLevelsForm(proposal);
+        productsTabs.addTab("Authority Levels", authForm.getRoot());
     }
 
     private void addSummaryPage(Proposal proposal, PCTChangedListener titleUpdater) {
