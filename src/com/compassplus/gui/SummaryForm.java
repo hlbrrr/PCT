@@ -68,7 +68,7 @@ public class SummaryForm {
             c.gridy = 0;
             c.weightx = 1 / 3d;
             c.fill = GridBagConstraints.BOTH;
-            c.anchor = GridBagConstraints.NORTHWEST;
+            c.anchor = GridBagConstraints.NORTH;
             settingsWrap.add(settingsPanelLeft, c);
 
             c.gridx++;
@@ -76,7 +76,7 @@ public class SummaryForm {
             settingsWrap.add(settingsPanelCenter, c);
 
             c.gridx++;
-            c.anchor = GridBagConstraints.NORTHEAST;
+            c.anchor = GridBagConstraints.NORTH;
             settingsWrap.add(settingsPanelRight, c);
 
             c.gridy = 1;
@@ -135,12 +135,6 @@ public class SummaryForm {
             maxDiscountField.setMaximumSize(new Dimension(maxDiscountField.getMaximumSize().width, 23));
             maxDiscountField.setMinimumSize(new Dimension(maxDiscountField.getMinimumSize().width, 23));
 
-            JPanel tmpPanel = new JPanel();
-            tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
-            tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
-            tmpPanel.add(maxDiscountLabel);
-            tmpPanel.add(maxDiscountField);
-
             JSpinner maxSupportDiscountField = new JSpinner(new SpinnerNumberModel(0, 0, 0, 0));
             JLabel maxSupportDiscountLabel = new JLabel("Max. support discount (%)");
             maxSupportDiscountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -151,11 +145,20 @@ public class SummaryForm {
             maxSupportDiscountField.setMaximumSize(new Dimension(maxSupportDiscountField.getMaximumSize().width, 23));
             maxSupportDiscountField.setMinimumSize(new Dimension(maxSupportDiscountField.getMinimumSize().width, 23));
 
+
+            JPanel tmpPanel = new JPanel();
+            tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
+            tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
+            tmpPanel.add(maxDiscountLabel);
+            tmpPanel.add(maxDiscountField);
+
             JPanel tmpPanel2 = new JPanel();
             tmpPanel2.setLayout(new BoxLayout(tmpPanel2, BoxLayout.Y_AXIS));
             tmpPanel2.setBorder(new EmptyBorder(4, 4, 4, 4));
             tmpPanel2.add(maxSupportDiscountLabel);
             tmpPanel2.add(maxSupportDiscountField);
+
+
 
 
             /*JPanel discounts = new JPanel(new GridBagLayout());
@@ -412,6 +415,19 @@ public class SummaryForm {
             if (!getProposal().getConfig().isSalesSupport()) {
                 settingsPanelLeft.add(tmpPanel2);
                 settingsPanelCenter.add(tmpPanel);
+                JPanel tmpPanelE = new JPanel();
+                tmpPanelE.setSize(1, 50);
+                settingsPanelRight.add(tmpPanelE);
+            }else{
+                JPanel tmpPanelE1 = new JPanel();
+                tmpPanelE1.setSize(1, 50);
+                settingsPanelCenter.add(tmpPanelE1);
+                JPanel tmpPanelE2 = new JPanel();
+                tmpPanelE2.setSize(1, 50);
+                settingsPanelRight.add(tmpPanelE2);
+                JPanel tmpPanelE3 = new JPanel();
+                tmpPanelE3.setSize(1, 50);
+                settingsPanelRight.add(tmpPanelE3);
             }
         }
         //maxDiscountField.setMaximumSize(new Dimension(planRateField.getMaximumSize().width, planRateField.getMinimumSize().height));
