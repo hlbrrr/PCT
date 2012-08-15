@@ -633,11 +633,11 @@ public class SummaryForm {
                                 " " + getProposal().getCurrency().getName() : ""));
                     }
 
-                    public void setData(Object data) {
+                    public void setData(String key, Object data) {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
-                    public Object getData() {
+                    public Object getData(String key) {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
                 });
@@ -652,11 +652,11 @@ public class SummaryForm {
                                 " " + getProposal().getCurrency().getName() : ""));
                     }
 
-                    public void setData(Object data) {
+                    public void setData(String key, Object data) {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
-                    public Object getData() {
+                    public Object getData(String key) {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
                 });
@@ -681,11 +681,11 @@ public class SummaryForm {
                         }
                     }
 
-                    public void setData(Object data) {
+                    public void setData(String key, Object data) {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
-                    public Object getData() {
+                    public Object getData(String key) {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
                 });
@@ -771,11 +771,11 @@ public class SummaryForm {
                                         " " + prod.getProposal().getCurrency().getName() : ""));
                             }
 
-                            public void setData(Object data) {
+                            public void setData(String key, Object data) {
                                 //To change body of implemented methods use File | Settings | File Templates.
                             }
 
-                            public Object getData() {
+                            public Object getData(String key) {
                                 return null;  //To change body of implemented methods use File | Settings | File Templates.
                             }
                         });
@@ -790,11 +790,11 @@ public class SummaryForm {
                                         " " + prod.getProposal().getCurrency().getName() : ""));
                             }
 
-                            public void setData(Object data) {
+                            public void setData(String key, Object data) {
                                 //To change body of implemented methods use File | Settings | File Templates.
                             }
 
-                            public Object getData() {
+                            public Object getData(String key) {
                                 return null;  //To change body of implemented methods use File | Settings | File Templates.
                             }
                         });
@@ -809,11 +809,11 @@ public class SummaryForm {
                                 }
                             }
 
-                            public void setData(Object data) {
+                            public void setData(String key, Object data) {
                                 //To change body of implemented methods use File | Settings | File Templates.
                             }
 
-                            public Object getData() {
+                            public Object getData(String key) {
                                 return null;  //To change body of implemented methods use File | Settings | File Templates.
                             }
                         });

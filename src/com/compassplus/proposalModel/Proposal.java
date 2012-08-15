@@ -1,8 +1,6 @@
 package com.compassplus.proposalModel;
 
-import com.compassplus.configurationModel.Configuration;
-import com.compassplus.configurationModel.Currency;
-import com.compassplus.configurationModel.SupportPlan;
+import com.compassplus.configurationModel.*;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
@@ -13,6 +11,7 @@ import org.w3c.dom.NodeList;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -32,6 +31,7 @@ public class Proposal {
     private String projectName = "";
     private Double currencyRate;
     private Map<String, Product> products = new LinkedHashMap<String, Product>();
+    private Map<String, String> selectedAls = new HashMap<String, String>();
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
     private com.compassplus.configurationModel.Region region;
@@ -41,6 +41,34 @@ public class Proposal {
     public Proposal(Configuration config) {
         this.setConfig(config);
         userName = config.getUserName();
+    }
+
+    public Map<String, String> getSelectedAls(){
+        return this.selectedAls;
+    }
+
+    public boolean isAllAlsDefined() {
+        return this.getSelectedAls().size() == this.getConfig().getAuthLevels().size();
+    }
+
+    public boolean isApproved() {
+        boolean ret = false;
+        try {
+            for (String alkey : this.getSelectedAls().keySet()) {
+                String selectedValue = this.getSelectedAls().get(alkey);
+                Double selectedPriority = this.getConfig().getAuthLevels().get(alkey).getLevels().get(selectedValue).getPriority();
+                String userValue = this.getConfig().getUserLevels().get(alkey).getSubKey();
+                Double userPriority = this.getConfig().getAuthLevels().get(alkey).getLevels().get(userValue).getPriority();
+                if (userPriority<selectedPriority) {
+                    return false;
+                }
+            }
+            ret = true;
+        } catch (Exception e) {
+
+        }
+
+        return ret && isAllAlsDefined();
     }
 
     public boolean containsDeprecated() {
@@ -70,6 +98,7 @@ public class Proposal {
             this.setRegion(xut.getNode("/root/Region", initialData), config.getRegions());
             this.setCurrency(xut.getNode("/root/Currency", initialData), config.getCurrencies());
             this.setSupportPlan(xut.getNode("/root/SupportPlan", initialData), config.getSupportPlans());
+            this.setSelectedAls(xut.getNodes("/root/Levels/Level", initialData));
 
             this.setProducts(xut.getNodes("/root/Products/Product", initialData));
         } catch (PCTDataFormatException e) {
@@ -108,6 +137,24 @@ public class Proposal {
             throw new PCTDataFormatException("Product support plan is not defined correctly", e.getDetails());
         }
     }
+
+    private void setSelectedAls(NodeList levels) throws PCTDataFormatException {
+        this.getSelectedAls().clear();
+        if (levels.getLength() > 0) {
+            for (int i = 0; i < levels.getLength(); i++) {
+                try {
+                    String akey = xut.getString(xut.getNode("Key", levels.item(i)));
+                    String asubkey = xut.getString(xut.getNode("SubKey", levels.item(i)));
+                    if(getConfig().getAuthLevels().containsKey(akey)&&getConfig().getAuthLevels().get(akey).getLevels().containsKey(asubkey)){
+                        this.getSelectedAls().put(akey, asubkey);
+                    }
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+        }
+    }
+
 
     public void setCurrency(com.compassplus.configurationModel.Currency currency) {
         this.currency = currency;
@@ -287,6 +334,21 @@ public class Proposal {
         sb.append("<Region>").append(this.getRegion().getKey()).append("</Region>");
         sb.append("<Currency>").append(this.getCurrency().getName()).append("</Currency>");
         sb.append("<SupportPlan>").append(this.getSupportPlan().getKey()).append("</SupportPlan>");
+
+        if (this.getSelectedAls() != null && this.getSelectedAls().size() > 0) {
+            sb.append("<Levels>");
+            for (String key : this.getSelectedAls().keySet()) {
+                sb.append("<Level>");
+                sb.append("<Key>");
+                sb.append(key);
+                sb.append("</Key>");
+                sb.append("<SubKey>");
+                sb.append(this.getSelectedAls().get(key));
+                sb.append("</SubKey>");
+                sb.append("</Level>");
+            }
+            sb.append("</Levels>");
+        }
 
         if (this.getProducts() != null && this.getProducts().size() > 0) {
             sb.append("<Products>");

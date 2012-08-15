@@ -9,6 +9,6 @@ package com.compassplus.gui;
  */
 public interface PCTChangedListener {
     void act(Object src);
-    void setData(Object data);
-    Object getData();
+    void setData(String key, Object data);
+    Object getData(String key);
 }

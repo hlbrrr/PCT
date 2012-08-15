@@ -39,9 +39,7 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -151,7 +149,6 @@ public class MainForm {
                         } catch (URISyntaxException use) {
                             throw new AssertionError(use);
                         } catch (IOException ioe) {
-                            ioe.printStackTrace();
                             JOptionPane.showMessageDialog(null, "Sorry, a problem occurred while trying to open this link in your system's standard browser.", "A problem occured", JOptionPane.ERROR_MESSAGE);
                         }
 
@@ -171,7 +168,7 @@ public class MainForm {
 
                 msg.add(version);
                 msg.add(build);
-                if(config.getMinBuild()!=null){
+                if (config.getMinBuild() != null) {
                     msg.add(minBuild);
                 }
                 msg.add(expiration);
@@ -513,9 +510,6 @@ public class MainForm {
                                                     getCurrentProposalForm().setChanged(false);
                                                     JOptionPane.showMessageDialog(getRoot(), "Proposal successfully exported", "Result", JOptionPane.INFORMATION_MESSAGE);
                                                 } catch (Exception exception) {
-                                                    System.out.println(exception);
-                                                    exception.printStackTrace();
-
                                                     JOptionPane.showMessageDialog(getRoot(), "Proposal can't be exported", "Error", JOptionPane.ERROR_MESSAGE);
                                                 }
                                             } else if (value == JOptionPane.CANCEL_OPTION) {
@@ -682,7 +676,8 @@ public class MainForm {
             public void actionPerformed(ActionEvent e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        if (checkForConsistence()) {
+                        if (checkForConsistence() && (getCurrentProposalForm().getProposal().getConfig().isSalesSupport() || JOptionPane.showOptionDialog(getRoot(), "Have you checked authority levels for this proposal?", "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null) == JOptionPane.YES_OPTION)) {
+
                             xlsFileChooser.setDialogTitle("Export");
                             int retVal = xlsFileChooser.showDialog(getRoot(), "Export");
 
@@ -807,6 +802,17 @@ public class MainForm {
 
     private boolean checkForConsistence() {
         StringBuilder sb = new StringBuilder();
+
+        if(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()){
+            for (String key : getCurrentProposalForm().getProposal().getConfig().getAuthLevels().keySet()) {
+                if (!getCurrentProposalForm().getProposal().getSelectedAls().containsKey(key) ||
+                        !getCurrentProposalForm().getProposal().getConfig().getAuthLevels().get(key).getLevels().containsKey(getCurrentProposalForm().getProposal().getSelectedAls().get(key))) {
+                    sb.append("\nAuthority level \"");
+                    sb.append(getCurrentProposalForm().getProposal().getConfig().getAuthLevels().get(key).getName());
+                    sb.append("\" value is not set");
+                }
+            }
+        }
         for (Product p : getCurrentProposalForm().getProposal().getProducts().values()) {
             if (!p.getSecondarySale()) {
                 sb.append(p.checkForConsistence());
@@ -961,24 +967,48 @@ public class MainForm {
 
     public void addProposalForm(Proposal proposal, JFrame frame, boolean dropChanged) {
         ProposalForm proposalForm = new ProposalForm(proposal, getFrame(), new PCTChangedListener() {
-            Object data;
+            Map<String, Object> data = new HashMap<String, Object>();
 
             public void act(Object src) {
-                if (getData() != null) {
-                    try {
-                        com.compassplus.proposalModel.Proposal pp = ((com.compassplus.proposalModel.Proposal) src);
-                        proposalsTabs.setTitleAt(proposalsTabs.indexOfComponent((Component) getData()), pp.getProjectName() + " [" + pp.getClientName() + "]");
-                    } catch (Exception e) {
+                try {
+                    com.compassplus.proposalModel.Proposal pp = ((com.compassplus.proposalModel.Proposal) src);
+                    if (getData("productTab") != null) {
+                        int ind = proposalsTabs.indexOfComponent((Component) getData("productTab"));
+                        if (!pp.isAllAlsDefined() || pp.getConfig().isSalesSupport()) {
+                            proposalsTabs.setForegroundAt(ind, Color.BLACK);
+                        } else if (pp.isApproved()) {
+                            proposalsTabs.setForegroundAt(ind, new Color(0, 158, 5));
+                        } else {
+                            proposalsTabs.setForegroundAt(ind, Color.RED);
+                        }
+                        proposalsTabs.setTitleAt(ind, pp.getProjectName() + " [" + pp.getClientName() + "]");
                     }
+                    if (!pp.getConfig().isSalesSupport() && getData("productsTabs") != null && getData("summaryForm") != null) {
+                        SummaryForm summaryForm = (SummaryForm) getData("summaryForm");
+                        JTabbedPane productsTabs = (JTabbedPane) getData("productsTabs");
+                        int ind = productsTabs.indexOfComponent((Component) (summaryForm.getRoot()));
+                        String append = "";
+                        if (!pp.isAllAlsDefined()) {
+                            productsTabs.setForegroundAt(ind, Color.BLACK);
+                        } else if (pp.isApproved()) {
+                            append = " [APPROVED]";
+                            productsTabs.setForegroundAt(ind, new Color(0, 158, 5));
+                        } else {
+                            append = " [REQUIRES APPROVAL]";
+                            productsTabs.setForegroundAt(ind, Color.RED);
+                        }
+                        productsTabs.setTitleAt(ind, "Summary" + append);
+                    }
+                } catch (Exception e) {
                 }
             }
 
-            public void setData(Object data) {
-                this.data = data;
+            public void setData(String key, Object data) {
+                this.data.put(key, data);
             }
 
-            public Object getData() {
-                return data;
+            public Object getData(String key) {
+                return this.data.get(key);
             }
         });
         proposalsTabs.addTab(proposalForm.getProposal().getName(), proposalForm.getRoot());
@@ -1022,20 +1052,19 @@ public class MainForm {
             }
           }
         }*/
-        for(int i=0; i<sheet.getNumMergedRegions(); i++){
+        for (int i = 0; i < sheet.getNumMergedRegions(); i++) {
             cras.add(sheet.getMergedRegion(i));
         }
-        while(sheet.getNumMergedRegions()>0){
+        while (sheet.getNumMergedRegions() > 0) {
             sheet.removeMergedRegion(0);
         }
         int lastRowNum = sheet.getLastRowNum();
 
 
-
         if (rowIndex >= 0 && rowIndex < lastRowNum) {
             Row removingRow = sheet.getRow(rowIndex);
 
-           /* Iterator<Cell> ci = removingRow.iterator();
+            /* Iterator<Cell> ci = removingRow.iterator();
             while(ci.hasNext()){
                 Cell nx = ci.next();
                 fe.notifyDeleteCell(nx);
@@ -1050,15 +1079,15 @@ public class MainForm {
                 sheet.removeRow(removingRow);
             }
         }
-        for(CellRangeAddress cra:cras){
-            if(rowIndex>=cra.getFirstRow() && rowIndex<=cra.getLastRow() && cra.getFirstRow()!=cra.getLastRow()){
-                cra.setLastRow(cra.getLastRow()-1);
+        for (CellRangeAddress cra : cras) {
+            if (rowIndex >= cra.getFirstRow() && rowIndex <= cra.getLastRow() && cra.getFirstRow() != cra.getLastRow()) {
+                cra.setLastRow(cra.getLastRow() - 1);
                 sheet.addMergedRegion(cra);
-            }else if(rowIndex<cra.getFirstRow()){
+            } else if (rowIndex < cra.getFirstRow()) {
                 cra.setFirstRow(cra.getFirstRow() - 1);
                 cra.setLastRow(cra.getLastRow() - 1);
                 sheet.addMergedRegion(cra);
-            }else if(rowIndex>cra.getLastRow()){
+            } else if (rowIndex > cra.getLastRow()) {
                 sheet.addMergedRegion(cra);
             }
         }
@@ -1124,10 +1153,11 @@ public class MainForm {
     }
 
     private boolean analyzeCell(Workbook wb, Sheet sheet, Row row, Cell cell, ScriptEngine engine, Bindings bindings) {
-        try{
+        try {
             String formula = cell.getCellFormula();
             cell.setCellFormula(formula);
-        }catch(Exception e){}
+        } catch (Exception e) {
+        }
         try {
             String expr = cell.getStringCellValue();
             short type = 0;

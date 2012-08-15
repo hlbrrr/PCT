@@ -218,12 +218,12 @@ public class Configuration {
                 }
             }
             log.info("Successfully parsed " + this.getAuthLevels().size() + " authority levels(s)");
-        } else {
+        } /*else {
             throw new PCTDataFormatException("No authority levels defined");
         }
         if (this.getAuthLevels().size() == 0) {
             throw new PCTDataFormatException("Authority levels are not defined correctly");
-        }
+        }*/
     }
 
     public Map<String, Currency> getCurrencies() {

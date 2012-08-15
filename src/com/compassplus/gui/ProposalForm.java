@@ -43,14 +43,38 @@ public class ProposalForm {
         });
 
         addSummaryPage(proposal, titleUpdater);
-        addAuthPage(proposal);
+        addAuthPage(proposal, titleUpdater/*new PCTChangedListener(){
+            public void act(Object src) {
+                int ind = productsTabs.indexOfComponent((Component) (summaryForm.getRoot()));
+                String append="";
+                if(!proposal.isAllAlsDefined()){
+                    productsTabs.setForegroundAt(ind, Color.BLACK);
+                }else if(proposal.isApproved()){
+                    append = " [APPROVED]";
+                    productsTabs.setForegroundAt(ind, new Color(0,158,5));
+                }else{
+                    append = " [REQUIRES APPROVAL]";
+                    productsTabs.setForegroundAt(ind, Color.RED);
+                }
+                productsTabs.setTitleAt(ind, "Summary" + append);
+            }
+
+            public void setData(Object data) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public Object getData() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        }*/);
         for (String key : proposal.getConfig().getProducts().keySet()) {
             if (proposal.getProducts().containsKey(key)) {
                 addProductForm(proposal.getProducts().get(key));
             }
         }
         mainPanel = new ProposalJPanel(new BorderLayout(), this);
-        titleUpdater.setData(mainPanel);
+        titleUpdater.setData("productTab", mainPanel);
+        titleUpdater.setData("productsTabs", productsTabs);
         mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         mainPanel.add(productsTabs, BorderLayout.CENTER);
@@ -84,9 +108,11 @@ public class ProposalForm {
     }
 
 
-    private void addAuthPage(Proposal proposal) {
-        authForm = new AuthLevelsForm(proposal);
-        productsTabs.addTab("Authority Levels", authForm.getRoot());
+    private void addAuthPage(Proposal proposal, PCTChangedListener alUpdater) {
+        if (!proposal.getConfig().isSalesSupport() && proposal.getConfig().getAuthLevels().size() > 0) {
+            authForm = new AuthLevelsForm(proposal, alUpdater);
+            productsTabs.addTab("Authority Levels", authForm.getRoot());
+        }
     }
 
     private void addSummaryPage(Proposal proposal, PCTChangedListener titleUpdater) {
@@ -101,11 +127,11 @@ public class ProposalForm {
                 }
             }
 
-            public void setData(Object data) {
+            public void setData(String key, Object data) {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public Object getData() {
+            public Object getData(String key) {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
         }, df, new PCTChangedListener() {
@@ -115,15 +141,16 @@ public class ProposalForm {
                 }
             }
 
-            public void setData(Object data) {
+            public void setData(String key, Object data) {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public Object getData() {
+            public Object getData(String key) {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
         }, titleUpdater
         );
+        titleUpdater.setData("summaryForm", summaryForm);
         productsTabs.addTab("Summary", summaryForm.getRoot());
         productsTabs.setSelectedComponent(summaryForm.getRoot());
     }
@@ -144,19 +171,19 @@ public class ProposalForm {
                     summaryForm.update();
                     Integer ti = productsTabs.indexOfComponent(pf.getRoot());
                     if (ti >= 0) {
-                        productsTabs.setTitleAt(ti, pf.getProduct().getName() + (!getProposal().getConfig().isSalesSupport()?(" (" + (getProposal().getCurrency().getSymbol() != null ?
+                        productsTabs.setTitleAt(ti, pf.getProduct().getName() + (!getProposal().getConfig().isSalesSupport() ? (" (" + (getProposal().getCurrency().getSymbol() != null ?
                                 getProposal().getCurrency().getSymbol() + " " : "") + "" + df.format(pf.getProduct().getRegionPrice()) + (getProposal().getCurrency().getSymbol() == null ?
-                                " " + getProposal().getCurrency().getName() : "") + ")"):""));
+                                " " + getProposal().getCurrency().getName() : "") + ")") : ""));
 
                     }
                 }
             }
 
-            public void setData(Object data) {
+            public void setData(String key, Object data) {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public Object getData() {
+            public Object getData(String key) {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
         }, df, getFrame());

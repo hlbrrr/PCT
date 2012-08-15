@@ -1027,11 +1027,11 @@ public class ProductForm {
                         reloadCapacitiesPrices(cs);
                     }
 
-                    public void setData(Object data) {
+                    public void setData(String key, Object data) {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
-                    public Object getData() {
+                    public Object getData(String key) {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
                 };
