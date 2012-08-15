@@ -135,10 +135,10 @@ public class ProductForm {
     }
 
     private void initForm() {
-        primaryCheckBox = new JCheckBox("Primary sale", !getProduct().getSecondarySale());
+        primaryCheckBox = new ModuleJCheckbox("Primary sale", !getProduct().getSecondarySale(), null, null);
         primaryCheckBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                final JCheckBox src = (JCheckBox) e.getSource();
+                final ModuleJCheckbox src = (ModuleJCheckbox) e.getSource();
                 final boolean secondary = !src.isSelected();
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
@@ -148,22 +148,27 @@ public class ProductForm {
                                 for (ModuleJButton mb : getCheckBoxes().values()) {
                                     mb.setSelected(false, false);
                                 }
-                                for (CapacityJSpinner cs : getSpinners().values()) {
-                                    cs.setValue(0);
-                                }
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        for (CapacityJSpinner cs : getSpinners().values()) {
+                                            cs.setValue(0);
+                                        }
+                                    }
+                                });
                             } else {
-                                src.setSelected(true);
+                                src.setSelected(true, true);
                             }
                         } else {
-                            getProduct().setSecondarySale(secondary);
                             final String cons = getProduct().checkForConsistence();
                             if (cons.length() > 0) {
                                 SwingUtilities.invokeLater(new Runnable() {
                                     public void run() {
                                         JOptionPane.showMessageDialog(getRoot(), "Current product configuration is not suitable for primary sale: " + cons, "Warning", JOptionPane.WARNING_MESSAGE);
+                                        src.setSelected(false, true);
                                     }
                                 });
-
+                            }else{
+                                getProduct().setSecondarySale(secondary);
                             }
                         }
                         reloadModulesPrices();
@@ -356,6 +361,7 @@ public class ProductForm {
                                     ModuleJButton src = (ModuleJButton) e.getSource();
                                     try {
                                         if (e.getStateChange() == ItemEvent.SELECTED) {
+                                            ArrayList<String> edited = new ArrayList<String>(0);
                                             if (getProduct().getProduct().getModules().get(src.getKey()).isDeprecated()) {
                                                 JOptionPane.showMessageDialog(getRoot(), "Deprecated module can't be enabled.", "Error", JOptionPane.INFORMATION_MESSAGE);
                                                 src.setSelected(false, true);
@@ -437,13 +443,13 @@ public class ProductForm {
 
                                                             ArrayList<String> cantBeDisabled = new ArrayList<String>(0);
                                                             for (String key : requireThisKeysCapacity) {
-                                                                if (key.split("\\s+").length > 1 || !getProduct().canBeSwitchedToZero(key, src.getKey())) {
+                                                                if (key.split("\\s+").length > 1 || !getProduct().canBeSwitchedToZero(key, depMod.getKey())) {
                                                                     cantBeDisabled.add(key);
                                                                 }
                                                             }
 
                                                             if (cantBeDisabled.size() > 0) {
-                                                                StringBuilder sbm = new StringBuilder("Automatic resolution failed. Following capacity(ies) can't be disabled because of complicated dependencies:");
+                                                                StringBuilder sbm = new StringBuilder("Automatic resolution failed. Following capacity(ies) can't be disabled because of complicated dependencies:"+cantBeDisabled);
                                                                 for (String key : cantBeDisabled) {
                                                                     String keys[] = key.split("\\s+");
                                                                     for (int i = 0; i < keys.length; i++) {
@@ -457,10 +463,26 @@ public class ProductForm {
                                                                 }
                                                                 sbm.append("\n\nYou should disable dependent capacity(ies) manually, then try again.");
                                                                 JOptionPane.showMessageDialog(getRoot(), sbm.toString(), "Error", JOptionPane.INFORMATION_MESSAGE);
-                                                                src.setSelected(true, true);
+                                                                src.setSelected(false, true);
                                                                 throw new PCTDataFormatException("");
                                                             } else {
                                                                 for (String key : requireThisKeysCapacity) {
+                                                                    /*for (RequireCapacity rc : getProduct().getProduct().getModules().get(depMod.getKey()).getRequireCapacities().values()) {
+                                                                        if (key.equals(rc.getKey()) && getProduct().getProduct().getCapacities().containsKey(rc.getKey())) {
+                                                                            if (rc.isIncremental()) {
+                                                                                getSpinners().get(rc.getKey()).delIncr(rc.getValue());
+                                                                                if (rc.isFreeOfCharge()) {
+                                                                                    getSpinners().get(rc.getKey()).delFoc(rc.getValue());
+                                                                                }
+                                                                            } else {
+                                                                                getSpinners().get(rc.getKey()).delMin(rc.getValue());
+                                                                            }
+                                                                            edited.add(key);
+                                                                            break;
+                                                                        }
+                                                                    }*/
+                                                                    getSpinners().get(key).resetFields();
+                                                                    edited.add(key);
                                                                     getSpinners().get(key).setValue(0);
                                                                 }
                                                             }
@@ -473,7 +495,6 @@ public class ProductForm {
                                                         //throw new PCTDataFormatException("");
                                                     }
                                                 }
-
                                             }
 
                                             if (!getProduct().getSecondarySale()) {
@@ -606,7 +627,7 @@ public class ProductForm {
                                                 depMod.setSelected(false, true);
                                                 getProduct().delModule(depMod.getKey());
                                                 for (RequireCapacity rc : getProduct().getProduct().getModules().get(depMod.getKey()).getRequireCapacities().values()) {
-                                                    if (getProduct().getProduct().getCapacities().containsKey(rc.getKey())) {
+                                                    if (getProduct().getProduct().getCapacities().containsKey(rc.getKey()) && !edited.contains(rc.getKey())) {
                                                         if (rc.isIncremental()) {
                                                             getSpinners().get(rc.getKey()).delIncr(rc.getValue());
                                                             if (rc.isFreeOfCharge()) {
@@ -638,6 +659,7 @@ public class ProductForm {
                                                 src.setSelected(true, true);
                                                 throw new PCTDataFormatException("");
                                             }*/
+                                            ArrayList<String> edited = new ArrayList<String>(0);
                                             if (!getProduct().getSecondarySale()) {
                                                 ArrayList<String> requireThisKeys = new ArrayList<String>();
                                                 for (String key : getProduct().getModules().keySet()) {
@@ -727,6 +749,22 @@ public class ProductForm {
                                                             throw new PCTDataFormatException("");
                                                         } else {
                                                             for (String key : requireThisKeysCapacities) {
+                                                                /*for (RequireCapacity rc : getProduct().getProduct().getModules().get(src.getKey()).getRequireCapacities().values()) {
+                                                                    if (key.equals(rc.getKey()) && getProduct().getProduct().getCapacities().containsKey(rc.getKey())) {
+                                                                        if (rc.isIncremental()) {
+                                                                            getSpinners().get(rc.getKey()).delIncr(rc.getValue());
+                                                                            if (rc.isFreeOfCharge()) {
+                                                                                getSpinners().get(rc.getKey()).delFoc(rc.getValue());
+                                                                            }
+                                                                        } else {
+                                                                            getSpinners().get(rc.getKey()).delMin(rc.getValue());
+                                                                        }
+                                                                        edited.add(key);
+                                                                        break;
+                                                                    }
+                                                                }*/
+                                                                getSpinners().get(key).resetFields();
+                                                                edited.add(key);
                                                                 getSpinners().get(key).setValue(0);
                                                             }
                                                         }
@@ -740,9 +778,8 @@ public class ProductForm {
                                                     //throw new PCTDataFormatException("");
                                                 }
                                             }
-                                            getProduct().delModule(src.getKey());
                                             for (RequireCapacity rc : getProduct().getProduct().getModules().get(src.getKey()).getRequireCapacities().values()) {
-                                                if (getProduct().getProduct().getCapacities().containsKey(rc.getKey())) {
+                                                if (getProduct().getProduct().getCapacities().containsKey(rc.getKey()) && !edited.contains(rc.getKey())) {
                                                     if (rc.isIncremental()) {
                                                         getSpinners().get(rc.getKey()).delIncr(rc.getValue());
                                                         if (rc.isFreeOfCharge()) {
@@ -753,6 +790,7 @@ public class ProductForm {
                                                     }
                                                 }
                                             }
+                                            getProduct().delModule(src.getKey());
                                         }
                                         reloadProductPrice();
                                     } catch (PCTDataFormatException er) {

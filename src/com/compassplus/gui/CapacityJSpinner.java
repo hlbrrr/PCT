@@ -98,6 +98,9 @@ public class CapacityJSpinner extends JSpinner {
         }
 
         public void recalc() {
+//            if("TWO-CAP-SELLER".equals(this.key)){
+//                debug();
+//            }
             Integer ret = this.incrs + this.user;
             Integer maxmin = mins.get(0);
             for (Integer i : mins) {
@@ -489,8 +492,26 @@ public class CapacityJSpinner extends JSpinner {
             this.user = user;
             recalc();
         }
-    }
 
+        public void resetFields(){
+            mins.clear();
+            mins.add(new Integer(0));
+            focs = 0;
+            incrs = 0;
+            user = 0;
+            recalc();
+        }
+
+        public void debug(){
+            System.out.println("\n\nincrs = "+this.incrs);
+            System.out.println("focs = "+this.focs);
+            System.out.println("mins = "+this.mins);
+            System.out.println("user = "+this.user);
+        }
+    }
+    public void resetFields() {
+        ((CapacitySpinnerNumberModel) this.getModel()).resetFields();
+    }
 
     public void addMin(Integer min) {
         ((CapacitySpinnerNumberModel) this.getModel()).addMin(min);
@@ -514,6 +535,10 @@ public class CapacityJSpinner extends JSpinner {
 
     public void delFoc(Integer foc) {
         ((CapacitySpinnerNumberModel) this.getModel()).delFoc(foc);
+    }
+
+    public void debug() {
+        ((CapacitySpinnerNumberModel) this.getModel()).debug();
     }
 
     public void recalc() {
