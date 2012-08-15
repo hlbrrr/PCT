@@ -9,9 +9,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -90,7 +87,7 @@ public class AuthLevelsForm {
         cg.gridy = 0;
         cg.fill = GridBagConstraints.HORIZONTAL;
         cg.weightx = 1.0;
-        cg.gridwidth = 2;
+        cg.gridwidth = 1;
         parent.setLayout(new GridBagLayout());
 
         ButtonGroup bg = null;
@@ -101,6 +98,7 @@ public class AuthLevelsForm {
                 final String fkey = key;
                 final JRadioButton mc;
                 mc = new JRadioButton(m.getName(), false);
+                mc.setFont(new Font(mc.getFont().getName(), Font.BOLD, mc.getFont().getSize()));
                 mc.addItemListener(new ItemListener() {
                     public void itemStateChanged(ItemEvent ev) {
                         if (ev.getSource() == mc) {
@@ -123,9 +121,6 @@ public class AuthLevelsForm {
                         }
                     }
                 });
-                if (!"".equals(m.getDescription())) {
-                    cg.gridwidth = 1;
-                }
                 mc.setBorder(new EmptyBorder(2, 5, 2, 3));
                 mc.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
                 parent.add((Component) mc, cg);
@@ -136,38 +131,16 @@ public class AuthLevelsForm {
                 bg.add((AbstractButton) mc);
 
                 mc.setSelected(proposal.getSelectedAls().containsKey(modulesGroup.getKey()) && proposal.getSelectedAls().get(modulesGroup.getKey()).equals(key));
+
+                cg.gridx = 0;
                 if (!"".equals(m.getDescription())) {
-                    cg.weightx = 0;
-                    cg.gridx++;
-                    JLabel hl = new JLabel("<html>[?]</html>");
-                    hl.setBorder(new EmptyBorder(0, 5, 2, 2));
-                    hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                    final String about = m.getDescription();
-                    hl.addMouseListener(new MouseListener() {
-                        public void mouseClicked(MouseEvent e) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    showHint(about);
-                                }
-                            });
-                        }
-
-                        public void mousePressed(MouseEvent e) {
-                        }
-
-                        public void mouseReleased(MouseEvent e) {
-                        }
-
-                        public void mouseEntered(MouseEvent e) {
-                        }
-
-                        public void mouseExited(MouseEvent e) {
-                        }
-                    });
-                    parent.add(hl, cg);
-                    cg.weightx = 1.0;
-                    cg.gridwidth = 2;
-                    cg.gridx = 0;
+                    cg.gridy++;
+                    final JPanel tmpPanel = new JPanel();
+                    tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.X_AXIS));
+                    final TextNote note = new TextNote(m.getDescription());
+                    note.setMaximumSize(new Dimension(700, Integer.MAX_VALUE));
+                    tmpPanel.add(note);
+                    parent.add(tmpPanel, cg);
                 }
                 cg.gridy++;
                 addedItems++;
@@ -230,43 +203,18 @@ public class AuthLevelsForm {
                     JLabel gl = new JLabel("<html><b>" + g.getName() + "</b></html>");
                     gl.setBorder(new EmptyBorder(0, 4, 2, 0));
                     labelPanel.add(gl, c);
-                    if (!"".equals(g.getDescription())) {
-                        JLabel hl = new JLabel("<html><b>[?]</b></html>");
-                        hl.setBorder(new EmptyBorder(0, 4, 2, 2));
-                        hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                        final String about = g.getDescription();
-                        hl.addMouseListener(new MouseListener() {
-                            public void mouseClicked(MouseEvent e) {
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        showHint(about);
-                                    }
-                                });
-                            }
-
-                            public void mousePressed(MouseEvent e) {
-                            }
-
-                            public void mouseReleased(MouseEvent e) {
-                            }
-
-                            public void mouseEntered(MouseEvent e) {
-                            }
-
-                            public void mouseExited(MouseEvent e) {
-                            }
-                        });
-                        c.gridx++;
-                        c.weightx = 0;
-                        labelPanel.add(hl, c);
-                    }
-
-                    if (!"".equals(g.getDescription())) {
-                        c.gridwidth = 3;
-                    } else {
-                        c.gridwidth = 2;
-                    }
+                    c.gridwidth = 2;
                     c.weightx = 1;
+                    c.gridx = 0;
+                    if (!"".equals(g.getDescription())) {
+                        c.gridy++;
+                        final JPanel tmpPanel = new JPanel();
+                        tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.X_AXIS));
+                        final TextNote note = new TextNote(g.getDescription());
+                        note.setMaximumSize(new Dimension(700, Integer.MAX_VALUE));
+                        tmpPanel.add(note);
+                        labelPanel.add(tmpPanel, c);
+                    }
                     c.gridy++;
                     c.gridx = 0;
                     labelPanel.add(modules, c);
