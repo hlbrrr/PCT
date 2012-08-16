@@ -676,7 +676,7 @@ public class MainForm {
             public void actionPerformed(ActionEvent e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        if (checkForConsistence() && (getCurrentProposalForm().getProposal().getConfig().isSalesSupport() || JOptionPane.showOptionDialog(getRoot(), "Have you checked authority levels for this proposal?", "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null) == JOptionPane.YES_OPTION)) {
+                        if (checkForConsistence() && (getCurrentProposalForm().getProposal().getConfig().getAuthLevels().size() == 0 || getCurrentProposalForm().getProposal().getConfig().isSalesSupport() || JOptionPane.showOptionDialog(getRoot(), "Have you checked authority levels for this proposal?", "Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null) == JOptionPane.YES_OPTION)) {
 
                             xlsFileChooser.setDialogTitle("Export");
                             int retVal = xlsFileChooser.showDialog(getRoot(), "Export");
@@ -803,7 +803,7 @@ public class MainForm {
     private boolean checkForConsistence() {
         StringBuilder sb = new StringBuilder();
 
-        if(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()){
+        if (!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()) {
             for (String key : getCurrentProposalForm().getProposal().getConfig().getAuthLevels().keySet()) {
                 if (!getCurrentProposalForm().getProposal().getSelectedAls().containsKey(key) ||
                         !getCurrentProposalForm().getProposal().getConfig().getAuthLevels().get(key).getLevels().containsKey(getCurrentProposalForm().getProposal().getSelectedAls().get(key))) {
@@ -965,6 +965,20 @@ public class MainForm {
         exit.addActionListener(actionListener);
     }
 
+    private boolean isNormalDiscount(Number value, Product product, Comparable maximumDiscount, boolean isSupport){
+        Double maximumDiscountedSum = ((1 - ((Number) maximumDiscount).doubleValue())) * (isSupport ? product.getSupportPriceUndiscounted(true) : product.getRegionPrice(true));
+
+        final Integer newMax = (int) (Math.round(10000d * (1 - maximumDiscountedSum / (isSupport ? product.getSupportPriceUndiscounted() : product.getRegionPrice()))) / 100d);
+
+        //if (!value.equals(this.value)) {
+        if (newMax.compareTo(((Number) value).intValue()) < 0) {
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+
     public void addProposalForm(Proposal proposal, JFrame frame, boolean dropChanged) {
         ProposalForm proposalForm = new ProposalForm(proposal, getFrame(), new PCTChangedListener() {
             Map<String, Object> data = new HashMap<String, Object>();
@@ -972,25 +986,46 @@ public class MainForm {
             public void act(Object src) {
                 try {
                     com.compassplus.proposalModel.Proposal pp = ((com.compassplus.proposalModel.Proposal) src);
+                    int status = 0;
+                    boolean exceedDL = false;
+                    for(Product p : pp.getProducts().values()){
+                        if(!isNormalDiscount(p.getSupportDiscount()*100d, p, p.getProposal().getConfig().getMaxSupportDiscount(), true) ||
+                                !isNormalDiscount(p.getDiscount()*100d, p, p.getProposal().getConfig().getMaxDiscount(), false) ){
+                            exceedDL = true;
+                            break;
+                        }
+                    }
+                    if (pp.getConfig().getAuthLevels().size()==0 || !pp.isAllAlsDefined() || pp.getConfig().isSalesSupport()) {
+
+                    } else if (pp.isApproved()) {
+                        status = 1;
+                    } else {
+                        status = 2;
+                    }
+                    if(!pp.getConfig().isSalesSupport() && exceedDL){
+                        status = 2;
+                    }
+
+
                     if (getData("productTab") != null) {
                         int ind = proposalsTabs.indexOfComponent((Component) getData("productTab"));
-                        if (!pp.isAllAlsDefined() || pp.getConfig().isSalesSupport()) {
+                        if (status == 0) {
                             proposalsTabs.setForegroundAt(ind, Color.BLACK);
-                        } else if (pp.isApproved()) {
+                        } else if (status == 1) {
                             proposalsTabs.setForegroundAt(ind, new Color(0, 158, 5));
                         } else {
                             proposalsTabs.setForegroundAt(ind, Color.RED);
                         }
                         proposalsTabs.setTitleAt(ind, pp.getProjectName() + " [" + pp.getClientName() + "]");
                     }
-                    if (!pp.getConfig().isSalesSupport() && getData("productsTabs") != null && getData("summaryForm") != null) {
+                    if (getData("productsTabs") != null && getData("summaryForm") != null) {
                         SummaryForm summaryForm = (SummaryForm) getData("summaryForm");
                         JTabbedPane productsTabs = (JTabbedPane) getData("productsTabs");
                         int ind = productsTabs.indexOfComponent((Component) (summaryForm.getRoot()));
                         String append = "";
-                        if (!pp.isAllAlsDefined()) {
+                        if (status == 0) {
                             productsTabs.setForegroundAt(ind, Color.BLACK);
-                        } else if (pp.isApproved()) {
+                        } else if (status == 1) {
                             append = " [APPROVED]";
                             productsTabs.setForegroundAt(ind, new Color(0, 158, 5));
                         } else {

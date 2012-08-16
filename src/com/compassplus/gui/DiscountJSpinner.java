@@ -65,7 +65,7 @@ public class DiscountJSpinner extends JSpinner {
             }
             this.value = value;
             this.minimum = minimum;
-            this.maximumDiscount = maximum;
+            this.maximumDiscount = 100d;
             this.stepSize = stepSize;
             this.product = product;
             this.isSupport = isSupport;
@@ -380,11 +380,11 @@ public class DiscountJSpinner extends JSpinner {
 
             //if (!value.equals(this.value)) {
             if (newMax.compareTo(((Number) value).intValue()) < 0) {
-                SwingUtilities.invokeLater(new Runnable() {
+                /*SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         JOptionPane.showMessageDialog(parent, message + newMax.toString() + "%.", "Error", JOptionPane.INFORMATION_MESSAGE);
                     }
-                });
+                });*/
 
                 this.value = (Number) newMax;
                 fireStateChanged();

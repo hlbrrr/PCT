@@ -26,8 +26,10 @@ public class ProposalForm {
     private SummaryForm summaryForm;
     private AuthLevelsForm authForm;
     private boolean changed = false;
+    private PCTChangedListener titleUpdater;
 
     public ProposalForm(Proposal proposal, JFrame frame, PCTChangedListener titleUpdater) {
+        this.titleUpdater = titleUpdater;
         this.frame = frame;
         this.proposal = proposal;
         productsTabs = new JTabbedPane(JTabbedPane.BOTTOM, JTabbedPane.WRAP_TAB_LAYOUT);
@@ -167,6 +169,7 @@ public class ProposalForm {
         ProductForm productForm = new ProductForm(product, new PCTChangedListener() {
             public void act(Object src) {
                 if (src instanceof ProductForm) {
+                    titleUpdater.act(proposal);
                     ProductForm pf = (ProductForm) src;
                     summaryForm.update();
                     Integer ti = productsTabs.indexOfComponent(pf.getRoot());

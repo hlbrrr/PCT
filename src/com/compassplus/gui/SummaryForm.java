@@ -890,6 +890,7 @@ public class SummaryForm {
                                                 eulabel.call();
                                                 gleulabel.call();
                                                 updated.act(that);
+                                                titleUpdater.act(proposal);
                                             }
                                         }
                                     });
@@ -939,6 +940,7 @@ public class SummaryForm {
                                                 splabel.call();
                                                 glsplabel.call();
                                                 updated.act(that);
+                                                titleUpdater.act(proposal);
                                             }
                                         }
                                     });
