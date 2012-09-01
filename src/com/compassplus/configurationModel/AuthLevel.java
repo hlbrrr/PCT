@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -19,9 +20,11 @@ public class AuthLevel {
     private String key;
     private String name;
     private String description;
+    private String memoHeader;
+    private String memoText;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
-    private Map<String, AuthLevelLevel> levels = new HashMap<String, AuthLevelLevel>(0);
+    private Map<String, AuthLevelLevel> levels = new LinkedHashMap<String, AuthLevelLevel>(0);           //LinkedHashMap
 
     public AuthLevel(Node initialData) throws PCTDataFormatException {
         init(initialData);
@@ -33,12 +36,16 @@ public class AuthLevel {
 
             this.setKey(xut.getNode("Key", initialData));
             this.setName(xut.getNode("Name", initialData));
+            this.setMemoHeader(xut.getNode("MemoHeader", initialData));
             this.setDescription(xut.getNode("Description", initialData));
+            this.setMemoText(xut.getNode("MemoText", initialData));
 
             this.setLevels(xut.getNodes("Levels/Level", initialData));
 
             log.info("Authority level successfully parsed: \nName: " + this.getName() +
+                    "\nMemoHeader: " + this.getMemoHeader() +
                     "\nKey: " + this.getKey() +
+                    "\nMemoText: " + this.getMemoText() +
                     "\nDescription: " + this.getDescription());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Authority level is not defined correctly: \nName: " + this.getName(), e.getDetails());
@@ -57,6 +64,18 @@ public class AuthLevel {
         }
     }
 
+    public String getMemoHeader() {
+        return memoHeader;
+    }
+
+    private void setMemoHeader(Node memoHeader) throws PCTDataFormatException {
+        try {
+            this.memoHeader = xut.getString(memoHeader, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Authority level memo header is not defined correctly", e.getDetails());
+        }
+    }
+
     public String getDescription() {
         return description;
     }
@@ -66,6 +85,18 @@ public class AuthLevel {
             this.description = xut.getString(description, true);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Authority level description is not defined correctly", e.getDetails());
+        }
+    }
+
+    public String getMemoText() {
+        return memoText;
+    }
+
+    private void setMemoText(Node memoText) throws PCTDataFormatException {
+        try {
+            this.memoText = xut.getString(memoText, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Authority level memo text is not defined correctly", e.getDetails());
         }
     }
 

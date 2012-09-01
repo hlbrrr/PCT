@@ -7,6 +7,10 @@ import com.compassplus.proposalModel.Proposal;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.plaf.basic.BasicBorders;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -89,6 +93,58 @@ public class AuthLevelsForm {
         cg.weightx = 1.0;
         cg.gridwidth = 1;
         parent.setLayout(new GridBagLayout());
+
+        if(modulesGroup != null && (!modulesGroup.getMemoHeader().equals(""))){
+            parent.setLayout(new BorderLayout());
+            JPanel parentLeft = new JPanel();
+            JPanel parentRight = new JPanel();
+            parent.add(parentLeft, BorderLayout.CENTER);
+            parent.add(parentRight, BorderLayout.LINE_END);
+
+            ///
+            String text = modulesGroup.getMemoText();
+            if(proposal.getAlsTxt().containsKey(modulesGroup.getKey())){
+                text = proposal.getAlsTxt().get(modulesGroup.getKey());
+            }
+
+            final String skey = modulesGroup.getKey();
+            final JTextArea jta = new JTextArea(text);
+            //jta.setMaximumSize(new Dimension(300, 500));
+            jta.setColumns(40);
+            jta.setWrapStyleWord(true);
+            jta.setLineWrap(true);
+            jta.getDocument().addDocumentListener(new DocumentListener() {
+                public void insertUpdate(DocumentEvent documentEvent) {
+                    act();
+                }
+
+                public void removeUpdate(DocumentEvent documentEvent) {
+                    act();
+                }
+
+                public void changedUpdate(DocumentEvent documentEvent) {
+                    act();
+                }
+                private void act(){
+                    proposal.getAlsTxt().put(skey, jta.getText());
+                }
+            });
+            JScrollPane textScroll = new JScrollPane(jta);
+
+            //jta.setBorder(new TitledBorder("zu"));
+            //jta.setForeground(Color.blue);
+            //jta.setBackground(Color.yellow);
+            JPanel wrap = new JPanel();
+            wrap.setLayout(new BorderLayout());
+            wrap.setBorder(new EmptyBorder(0, 10, 10, 10));
+            wrap.add(new JLabel(modulesGroup.getMemoHeader()), BorderLayout.PAGE_START);
+            wrap.add(textScroll, BorderLayout.CENTER);
+
+            parentRight.setLayout(new BorderLayout());
+            parentRight.add(wrap, BorderLayout.CENTER);
+            parentLeft.setLayout(new GridBagLayout());
+            parent= parentLeft;
+        }
 
         ButtonGroup bg = null;
         if (modulesGroup != null) {
@@ -208,9 +264,9 @@ public class AuthLevelsForm {
                     c.gridx = 0;
                     if (!"".equals(g.getDescription())) {
                         c.gridy++;
-                        final JPanel tmpPanel = new JPanel();
+                        JPanel tmpPanel = new JPanel();
                         tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.X_AXIS));
-                        final TextNote note = new TextNote(g.getDescription());
+                        TextNote note = new TextNote(g.getDescription());
                         note.setMaximumSize(new Dimension(700, Integer.MAX_VALUE));
                         tmpPanel.add(note);
                         labelPanel.add(tmpPanel, c);
@@ -218,6 +274,10 @@ public class AuthLevelsForm {
                     c.gridy++;
                     c.gridx = 0;
                     labelPanel.add(modules, c);
+                    ////////////////
+                    //c.gridx++;
+                    //labelPanel.add(new JLabel("xxx"), c);
+                    ////////////////
                     parent.add(labelPanel, cg);
                     cg.gridy++;
                     addedGroups++;
@@ -227,6 +287,15 @@ public class AuthLevelsForm {
         }
         if (addedGroups + addedItems == 0) {
             throw new PCTDataFormatException("Empty group");
+        }
+        {
+            Double cgWY = cg.weighty;
+            cg.weighty = 1;
+            JPanel spacer = new JPanel();
+            spacer.setPreferredSize(new Dimension(0, 0));
+            parent.add(spacer, cg);
+            cg.weighty = cgWY;
+
         }
     }
 

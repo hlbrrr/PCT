@@ -32,6 +32,8 @@ public class Proposal {
     private Double currencyRate;
     private Map<String, Product> products = new LinkedHashMap<String, Product>();
     private Map<String, String> selectedAls = new HashMap<String, String>();
+    private Map<String, String> alsTxt = new HashMap<String, String>();
+
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
     private com.compassplus.configurationModel.Region region;
@@ -45,6 +47,10 @@ public class Proposal {
 
     public Map<String, String> getSelectedAls(){
         return this.selectedAls;
+    }
+
+    public Map<String, String> getAlsTxt(){
+        return this.alsTxt;
     }
 
     public boolean isAllAlsDefined() {
@@ -145,8 +151,12 @@ public class Proposal {
                 try {
                     String akey = xut.getString(xut.getNode("Key", levels.item(i)));
                     String asubkey = xut.getString(xut.getNode("SubKey", levels.item(i)));
+                    String text = xut.getString(xut.getNode("Text", levels.item(i)), true);
+
+
                     if(getConfig().getAuthLevels().containsKey(akey)&&getConfig().getAuthLevels().get(akey).getLevels().containsKey(asubkey)){
                         this.getSelectedAls().put(akey, asubkey);
+                        this.getAlsTxt().put(akey, text);
                     }
                 } catch (PCTDataFormatException e) {
                     log.error(e);
@@ -345,6 +355,9 @@ public class Proposal {
                 sb.append("<SubKey>");
                 sb.append(this.getSelectedAls().get(key));
                 sb.append("</SubKey>");
+                sb.append("<Text>");
+                sb.append(this.getAlsTxt().get(key));
+                sb.append("</Text>");
                 sb.append("</Level>");
             }
             sb.append("</Levels>");

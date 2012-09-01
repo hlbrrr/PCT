@@ -2526,6 +2526,8 @@
                 _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
                 _description:$('#Description', dom).get(),
+                _memoText:$('#MemoText', dom).get(),
+                _memoHeader:$('#MemoHeader', dom).get(),
                 _key:$('#Key', dom).get(),
                 _authLevelTitle:$('#Title', dom).get(),
                 _addAuthLevelLevel:$('#AddAuthLevelLevel', dom).get(),
@@ -2561,6 +2563,8 @@
                     config += '<Name>' + $(that._name).val() + '</Name>';
                     config += '<Key>' + $(that._key).val() + '</Key>';
                     config += '<Description>' + $(that._description).val() + '</Description>';
+                    config += '<MemoText>' + $(that._memoText).val() + '</MemoText>';
+                    config += '<MemoHeader>' + $(that._memoHeader).val() + '</MemoHeader>';
                     config += '<Levels>';
                     $(that._authLevelLevels).children().each(function() {
                         if ($(this).hasClass('divAuthLevelLevel'))
@@ -2612,6 +2616,8 @@
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._description).val($('>Description', initialData).text()).change();
+                    $(this._memoText).val($('>MemoText', initialData).text()).change();
+                    $(this._memoHeader).val($('>MemoHeader', initialData).text()).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._authLevelLevels).addClass('hidden');

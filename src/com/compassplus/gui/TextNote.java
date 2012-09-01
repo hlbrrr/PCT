@@ -12,7 +12,8 @@ public class TextNote extends JTextArea {
         setBorder(new EmptyBorder(0, 30, 10, 10));
         setLineWrap(true);
         setWrapStyleWord(true);
-        setFocusable(false);
+        setCursor(new Cursor(Cursor.TEXT_CURSOR));
+        //setFocusable(false);
         JLabel tt = new JLabel();
         //Font f = new Font(tt.getFont().getName(), Font.ITALIC,tt.getFont().getSize());
         setFont(tt.getFont());
