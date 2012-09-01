@@ -95,11 +95,11 @@ public class AuthLevelsForm {
         parent.setLayout(new GridBagLayout());
 
         if(modulesGroup != null && (!modulesGroup.getMemoHeader().equals(""))){
-            parent.setLayout(new BorderLayout());
+            parent.setLayout(new GridLayout(0,2));
             JPanel parentLeft = new JPanel();
             JPanel parentRight = new JPanel();
-            parent.add(parentLeft, BorderLayout.CENTER);
-            parent.add(parentRight, BorderLayout.LINE_END);
+            parent.add(parentLeft);
+            parent.add(parentRight);
 
             ///
             String text = modulesGroup.getMemoText();
@@ -109,8 +109,10 @@ public class AuthLevelsForm {
 
             final String skey = modulesGroup.getKey();
             final JTextArea jta = new JTextArea(text);
+            Font f = (new JLabel()).getFont();
+            jta.setFont(f);
             //jta.setMaximumSize(new Dimension(300, 500));
-            jta.setColumns(40);
+            //jta.setColumns(40);
             jta.setWrapStyleWord(true);
             jta.setLineWrap(true);
             jta.getDocument().addDocumentListener(new DocumentListener() {
