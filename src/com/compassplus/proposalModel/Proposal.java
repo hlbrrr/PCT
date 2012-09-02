@@ -43,6 +43,9 @@ public class Proposal {
     public Proposal(Configuration config) {
         this.setConfig(config);
         userName = config.getUserName();
+        for(AuthLevel l : config.getAuthLevels().values()){
+            this.alsTxt.put(l.getKey(), l.getMemoText());
+        }
     }
 
     public Map<String, String> getSelectedAls(){

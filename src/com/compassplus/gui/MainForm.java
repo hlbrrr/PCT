@@ -1,5 +1,6 @@
 package com.compassplus.gui;
 
+import com.compassplus.configurationModel.AuthLevel;
 import com.compassplus.configurationModel.Capacity;
 import com.compassplus.configurationModel.Configuration;
 import com.compassplus.configurationModel.Module;
@@ -1183,6 +1184,13 @@ public class MainForm {
                         (m.getShortName() != null ? m.getShortName() : m.getName()) : "");
             }
             b.put("VAR$" + prod.getName().replaceAll("\\s", "_") + "$PRIMARY_MODE", p != null ? !p.getSecondarySale() : "");
+        }
+        for(com.compassplus.configurationModel.AuthLevel al : proposal.getConfig().getAuthLevels().values()){
+            String key = "AL$" + al.getKey().replace("-", "_");
+            String alValue = proposal.getSelectedAls().get(al.getKey());
+            String alText = proposal.getAlsTxt().get(al.getKey());
+            b.put(key + "$VALUE", alValue!=null?alValue:"");
+            b.put(key + "$TEXT", alText!=null?alText:"");
         }
         return b;
     }
