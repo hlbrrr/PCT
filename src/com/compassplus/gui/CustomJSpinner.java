@@ -14,8 +14,8 @@ import java.io.Serializable;
  * Time: 1:34 PM
  * To change this template use File | Settings | File Templates.
  */
-public class DiscountJSpinner extends JSpinner {
-    private class DiscountSpinnerNumberModel extends SpinnerNumberModel {
+public class CustomJSpinner extends JSpinner {
+    private class CustomSpinnerNumberModel extends SpinnerNumberModel {
         private Number stepSize, value;
         private Comparable minimum, maximum, maximumDiscount;
         private Component parent;
@@ -52,7 +52,7 @@ public class DiscountJSpinner extends JSpinner {
          *                                  <code>null</code> or if the following expression is false:
          *                                  <code>minimum &lt;= value &lt;= maximum</code>
          */
-        public DiscountSpinnerNumberModel(String message, Component parent, Number value, Comparable minimum, Comparable maximum, Number stepSize, Product product, boolean isSupport) {
+        public CustomSpinnerNumberModel(String message, Component parent, Number value, Comparable minimum, Comparable maximum, Number stepSize, Product product, boolean isSupport) {
             if (message != null) {
                 this.message = message;
             }
@@ -84,7 +84,7 @@ public class DiscountJSpinner extends JSpinner {
          * @throws IllegalArgumentException if the following expression is false:
          *                                  <code>minimum &lt;= value &lt;= maximum</code>
          */
-        public DiscountSpinnerNumberModel(String message, Component parent, int value, int minimum, int maximum, int stepSize, Product product, boolean isSupport) {
+        public CustomSpinnerNumberModel(String message, Component parent, int value, int minimum, int maximum, int stepSize, Product product, boolean isSupport) {
             this(message, parent, new Integer(value), new Integer(minimum), new Integer(maximum), new Integer(stepSize), product, isSupport);
         }
 
@@ -101,7 +101,7 @@ public class DiscountJSpinner extends JSpinner {
          * @throws IllegalArgumentException if the following expression is false:
          *                                  <code>minimum &lt;= value &lt;= maximum</code>
          */
-        public DiscountSpinnerNumberModel(String message, Component parent, double value, double minimum, double maximum, double stepSize, Product product, boolean isSupport) {
+        public CustomSpinnerNumberModel(String message, Component parent, double value, double minimum, double maximum, double stepSize, Product product, boolean isSupport) {
             this(message, parent, new Double(value), new Double(minimum), new Double(maximum), new Double(stepSize), product, isSupport);
         }
 
@@ -111,7 +111,7 @@ public class DiscountJSpinner extends JSpinner {
          * <code>minimum</code> or <code>maximum</code> value,
          * <code>stepSize</code> equal to one, and an initial value of zero.
          */
-        public DiscountSpinnerNumberModel(String message, Component parent, Product product, boolean isSupport) {
+        public CustomSpinnerNumberModel(String message, Component parent, Product product, boolean isSupport) {
             this(message, parent, new Integer(0), null, null, new Integer(1), product, isSupport);
         }
 
@@ -403,18 +403,17 @@ public class DiscountJSpinner extends JSpinner {
         }
     }
 
-    public DiscountJSpinner(String message, Component parent, int value, int minimum, int maximum, int stepSize, Product product, boolean isSupport) {
+    public CustomJSpinner(String message, Component parent, int value, int minimum, int maximum, int stepSize, Product product, boolean isSupport) {
         super();
-        setModel(new DiscountSpinnerNumberModel(message, parent, value, minimum, maximum, stepSize, product, isSupport));
+        setModel(new CustomSpinnerNumberModel(message, parent, value, minimum, maximum, stepSize, product, isSupport));
     }
 
-    public DiscountJSpinner(String message, Component parent, double value, double minimum, double maximum, double stepSize, Product product, boolean isSupport) {
+    public CustomJSpinner(String message, Component parent, double value, double minimum, double maximum, double stepSize, Product product, boolean isSupport) {
         super();
-        setModel(new DiscountSpinnerNumberModel(message, parent, value, minimum, maximum, stepSize, product, isSupport));
+        setModel(new CustomSpinnerNumberModel(message, parent, value, minimum, maximum, stepSize, product, isSupport));
     }
 
     public void setValue(Object value){
-        ((DiscountSpinnerNumberModel)this.getModel()).setValue(value, true);
+        ((CustomSpinnerNumberModel)this.getModel()).setValue(value, true);
     }
-
 }

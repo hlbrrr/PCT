@@ -761,7 +761,7 @@ public class SummaryForm {
                             }
                         }
                         final Product prod = p;
-                        final CustomJLabel eulabel = new CustomJLabel(new PCTChangedListener() {
+                        /*final CustomJLabel eulabel = new CustomJLabel(new PCTChangedListener() {
                             public void act(Object src) {
                                 Double price = 0d;
                                 price = prod.getEndUserPrice();
@@ -798,6 +798,8 @@ public class SummaryForm {
                                 return null;  //To change body of implemented methods use File | Settings | File Templates.
                             }
                         });
+
+
                         final CustomJLabel splabel = new CustomJLabel(new PCTChangedListener() {
                             public void act(Object src) {
                                 if (planRateField != null) {
@@ -816,47 +818,184 @@ public class SummaryForm {
                             public Object getData(String key) {
                                 return null;  //To change body of implemented methods use File | Settings | File Templates.
                             }
-                        });
-                        final JSpinner productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1, prod, false);
-                        final JSpinner supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
+                        });*/
+                        //final JSpinner productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (prod.getDiscount() * 100), 0d, (getProposal().getConfig().getMaxDiscount() * 100), 1d, prod, false);
+                        //final JSpinner supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (prod.getSupportDiscount() * 100), 0d, (getProposal().getConfig().getMaxSupportDiscount() * 100), 1d, prod, true);
+
+                        final JSpinner supportDiscount = new JSpinner(new SpinnerNumberModel((prod.getSupportDiscount() * 100), 0d, 100d, 1d));
+                        final JSpinner productDiscount = new JSpinner(new SpinnerNumberModel((prod.getDiscount() * 100), 0d, 100d, 1d));
+                        final JSpinner markUp = new JSpinner(new SpinnerNumberModel((prod.getMarkUp() - 1) * 100d, 0d, 100d, 1d));
+
+                        final SpinnerNumberModel markUpSNP = new SpinnerNumberModel(prod.getRegionPrice().doubleValue(), prod.getRegionPrice(true).doubleValue(), prod.getRegionPrice(true).doubleValue()*2, 1000d);
+                        final JSpinner markUpSpinner = new JSpinner(markUpSNP);
+
+                        final SpinnerNumberModel productDiscountSpinnerSNP = new SpinnerNumberModel(prod.getEndUserPrice().doubleValue(), 0d, prod.getRegionPrice().doubleValue(), 1000d);
+                        final JSpinner productDiscountSpinner = new JSpinner(productDiscountSpinnerSNP);
+
+
+                        final SpinnerNumberModel supportDiscountSpinnerSNP = new SpinnerNumberModel(prod.getSupportPrice().doubleValue(), 0d, prod.getSupportPriceUndiscounted().doubleValue(), 1000d);
+                        final JSpinner supportDiscountSpinner = new JSpinner(supportDiscountSpinnerSNP);
+
+
+                        final ChangeListener markUpCL = new ChangeListener() {
+                            public void stateChanged(ChangeEvent e) {
+                                final ChangeEvent ev = e;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        if (ev.getSource() == markUp) {
+                                            prod.setMarkUp(1d + (Double) markUp.getValue() / 100d);
+                                            markUpSpinner.setValue(prod.getRegionPrice());
+                                            //eulabel.call();
+                                            //gleulabel.call();
+                                            //splabel.call();
+                                            //glsplabel.call();
+                                            //glmuplabel.call();
+                                            //muplabel.call();
+
+                                            //updated.act(that);
+                                            //productDiscount.setValue(productDiscount.getValue());
+                                            //supportDiscount.setValue(supportDiscount.getValue());
+                                            //titleUpdater.act(proposal);
+                                        }
+                                    }
+                                });
+                            }
+                        };
+                        ChangeListener markUpSpinnerCL = new ChangeListener() {
+                            public void stateChanged(ChangeEvent e) {
+                                final ChangeEvent ev = e;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        if (ev.getSource() == markUpSpinner) {
+                                            markUp.removeChangeListener(markUpCL);
+                                            Double mu = (100 *(Double)markUpSpinner.getValue())/prod.getRegionPrice(true)-100;
+                                            markUp.setValue(mu);
+                                            markUp.addChangeListener(markUpCL);
+
+                                            prod.setMarkUp(1d + (Double) markUp.getValue() / 100d);
+                                            //eulabel.call();
+                                            gleulabel.call();
+                                            //splabel.call();
+                                            glsplabel.call();
+                                            glmuplabel.call();
+                                            //muplabel.call();
+                                            productDiscountSpinnerSNP.setMaximum(prod.getRegionPrice());
+                                            productDiscountSpinner.setValue(prod.getEndUserPrice());
+
+                                            supportDiscountSpinnerSNP.setMaximum(prod.getSupportPriceUndiscounted());
+                                            supportDiscountSpinner.setValue(prod.getSupportPrice());
+
+                                            updated.act(that);
+                                            //productDiscount.setValue(productDiscount.getValue());
+                                            //supportDiscount.setValue(supportDiscount.getValue());
+                                            titleUpdater.act(proposal);
+                                        }
+                                    }
+                                });
+                            }
+                        };
+                        markUpSpinner.addChangeListener(markUpSpinnerCL);
+                        markUp.addChangeListener(markUpCL);
+
+                        final ChangeListener productDiscountCL = new ChangeListener() {
+                            public void stateChanged(ChangeEvent e) {
+                                final ChangeEvent ev = e;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        if (ev.getSource() == productDiscount) {
+                                            prod.setDiscount((Double) productDiscount.getValue() / 100d);
+                                            productDiscountSpinner.setValue(prod.getEndUserPrice());
+                                            //eulabel.call();
+                                            //gleulabel.call();
+                                            //updated.act(that);
+                                            //titleUpdater.act(proposal);
+                                        }
+                                    }
+                                });
+                            }
+                        };
+                        ChangeListener productDiscountSpinnerCL = new ChangeListener() {
+                            public void stateChanged(ChangeEvent e) {
+                                final ChangeEvent ev = e;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        if (ev.getSource() == productDiscountSpinner) {
+                                            productDiscount.removeChangeListener(productDiscountCL);
+                                            Double mu = (1d - ((Double)productDiscountSpinner.getValue())/prod.getRegionPrice())*100;
+                                            productDiscount.setValue(mu);
+                                            productDiscount.addChangeListener(productDiscountCL);
+
+                                            prod.setDiscount((Double) productDiscount.getValue() / 100d);
+                                            //eulabel.call();
+                                            gleulabel.call();
+                                            updated.act(that);
+                                            titleUpdater.act(proposal);
+                                        }
+                                    }
+                                });
+                            }
+                        };
+
+                        productDiscountSpinner.addChangeListener(productDiscountSpinnerCL);
+                        productDiscount.addChangeListener(productDiscountCL);
+
+                        final ChangeListener supportDiscountCL = new ChangeListener() {
+                            public void stateChanged(ChangeEvent e) {
+                                final ChangeEvent ev = e;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        if (ev.getSource() == supportDiscount) {
+                                            prod.setSupportDiscount((Double) supportDiscount.getValue() / 100d);
+                                            supportDiscountSpinner.setValue(prod.getSupportPrice());
+                                            /*splabel.call();
+                                            glsplabel.call();
+                                            updated.act(that);
+                                            titleUpdater.act(proposal);*/
+                                        }
+                                    }
+                                });
+                            }
+                        };
+                        ChangeListener supportDiscountSpinnerCL = new ChangeListener() {
+                            public void stateChanged(ChangeEvent e) {
+                                final ChangeEvent ev = e;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        if (ev.getSource() == supportDiscountSpinner) {
+                                            supportDiscount.removeChangeListener(supportDiscountCL);
+                                            Double mu = (1d - ((Double)supportDiscountSpinner.getValue())/prod.getSupportPriceUndiscounted())*100;
+                                            supportDiscount.setValue(mu);
+                                            supportDiscount.addChangeListener(supportDiscountCL);
+
+                                            prod.setSupportDiscount((Double) supportDiscount.getValue() / 100d);
+                                            //splabel.call();
+                                            glsplabel.call();
+                                            updated.act(that);
+                                            titleUpdater.act(proposal);
+                                        }
+                                    }
+                                });
+                            }
+                        };
+
+                        supportDiscountSpinner.addChangeListener(supportDiscountSpinnerCL);
+                        supportDiscount.addChangeListener(supportDiscountCL);
+
                         {
                             c.gridx++;
-                            final JSpinner sp = new JSpinner(new SpinnerNumberModel((int) ((prod.getMarkUp() - 1) * 100), 0, 100, 1));
-
-                            sp.addChangeListener(new ChangeListener() {
-                                public void stateChanged(ChangeEvent e) {
-                                    final ChangeEvent ev = e;
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        public void run() {
-                                            if (ev.getSource() == sp) {
-                                                prod.setMarkUp(1d + (Integer) sp.getValue() / 100d);
-                                                eulabel.call();
-                                                gleulabel.call();
-                                                splabel.call();
-                                                glsplabel.call();
-                                                glmuplabel.call();
-                                                muplabel.call();
-                                                updated.act(that);
-                                                productDiscount.setValue(productDiscount.getValue());
-                                                supportDiscount.setValue(supportDiscount.getValue());
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-                            sp.setMaximumSize(new Dimension(sp.getMaximumSize().width, sp.getMinimumSize().height));
+                            markUp.setMaximumSize(new Dimension(markUp.getMaximumSize().width, markUp.getMinimumSize().height));
 
                             JPanel panelW = new JPanel();
                             panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
                             panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
-                            panelW.add(sp);
+                            panelW.add(markUp);
                             panelW.setBackground(Color.white);
 
                             JPanel panel = new JPanel();
                             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                             panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
 
-                            sp.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            markUp.setAlignmentX(Component.RIGHT_ALIGNMENT);
                             panel.setPreferredSize(new Dimension(0, 32));
                             panel.add(panelW);
                             panel.setBorder(border);
@@ -865,37 +1004,45 @@ public class SummaryForm {
                         }
                         {
                             c.gridx++;
+                            markUpSpinner.setMaximumSize(new Dimension(markUpSpinner.getMaximumSize().width, markUpSpinner.getMinimumSize().height));
+
+                            JPanel panelW = new JPanel();
+                            panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                            panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            panelW.add(markUpSpinner);
+                            panelW.setBackground(Color.white);
+
                             JPanel panel = new JPanel();
                             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                            muplabel.setBorder(new EmptyBorder(4, 4, 4, 4));
-                            muplabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                            markUpSpinner.setAlignmentX(Component.RIGHT_ALIGNMENT);
                             panel.setPreferredSize(new Dimension(0, 32));
-                            panel.add(muplabel);
+                            panel.add(panelW);
                             panel.setBorder(border);
                             panel.setBackground(Color.white);
                             productsTable.add(panel, c);
                         }
+                       /* {
+                            c.gridx++;
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            panel.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            mupSpinner.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            //panel.add(muplabel);
+                            panel.add(mupSpinner);
+                            panel.setBorder(border);
+                            panel.setBackground(Color.white);
+                            productsTable.add(panel, c);
+                        }*/
+
                         {
                             c.gridx++;
                             //final JSpinner sp = new DiscountJSpinner("Maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1);
                             //productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1, prod, false);
 
-                            productDiscount.addChangeListener(new ChangeListener() {
-                                public void stateChanged(ChangeEvent e) {
-                                    final ChangeEvent ev = e;
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        public void run() {
-                                            if (ev.getSource() == productDiscount) {
-                                                prod.setDiscount((Integer) productDiscount.getValue() / 100d);
-                                                eulabel.call();
-                                                gleulabel.call();
-                                                updated.act(that);
-                                                titleUpdater.act(proposal);
-                                            }
-                                        }
-                                    });
-                                }
-                            });
+                            //productDiscount.addChangeListener(productDiscountCL);
                             productDiscount.setMaximumSize(new Dimension(productDiscount.getMaximumSize().width, productDiscount.getMinimumSize().height));
 
                             JPanel panelW = new JPanel();
@@ -917,6 +1064,29 @@ public class SummaryForm {
                         }
                         {
                             c.gridx++;
+                            //supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
+                            //supportDiscount.addChangeListener(supportDiscountCL);
+                            productDiscountSpinner.setMaximumSize(new Dimension(productDiscountSpinner.getMaximumSize().width, productDiscountSpinner.getMinimumSize().height));
+
+                            JPanel panelW = new JPanel();
+                            panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                            panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            panelW.add(productDiscountSpinner);
+                            panelW.setBackground(Color.white);
+
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                            productDiscountSpinner.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(panelW);
+                            panel.setBorder(border);
+                            panel.setBackground(Color.white);
+                            productsTable.add(panel, c);
+                        }
+                        /*{
+                            c.gridx++;
                             JPanel panel = new JPanel();
                             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                             eulabel.setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -926,26 +1096,10 @@ public class SummaryForm {
                             panel.setBorder(border);
                             panel.setBackground(Color.white);
                             productsTable.add(panel, c);
-                        }
+                        }*/
                         {
                             c.gridx++;
                             //supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
-                            supportDiscount.addChangeListener(new ChangeListener() {
-                                public void stateChanged(ChangeEvent e) {
-                                    final ChangeEvent ev = e;
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        public void run() {
-                                            if (ev.getSource() == supportDiscount) {
-                                                prod.setSupportDiscount((Integer) supportDiscount.getValue() / 100d);
-                                                splabel.call();
-                                                glsplabel.call();
-                                                updated.act(that);
-                                                titleUpdater.act(proposal);
-                                            }
-                                        }
-                                    });
-                                }
-                            });
                             supportDiscount.setMaximumSize(new Dimension(supportDiscount.getMaximumSize().width, supportDiscount.getMinimumSize().height));
 
                             JPanel panelW = new JPanel();
@@ -965,13 +1119,13 @@ public class SummaryForm {
                             panel.setBackground(Color.white);
                             productsTable.add(panel, c);
                         }
-                        {
+/*                        {
                             c.gridx++;
-                            /*if (planRateField != null) {
+                            *//*if (planRateField != null) {
                                 label.setText((p.getProposal().getCurrency().getSymbol() != null ?
                                         p.getProposal().getCurrency().getSymbol() + " " : "") + df.format(p.getPrice() * getProposal().getRegion().getRate() * ((Integer) planRateField.getValue() / 100d)) + (p.getProposal().getCurrency().getSymbol() == null ?
                                         " " + p.getProposal().getCurrency().getName() : ""));
-                            }*/
+                            }*//*
                             JPanel panel = new JPanel();
                             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                             splabel.setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -981,10 +1135,33 @@ public class SummaryForm {
                             panel.setBorder(lborder);
                             panel.setBackground(Color.white);
                             productsTable.add(panel, c);
+                        }*/
+                        {
+                            c.gridx++;
+                            //supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
+                            //supportDiscount.addChangeListener(supportDiscountCL);
+                            supportDiscountSpinner.setMaximumSize(new Dimension(supportDiscountSpinner.getMaximumSize().width, supportDiscountSpinner.getMinimumSize().height));
+
+                            JPanel panelW = new JPanel();
+                            panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                            panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            panelW.add(supportDiscountSpinner);
+                            panelW.setBackground(Color.white);
+
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                            supportDiscountSpinner.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(panelW);
+                            panel.setBorder(border);
+                            panel.setBackground(Color.white);
+                            productsTable.add(panel, c);
                         }
-                        eulabel.call();
-                        splabel.call();
-                        muplabel.call();
+                        //eulabel.call();
+                        //splabel.call();
+                        //muplabel.call();
                     }
                 }
 

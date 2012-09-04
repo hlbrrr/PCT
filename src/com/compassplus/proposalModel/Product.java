@@ -329,8 +329,7 @@ public class Product {
     public Double getSupportPrice() {
         /*return CommonUtils.getInstance().toNextInt(getSupportPriceUndiscounted() -
                 getSupportPriceUndiscounted(true) * getSupportDiscount());*/
-        return CommonUtils.getInstance().toNextInt(getSupportPriceUndiscounted() -
-                getSupportPriceUndiscounted() * getSupportDiscount());
+        return getSupportPriceUndiscounted() - getSupportPriceUndiscounted() * getSupportDiscount();
     }
 
     public Double getSupportPriceUndiscounted() {

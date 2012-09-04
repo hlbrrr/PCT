@@ -969,10 +969,10 @@ public class MainForm {
     private boolean isNormalDiscount(Number value, Product product, Comparable maximumDiscount, boolean isSupport){
         Double maximumDiscountedSum = ((1 - ((Number) maximumDiscount).doubleValue())) * (isSupport ? product.getSupportPriceUndiscounted(true) : product.getRegionPrice(true));
 
-        final Integer newMax = (int) (Math.round(10000d * (1 - maximumDiscountedSum / (isSupport ? product.getSupportPriceUndiscounted() : product.getRegionPrice()))) / 100d);
+        final Double newMax = (Math.round(10000d * (1 - maximumDiscountedSum / (isSupport ? product.getSupportPriceUndiscounted() : product.getRegionPrice()))) / 100d);
 
         //if (!value.equals(this.value)) {
-        if (newMax.compareTo(((Number) value).intValue()) < 0) {
+        if (newMax.compareTo(((Number) value).doubleValue()) < 0) {
             return false;
         }else{
             return true;
