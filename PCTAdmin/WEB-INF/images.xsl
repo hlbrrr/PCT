@@ -40,10 +40,24 @@
                                         </xsl:otherwise>
                                     </xsl:choose>
                                 </td>
-                                <td class="nowrap">
+                                <td class="nowrap downloadTr">
                                     <xsl:choose>
                                         <xsl:when test="Timestamp">
-                                            <a href="#" onclick="PCT.getConfiguration(this)" date="{Date}" cfg="{Timestamp}">download</a>
+                                            <a href="#" class="downloadLink" onclick="$('.downloadDiv', $(this).parents('.downloadTr')).show(); $(this).hide()">download</a>
+                                            <div class="downloadDiv" style="display:none">
+                                                Password:&#160;<input type="password" size="10" id="pwd{Timestamp}"/>
+                                                <div style="text-align:right">
+                                                    <button date="{Date}" cfg="{Timestamp}" pwdid="pwd{Timestamp}">
+                                                        <xsl:attribute name="onclick">
+                                                            if(PCT.getConfiguration(this)){
+                                                                $('.downloadLink', $(this).parents('.downloadTr')).show();
+                                                                $('.downloadDiv', $(this).parents('.downloadTr')).hide();
+                                                            }
+                                                        </xsl:attribute>
+                                                        Download
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </xsl:when>
                                         <xsl:otherwise>
                                             &#160;

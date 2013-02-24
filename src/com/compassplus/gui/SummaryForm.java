@@ -558,7 +558,7 @@ public class SummaryForm {
                         panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
                         productsTable.add(panel, c);
                     }
-                    if (getProposal().getRegion().getRate() != 1d) {
+                    /*if (getProposal().getRegion().getRate() != 1d)*/ {
                         c.gridx++;
                         JLabel label = new JLabel("Regional list price");
                         JPanel panel = new JPanel();
@@ -743,7 +743,7 @@ public class SummaryForm {
                             panel.setBackground(Color.white);
                             productsTable.add(panel, c);
                         }
-                        if (getProposal().getRegion().getRate() != 1d) {
+                        /*if (getProposal().getRegion().getRate() != 1d)*/ {
                             {
                                 c.gridx++;
                                 JLabel label = new JLabel((p.getProposal().getCurrency().getSymbol() != null ?
@@ -1213,10 +1213,10 @@ public class SummaryForm {
                         panel.setBackground(Color.white);
                         productsTable.add(panel, c);
                     }
-                    if (getProposal().getRegion().getRate() != 1d) {
+                    /*if (getProposal().getRegion().getRate() != 1d)*/ {
                         c.gridx++;
                         JLabel label = new JLabel((getProposal().getCurrency().getSymbol() != null ?
-                                getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPrice() * getProposal().getRegion().getRate()) + (getProposal().getCurrency().getSymbol() == null ?
+                                getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getRegionalPrice()) + (getProposal().getCurrency().getSymbol() == null ?
                                 " " + getProposal().getCurrency().getName() : ""));
                         JPanel panel = new JPanel();
                         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

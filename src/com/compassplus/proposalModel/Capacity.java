@@ -209,11 +209,13 @@ public class Capacity {
     }
 
     public Double getPrice(Product product) {
-        return CommonUtils.getInstance().toNextThousand(getCleanPrice(product));
+        //return CommonUtils.getInstance().toNextThousand(getCleanPrice(product));
+        return CommonUtils.getInstance().toNextHundred(getCleanPrice(product));
     }
 
     public Double getRegionalPrice(Product product) {
-        return CommonUtils.getInstance().toNextThousand(getCleanPrice(product))*product.getProposal().getRegion().getRate();
+        //return CommonUtils.getInstance().toNextThousand(getCleanPrice(product))*product.getProposal().getRegion().getRate(product.getName());
+        return CommonUtils.getInstance().toNextHundred(getCleanPrice(product))*product.getProposal().getRegion().getRate(product.getName());
     }
     /*public Double getPrice() {
         Double price = 0d;

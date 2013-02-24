@@ -276,7 +276,7 @@ public class Module {
     }
 
     public Double getRegionalPrice(com.compassplus.proposalModel.Product product){
-        return CommonUtils.getInstance().toNextThousand(getCleanPrice(product))*product.getProposal().getRegion().getRate();
+        return CommonUtils.getInstance().toNextThousand(getCleanPrice(product))*product.getProposal().getRegion().getRate(product.getName());
     }
 
     public void setIsRadioMember(boolean isRadioMember) {

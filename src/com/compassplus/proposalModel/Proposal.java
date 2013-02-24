@@ -394,6 +394,14 @@ public class Proposal {
         return ret;
     }
 
+    public Double getRegionalPrice() {
+        Double ret = 0d;
+        for (Product p : this.products.values()) {
+            ret += p.getRegionPrice(true);
+        }
+        return ret;
+    }
+
     public boolean isPrimarySale() {
         boolean primary = true;
         for (Product p : this.products.values()) {

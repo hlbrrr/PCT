@@ -66,6 +66,10 @@ public class CommonUtils {
         return Math.ceil(val / 1000) * 1000;
     }
 
+    public Double toNextHundred(Double val) {
+        return Math.ceil(val / 100) * 100;
+    }
+
     public Double toNextInt(Double val) {
         return Math.ceil(val);
     }

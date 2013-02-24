@@ -263,7 +263,7 @@ body, input, select, textarea {
     -webkit-border-radius: 5px;
 }
 
-.divSupportPlanRegion, .divAuthLevelLevel, .divCurrencyRegion, .divUserRegion {
+.divSupportPlanRegion, .divAuthLevelLevel, .divCurrencyRegion, .divRegionProduct, .divUserRegion {
     border: 1px solid #dbd0d0;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -306,7 +306,7 @@ body, input, select, textarea {
     color: black;
 }
 
-.divSupportPlanRegionTitle, .divAuthLevelLevelTitle, .divCurrencyRegionTitle, .divUserRegionTitle {
+.divSupportPlanRegionTitle, .divAuthLevelLevelTitle, .divCurrencyRegionTitle, .divRegionProductTitle, .divUserRegionTitle {
     background-color: #e7e6e6;
     color: black;
 }
@@ -339,7 +339,7 @@ body, input, select, textarea {
     padding-top: 5px;
 }
 
-.divDependencies, .divTiers, .divUserAuthLevels, .divSupportPlanRegions, .divAuthLevelLevels, .divCurrencyRegions {
+.divDependencies, .divTiers, .divUserAuthLevels, .divSupportPlanRegions, .divAuthLevelLevels, .divCurrencyRegions, .divRegionProducts {
     padding: 10px;
     padding-bottom: 0;
 }
@@ -417,6 +417,7 @@ body, input, select, textarea {
 
 .divSupportPlanRegionTitle>.titleTable>.titleTableCellButton:hover, .divAuthLevelLevelTitle>.titleTable>.titleTableCellButton:hover,
 .divCurrencyRegionTitle>.titleTable>.titleTableCellButton:hover,
+.divRegionProductTitle>.titleTable>.titleTableCellButton:hover,
 .divUserRegionTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #f5f5f5;
 }

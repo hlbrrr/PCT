@@ -4,6 +4,12 @@ import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,6 +25,7 @@ public class Region {
     private String defaultCurrencyName;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
+    private Map<String, Double> rateProducts = new HashMap<String, Double>(0);
 
     public Region(Node initialData) throws PCTDataFormatException {
         init(initialData);
@@ -32,19 +39,27 @@ public class Region {
             this.setName(xut.getNode("Name", initialData));
             this.setRate(xut.getNode("Rate", initialData));
             this.setDefaultCurrencyName(xut.getNode("DefaultCurrency", initialData));
+            this.setRateProducts(xut.getNodes("Products/Product", initialData));
 
             log.info("Region successfully parsed: \nName: " + this.getName() +
                     "\nKey: " + this.getKey() +
                     "\nDefaultCurrency: " + this.getDefaultCurrencyName() +
-                    "\nRate: " + this.getRate());
+                    "\nRate: " + this.getRate(null));
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Region is not defined correctly: \nName: " + this.getName(), e.getDetails());
         }
     }
 
-    public Double getRate() {
-        return rate;
+    public Double getRate(String product) {
+        if (product == null || rateProducts.get(product) == null) {
+            return rate;
+        } else {
+            return rateProducts.get(product);
+        }
     }
+/*    public Double getRate() {
+        return rate;
+    }*/
 
     private void setRate(Node rate) throws PCTDataFormatException {
         try {
@@ -88,6 +103,47 @@ public class Region {
             this.defaultCurrencyName = xut.getString(defaultCurrencyName, true);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Region default currency is not defined correctly", e.getDetails());
+        }
+    }
+
+    public Map<String, Double> getRateProducts() {
+        return rateProducts;
+    }
+
+    private void setRateProducts(NodeList rateProducts) throws PCTDataFormatException {
+        this.getRateProducts().clear();
+        if (rateProducts.getLength() > 0) {
+            log.info("Found " + rateProducts.getLength() + " region product(s)");
+            for (int i = 0; i < rateProducts.getLength(); i++) {
+                Node initialData = rateProducts.item(i);
+                try {
+                    try {
+                        log.info("Parsing region product");
+
+                        String productName = null;
+                        try {
+                            productName = xut.getString(xut.getNode("Key", initialData));
+                        } catch (PCTDataFormatException e) {
+                            throw new PCTDataFormatException("Region product name is not defined correctly", e.getDetails());
+                        }
+                        Double productRate = null;
+                        try {
+                            productRate = xut.getDouble(xut.getNode("Rate", initialData));
+                        } catch (PCTDataFormatException e) {
+                            throw new PCTDataFormatException("Region product rate is not defined correctly", e.getDetails());
+                        }
+                        this.getRateProducts().put(productName, productRate);
+
+                        log.info("Region product successfully parsed: \nName: " + productName +
+                                "\nRate: " + productRate);
+                    } catch (PCTDataFormatException e) {
+                        throw new PCTDataFormatException("Region product is not defined correctly", e.getDetails());
+                    }
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getRateProducts().size() + " region product(s)");
         }
     }
 

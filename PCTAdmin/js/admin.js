@@ -19,10 +19,16 @@
         location:'/',
         animation:'blind',
         format:'xml',
-        getConfiguration:function(src) {
-            var pwd = prompt("Provide a password to encrypt your configuration", "");
+        getConfiguration:function(src, pwd) {
+            //var pwd = prompt("Provide a password to encrypt your configuration", "");
+            pwd = src ? document.getElementById($(src).attr('pwdid')).value : pwd;
+            if(!pwd || pwd==''){
+                alert('Please, provide a password to encrypt your configuration');
+                return false;
+            }
             PCT.sendData(PCT.location, (src ? 'timestamp=' + $(src).attr('cfg') + '&': '') + 'action=downloadConfig&pwd=' + $().md5(pwd));
             pwd = null;
+            return true;
         },
         releaseConfig:function(src) {
             if (PCT.checker) {
@@ -2296,23 +2302,43 @@
                 _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
                 _rate:$('#Rate', dom).get(),
+                _mdRate:$('#MDRate', dom).get(),
+                _onsiteDailyCost:$('#OnsiteDailyCost', dom).get(),
+                _tripPrice:$('#TripPrice', dom).get(),
                 _regionTitle:$('#Title', dom).get(),
                 _key:$('#Key', dom).get(),
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
+                _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _defaultCurrency:$('#DefaultCurrency', dom).get(),
+                _regionProducts:$('#RegionProducts', dom).get(),
+                _addRegionProduct:$('#AddRegionProduct', dom).get(),
                 _clone:$('#Clone', dom).get(),
                 _core:$('#Core', dom).get()
             });
             var that = this;
+            $(this._regionProducts, dom).sortable({
+                revert:true,
+                handle: '.regionProductDrag',
+                connectWith: '.divRegionProducts'
+            });
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
                     var config = '<Region>';
                     config += '<Name>' + $(that._name).val() + '</Name>';
                     config += '<Rate>' + $(that._rate).val() + '</Rate>';
+                    config += '<MDRate>' + $(that._mdRate).val() + '</MDRate>';
+                    config += '<OnsiteDailyCost>' + $(that._onsiteDailyCost).val() + '</OnsiteDailyCost>';
+                    config += '<TripPrice>' + $(that._tripPrice).val() + '</TripPrice>';
                     config += '<DefaultCurrency>' + $(that._defaultCurrency).val() + '</DefaultCurrency>';
                     config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<Products>';
+                    $(that._regionProducts).children().each(function() {
+                        if ($(this).hasClass('divRegionProduct'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Products>';
                     config += '</Region>';
                     return config;
                 }
@@ -2330,6 +2356,21 @@
             $(this._name).change(function() {
                 $(that._regionTitle).html($(this).val());
             });
+            $(this._expand).click(function(arg) {
+                $(that._regionProducts).toggleClass('hidden');
+                if ($(that._regionProducts).hasClass('hidden')) {
+                    $(that._expand).html('Expand');
+                } else {
+                    $(that._expand).html('Collapse');
+                }
+            });
+            $(this._addRegionProduct).click(function() {
+                if ($(that._regionProducts).hasClass('hidden')) {
+                    $(that._regionProducts).removeClass('hidden');
+                    $(that._expand).html('Collapse');
+                }
+                that.addRegionProduct();
+            });
             $(this._key).val(PCT.randomString(15)).change();
             $(this._regionTitle).click(function() {
                 $(that._remove).toggleClass('hidden');
@@ -2343,8 +2384,77 @@
                 init:function(initialData) {
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._rate).val($('>Rate', initialData).text()).change();
+                    $(this._mdRate).val($('>MDRate', initialData).text()).change();
+                    $(this._onsiteDailyCost).val($('>OnsiteDailyCost', initialData).text()).change();
+                    $(this._tripPrice).val($('>TripPrice', initialData).text()).change();
+                    $(this._regionProducts).addClass('hidden');
                     $(this._defaultCurrency).val($('>DefaultCurrency', initialData).text()).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
+                    $(this._expand).html('Expand');
+                    $('>Products>Product', initialData).each(function() {
+                        that.addRegionProduct((new PCT.regionProduct()).setRoot(that._regionProducts).init(this));
+                    });
+                    return this;
+                },
+                addRegionProduct:function(product) {
+                    if (product) {
+                        $('html, body').animate({
+                            scrollTop: $(product.getHead()).offset().top
+                        }, 000);
+                    } else {
+                        this.addRegionProduct((new PCT.regionProduct()).setRoot(this._regionProducts));
+                    }
+                }
+            });
+        },
+        regionProduct:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('regionProduct');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _key:$('#Key', dom).get(),
+                _rate:$('#Rate', dom).get(),
+                _regionProductTitle:$('#Title', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Product>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<Rate>' + $(that._rate).val() + '</Rate>';
+                    config += '</Product>';
+                    return config;
+                }
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove product?')) {
+                    $(that._body).remove();
+                }
+            });
+            $(this._key).change(function() {
+                $(that._regionProductTitle).html($(this).val());
+            });
+            $(this._regionProductTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._key).val($('>Key', initialData).text()).change();
+                    $(this._rate).val($('>Rate', initialData).text()).change();
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
                     return this;

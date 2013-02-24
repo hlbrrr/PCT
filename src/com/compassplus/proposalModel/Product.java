@@ -319,7 +319,7 @@ public class Product {
     }
 
     public Double getRegionPrice(boolean clean) {
-        return getPrice() * getProposal().getRegion().getRate() * (clean ? 1 : getMarkUp());
+        return getPrice() * getProposal().getRegion().getRate(this.getName()) * (clean ? 1 : getMarkUp());
     }
 
     public Double getRegionPrice() {
