@@ -510,6 +510,7 @@
                 _releaseTimestamp:$('#ReleaseTimestamp', dom).get(),
                 _products:$('#Products', dom).get(),
                 _regions:$('#Regions', dom).get(),
+                _services:$('#Services', dom).get(),
                 _supportPlans:$('#SupportPlans', dom).get(),
                 _authLevels:$('#AuthLevels', dom).get(),
                 _currencies:$('#Currencies', dom).get(),
@@ -519,6 +520,7 @@
                 _addRegion:$('#AddRegion', dom).get(),
                 _addSupportPlan:$('#AddSupportPlan', dom).get(),
                 _addAuthLevel:$('#AddAuthLevel', dom).get(),
+                _addServicesGroup:$('#AddServicesGroup', dom).get(),
                 _addCurrency:$('#AddCurrency', dom).get(),
                 _addUser:$('#AddUser', dom).get(),
                 /*_addFile:$('#AddFile', dom).get(),*/
@@ -596,6 +598,9 @@
             });
             $(this._addAuthLevel).click(function() {
                 that.addAuthLevel();
+            });
+            $(this._addServicesGroup).click(function() {
+                that.addServicesGroup();
             });
             $(this._addCurrency).click(function() {
                 that.addCurrency();
@@ -732,6 +737,13 @@
                         $('.authLevelKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
+                    });
+                }
+            });
+            $.data($(this._services)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>ServicesGroup', xml).each(function() {
+                        that.addServicesGroup((new PCT.servicesGroup()).setRoot(that._services).init(this));
                     });
                 }
             });
@@ -917,6 +929,9 @@
                     $('>AuthLevels>AuthLevel', initialData).each(function() {
                         that.addAuthLevel((new PCT.authLevel()).setRoot(that._authLevels).init(this));
                     });
+                    $('>Services>ServicesGroup', initialData).each(function() {
+                        that.addServicesGroup((new PCT.servicesGroup()).setRoot(that._services).init(this));
+                    });
                     $('>Currencies>Currency', initialData).each(function() {
                         that.addCurrency((new PCT.currency()).setRoot(that._currencies).init(this));
                     });
@@ -1005,6 +1020,16 @@
                         return authLevel.getHead();
                     } else {
                         return this.addAuthLevel((new PCT.authLevel()).setRoot(that._authLevels));
+                    }
+                },
+                addServicesGroup:function(servicesGroup) {
+                    if (servicesGroup) {
+                        $('html, body').animate({
+                            scrollTop: $(servicesGroup.getHead()).offset().top
+                        }, 200);
+                        return servicesGroup.getHead();
+                    } else {
+                        return this.addServicesGroup((new PCT.servicesGroup()).setRoot(that._services));
                     }
                 },
                 addCurrency:function(currency) {
@@ -2811,6 +2836,193 @@
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
                     return this;
+                }
+            });
+        },
+        servicesGroup:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('servicesGroup');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _name:$('#Name', dom).get(),
+                _shortName:$('#ShortName', dom).get(),
+                _content:$('#Content', dom).get(),
+                _services:$('#Services', dom).get(),
+                _groups:$('#Groups', dom).get(),
+                _groupTitle:$('#GroupTitle', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _addGroup:$('#AddGroup', dom).get(),
+                _addService:$('#AddService', dom).get(),
+                _expand:$('#Expand', dom).get(),
+                _hidden:$('#Hidden', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _core:$('#Core', dom).get(),
+                _clone:$('#Clone', dom).get(),
+                _hint:$('#Hint', dom).get(),
+                _drag:$('#Drag', dom).get()
+            });
+            var that = this;
+            $(this._services, dom).sortable({
+                revert:true,
+                handle: '.serviceDrag',
+                connectWith: '.divServices',
+                start:function() {
+                    //that.updateTotal();
+                },
+                update:function() {
+                    //that.updateTotal();
+                }
+            });
+            $(this._groups, dom).sortable({
+                revert:true,
+                handle: '.groupDrag',
+                connectWith: '.divSGroups',
+                start:function() {
+                    //that.updateTotal();
+                },
+                update:function() {
+                    //that.updateTotal();
+                }
+            });
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '';
+                    config += '<Group>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                    config += '<Hidden>' + ($(that._hidden).prop('checked') ? 'true' : 'false') + '</Hidden>';
+                    config += '<Hint>' + $(that._hint).val() + '</Hint>';
+                    config += '<Services>';
+                    $(that._services).children().each(function() {
+                        if ($(this).hasClass('divService'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    $(that._groups).children().each(function() {
+                        if ($(this).hasClass('divServicesGroup'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Services>';
+                    config += '</Group>';
+                    return config;
+                }
+            });
+            $.data($(this._groups)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Group', xml).each(function() {
+                        var rt = that.addGroup((new PCT.servicesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Hidden', this).text(), $('>Services', this)));
+                        $('.serviceKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                    //that.updateTotal();
+                }
+            });
+            $.data($(this._services)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Service', xml).each(function() {
+                        var rt = that.addService((new PCT.service()).setRoot(that._services).init(this));
+                        $('.serviceKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                    //that.updateTotal();
+                }
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove group?')) {
+                    if (confirm('Group will be removed with nested services. Removing service can result in broken backward compatibility. Remove group?')) {
+                        //$('.moduleWeight', that._content).val(0);
+                        //that.updateTotal();
+                        $(that._body).remove();
+                    }
+                }
+            });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divGroups')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+            $(this._expand).click(function(arg) {
+                $(that._content).toggleClass('hidden');
+                if ($(that._content).hasClass('hidden')) {
+                    $(that._expand).html('Expand');
+                } else {
+                    $(that._expand).html('Collapse');
+                }
+            });
+            $(this._addGroup).click(function() {
+                if ($(that._content).hasClass('hidden')) {
+                    $(that._content).removeClass('hidden');
+                    $(that._expand).html('Collapse');
+                }
+                that.addGroup();
+            });
+            $(this._addService).click(function() {
+                if ($(that._content).hasClass('hidden')) {
+                    $(that._content).removeClass('hidden');
+                    $(that._expand).html('Collapse');
+                }
+                that.addService();
+            });
+            $(this._name).change(function() {
+                $(that._groupTitle).html($(this).val());
+            });
+
+            $(this._groupTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(name, shortName, hint, hidden, initialData) {
+                    if (name) {
+                        $(this._name).val(name).change();
+                    }
+                    var that = this;
+                    if (shortName) {
+                        $(this._shortName).val(shortName).change();
+                    }
+                    if (hidden) {
+                        $(this._hidden).prop('checked', (hidden == 'true')).change();
+                    }
+                    if (hint) {
+                        $(this._hint).val(hint).change();
+                    }
+                    $('>Service', initialData).each(function() {
+                        that.addService((new PCT.service()).setRoot(that._services).init(this));
+                    });
+                    $('>Group', initialData).each(function() {
+                        that.addGroup((new PCT.servicesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Hidden', this).text(), $('>Services', this)));
+                    });
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._remove).addClass('hidden');
+                    return this;
+                },
+                addService:function(service) {
+                    if (service) {
+                        $('html, body').animate({
+                            scrollTop: $(service.getHead()).offset().top
+                        }, 000);
+                        return service.getHead();
+                    } else {
+                        return this.addService((new PCT.service()).setRoot(this._services));
+                    }
+                },
+                addGroup:function(group) {
+                    if (group) {
+                        $('html, body').animate({
+                            scrollTop: $(group.getHead()).offset().top
+                        }, 000);
+                        return group.getHead();
+                    } else {
+                        return this.addGroup((new PCT.servicesGroup()).setRoot(this._groups));
+                    }
                 }
             });
         },

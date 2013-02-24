@@ -54,6 +54,9 @@
                 <div id="AuthLevelsTab" bind="#AuthLevelsWrap" class="titleTableCell titleTableCellButton tab">
                     Auth. Levels
                 </div>
+                <div id="ServicesTab" bind="#ServicesWrap" class="titleTableCell titleTableCellButton tab">
+                    Services
+                </div>
                 <div id="SystemTab" bind="#SystemWrap" class="titleTableCell titleTableCellButton tab">
                     System
                 </div>
@@ -156,6 +159,16 @@
                 </div>
             </div>
             <div id="AuthLevels" class="divModelAuthLevels"></div>
+        </div>
+        <div id="ServicesWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="AddServicesGroup" class="titleTableCell titleTableCellButton">
+                    Add Group
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="Services" class="divModelServices"></div>
         </div>
         <div id="SystemWrap" class="hidden">
             <div class="titleTable divModelSubTitle">
@@ -356,6 +369,75 @@
         <div id="Content">
             <div id="Modules" class="divModules"></div>
             <div id="Groups" class="divGroups divMGroups"></div>
+        </div>
+    </div>
+</template>
+<template id="servicesGroup">
+    <div class="divServicesGroup" id="Core">
+        <div class="divGroupTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton groupDrag">
+                    #
+                </div>
+                <div id="GroupTitle" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
+                <div id="AddGroup" class="titleTableCell titleTableCellButton">
+                    Add Group
+                </div>
+                <div id="AddService" class="titleTableCell titleTableCellButton">
+                    Add Service
+                </div>
+                <div id="Expand" class="titleTableCell titleTableCellButton">
+                    Collapse
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Short Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="ShortName" autocomplete="off" class="settingInput validate" validclass="mempty"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Hint:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <textarea id="Hint" autocomplete="off" class="settingInput validate"
+                                      validclass="mempty"></textarea>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Do Not Export:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="Hidden" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="Content">
+            <div id="Services" class="divServices"></div>
+            <div id="Groups" class="divGroups divSGroups"></div>
         </div>
     </div>
 </template>
