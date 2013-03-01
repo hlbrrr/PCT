@@ -510,10 +510,11 @@
                 _releaseTimestamp:$('#ReleaseTimestamp', dom).get(),
                 _products:$('#Products', dom).get(),
                 _regions:$('#Regions', dom).get(),
-                _services:$('#Services', dom).get(),
+                _services:$('#ModelServices', dom).get(),
                 _supportPlans:$('#SupportPlans', dom).get(),
                 _authLevels:$('#AuthLevels', dom).get(),
                 _currencies:$('#Currencies', dom).get(),
+                _recommendations:$('#Recommendations', dom).get(),
                 _users:$('#Users', dom).get(),
                 _files:$('#Files', dom).get(),
                 _addProduct:$('#AddProduct', dom).get(),
@@ -522,6 +523,7 @@
                 _addAuthLevel:$('#AddAuthLevel', dom).get(),
                 _addServicesGroup:$('#AddServicesGroup', dom).get(),
                 _addCurrency:$('#AddCurrency', dom).get(),
+                _addRecommendation:$('#AddRecommendation', dom).get(),
                 _addUser:$('#AddUser', dom).get(),
                 /*_addFile:$('#AddFile', dom).get(),*/
                 _home:$('#Home', dom).get(),
@@ -558,6 +560,10 @@
                 revert:true,
                 handle: '.currencyDrag'
             });
+            $(this._recommendations, dom).sortable({
+                revert:true,
+                handle: '.recommendationDrag'
+            });
             $(this._users, dom).sortable({
                 revert:true,
                 handle: '.userDrag'
@@ -565,6 +571,11 @@
             $(this._files, dom).sortable({
                 revert:true,
                 handle: '.fileDrag'
+            });
+            $(this._services, dom).sortable({
+                revert:true,
+                handle: '.groupDrag',
+                connectWith: '.divSGroups'
             });
             $('.tab', dom).each(function() {
                 that._tabs.push(this);
@@ -604,6 +615,9 @@
             });
             $(this._addCurrency).click(function() {
                 that.addCurrency();
+            });
+            $(this._addRecommendation).click(function() {
+                that.addRecommendation();
             });
             $(this._addUser).click(function() {
                 that.addUser();
@@ -699,7 +713,24 @@
                             config += $.data($(this)[0], 'pct').getXML();
                     });
                     config += '</Files>';
+                    config += '<Services>';
+                    $(that._services).children().each(function() {
+                            console.log('pip1');
+                        if ($(this).hasClass('divServicesGroup')){
+                            console.log('pip2');
+                            console.log('pip3='+$.data($(this)[0], 'pct').getXML());
+                            config += $.data($(this)[0], 'pct').getXML();
+                        }
+                    });
+                    config += '</Services>';
+                    config += '<Recommendations>';
+                    $(that._recommendations).children().each(function() {
+                        if ($(this).hasClass('divRecommendation'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Recommendations>';
                     config += '</root>';
+                    console.log(config);
                     return config;
                 }
             });
@@ -742,8 +773,17 @@
             });
             $.data($(this._services)[0], 'pct', {
                 cloneTree:function(xml) {
-                    $('root>ServicesGroup', xml).each(function() {
+                    /*$('root>Group', xml).each(function() {
                         that.addServicesGroup((new PCT.servicesGroup()).setRoot(that._services).init(this));
+                    });*/
+                    $('root>Group', xml).each(function() {
+                        var rt = that.addServicesGroup((new PCT.servicesGroup()).setRoot(that._services).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Hidden', this).text(), $('>Key', this).text(), $('>Services', this)));
+                        $('.serviceKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                        $('.groupKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
+                        });
                     });
                 }
             });
@@ -753,6 +793,16 @@
                         var rt = that.addCurrency((new PCT.currency()).setRoot(that._currencies).init(this));
                         $('.currencyName', rt).each(function() {
                             $(this).val('').change();
+                        });
+                    });
+                }
+            });
+            $.data($(this._recommendations)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Recommendation', xml).each(function() {
+                        var rt = that.addRecommendation((new PCT.recommendation()).setRoot(that._recommendations).init(this));
+                        $('.recommendationKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
                         });
                     });
                 }
@@ -929,11 +979,14 @@
                     $('>AuthLevels>AuthLevel', initialData).each(function() {
                         that.addAuthLevel((new PCT.authLevel()).setRoot(that._authLevels).init(this));
                     });
-                    $('>Services>ServicesGroup', initialData).each(function() {
-                        that.addServicesGroup((new PCT.servicesGroup()).setRoot(that._services).init(this));
+                    $('>Services>Group', initialData).each(function() {
+                        that.addServicesGroup((new PCT.servicesGroup()).setRoot(that._services).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Hidden', this).text(), $('>Key', this).text(), $('>Services', this)));
                     });
                     $('>Currencies>Currency', initialData).each(function() {
                         that.addCurrency((new PCT.currency()).setRoot(that._currencies).init(this));
+                    });
+                    $('>Recommendations>Recommendation', initialData).each(function() {
+                        that.addRecommendation((new PCT.recommendation()).setRoot(that._recommendations).init(this));
                     });
                     $('>Users>User', initialData).each(function() {
                         that.addUser((new PCT.user()).setRoot(that._users).init(this));
@@ -1040,6 +1093,16 @@
                         return currency.getHead();
                     } else {
                         return this.addCurrency((new PCT.currency()).setRoot(that._currencies));
+                    }
+                },
+                addRecommendation:function(recommendation) {
+                    if (recommendation) {
+                        $('html, body').animate({
+                            scrollTop: $(recommendation.getHead()).offset().top
+                        }, 200);
+                        return recommendation.getHead();
+                    } else {
+                        return this.addRecommendation((new PCT.recommendation()).setRoot(that._recommendations));
                     }
                 },
                 addUser:function(user) {
@@ -2849,6 +2912,7 @@
                 _body:$(dom).contents(),
                 _name:$('#Name', dom).get(),
                 _shortName:$('#ShortName', dom).get(),
+                _key:$('#Key', dom).get(),
                 _content:$('#Content', dom).get(),
                 _services:$('#Services', dom).get(),
                 _groups:$('#Groups', dom).get(),
@@ -2869,13 +2933,7 @@
             $(this._services, dom).sortable({
                 revert:true,
                 handle: '.serviceDrag',
-                connectWith: '.divServices',
-                start:function() {
-                    //that.updateTotal();
-                },
-                update:function() {
-                    //that.updateTotal();
-                }
+                connectWith: '.divServices'
             });
             $(this._groups, dom).sortable({
                 revert:true,
@@ -2888,6 +2946,7 @@
                     //that.updateTotal();
                 }
             });
+            $(this._key).val(PCT.randomString(15)).change();
             $.data($(this._core)[0], 'pct', {
                 getXML:function() {
                     var config = '';
@@ -2896,6 +2955,7 @@
                     config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
                     config += '<Hidden>' + ($(that._hidden).prop('checked') ? 'true' : 'false') + '</Hidden>';
                     config += '<Hint>' + $(that._hint).val() + '</Hint>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
                     config += '<Services>';
                     $(that._services).children().each(function() {
                         if ($(this).hasClass('divService'))
@@ -2913,8 +2973,11 @@
             $.data($(this._groups)[0], 'pct', {
                 cloneTree:function(xml) {
                     $('root>Group', xml).each(function() {
-                        var rt = that.addGroup((new PCT.servicesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Hidden', this).text(), $('>Services', this)));
+                        var rt = that.addGroup((new PCT.servicesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Hidden', this).text(), $('>Key', this).text(), $('>Services', this)));
                         $('.serviceKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                        $('.groupKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
                     });
@@ -2980,10 +3043,11 @@
                 getHead:function() {
                     return this._head;
                 },
-                init:function(name, shortName, hint, hidden, initialData) {
+                init:function(name, shortName, hint, hidden, key, initialData) {
                     if (name) {
                         $(this._name).val(name).change();
                     }
+                    $(this._key).val('').val(key).change();
                     var that = this;
                     if (shortName) {
                         $(this._shortName).val(shortName).change();
@@ -2998,7 +3062,7 @@
                         that.addService((new PCT.service()).setRoot(that._services).init(this));
                     });
                     $('>Group', initialData).each(function() {
-                        that.addGroup((new PCT.servicesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Hidden', this).text(), $('>Services', this)));
+                        that.addGroup((new PCT.servicesGroup()).setRoot(that._groups).init($('>Name', this).text(), $('>ShortName', this).text(), $('>Hint', this).text(), $('>Hidden', this).text(), $('>Key', this).text(), $('>Services', this)));
                     });
                     $(this._settingsPane).addClass('hidden');
                     $(this._remove).addClass('hidden');
@@ -3023,6 +3087,81 @@
                     } else {
                         return this.addGroup((new PCT.servicesGroup()).setRoot(this._groups));
                     }
+                }
+            });
+        },
+        service:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('service');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _name:$('#Name', dom).get(),
+                _shortName:$('#ShortName', dom).get(),
+                _key:$('#Key', dom).get(),
+                _maxMD:$('#MaxMD', dom).get(),
+                _minMD:$('#MinMD', dom).get(),
+                _hidden:$('#Hidden', dom).get(),
+                _serviceTitle:$('#Title', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _clone:$('#Clone', dom).get(),
+                _hint:$('#Hint', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divServices')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Service>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Hint>' + $(that._hint).val() + '</Hint>';
+                    config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<MaxMD>' + $(that._maxMD).val() + '</MaxMD>';
+                    config += '<MinMD>' + $(that._minMD).val() + '</MinMD>';
+                    config += '<Hidden>' + ($(that._hidden).prop('checked') ? 'true' : 'false') + '</Hidden>';
+                    config += '</Service>';
+                    return config;
+                }
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove service?')) {
+                    if (confirm('Removing service can result in broken backward compatibility. Remove service?')) {
+                        $(that._body).remove();
+                    }
+                }
+            });
+            $(this._name).change(function() {
+                $(that._serviceTitle).html($(this).val());
+            });
+            $(this._key).val(PCT.randomString(15)).change();
+            $(this._serviceTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._hint).val($('>Hint', initialData).text()).change();
+                    $(this._shortName).val($('>ShortName', initialData).text()).change();
+                    $(this._key).val('').val($('>Key', initialData).text()).change();
+                    $(this._maxMD).val($('>MaxMD', initialData).text()).change();
+                    $(this._minMD).val($('>MinMD', initialData).text()).change();
+                    $(this._hidden).prop('checked', ($('>Hidden', initialData).text() == 'true')).change();
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._dependencies).addClass('hidden');
+                    $(this._remove).addClass('hidden');
+                    return this;
                 }
             });
         },
@@ -3131,6 +3270,94 @@
                     } else {
                         this.addCurrencyRegion((new PCT.currencyRegion()).setRoot(this._currencyRegions));
                     }
+                }
+            });
+        },
+        recommendation:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('recommendation');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _key:$('#Key', dom).get(),
+                _name:$('#Name', dom).get(),
+                _percentageKeys:$('#PercentageKeys', dom).get(),
+                _mdValue:$('#MDValue', dom).get(),
+                _referenceKey:$('#ReferenceKey', dom).get(),
+                _recommendationTitle:$('#Title', dom).get(),
+                _recommendationType:$('#RecommendationType', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _clone:$('#Clone', dom).get(),
+                _hint:$('#Hint', dom).get(),
+                _core:$('#Core', dom).get(),
+                _percentageKeysArea:$('#PercentageKeysArea', dom).get(),
+            });
+            var that = this;
+
+            $(this._recommendationType).change(function() {
+                if ($(this).val() == 'percentage') {
+                    $(that._percentageKeys).addClass('validate').change();
+                    $(that._percentageKeysArea).removeClass('hidden');
+                } else {
+                    $(that._percentageKeys).removeClass('validate').change();
+                    $(that._percentageKeysArea).addClass('hidden');
+                }
+            });
+
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Recommendation>';
+                    config += '<Hint>' + $(that._hint).val() + '</Hint>';
+                    config += '<RecommendationType>' + $(that._recommendationType).val() + '</RecommendationType>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<PercentageKeys>' + $(that._percentageKeys).val() + '</PercentageKeys>';
+                    config += '<MDValue>' + $(that._mdValue).val() + '</MDValue>';
+                    config += '<ReferenceKey>' + $(that._referenceKey).val() + '</ReferenceKey>';
+                    config += '</Recommendation>';
+                    return config;
+                }
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove recommendation?')) {
+                    if (confirm('Removing recommendation can result in broken backward compatibility. Remove recommendation?')) {
+                        $(that._body).remove();
+                    }
+                }
+            });
+            $(this._key).val(PCT.randomString(15)).change();
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divModelRecommendations')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+            $(this._name).change(function() {
+                $(that._recommendationTitle).html($(this).val());
+            });
+            $(this._name).val('').change();
+            $(this._recommendationTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._hint).val($('>Hint', initialData).text()).change();
+                    $(this._key).val('').val($('>Key', initialData).text()).change();
+                    $(this._recommendationType).val($('>RecommendationType', initialData).text()).change();
+                    $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._percentageKeys).val($('>PercentageKeys', initialData).text()).change();
+                    $(this._mdValue).val($('>MDValue', initialData).text()).change();
+                    $(this._referenceKey).val($('>ReferenceKey', initialData).text()).change();
+                    $(this._remove).addClass('hidden');
+                    $(this._settingsPane).addClass('hidden');
+                    var that = this;
+                    return this;
                 }
             });
         },

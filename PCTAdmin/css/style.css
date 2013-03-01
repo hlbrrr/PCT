@@ -90,7 +90,7 @@ body, input, select, textarea {
     padding-right: 10px;
 }
 
-.divProduct, .divRegion, .divSupportPlan, .divAuthLevel, .divCurrency, .divUser, .divFile, .divLicense {
+.divProduct, .divRegion, .divSupportPlan, .divAuthLevel, .divCurrency, .divUser, .divFile, .divLicense, .divRecommendation {
     border: 1px solid #000;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -104,11 +104,11 @@ body, input, select, textarea {
     margin-top: 10px;
 }
 
-.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans, .divModelAuthLevels, .divModelUsers, .divModelFiles, .divModelServices {
+.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans, .divModelAuthLevels, .divModelUsers, .divModelRecommendations, .divModelFiles, .divModelServices {
     margin: 10px;
 }
 
-.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divAuthLevelTitle, .divCurrencyTitle, .divUserTitle, .divFileTitle, .divLicenseTitle {
+.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divAuthLevelTitle, .divCurrencyTitle, .divUserTitle, .divRecommendationTitle, .divFileTitle, .divLicenseTitle {
     background-color: #444;
     color: white;
 }
@@ -161,7 +161,7 @@ body, input, select, textarea {
     -webkit-border-radius: 5px;
 }
 .divServicesGroup {
-    border: 1px solid #e39724;
+    border: 1px solid #000;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
     border-radius: 5px;
@@ -181,8 +181,8 @@ body, input, select, textarea {
     color: black;
 }
 .divServicesGroup>.divGroupTitle {
-    background-color: #f9a930;
-    color: black;
+    background-color: #444;
+    color: white;
 }
 
 .divCapacitiesGroup>.divGroupTitle {
@@ -290,6 +290,14 @@ body, input, select, textarea {
     -webkit-border-radius: 5px;
 }
 
+.divService {
+    border: 1px solid #dbd0d0;
+    margin-bottom: 10px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
 .divCapacity {
     border: 1px solid #dbd0d0;
     margin-bottom: 10px;
@@ -338,6 +346,12 @@ body, input, select, textarea {
     background-color: #e7e6e6;
     color: black;
 }
+
+.divServiceTitle {
+    background-color: #e7e6e6;
+    color: black;
+}
+
 
 .divCapacityTitle {
     background-color: #e7e6e6;
@@ -435,8 +449,8 @@ body, input, select, textarea {
 
 .divProductTitle>.titleTable>.titleTableCellButton:hover, .divRegionTitle>.titleTable>.titleTableCellButton:hover,
 .divSupportPlanTitle>.titleTable>.titleTableCellButton:hover, .divAuthLevelTitle>.titleTable>.titleTableCellButton:hover,
-.divCurrencyTitle>.titleTable>.titleTableCellButton:hover,
-.divUserTitle>.titleTable>.titleTableCellButton:hover, .divFileTitle>.titleTable>.titleTableCellButton:hover,
+.divUserTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyTitle>.titleTable>.titleTableCellButton:hover,
+.divRecommendationTitle>.titleTable>.titleTableCellButton:hover, .divFileTitle>.titleTable>.titleTableCellButton:hover,
 .divLicenseTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #777;
 }
@@ -445,7 +459,7 @@ body, input, select, textarea {
     background-color: #ffbc57;
 }
 .divServicesGroup>.divGroupTitle>.titleTable>.titleTableCellButton:hover {
-    background-color: #ffbc57;
+    background-color: #777;
 }
 
 .divCapacitiesGroup>.divGroupTitle>.titleTable>.titleTableCellButton:hover {
@@ -453,6 +467,10 @@ body, input, select, textarea {
 }
 
 .divModuleTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #f5f5f5;
+}
+
+.divServiceTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #f5f5f5;
 }
 
@@ -483,7 +501,7 @@ body, input, select, textarea {
     background-color: #feb5b5;
 }
 
-.moduleDrag:hover, .capacityDrag:hover, .groupDrag:hover, .userAuthLevelDrag:hover, .tierDrag:hover, .dependencyDrag:hover, .productDrag:hover {
+.serviceDrag:hover, .moduleDrag:hover, .capacityDrag:hover, .groupDrag:hover, .userAuthLevelDrag:hover, .tierDrag:hover, .dependencyDrag:hover, .productDrag:hover {
     background-color: inherit !important;
     cursor: move;
 }
@@ -647,7 +665,7 @@ input.validate.error, textarea.validate.error {
     background-color: red;
 }
 
-.divServicesGroup, .divService, .divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan, .divAuthLevel, .divCurrency, .divUser, .divFile {
+.divServicesGroup, .divService, .divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan, .divAuthLevel, .divCurrency, .divUser, .divRecommendation, .divFile {
     background-color: #fff;
 }
 

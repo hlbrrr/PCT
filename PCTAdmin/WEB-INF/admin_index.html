@@ -57,6 +57,9 @@
                 <div id="ServicesTab" bind="#ServicesWrap" class="titleTableCell titleTableCellButton tab">
                     Services
                 </div>
+                <div id="RecommendationsTab" bind="#RecommendationsWrap" class="titleTableCell titleTableCellButton tab">
+                    Recommendations
+                </div>
                 <div id="SystemTab" bind="#SystemWrap" class="titleTableCell titleTableCellButton tab">
                     System
                 </div>
@@ -127,6 +130,16 @@
             </div>
             <div id="Users" class="divModelUsers"></div>
         </div>
+        <div id="RecommendationsWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="AddRecommendation" class="titleTableCell titleTableCellButton">
+                    Add Recommendation
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="Recommendations" class="divModelRecommendations"></div>
+        </div>
         <div id="DownloadsWrap" class="hidden">
             <div class="titleTable divModelSubTitle" id="Uploader">
                 <!--<div id="AddFile" class="titleTableCell titleTableCellButton">
@@ -168,7 +181,7 @@
                 <div class="titleTableCell titleTableCellFill">
                 </div>
             </div>
-            <div id="Services" class="divModelServices"></div>
+            <div id="ModelServices" class="divModelServices divGroups divSGroups" style="padding-top: 0"></div>
         </div>
         <div id="SystemWrap" class="hidden">
             <div class="titleTable divModelSubTitle">
@@ -407,12 +420,21 @@
                             <input id="Name" autocomplete="off" class="settingInput validate"/>
                         </div>
                     </div>
-                    <div class="settingsTableRow">
+                    <div class="settingsTableRow" style="display:none">
                         <div class="settingsTableCell settingsTitle">
                             Short Name:
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <input id="ShortName" autocomplete="off" class="settingInput validate" validclass="mempty"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate groupKey"
+                                   validclass="unique" unique=".groupKey" uniqueroot=".divModelServices"/>
                         </div>
                     </div>
                     <div class="settingsTableRow">
@@ -619,6 +641,89 @@
             </div>
         </div>
         <div id="Dependencies" class="divDependencies"></div>
+    </div>
+</template>
+<template id="service">
+    <div class="divService" id="Core">
+        <div class="divServiceTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton serviceDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow" style="display:none">
+                        <div class="settingsTableCell settingsTitle">
+                            Short Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="ShortName" autocomplete="off" class="settingInput validate" validclass="mempty"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate serviceKey"
+                                   validclass="unique" unique=".serviceKey" uniqueroot=".divModelServices"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Minimum MD:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="MinMD" autocomplete="off" class="settingInput validate" validclass="summ mempty"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Maximum MD:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="MaxMD" autocomplete="off" class="settingInput validate"
+                                   validclass="summ mempty"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Hint:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <textarea id="Hint" autocomplete="off" class="settingInput validate"
+                                      validclass="mempty"></textarea>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Do Not Export:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="Hidden" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
+                </div>
+                <!--<input id="SecondarySalesRate" type="hidden" value="2"/>-->
+            </div>
+        </div>
     </div>
 </template>
 <template id="capacity">
@@ -1254,6 +1359,92 @@
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <input id="Key" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="recommendation">
+    <div class="divRecommendation" id="Core">
+        <div class="divRecommendationTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton recommendationDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate recommendationKey"
+                                   validclass="unique" unique=".recommendationKey" uniqueroot=".divModelRecommendations"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Service Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="ReferenceKey" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Description:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <textarea id="Hint" autocomplete="off" class="settingInput validate"
+                                      validclass="mempty"></textarea>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow capacitySetting">
+                        <div class="settingsTableCell settingsTitle">
+                            MD Recommendation Type:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <select id="RecommendationType" autocomplete="off" class="settingInput">
+                                <option value="static">Static</option>
+                                <option value="capacity">Capacity Based</option>
+                                <option value="percentage">Percentage</option>
+                            </select>
+                            <!--<input id="Type" autocomplete="off" class="settingInput"/>-->
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            MD Value:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="MDValue" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow hidden" id="PercentageKeysArea">
+                        <div class="settingsTableCell settingsTitle">
+                            Percentage Keys:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="PercentageKeys" autocomplete="off" class="settingInput"/>
                         </div>
                     </div>
                 </div>
