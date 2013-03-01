@@ -334,6 +334,10 @@ body, input, select, textarea {
     border-color: #eb5959;
 }
 
+.divDependency.recommendationDependency {
+    border-color: #E8E856;
+}
+
 .divDependency {
     border: 1px solid;
     margin-bottom: 10px;
@@ -378,6 +382,10 @@ body, input, select, textarea {
 
 .divDependency.excludeDependency .divDependencyTitle {
     background-color: #ff8888;
+}
+
+.divDependency.recommendationDependency .divDependencyTitle {
+    background-color: #FFF788;
 }
 
 .divDependencyTitle {
@@ -500,6 +508,10 @@ body, input, select, textarea {
 .divDependency.excludeDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #feb5b5;
 }
+.divDependency.recommendationDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #FEFCB5;
+}
+
 
 .serviceDrag:hover, .moduleDrag:hover, .capacityDrag:hover, .groupDrag:hover, .userAuthLevelDrag:hover, .tierDrag:hover, .dependencyDrag:hover, .productDrag:hover {
     background-color: inherit !important;

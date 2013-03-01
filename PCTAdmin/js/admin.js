@@ -1608,6 +1608,10 @@
                         if ($(this).hasClass('requireCapacityDependency'))
                             config += '<RequireCapacity' + $.data($(this)[0], 'pct').getAttributesString() + '>' + $.data($(this)[0], 'pct').getXML() + '</RequireCapacity>';
                     });
+                    $(that._dependencies).children().each(function() {
+                        if ($(this).hasClass('recommendationDependency'))
+                            config += '<Recommendation>' + $.data($(this)[0], 'pct').getXML() + '</Recommendation>';
+                    });
                     config += '</Dependencies>';
                     config += '</Module>';
                     return config;
@@ -1690,6 +1694,9 @@
                     $('>Dependencies>RequireCapacity', initialData).each(function() {
                         that.addDependency((new PCT.dependency()).setRoot(that._dependencies).setType('capacity').setValue($(this).attr('value')).setIncremental($(this).attr('incremental') == 'true').setFreeOfCharge($(this).attr('freeofcharge') == 'true').init($(this).text()));
                     });
+                    $('>Dependencies>Recommendation', initialData).each(function() {
+                        that.addDependency((new PCT.dependency()).setRoot(that._dependencies).setType('recommendation').init($(this).text()));
+                    });
                     return this;
                 },
                 addDependency:function(dependency) {
@@ -1760,19 +1767,24 @@
             $(this._type).change(function() {
                 if ($(this).val() == 'require') {
                     $(that._dependencyBody).addClass('requireDependency');
-                    $(that._dependencyBody).removeClass('excludeDependency').removeClass('requireCapacityDependency');
+                    $(that._dependencyBody).removeClass('excludeDependency').removeClass('requireCapacityDependency').removeClass('recommendationDependency');
                     $(that._keyTitle).html('Key(s):');
                     $(that._value).removeClass('validate').change();
                 } else if ($(this).val() == 'exclude') {
                     $(that._dependencyBody).addClass('excludeDependency');
-                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency');
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('recommendationDependency');
                     $(that._keyTitle).html('Key:');
                     $(that._value).removeClass('validate').change();
                 } else if ($(this).val() == 'capacity') {
                     $(that._dependencyBody).addClass('requireCapacityDependency');
                     $(that._keyTitle).html('Key:');
                     $(that._value).addClass('validate').change();
-                    $(that._dependencyBody).removeClass('requireDependency').removeClass('excludeDependency');
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('excludeDependency').removeClass('recommendationDependency');
+                } else if ($(this).val() == 'recommendation') {
+                    $(that._dependencyBody).addClass('recommendationDependency');
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('excludeDependency');
+                    $(that._keyTitle).html('Key:');
+                    $(that._value).removeClass('validate').change();
                 }
             });
             $(this._dependencyTitle).click(
@@ -2092,6 +2104,10 @@
                         if ($(this).hasClass('requireCapacityDependency'))
                             config += '<RequireCapacity' + $.data($(this)[0], 'pct').getAttributesString() + '>' + $.data($(this)[0], 'pct').getXML() + '</RequireCapacity>';
                     });
+                    $(that._dependencies).children().each(function() {
+                        if ($(this).hasClass('recommendationDependency'))
+                            config += '<Recommendation>' + $.data($(this)[0], 'pct').getXML() + '</Recommendation>';
+                    });
                     config += '</Dependencies>';
                     config += '</Capacity>';
                     return config;
@@ -2178,6 +2194,9 @@
                     });
                     $('>Dependencies>RequireCapacity', initialData).each(function() {
                         that.addDependency((new PCT.capacityDependency()).setRoot(that._dependencies).setType('capacity').setValue($(this).attr('value')).setIncremental($(this).attr('incremental') == 'true').setFreeOfCharge($(this).attr('freeofcharge') == 'true').init($(this).text()));
+                    });
+                    $('>Dependencies>Recommendation', initialData).each(function() {
+                        that.addDependency((new PCT.capacityDependency()).setRoot(that._dependencies).setType('recommendation').init($(this).text()));
                     });
                     $('>Tiers>Tier', initialData).each(function() {
                         that.addTier((new PCT.tier()).setRoot(that._tiers).init(this));
@@ -2328,20 +2347,25 @@
             $(this._type).change(function() {
                 if ($(this).val() == 'require') {
                     $(that._dependencyBody).addClass('requireDependency');
-                    $(that._dependencyBody).removeClass('excludeDependency').removeClass('requireCapacityDependency');
+                    $(that._dependencyBody).removeClass('excludeDependency').removeClass('requireCapacityDependency').removeClass('recommendationDependency');
                     $(that._keyTitle).html('Key(s):');
                     $(that._value).removeClass('validate').change();
                 } else if ($(this).val() == 'exclude') {
                     $(that._dependencyBody).addClass('excludeDependency');
-                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency');
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('recommendationDependency');
                     $(that._keyTitle).html('Key:');
                     $(that._value).removeClass('validate').change();
                 } else if ($(this).val() == 'capacity') {
                     $(that._dependencyBody).addClass('requireCapacityDependency');
                     $(that._keyTitle).html('Key:');
                     $(that._value).addClass('validate').change();
-                    $(that._dependencyBody).removeClass('requireDependency').removeClass('excludeDependency');
-                }
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('excludeDependency').removeClass('recommendationDependency');
+                }else if ($(this).val() == 'recommendation') {
+                    $(that._dependencyBody).addClass('recommendationDependency');
+                    $(that._keyTitle).html('Key:');
+                    $(that._value).removeClass('validate').change();
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('excludeDependency').removeClass('requireCapacityDependency');
+                 }
             });
             $(this._dependencyTitle).click(
                 function() {
