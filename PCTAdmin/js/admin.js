@@ -715,10 +715,7 @@
                     config += '</Files>';
                     config += '<Services>';
                     $(that._services).children().each(function() {
-                            console.log('pip1');
                         if ($(this).hasClass('divServicesGroup')){
-                            console.log('pip2');
-                            console.log('pip3='+$.data($(this)[0], 'pct').getXML());
                             config += $.data($(this)[0], 'pct').getXML();
                         }
                     });
@@ -3285,9 +3282,12 @@
                 _name:$('#Name', dom).get(),
                 _percentageKeys:$('#PercentageKeys', dom).get(),
                 _mdValue:$('#MDValue', dom).get(),
+                _onsiteValue:$('#OnsiteValue', dom).get(),
+                _tripValue:$('#TripValue', dom).get(),
                 _referenceKey:$('#ReferenceKey', dom).get(),
                 _recommendationTitle:$('#Title', dom).get(),
                 _recommendationType:$('#RecommendationType', dom).get(),
+                _onsiteRecommendationType:$('#OnsiteRecommendationType', dom).get(),
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
                 _remove:$('#Remove', dom).get(),
@@ -3300,10 +3300,10 @@
 
             $(this._recommendationType).change(function() {
                 if ($(this).val() == 'percentage') {
-                    $(that._percentageKeys).addClass('validate').change();
+                    //$(that._percentageKeys).addClass('validate').change();
                     $(that._percentageKeysArea).removeClass('hidden');
                 } else {
-                    $(that._percentageKeys).removeClass('validate').change();
+                    //$(that._percentageKeys).removeClass('validate').change();
                     $(that._percentageKeysArea).addClass('hidden');
                 }
             });
@@ -3313,10 +3313,13 @@
                     var config = '<Recommendation>';
                     config += '<Hint>' + $(that._hint).val() + '</Hint>';
                     config += '<RecommendationType>' + $(that._recommendationType).val() + '</RecommendationType>';
+                    config += '<OnsiteRecommendationType>' + $(that._onsiteRecommendationType).val() + '</OnsiteRecommendationType>';
                     config += '<Key>' + $(that._key).val() + '</Key>';
                     config += '<Name>' + $(that._name).val() + '</Name>';
                     config += '<PercentageKeys>' + $(that._percentageKeys).val() + '</PercentageKeys>';
                     config += '<MDValue>' + $(that._mdValue).val() + '</MDValue>';
+                    config += '<OnsiteValue>' + $(that._onsiteValue).val() + '</OnsiteValue>';
+                    config += '<TripValue>' + $(that._tripValue).val() + '</TripValue>';
                     config += '<ReferenceKey>' + $(that._referenceKey).val() + '</ReferenceKey>';
                     config += '</Recommendation>';
                     return config;
@@ -3350,9 +3353,12 @@
                     $(this._hint).val($('>Hint', initialData).text()).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();
                     $(this._recommendationType).val($('>RecommendationType', initialData).text()).change();
+                    $(this._onsiteRecommendationType).val($('>OnsiteRecommendationType', initialData).text()).change();
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._percentageKeys).val($('>PercentageKeys', initialData).text()).change();
                     $(this._mdValue).val($('>MDValue', initialData).text()).change();
+                    $(this._onsiteValue).val($('>OnsiteValue', initialData).text()).change();
+                    $(this._tripValue).val($('>TripValue', initialData).text()).change();
                     $(this._referenceKey).val($('>ReferenceKey', initialData).text()).change();
                     $(this._remove).addClass('hidden');
                     $(this._settingsPane).addClass('hidden');
