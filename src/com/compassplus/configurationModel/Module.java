@@ -27,6 +27,7 @@ public class Module {
     private String hint;
     private Double weight;
     private Double secondarySalesPrice;
+    private ArrayList<String> recommendations = new ArrayList<String>(0);
     private ArrayList<String> requireModules = new ArrayList<String>(0);
     private ArrayList<String> excludeModules = new ArrayList<String>(0);
     private HashMap<String, RequireCapacity> requireCapacities = new HashMap<String, RequireCapacity>(0);
@@ -59,6 +60,7 @@ public class Module {
             this.setWeight(xut.getNode("Weight", initialData));
             this.setHint(xut.getNode("Hint", initialData));
             this.setRequireModules(xut.getNodes("Dependencies/Require", initialData));
+            this.setRecommendations(xut.getNodes("Dependencies/Recommendation", initialData));
             this.setExcludeModules(xut.getNodes("Dependencies/Exclude", initialData));
             this.setRequireCapacities(xut.getNodes("Dependencies/RequireCapacity", initialData));
 
@@ -128,6 +130,22 @@ public class Module {
         }
     }
 
+    private void setRecommendations(NodeList recommendations) {
+        this.getRecommendations().clear();
+        if (recommendations.getLength() > 0) {
+
+            log.info("Found " + recommendations.getLength() + " recommendation(s)");
+            for (int i = 0; i < recommendations.getLength(); i++) {
+                try {
+                    this.getRecommendations().add(xut.getString(recommendations.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getRecommendations().size() + " recommendation(s)");
+        }
+    }
+
     private void setExcludeModules(NodeList excludeModules) {
         this.getExcludeModules().clear();
         if (excludeModules.getLength() > 0) {
@@ -163,6 +181,10 @@ public class Module {
 
     public ArrayList<String> getRequireModules() {
         return requireModules;
+    }
+
+    public ArrayList<String> getRecommendations() {
+        return recommendations;
     }
 
     public ArrayList<String> getExcludeModules() {

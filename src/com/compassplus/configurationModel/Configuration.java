@@ -24,6 +24,8 @@ public class Configuration {
     private String expirationFormat = "dd/MM/yyyy";
     private Map<String, Currency> currencies = new LinkedHashMap<String, Currency>();
     private Map<String, Region> regions = new LinkedHashMap<String, Region>();
+    private ServicesGroup servicesRoot = new ServicesGroup("Modules", "");
+    private Map<String, Service> services = new LinkedHashMap<String, Service>();
     private Map<String, SupportPlan> supportPlans = new LinkedHashMap<String, SupportPlan>();
     private Map<String, AuthLevel> authLevels = new LinkedHashMap<String, AuthLevel>();
 
@@ -68,6 +70,7 @@ public class Configuration {
             this.checkExpiration(xut.getNode("/root/Expiration", initialData));
             this.setProducts(xut.getNodes("/root/Products/Product", initialData));
             this.setRegions(xut.getNodes("/root/Regions/Region", initialData));
+            this.setServices(xut.getNode("/root/Services", initialData));
             this.setCurrencies(xut.getNodes("/root/Currencies/Currency", initialData));
             this.setSupportPlans(xut.getNodes("/root/SupportPlans/SupportPlan", initialData));
             this.setAuthLevels(xut.getNodes("/root/AuthLevels/AuthLevel", initialData));
@@ -274,6 +277,60 @@ public class Configuration {
         if (this.getRegions().size() == 0) {
             throw new PCTDataFormatException("Regions are not defined correctly");
         }
+    }
+
+    public Map<String, Service> getServices() {
+        return this.services;
+    }
+
+    public ServicesGroup getServicesRoot() {
+        return this.servicesRoot;
+    }
+
+    private void setServices(Node servicesNode) {
+        setServices(servicesNode, null);
+    }
+
+    private void setServices(Node servicesNode, ServicesGroup servicesGroup) {
+        if (servicesGroup == null) {
+            this.getServices().clear();
+            servicesGroup = this.getServicesRoot();
+            servicesGroup.getServices().clear();
+            servicesGroup.getGroups().clear();
+        }
+
+        log.info("Parsing services group");
+        NodeList services = xut.getNodes("Service", servicesNode);
+        if (services.getLength() > 0) {
+            log.info("Found " + services.getLength() + " service(s)");
+            for (int i = 0; i < services.getLength(); i++) {
+                try {
+                    Service tmpService = new Service(services.item(i));
+                    servicesGroup.addService(tmpService.getKey(), tmpService);
+                    this.getServices().put(tmpService.getKey(), tmpService);
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + servicesGroup.getServices().size() + " service(s)");
+        }
+
+        NodeList groups = xut.getNodes("Group", servicesNode);
+        if (groups.getLength() > 0) {
+            log.info("Found " + groups.getLength() + " subgroup(s)");
+            for (int i = 0; i < groups.getLength(); i++) {
+                try {
+                    ServicesGroup tmpServicesGroup = new ServicesGroup(xut.getNode("Key", groups.item(i)), xut.getNode("Name", groups.item(i)), xut.getNode("Hint", groups.item(i)), xut.getNode("Hidden", groups.item(i)));
+                    servicesGroup.addServicesGroup(tmpServicesGroup);
+                    this.setServices(xut.getNode("Services", groups.item(i)), tmpServicesGroup);
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + servicesGroup.getGroups().size() + " subgroup(s)");
+        }
+
+        log.info("Services group successfully parsed: \nName: " + servicesGroup.getName());
     }
 
     public Integer getBuild() {

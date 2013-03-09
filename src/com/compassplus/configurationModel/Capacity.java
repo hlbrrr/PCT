@@ -27,6 +27,7 @@ public class Capacity {
     private String hint;
     private Integer type;
     private ArrayList<String> requireModules = new ArrayList<String>(0);
+    private ArrayList<String> recommendations = new ArrayList<String>(0);
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
     private ArrayList<Tier> tiers = new ArrayList<Tier>();
@@ -68,6 +69,7 @@ public class Capacity {
                 this.setTiers(xut.getNodes("Tiers/Tier", initialData));
             }
             this.setRequireModules(xut.getNodes("Dependencies/Require", initialData));
+            this.setRecommendations(xut.getNodes("Dependencies/Recommendation", initialData));
 
             log.info("Capacity successfully parsed: \nKey: " + this.getKey() +
                     "\nName: " + this.getName() +
@@ -126,8 +128,28 @@ public class Capacity {
         }
     }
 
+    private void setRecommendations(NodeList recommendations) {
+        this.getRecommendations().clear();
+        if (recommendations.getLength() > 0) {
+
+            log.info("Found " + recommendations.getLength() + " recommendation(s)");
+            for (int i = 0; i < recommendations.getLength(); i++) {
+                try {
+                    this.getRecommendations().add(xut.getString(recommendations.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getRecommendations().size() + " recommendation(s)");
+        }
+    }
+
     public ArrayList<String> getRequireModules() {
         return requireModules;
+    }
+
+    public ArrayList<String> getRecommendations() {
+        return recommendations;
     }
 
     public Boolean isHidden() {

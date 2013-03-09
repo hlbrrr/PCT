@@ -22,6 +22,8 @@ public class Region {
     private String key;
     private String name;
     private Double rate;
+    private Double mdRate;
+    private Double onsiteDailyCost;
     private String defaultCurrencyName;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
@@ -38,13 +40,17 @@ public class Region {
             this.setKey(xut.getNode("Key", initialData));
             this.setName(xut.getNode("Name", initialData));
             this.setRate(xut.getNode("Rate", initialData));
+            this.setMDRate(xut.getNode("MDRate", initialData));
+            this.setOnsiteDailyCost(xut.getNode("OnsiteDailyCost", initialData));
             this.setDefaultCurrencyName(xut.getNode("DefaultCurrency", initialData));
             this.setRateProducts(xut.getNodes("Products/Product", initialData));
 
             log.info("Region successfully parsed: \nName: " + this.getName() +
                     "\nKey: " + this.getKey() +
                     "\nDefaultCurrency: " + this.getDefaultCurrencyName() +
-                    "\nRate: " + this.getRate(null));
+                    "\nRate: " + this.getRate(null) +
+                    "\nMDRate: " + this.getMDRate(null) +
+                    "\nOnsiteDailyCost: " + this.getOnsiteDailyCost(null));
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Region is not defined correctly: \nName: " + this.getName(), e.getDetails());
         }
@@ -58,14 +64,46 @@ public class Region {
         }
     }
 /*    public Double getRate() {
-        return rate;
-    }*/
+    return rate;
+}*/
+
+    public Double getMDRate(String product) {
+        /*if (product == null || mdRateProducts.get(product) == null) {*/
+            return mdRate;
+       /* } else {
+            return mdRateProducts.get(product);
+        }*/
+    }
+
+    public Double getOnsiteDailyCost(String product) {
+        /*if (product == null || onsiteDailyCostProducts.get(product) == null) {*/
+        return onsiteDailyCost;
+        /* } else {
+            return onsiteDailyCostProducts.get(product);
+        }*/
+    }
 
     private void setRate(Node rate) throws PCTDataFormatException {
         try {
             this.rate = xut.getDouble(rate);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Region rate is not defined correctly", e.getDetails());
+        }
+    }
+
+    private void setMDRate(Node mdRate) throws PCTDataFormatException {
+        try {
+            this.mdRate = xut.getDouble(mdRate, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Region MDRate is not defined correctly", e.getDetails());
+        }
+    }
+
+    private void setOnsiteDailyCost(Node onsiteDailyCost) throws PCTDataFormatException {
+        try {
+            this.onsiteDailyCost = xut.getDouble(onsiteDailyCost, true);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Region onsite daily cost is not defined correctly", e.getDetails());
         }
     }
 
