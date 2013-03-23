@@ -31,6 +31,8 @@ public class Proposal {
     private String projectName = "";
     private Double currencyRate;
     private Map<String, Product> products = new LinkedHashMap<String, Product>();
+    private Map<String, Service> services = new HashMap<String, Service>();
+
     private Map<String, String> selectedAls = new HashMap<String, String>();
     private Map<String, String> alsTxt = new HashMap<String, String>();
 
@@ -110,6 +112,7 @@ public class Proposal {
             this.setSelectedAls(xut.getNodes("/root/Levels/Level", initialData));
 
             this.setProducts(xut.getNodes("/root/Products/Product", initialData));
+            this.setServices(xut.getNodes("/root/Services/Service", initialData));
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Bad proposal", e.getDetails());
         }
@@ -310,6 +313,34 @@ public class Proposal {
             log.info("Successfully parsed " + this.getProducts().size() + " product(s)");
         }
     }
+    public Map<String, Service> getServices() {
+        return this.services;
+    }
+
+    private void setServices(NodeList services) throws PCTDataFormatException {
+        this.getServices().clear();
+        if (services.getLength() > 0) {
+            log.info("Found " + services.getLength() + " service(s)");
+            for (int i = 0; i < services.getLength(); i++) {
+                try {
+                    Service tmpService = new Service(services.item(i), this.getConfig().getServices());
+                    this.getServices().put(tmpService.getKey(), tmpService);
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getServices().size() + " services(s)");
+        }
+    }
+
+    public void addService(Service service) {
+        this.getServices().put(service.getKey(), service);
+    }
+
+    public void delService(Service service) {
+        this.getServices().remove(service.getKey());
+
+    }
 
     public void addProduct(Product product) {
         this.getProducts().put(product.getName(), product);
@@ -372,6 +403,14 @@ public class Proposal {
                 sb.append(p.toString());
             }
             sb.append("</Products>");
+        }
+
+        if (this.getServices() != null && this.getServices().size() > 0) {
+            sb.append("<Services>");
+            for (Service s : this.getServices().values()) {
+                sb.append(s.toString());
+            }
+            sb.append("</Services>");
         }
         sb.append("</root>");
         return sb.toString();
