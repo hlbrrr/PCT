@@ -31,7 +31,6 @@ public class Proposal {
     private String projectName = "";
     private Double currencyRate;
     private Map<String, Product> products = new LinkedHashMap<String, Product>();
-    private Map<String, Service> services = new HashMap<String, Service>();
 
     private Map<String, String> selectedAls = new HashMap<String, String>();
     private Map<String, String> alsTxt = new HashMap<String, String>();
@@ -113,9 +112,7 @@ public class Proposal {
             this.setSelectedAls(xut.getNodes("/root/Levels/Level", initialData));
 
             this.setProducts(xut.getNodes("/root/Products/Product", initialData));
-            this.setServices(xut.getNodes("/root/Services/Service", initialData));
-
-            this.setPSQuote(xut.getNode("/root/PSQuote", initialData));
+            this.setPSQuote(initialData);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Bad proposal", e.getDetails());
         }
@@ -317,39 +314,14 @@ public class Proposal {
         }
     }
 
-    public Map<String, Service> getServices() {
-        return this.services;
-    }
-
     private void setServices(NodeList services) throws PCTDataFormatException {
-        this.getServices().clear();
-        if (services.getLength() > 0) {
-            log.info("Found " + services.getLength() + " service(s)");
-            for (int i = 0; i < services.getLength(); i++) {
-                try {
-                    Service tmpService = new Service(services.item(i), this.getConfig().getServices());
-                    this.getServices().put(tmpService.getKey(), tmpService);
-                } catch (PCTDataFormatException e) {
-                    log.error(e);
-                }
-            }
-            log.info("Successfully parsed " + this.getServices().size() + " services(s)");
+    }
+
+    private void setPSQuote(Document initialData) throws PCTDataFormatException {
+        if (xut.getNode("/root/PSQuotePresent", initialData) != null) {
+            NodeList services = xut.getNodes("/root/Services/Service", initialData);
+            this.psQuote = new PSQuote(services, this);
         }
-    }
-
-    private void setPSQuote(Node psQuote) throws PCTDataFormatException {
-        if (psQuote != null) {
-            this.psQuote = new PSQuote(psQuote, this);
-        }
-    }
-
-    public void addService(Service service) {
-        this.getServices().put(service.getKey(), service);
-    }
-
-    public void delService(Service service) {
-        this.getServices().remove(service.getKey());
-
     }
 
     public void addProduct(Product product) {
@@ -414,20 +386,11 @@ public class Proposal {
             }
             sb.append("</Products>");
         }
-
-        if (this.getServices() != null && this.getServices().size() > 0) {
-            sb.append("<Services>");
-            for (Service s : this.getServices().values()) {
-                sb.append(s.toString());
-            }
-            sb.append("</Services>");
-        }
         if (this.getPSQuote() != null) {
-            sb.append("<PSQuote>");
-            this.getPSQuote().toString();
-            sb.append("</PSQuote>");
+            sb.append(this.getPSQuote().toString());
         }
         sb.append("</root>");
+        System.out.println(sb.toString());
         return sb.toString();
     }
 
