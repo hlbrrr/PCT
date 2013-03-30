@@ -24,6 +24,7 @@ public class ProposalForm {
     private ProductForm currentProductForm;
     private DecimalFormat df = new DecimalFormat();
     private SummaryForm summaryForm;
+    private PSQuoteForm psForm;
     private AuthLevelsForm authForm;
     private boolean changed = false;
     private PCTChangedListener titleUpdater;
@@ -43,8 +44,8 @@ public class ProposalForm {
                 }
             }
         });
-
         addSummaryPage(proposal, titleUpdater);
+        addPSForm();
         addAuthPage(proposal, titleUpdater/*new PCTChangedListener(){
             public void act(Object src) {
                 int ind = productsTabs.indexOfComponent((Component) (summaryForm.getRoot()));
@@ -208,5 +209,37 @@ public class ProposalForm {
 
     private JFrame getFrame() {
         return frame;
+    }
+
+    public void addPSForm() {
+        if (proposal.getPSQuote() != null) {
+            psForm = new PSQuoteForm(proposal, new PCTChangedListener() {
+                public void act(Object src) {
+                    if (src instanceof ProductForm) {
+                        titleUpdater.act(proposal);
+                        summaryForm.update();
+                    }
+                }
+
+                public void setData(String key, Object data) {
+                    //To change body of implemented methods use File | Settings | File Templates.
+                }
+
+                public Object getData(String key) {
+                    return null;  //To change body of implemented methods use File | Settings | File Templates.
+                }
+            }, df, getFrame());
+
+            //productsTabs.addTab("PS quote", psForm.getRoot());
+            productsTabs.insertTab("PS quote", null, psForm.getRoot(), null, 1);
+
+            productsTabs.setSelectedComponent(psForm.getRoot());
+        }
+    }
+
+    public void delPSForm() {
+        this.getProposal().delPSQuote();
+        productsTabs.remove(psForm.getRoot());
+        summaryForm.update();
     }
 }

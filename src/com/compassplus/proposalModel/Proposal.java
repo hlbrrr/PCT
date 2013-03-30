@@ -41,20 +41,21 @@ public class Proposal {
     private com.compassplus.configurationModel.Region region;
     private com.compassplus.configurationModel.Currency currency;
     private SupportPlan supportPlan;
+    private PSQuote psQuote = null;
 
     public Proposal(Configuration config) {
         this.setConfig(config);
         userName = config.getUserName();
-        for(AuthLevel l : config.getAuthLevels().values()){
+        for (AuthLevel l : config.getAuthLevels().values()) {
             this.alsTxt.put(l.getKey(), l.getMemoText());
         }
     }
 
-    public Map<String, String> getSelectedAls(){
+    public Map<String, String> getSelectedAls() {
         return this.selectedAls;
     }
 
-    public Map<String, String> getAlsTxt(){
+    public Map<String, String> getAlsTxt() {
         return this.alsTxt;
     }
 
@@ -70,7 +71,7 @@ public class Proposal {
                 Double selectedPriority = this.getConfig().getAuthLevels().get(alkey).getLevels().get(selectedValue).getPriority();
                 String userValue = this.getConfig().getUserLevels().get(alkey).getSubKey();
                 Double userPriority = this.getConfig().getAuthLevels().get(alkey).getLevels().get(userValue).getPriority();
-                if (userPriority<selectedPriority) {
+                if (userPriority < selectedPriority) {
                     return false;
                 }
             }
@@ -113,6 +114,8 @@ public class Proposal {
 
             this.setProducts(xut.getNodes("/root/Products/Product", initialData));
             this.setServices(xut.getNodes("/root/Services/Service", initialData));
+
+            this.setPSQuote(xut.getNode("/root/PSQuote", initialData));
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Bad proposal", e.getDetails());
         }
@@ -160,7 +163,7 @@ public class Proposal {
                     String text = xut.getString(xut.getNode("Text", levels.item(i)), true);
 
 
-                    if(getConfig().getAuthLevels().containsKey(akey)&&getConfig().getAuthLevels().get(akey).getLevels().containsKey(asubkey)){
+                    if (getConfig().getAuthLevels().containsKey(akey) && getConfig().getAuthLevels().get(akey).getLevels().containsKey(asubkey)) {
                         this.getSelectedAls().put(akey, asubkey);
                         this.getAlsTxt().put(akey, text);
                     }
@@ -313,6 +316,7 @@ public class Proposal {
             log.info("Successfully parsed " + this.getProducts().size() + " product(s)");
         }
     }
+
     public Map<String, Service> getServices() {
         return this.services;
     }
@@ -330,6 +334,12 @@ public class Proposal {
                 }
             }
             log.info("Successfully parsed " + this.getServices().size() + " services(s)");
+        }
+    }
+
+    private void setPSQuote(Node psQuote) throws PCTDataFormatException {
+        if (psQuote != null) {
+            this.psQuote = new PSQuote(psQuote, this);
         }
     }
 
@@ -412,6 +422,11 @@ public class Proposal {
             }
             sb.append("</Services>");
         }
+        if (this.getPSQuote() != null) {
+            sb.append("<PSQuote>");
+            this.getPSQuote().toString();
+            sb.append("</PSQuote>");
+        }
         sb.append("</root>");
         return sb.toString();
     }
@@ -447,5 +462,19 @@ public class Proposal {
             primary &= !p.getSecondarySale();
         }
         return primary;
+    }
+
+    public PSQuote getPSQuote() {
+        return this.psQuote;
+    }
+
+    public void createPSQuote() {
+        if (this.psQuote == null) {
+            this.psQuote = new PSQuote(this);
+        }
+    }
+
+    public void delPSQuote() {
+        this.psQuote = null;
     }
 }

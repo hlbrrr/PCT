@@ -71,6 +71,9 @@ public class MainForm {
     private JMenuItem about;
     private JMenuItem rollUp;
 
+    private JMenuItem addPSQuote;
+    private JMenuItem delPSQuote;
+
     private JMenuItem addProduct;
     private JMenuItem delProduct;
 
@@ -842,6 +845,22 @@ public class MainForm {
                 }
             }
         });
+        addPSQuote = new JMenuItem("Add PS quote");
+        delPSQuote = new JMenuItem("Remove PS quote");
+        addPSQuote.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                getCurrentProposalForm().getProposal().createPSQuote();
+                getCurrentProposalForm().addPSForm();
+            }
+        });
+        delPSQuote.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                getCurrentProposalForm().delPSForm();
+            }
+        });
+
+
+
         addProduct = new JMenuItem("Add product");
         addProduct.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -874,6 +893,8 @@ public class MainForm {
         });
 
         proposalMenu = new JMenu("Proposal");
+        proposalMenu.add(addPSQuote);
+        proposalMenu.add(delPSQuote);
         proposalMenu.setEnabled(false);
         proposalMenu.add(addProduct);
         proposalMenu.add(delProduct);
@@ -892,6 +913,13 @@ public class MainForm {
                     getDelProduct().setEnabled(false);
                 }
 
+                if (getCurrentProposalForm() != null && getCurrentProposalForm().getProposal().getPSQuote() == null) {
+                    addPSQuote.setEnabled(true);
+                    delPSQuote.setEnabled(false);
+                } else {
+                    addPSQuote.setEnabled(false);
+                    delPSQuote.setEnabled(true);
+                }
 
                 if (getCurrentProposalForm() != null && getCurrentProposalForm().getProposal().getProducts().size() > 0) {
                     rollUp.setEnabled(true);
@@ -910,6 +938,14 @@ public class MainForm {
 
     private JMenuItem getAddProduct() {
         return addProduct;
+    }
+
+    private JMenuItem getAddPSQuote() {
+        return addPSQuote;
+    }
+
+    private JMenuItem getDelPSQuote() {
+        return delPSQuote;
     }
 
     private void initMainPanel() {
