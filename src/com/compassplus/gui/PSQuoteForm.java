@@ -1,5 +1,6 @@
 package com.compassplus.gui;
 
+import com.compassplus.configurationModel.Recommendation;
 import com.compassplus.configurationModel.Service;
 import com.compassplus.configurationModel.ServicesGroup;
 import com.compassplus.proposalModel.Proposal;
@@ -286,7 +287,7 @@ public class PSQuoteForm {
     }
 
     private void getFormFromService(JPanel parent, Service s) {
-        /*parent.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+        parent.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         GridBagConstraints cg = new GridBagConstraints();
         cg.gridx = 0;
         cg.gridy = 0;
@@ -296,9 +297,13 @@ public class PSQuoteForm {
         parent.setLayout(new GridBagLayout());
 
         boolean first = true;
-        for (Service s : sg.getServices().values()) {
-            JPanel service = new JPanel();
-            getFormFromService(service, s);
+        for (Recommendation r : proposal.getConfig().getRecommendations().values()) {
+            if(!r.getServiceKey().equals(s.getKey())){
+                 continue;
+            }else{
+            }
+            JPanel recommendation = new JPanel();
+            getFormFromRecommendation(recommendation, r);
             JPanel labelPanel = new JPanel();
             labelPanel.setLayout(new GridBagLayout());
             labelPanel.setBorder(new EmptyBorder(first ? 10 : 5, 5, 5, 5));
@@ -307,7 +312,7 @@ public class PSQuoteForm {
             JLabel mm = new JLabel("<html><b>[~]</b></html>\"");
             mm.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             mm.setBorder(new EmptyBorder(0, 4, 2, 2));
-            final JPanel lnk = service;
+            final JPanel lnk = recommendation;
             mm.addMouseListener(new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
                     final JLabel that = ((JLabel) e.getSource());
@@ -343,14 +348,14 @@ public class PSQuoteForm {
             labelPanel.add(mm, c);
             c.gridx++;
             c.weightx = 1.0;
-            JLabel gl = new JLabel("<html><b>" + s.getName() + "</b></html>");
+            JLabel gl = new JLabel("<html><b>" + r.getName() + "</b></html>");
             gl.setBorder(new EmptyBorder(0, 4, 2, 0));
             labelPanel.add(gl, c);
-            if (!"".equals(s.getHint())) {
+            if (!"".equals(r.getHint())) {
                 JLabel hl = new JLabel("<html><b>[?]</b></html>");
                 hl.setBorder(new EmptyBorder(0, 4, 2, 2));
                 hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                final String about = s.getHint();
+                final String about = r.getHint();
                 hl.addMouseListener(new MouseListener() {
                     public void mouseClicked(MouseEvent e) {
                         SwingUtilities.invokeLater(new Runnable() {
@@ -376,7 +381,7 @@ public class PSQuoteForm {
                 c.weightx = 0;
                 labelPanel.add(hl, c);
             }
-            if (!"".equals(s.getHint())) {
+            if (!"".equals(r.getHint())) {
                 c.gridwidth = 3;
             } else {
                 c.gridwidth = 2;
@@ -384,10 +389,14 @@ public class PSQuoteForm {
             c.weightx = 1;
             c.gridy++;
             c.gridx = 0;
-            labelPanel.add(service, c);
+            labelPanel.add(recommendation, c);
             parent.add(labelPanel, cg);
             cg.gridy++;
-        }          */
+        }
+    }
+
+    private void getFormFromRecommendation(JPanel parent, Recommendation r) {
+
     }
 
     public JPanel getRoot() {

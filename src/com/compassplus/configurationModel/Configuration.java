@@ -24,6 +24,7 @@ public class Configuration {
     private String expirationFormat = "dd/MM/yyyy";
     private Map<String, Currency> currencies = new LinkedHashMap<String, Currency>();
     private Map<String, Region> regions = new LinkedHashMap<String, Region>();
+    private Map<String, Recommendation> recommendations = new LinkedHashMap<String, Recommendation>();
     private ServicesGroup servicesRoot = new ServicesGroup("Modules", "");
     private Map<String, Service> services = new LinkedHashMap<String, Service>();
     private Map<String, SupportPlan> supportPlans = new LinkedHashMap<String, SupportPlan>();
@@ -70,6 +71,7 @@ public class Configuration {
             this.checkExpiration(xut.getNode("/root/Expiration", initialData));
             this.setProducts(xut.getNodes("/root/Products/Product", initialData));
             this.setRegions(xut.getNodes("/root/Regions/Region", initialData));
+            this.setRecommendations(xut.getNodes("/root/Recommendations/Recommendation", initialData));
             this.setServices(xut.getNode("/root/Services", initialData));
             this.setCurrencies(xut.getNodes("/root/Currencies/Currency", initialData));
             this.setSupportPlans(xut.getNodes("/root/SupportPlans/SupportPlan", initialData));
@@ -276,6 +278,26 @@ public class Configuration {
         }
         if (this.getRegions().size() == 0) {
             throw new PCTDataFormatException("Regions are not defined correctly");
+        }
+    }
+
+    public Map<String, Recommendation> getRecommendations() {
+        return this.recommendations;
+    }
+
+    private void setRecommendations(NodeList recommendations) throws PCTDataFormatException {
+        this.getRecommendations().clear();
+        if (recommendations.getLength() > 0) {
+            log.info("Found " + recommendations.getLength() + " recommendation(s)");
+            for (int i = 0; i < recommendations.getLength(); i++) {
+                try {
+                    Recommendation tmpRecommendation = new Recommendation(recommendations.item(i));
+                    this.getRecommendations().put(tmpRecommendation.getKey(), tmpRecommendation);
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getRecommendations().size() + " recommendations(s)");
         }
     }
 
