@@ -6,6 +6,7 @@ import com.compassplus.configurationModel.ServicesGroup;
 import com.compassplus.proposalModel.Proposal;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
@@ -37,7 +38,7 @@ public class PSQuoteForm {
         initForm();
     }
 
-    public void update(){
+    public void update() {
         mainPanel.removeAll();
         initForm();
     }
@@ -414,6 +415,184 @@ public class PSQuoteForm {
 
     private void getFormFromRecommendation(JPanel parent, com.compassplus.proposalModel.Service s) {
 
+        JPanel settingsWrap = new JPanel();
+        parent.setLayout(new BoxLayout(parent, BoxLayout.Y_AXIS));
+        //JScrollPane scroll = new JScrollPane(settingsWrap);
+        parent.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+        parent.setBorder(new EmptyBorder(4, 0, 4, 0));
+        //parent.add(settingsWrap, BorderLayout.CENTER);
+
+        settingsWrap.setLayout(new GridBagLayout());
+        JPanel productsTable = new JPanel(new GridBagLayout());
+        productsTable.setMinimumSize(new Dimension(0, 0));
+        productsTable.setBorder(new EmptyBorder(0, 0, 4, 0));
+        {
+            GridBagConstraints c = new GridBagConstraints();
+            c.gridy = 1;
+            c.gridx = 0;
+            c.weightx = 1;
+            c.weighty = 1;
+            c.gridwidth = 1;
+            parent.add(productsTable, c);
+        }
+        {
+            GridBagConstraints c = new GridBagConstraints();
+            c.gridy = 0;
+            c.weightx = 1;
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.anchor = GridBagConstraints.PAGE_START;
+            Border border = BorderFactory.createMatteBorder(1, 1, 0, 0, Color.black);
+            Border lborder = BorderFactory.createMatteBorder(1, 1, 0, 1, Color.black);
+            {
+                c.gridx = 0;
+                JLabel label = new JLabel(" ");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                productsTable.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("M/Ds");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                productsTable.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("Onsite days");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                productsTable.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("Onsite trips");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(lborder);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                productsTable.add(panel, c);
+            }
+            c.gridy++;
+            // second row
+            {
+                c.gridx = 0;
+                JLabel label = new JLabel("Recommended");
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+               // panel.setPreferredSize(new Dimension(0, 32));
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.white);
+                productsTable.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("99");
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                //panel.setPreferredSize(new Dimension(0, 32));
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.white);
+                productsTable.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("99");
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                //panel.setPreferredSize(new Dimension(0, 32));
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.white);
+                productsTable.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("99");
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                //panel.setPreferredSize(new Dimension(0, 32));
+                panel.add(label);
+                panel.setBorder(lborder);
+                panel.setBackground(Color.white);
+                productsTable.add(panel, c);
+            }
+
+
+
+            c.gridy++;
+            // total row
+            border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
+            lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
+            {
+                c.gridx = 0;
+                JLabel label = new JLabel("Total");
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                //panel.setPreferredSize(new Dimension(0, 32));
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.white);
+                productsTable.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("99");
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                //panel.setPreferredSize(new Dimension(0, 32));
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.white);
+                productsTable.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("99");
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                //panel.setPreferredSize(new Dimension(0, 32));
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.white);
+                productsTable.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("99");
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+               // panel.setPreferredSize(new Dimension(0, 32));
+                panel.add(label);
+                panel.setBorder(lborder);
+                panel.setBackground(Color.white);
+                productsTable.add(panel, c);
+            }
+        }
     }
 
     public JPanel getRoot() {

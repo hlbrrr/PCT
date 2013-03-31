@@ -1155,7 +1155,7 @@ public class SummaryForm {
                             supportDiscountSpinner.setAlignmentX(Component.RIGHT_ALIGNMENT);
                             panel.setPreferredSize(new Dimension(0, 32));
                             panel.add(panelW);
-                            panel.setBorder(border);
+                            panel.setBorder(lborder);
                             panel.setBackground(Color.white);
                             productsTable.add(panel, c);
                         }
