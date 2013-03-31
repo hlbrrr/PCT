@@ -1,9 +1,6 @@
 package com.compassplus.proposalModel;
 
-import com.compassplus.configurationModel.CapacitiesGroup;
-import com.compassplus.configurationModel.License;
-import com.compassplus.configurationModel.ModulesGroup;
-import com.compassplus.configurationModel.RequireCapacity;
+import com.compassplus.configurationModel.*;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
@@ -50,7 +47,7 @@ public class Product {
         setDefaultLicense();
     }
 
-    public Product(com.compassplus.configurationModel.Product product, Proposal proposal) {
+    public Product(com.compassplus.configurationModel.Product product, Proposal proposal) throws PCTDataFormatException {
         this.proposal = proposal;
         this.setProduct(product);
         this.setCapacities(product);
@@ -133,6 +130,7 @@ public class Product {
                 try {
                     Module tmpModule = new Module(modules.item(i), this.getProduct().getModules());
                     this.getModules().put(tmpModule.getKey(), tmpModule);
+                    addModuleRecommendation(tmpModule.getKey());
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
@@ -141,9 +139,37 @@ public class Product {
         }
     }
 
-    public void addModule(com.compassplus.configurationModel.Module module, String key) {
+    public void addModule(com.compassplus.configurationModel.Module module, String key) throws PCTDataFormatException {
         Module tmpModule = new Module(module, key);
         this.getModules().put(tmpModule.getKey(), tmpModule);
+        addModuleRecommendation(key);
+    }
+
+
+    private void addModuleRecommendation(String key) throws PCTDataFormatException {
+        com.compassplus.configurationModel.Module module = proposal.getConfig().getProducts().get(this.getName()).getModules().get(key);
+        if (module.getRecommendations().size() > 0) {
+            for (String rKey : module.getRecommendations()) {
+                Recommendation r = proposal.getConfig().getRecommendations().get(rKey);
+                if (r != null) {
+                    proposal.getPSQuote().addService(new Service(r, proposal.getConfig()));
+                }
+            }
+        }else{
+        }
+    }
+
+    private void addCapacityRecommendation(String key) throws PCTDataFormatException {
+        com.compassplus.configurationModel.Capacity capacity = proposal.getConfig().getProducts().get(this.getName()).getCapacities().get(key);
+        if (capacity.getRecommendations().size() > 0) {
+            for (String rKey : capacity.getRecommendations()) {
+                Recommendation r = proposal.getConfig().getRecommendations().get(rKey);
+                if (r != null) {
+                    proposal.getPSQuote().addService(new Service(r, proposal.getConfig()));
+                }
+            }
+        }else{
+        }
     }
 
     public Map<String, Capacity> getCapacities() {
@@ -158,6 +184,7 @@ public class Product {
                 try {
                     Capacity tmpCapacity = new Capacity(capacities.item(i), this.getProduct().getCapacities());
                     this.getCapacities().put(tmpCapacity.getKey(), tmpCapacity);
+                    addCapacityRecommendation(tmpCapacity.getKey());
                 } catch (PCTDataFormatException e) {
                     log.error(e);
                 }
@@ -173,12 +200,12 @@ public class Product {
     } else if (firstModule) {
         checkBoxesToCheck.add(mc);
     }*/
-    private void setModules(com.compassplus.configurationModel.Product product) {
+    private void setModules(com.compassplus.configurationModel.Product product) throws PCTDataFormatException {
         //this.getCapacities().clear();
         setModules(product, product.getModulesRoot());
     }
 
-    private void setModules(com.compassplus.configurationModel.Product product, ModulesGroup group) {
+    private void setModules(com.compassplus.configurationModel.Product product, ModulesGroup group) throws PCTDataFormatException {
         for (ModulesGroup g : group.getGroups()) {
             setModules(product, g);
         }
@@ -200,8 +227,9 @@ public class Product {
             }
             if (tmpModule != null) {
                 this.getModules().put(tmpModule.getKey(), new Module(tmpModule, tmpModule.getKey()));
-                for(RequireCapacity rc : tmpModule.getRequireCapacities().values()){
-                    if(!getCapacities().containsKey(rc.getKey())){
+                addModuleRecommendation(tmpModule.getKey());
+                for (RequireCapacity rc : tmpModule.getRequireCapacities().values()) {
+                    if (!getCapacities().containsKey(rc.getKey())) {
                         addCapacity(getProduct().getCapacities().get(rc.getKey()), rc.getKey());
                     }
                     if (rc.isIncremental()) {
@@ -217,20 +245,22 @@ public class Product {
         }
     }
 
-    private void setCapacities(com.compassplus.configurationModel.Product product) {
+    private void setCapacities(com.compassplus.configurationModel.Product product) throws PCTDataFormatException {
         this.getCapacities().clear();
         for (com.compassplus.configurationModel.Capacity c : product.getCapacities().values()) {
             if (c.getMinValue() != null && c.getMinValue() > 0 && !c.isDeprecated()) {
                 Capacity tmpCapacity = new Capacity(c, c.getKey());
                 tmpCapacity.setUser(c.getMinValue());
                 this.getCapacities().put(tmpCapacity.getKey(), tmpCapacity);
+                addCapacityRecommendation(tmpCapacity.getKey());
             }
         }
     }
 
-    public void addCapacity(com.compassplus.configurationModel.Capacity capacity, String key) {
+    public void addCapacity(com.compassplus.configurationModel.Capacity capacity, String key) throws PCTDataFormatException {
         Capacity tmpCapacity = new Capacity(capacity, key);
         this.getCapacities().put(tmpCapacity.getKey(), tmpCapacity);
+        addCapacityRecommendation(tmpCapacity.getKey());
     }
 
     @Override
@@ -341,8 +371,8 @@ public class Product {
     }
 
     public boolean canBeSwitchedToZero(String mKey, String extraKey) {
-        for(Module m:getModules().values()){
-            if(!m.getKey().equals(extraKey) && getProduct().getModules().get(m.getKey()).getRequireCapacities().containsKey(mKey)){
+        for (Module m : getModules().values()) {
+            if (!m.getKey().equals(extraKey) && getProduct().getModules().get(m.getKey()).getRequireCapacities().containsKey(mKey)) {
                 return false;
             }
         }
@@ -532,10 +562,36 @@ public class Product {
 
     public void delModule(String key) {
         getModules().remove(key);
+        removeModuleRecommendation(key);
+    }
+
+    private void removeModuleRecommendation(String key){
+        com.compassplus.configurationModel.Module module = proposal.getConfig().getProducts().get(this.getName()).getModules().get(key);
+        if (module.getRecommendations().size() > 0) {
+            for (String rKey : module.getRecommendations()) {
+                Recommendation r = proposal.getConfig().getRecommendations().get(rKey);
+                if (r != null) {
+                    proposal.getPSQuote().delService(r.getKey());
+                }
+            }
+        }
+    }
+
+    private void removeCapacityRecommendation(String key){
+        com.compassplus.configurationModel.Capacity capacity = proposal.getConfig().getProducts().get(this.getName()).getCapacities().get(key);
+        if (capacity.getRecommendations().size() > 0) {
+            for (String rKey : capacity.getRecommendations()) {
+                Recommendation r = proposal.getConfig().getRecommendations().get(rKey);
+                if (r != null) {
+                    proposal.getPSQuote().delService(r.getKey());
+                }
+            }
+        }
     }
 
     public void delCapacity(String key) {
         getCapacities().remove(key);
+        removeCapacityRecommendation(key);
     }
 
     public Double getSupportDiscount() {

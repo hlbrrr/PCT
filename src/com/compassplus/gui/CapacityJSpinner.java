@@ -1,6 +1,7 @@
 package com.compassplus.gui;
 
 import com.compassplus.configurationModel.Module;
+import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.proposalModel.Capacity;
 
 import javax.swing.*;
@@ -116,7 +117,11 @@ public class CapacityJSpinner extends JSpinner {
             if (ret > 0) {
                 if (!form.getProduct().getCapacities().containsKey(key)) {
                     com.compassplus.configurationModel.Capacity tmpCapacity = form.getProduct().getProduct().getCapacities().get(key);
-                    form.getProduct().addCapacity(tmpCapacity, key);
+                    try {
+                        form.getProduct().addCapacity(tmpCapacity, key);
+                    } catch (PCTDataFormatException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
                 }
                 Capacity tmpCapacity = form.getProduct().getCapacities().get(key);
                 tmpCapacity.setUser(this.user);

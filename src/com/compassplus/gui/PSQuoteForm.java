@@ -37,6 +37,11 @@ public class PSQuoteForm {
         initForm();
     }
 
+    public void update(){
+        mainPanel.removeAll();
+        initForm();
+    }
+
     private void initForm() {
         JPanel modulesC = new JPanel();
         {
@@ -88,7 +93,10 @@ public class PSQuoteForm {
         boolean first = true;
         for (ServicesGroup sg : proposal.getConfig().getServicesRoot().getGroups()) {
             JPanel serviceGroup = new JPanel();
-            getFormFromGroup(serviceGroup, sg);
+            if (getFormFromGroup(serviceGroup, sg) > 0) {
+            } else {
+                continue;
+            }
             JPanel labelPanel = new JPanel();
             labelPanel.setLayout(new GridBagLayout());
             labelPanel.setBorder(new EmptyBorder(first ? 10 : 5, 5, 5, 5));
@@ -177,11 +185,11 @@ public class PSQuoteForm {
             labelPanel.add(serviceGroup, c);
             parent.add(labelPanel, cg);
             cg.gridy++;
-
         }
     }
 
-    private void getFormFromGroup(JPanel parent, ServicesGroup sg) {
+    private int getFormFromGroup(JPanel parent, ServicesGroup sg) {
+        int ret = 0;
         parent.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         GridBagConstraints cg = new GridBagConstraints();
         cg.gridx = 0;
@@ -194,7 +202,12 @@ public class PSQuoteForm {
         boolean first = true;
         for (Service s : sg.getServices().values()) {
             JPanel service = new JPanel();
-            getFormFromService(service, s);
+            boolean srvNotEmpty = false;
+            if (getFormFromService(service, s) > 0) {
+                ret++;
+            } else {
+                continue;
+            }
             JPanel labelPanel = new JPanel();
             labelPanel.setLayout(new GridBagLayout());
             labelPanel.setBorder(new EmptyBorder(first ? 10 : 5, 5, 5, 5));
@@ -284,9 +297,11 @@ public class PSQuoteForm {
             parent.add(labelPanel, cg);
             cg.gridy++;
         }
+        return ret;
     }
 
-    private void getFormFromService(JPanel parent, Service s) {
+    private int getFormFromService(JPanel parent, Service s) {
+        int ret = 0;
         parent.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         GridBagConstraints cg = new GridBagConstraints();
         cg.gridx = 0;
@@ -297,10 +312,11 @@ public class PSQuoteForm {
         parent.setLayout(new GridBagLayout());
 
         boolean first = true;
-        for (Recommendation r : proposal.getConfig().getRecommendations().values()) {
-            if(!r.getServiceKey().equals(s.getKey())){
-                 continue;
-            }else{
+        for (com.compassplus.proposalModel.Service r : proposal.getPSQuote().getServices().values()) {
+            if (!r.getService().getKey().equals(s.getKey())) {
+                continue;
+            } else {
+                ret++;
             }
             JPanel recommendation = new JPanel();
             getFormFromRecommendation(recommendation, r);
@@ -393,9 +409,10 @@ public class PSQuoteForm {
             parent.add(labelPanel, cg);
             cg.gridy++;
         }
+        return ret;
     }
 
-    private void getFormFromRecommendation(JPanel parent, Recommendation r) {
+    private void getFormFromRecommendation(JPanel parent, com.compassplus.proposalModel.Service s) {
 
     }
 

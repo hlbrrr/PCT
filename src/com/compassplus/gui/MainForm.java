@@ -881,7 +881,11 @@ public class MainForm {
                         allowedProjects.toArray(),
                         null);
                 if (product != null) {
-                    getCurrentProposalForm().addProductForm(new com.compassplus.proposalModel.Product((com.compassplus.configurationModel.Product) product, getCurrentProposalForm().getProposal()));
+                    try {
+                        getCurrentProposalForm().addProductForm(new Product((com.compassplus.configurationModel.Product) product, getCurrentProposalForm().getProposal()));
+                    } catch (PCTDataFormatException e1) {
+                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
                 }
             }
         });
@@ -913,7 +917,7 @@ public class MainForm {
                     getDelProduct().setEnabled(false);
                 }
 
-                if (getCurrentProposalForm() != null && getCurrentProposalForm().getProposal().getPSQuote() == null) {
+                if (getCurrentProposalForm() != null && !getCurrentProposalForm().getProposal().getPSQuote().enabled()) {
                     addPSQuote.setEnabled(true);
                     delPSQuote.setEnabled(false);
                 } else {

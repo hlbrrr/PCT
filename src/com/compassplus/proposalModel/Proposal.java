@@ -40,9 +40,10 @@ public class Proposal {
     private com.compassplus.configurationModel.Region region;
     private com.compassplus.configurationModel.Currency currency;
     private SupportPlan supportPlan;
-    private PSQuote psQuote = null;
+    private PSQuote psQuote;
 
     public Proposal(Configuration config) {
+        psQuote = new PSQuote(this);
         this.setConfig(config);
         userName = config.getUserName();
         for (AuthLevel l : config.getAuthLevels().values()) {
@@ -314,13 +315,11 @@ public class Proposal {
         }
     }
 
-    private void setServices(NodeList services) throws PCTDataFormatException {
-    }
-
     private void setPSQuote(Document initialData) throws PCTDataFormatException {
         if (xut.getNode("/root/PSQuotePresent", initialData) != null) {
             NodeList services = xut.getNodes("/root/Services/Service", initialData);
             this.psQuote = new PSQuote(services, this);
+            this.getPSQuote().setEnabled(true);
         }
     }
 
@@ -386,7 +385,7 @@ public class Proposal {
             }
             sb.append("</Products>");
         }
-        if (this.getPSQuote() != null) {
+        if (this.getPSQuote().enabled()) {
             sb.append(this.getPSQuote().toString());
         }
         sb.append("</root>");
@@ -432,12 +431,10 @@ public class Proposal {
     }
 
     public void createPSQuote() {
-        if (this.psQuote == null) {
-            this.psQuote = new PSQuote(this);
-        }
+        this.getPSQuote().setEnabled(true);
     }
 
     public void delPSQuote() {
-        this.psQuote = null;
+        this.getPSQuote().setEnabled(false);
     }
 }

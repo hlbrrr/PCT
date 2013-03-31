@@ -127,6 +127,9 @@ public class ProposalForm {
                             ((ProductJPanel) c).getParentForm().update();
                         }
                     }
+                    if (psForm != null) {
+                        psForm.update();
+                    }
                 }
             }
 
@@ -173,6 +176,9 @@ public class ProposalForm {
                     titleUpdater.act(proposal);
                     ProductForm pf = (ProductForm) src;
                     summaryForm.update();
+                    if (psForm != null) {
+                        psForm.update();
+                    }
                     Integer ti = productsTabs.indexOfComponent(pf.getRoot());
                     if (ti >= 0) {
                         productsTabs.setTitleAt(ti, pf.getProduct().getName() + (!getProposal().getConfig().isSalesSupport() ? (" (" + (getProposal().getCurrency().getSymbol() != null ?
@@ -212,7 +218,7 @@ public class ProposalForm {
     }
 
     public void addPSForm() {
-        if (proposal.getPSQuote() != null) {
+        if (proposal.getPSQuote().enabled()) {
             psForm = new PSQuoteForm(proposal, new PCTChangedListener() {
                 public void act(Object src) {
                     if (src instanceof ProductForm) {
@@ -241,5 +247,6 @@ public class ProposalForm {
         this.getProposal().delPSQuote();
         productsTabs.remove(psForm.getRoot());
         summaryForm.update();
+        psForm = null;
     }
 }
