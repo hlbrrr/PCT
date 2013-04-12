@@ -404,7 +404,7 @@
     $.extend(PCT, {
         init:function(templatesContainer, root) {
             PCT.disableAnimation();
-            $('template', templatesContainer).each(function() {
+            $('.template', templatesContainer).each(function() {
                 PCT.addTemplate(this);
             });
             {
