@@ -152,7 +152,7 @@ public class Product {
             for (String rKey : module.getRecommendations()) {
                 Recommendation r = proposal.getConfig().getRecommendations().get(rKey);
                 if (r != null) {
-                    proposal.getPSQuote().addService(new Service(r, proposal.getConfig()));
+                    proposal.getPSQuote().addService(new Service(r, proposal, null, null));
                 }
             }
         }else{
@@ -165,7 +165,7 @@ public class Product {
             for (String rKey : capacity.getRecommendations()) {
                 Recommendation r = proposal.getConfig().getRecommendations().get(rKey);
                 if (r != null) {
-                    proposal.getPSQuote().addService(new Service(r, proposal.getConfig()));
+                    proposal.getPSQuote().addService(new Service(r, proposal, key, this.getName()));
                 }
             }
         }else{

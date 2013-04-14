@@ -41,7 +41,7 @@ public class PSQuote {
             log.info("Found " + services.getLength() + " service(s)");
             for (int i = 0; i < services.getLength(); i++) {
                 try {
-                    Service tmpService = new Service(services.item(i), proposal.getConfig());
+                    Service tmpService = new Service(services.item(i), proposal);
                     this.getServices().put(tmpService.getKey(), tmpService);
                 } catch (PCTDataFormatException e) {
                     log.error(e);

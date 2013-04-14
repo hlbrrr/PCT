@@ -6,8 +6,6 @@ import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
 
-import java.util.Map;
-
 /**
  * Created with IntelliJ IDEA.
  * User: arudin
@@ -34,6 +32,9 @@ public class Service {
     private Double ostSubstitute = 0d;
     private String randomKey = null;
 
+    private Proposal proposal = null;
+    private String triggeredByCapacity = null;
+    private String triggeredByProduct = null;
 
     /* public Service(Node initialData, Map<String, com.compassplus.configurationModel.Service> allowedServices) throws PCTDataFormatException {
         init(initialData, allowedServices);
@@ -44,15 +45,16 @@ public class Service {
         this.key = key;
     }*/
 
-    public Service(Node initialData, Configuration config) throws PCTDataFormatException {
+    public Service(Node initialData, Proposal proposal) throws PCTDataFormatException {
+        this.proposal = proposal;
         try {
             log.info("Parsing service");
 
-            this.setRecommendation(xut.getNode("RecommendationKey", initialData), config);
+            this.setRecommendation(xut.getNode("RecommendationKey", initialData), proposal.getConfig());
             if (this.getRecommendation() == null) {
-                this.setService(xut.getNode("ServiceKey", initialData), config);
+                this.setService(xut.getNode("ServiceKey", initialData), proposal.getConfig());
             } else {
-                this.setService(getRecommendation().getServiceKey(), config);
+                this.setService(getRecommendation().getServiceKey(), proposal.getConfig());
             }
             try {
                 this.setName(xut.getNode("Name", initialData));
@@ -69,6 +71,9 @@ public class Service {
             this.setSubstitute(xut.getNode("Substitute", initialData));
             this.setCharge(xut.getNode("Charge", initialData));
 
+            this.setTriggeredByCapacity(xut.getNode("TriggeredByCapacity", initialData));
+            this.setTriggeredByProduct(xut.getNode("TriggeredByProduct", initialData));
+
             this.setOSDIncrement(xut.getNode("OSDIncrement", initialData));
             this.setOSDSubstitute(xut.getNode("OSDSubstitute", initialData));
 
@@ -81,11 +86,14 @@ public class Service {
         }
     }
 
-    public Service(Recommendation recommendation, Configuration config) throws PCTDataFormatException {
+    public Service(Recommendation recommendation, Proposal proposal, String triggeredByCapacity, String triggeredByProduct) throws PCTDataFormatException {
+        this.triggeredByCapacity = triggeredByCapacity;
+        this.triggeredByProduct = triggeredByProduct;
+        this.proposal = proposal;
         setRecommendation(recommendation);
         this.name = getRecommendation().getName();
         this.hint = getRecommendation().getHint();
-        this.setService(getRecommendation().getServiceKey(), config);
+        this.setService(getRecommendation().getServiceKey(), proposal.getConfig());
     }
 
     public Recommendation getRecommendation() {
@@ -162,6 +170,20 @@ public class Service {
 
     public Boolean getCharge() {
         return this.charge;
+    }
+
+    private void setTriggeredByCapacity(Node triggeredByCapacity) throws PCTDataFormatException {
+        try {
+            this.triggeredByCapacity = xut.getString(triggeredByCapacity);
+        } catch (PCTDataFormatException e) {
+        }
+    }
+
+    private void setTriggeredByProduct(Node triggeredByProduct) throws PCTDataFormatException {
+        try {
+            this.triggeredByProduct = xut.getString(triggeredByProduct);
+        } catch (PCTDataFormatException e) {
+        }
     }
 
     private void setCharge(Node charge) throws PCTDataFormatException {
@@ -244,11 +266,25 @@ public class Service {
         }
     }
 
+    public String getTriggeredByCapacity(){
+        return triggeredByCapacity;
+    }
+
+    public String getTriggeredByProduct(){
+        return triggeredByProduct;
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("<Service>");
         if (getRecommendation() != null) {
             sb.append("<RecommendationKey>").append(getRecommendation().getKey()).append("</RecommendationKey>");
+        }
+        if (getTriggeredByCapacity() != null) {
+            sb.append("<TriggeredByCapacity>").append(getTriggeredByCapacity()).append("</TriggeredByCapacity>");
+        }
+        if (getTriggeredByProduct() != null) {
+            sb.append("<TriggeredByProduct>").append(getTriggeredByProduct()).append("</TriggeredByProduct>");
         }
         sb.append("<ServiceKey>").append(getService().getKey()).append("</ServiceKey>");
         sb.append("<Name>").append(getName()).append("</Name>");
@@ -264,6 +300,10 @@ public class Service {
         return sb.toString();
     }
 
+    public boolean isRecommended(){
+        return this.recommendation != null;
+    }
+
     public String getKey() {
         if (getRecommendation() != null) {
             return getRecommendation().getKey();
@@ -272,6 +312,25 @@ public class Service {
             this.randomKey = (new Integer(random.nextInt())).toString();
         }
         return this.randomKey;
+    }
+
+    public double getMDRecommendationValue() {
+        double ret = 0d;
+        if ("static".equals(getRecommendation().getRecommendationType())) {
+            ret = getRecommendation().getMDValue();
+        } else if ("capacity".equals(getRecommendation().getRecommendationType())) {
+            Capacity capacity = getProposal().getProducts().get(getTriggeredByProduct()).getCapacities().get(getTriggeredByCapacity());//.getConfig().getProducts().get(getTriggeredByProduct()).getCapacities().get(getTriggeredByCapacity());
+            ret = capacity.getVal()*getRecommendation().getMDValue();
+        } else if ("percentage".equals(getRecommendation().getRecommendationType())) {
+
+        } else {
+
+        }
+        return ret;
+    }
+
+    public Proposal getProposal() {
+        return proposal;
     }
 
     /*   public Double getPrice(Product product) {
