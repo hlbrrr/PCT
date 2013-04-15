@@ -25,10 +25,15 @@ public class Service {
     private Double maxMD;
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
+    private String groupKey;
 
-
-    public Service(Node initialData) throws PCTDataFormatException {
+    public Service(Node initialData, String groupKey) throws PCTDataFormatException {
+        this.groupKey = groupKey;
         init(initialData);
+    }
+
+    public String getGroupKey(){
+        return groupKey;
     }
 
     private void init(Node initialData) throws PCTDataFormatException {

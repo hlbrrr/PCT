@@ -9,10 +9,13 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,6 +30,7 @@ public class PSQuoteForm {
     private Proposal proposal;
     private PCTChangedListener titleUpdater;
     private DecimalFormat df;
+    private java.util.List<CustomJLabel> labelsToUpdate = new ArrayList<CustomJLabel>();
 
     public PSQuoteForm(Proposal proposal, PCTChangedListener titleUpdater, DecimalFormat df, JFrame frame) {
         this.titleUpdater = titleUpdater;
@@ -36,6 +40,12 @@ public class PSQuoteForm {
         mainPanel = new PSQuoteJPanel(this);
         mainPanel.setLayout(new GridBagLayout());
         initForm();
+    }
+
+    public void recalc(){
+        for(CustomJLabel c:labelsToUpdate){
+            c.call();
+        }
     }
 
     public void update() {
@@ -512,6 +522,7 @@ public class PSQuoteForm {
                         }
                     });
                     label.call();
+                    labelsToUpdate.add(label);
                     JPanel panel = new JPanel();
                     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                     label.setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -524,7 +535,21 @@ public class PSQuoteForm {
                 }
                 {
                     c.gridx++;
-                    JLabel label = new JLabel("99");
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            ((CustomJLabel) src).setText(df.format(_ref.getOnsiteMDRecommendationValue()));
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    labelsToUpdate.add(label);
                     JPanel panel = new JPanel();
                     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                     label.setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -537,7 +562,21 @@ public class PSQuoteForm {
                 }
                 {
                     c.gridx++;
-                    JLabel label = new JLabel("99");
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            ((CustomJLabel) src).setText(df.format(_ref.getTripRecommendationValue()));
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    labelsToUpdate.add(label);
                     JPanel panel = new JPanel();
                     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                     label.setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -567,7 +606,20 @@ public class PSQuoteForm {
                 }
                 {
                     c.gridx++;
-                    JSpinner input = new JSpinner();
+                    final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getIncrement().doubleValue(), 0d, 10000d, 1d));
+                    input.addChangeListener(new ChangeListener() {
+                        public void stateChanged(ChangeEvent e) {
+                            final ChangeEvent ev = e;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    if (ev.getSource() == input) {
+                                        _ref.setIncrement((Double)input.getValue());
+                                        recalc();
+                                    }
+                                }
+                            });
+                        }
+                    });
                     input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
 
                     JPanel panelW = new JPanel();
@@ -589,7 +641,20 @@ public class PSQuoteForm {
                 }
                 {
                     c.gridx++;
-                    JSpinner input = new JSpinner();
+                    final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getOSDIncrement().doubleValue(), 0d, 10000d, 1d));
+                    input.addChangeListener(new ChangeListener() {
+                        public void stateChanged(ChangeEvent e) {
+                            final ChangeEvent ev = e;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    if (ev.getSource() == input) {
+                                        _ref.setOSDIncrement((Double)input.getValue());
+                                        recalc();
+                                    }
+                                }
+                            });
+                        }
+                    });
                     input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
 
                     JPanel panelW = new JPanel();
@@ -611,7 +676,20 @@ public class PSQuoteForm {
                 }
                 {
                     c.gridx++;
-                    JSpinner input = new JSpinner();
+                    final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getOSTIncrement().doubleValue(), 0d, 10000d, 1d));
+                    input.addChangeListener(new ChangeListener() {
+                        public void stateChanged(ChangeEvent e) {
+                            final ChangeEvent ev = e;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    if (ev.getSource() == input) {
+                                        _ref.setOSTIncrement((Double)input.getValue());
+                                        recalc();
+                                    }
+                                }
+                            });
+                        }
+                    });
                     input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
 
                     JPanel panelW = new JPanel();
@@ -655,7 +733,20 @@ public class PSQuoteForm {
             }
             {
                 c.gridx++;
-                JSpinner input = new JSpinner();
+                final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getSubstitute().doubleValue(), 0d, 10000d, 1d));
+                input.addChangeListener(new ChangeListener() {
+                    public void stateChanged(ChangeEvent e) {
+                        final ChangeEvent ev = e;
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                if (ev.getSource() == input) {
+                                    _ref.setSubstitute((Double)input.getValue());
+                                    recalc();
+                                }
+                            }
+                        });
+                    }
+                });
                 input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
 
                 JPanel panelW = new JPanel();
@@ -677,7 +768,20 @@ public class PSQuoteForm {
             }
             {
                 c.gridx++;
-                JSpinner input = new JSpinner();
+                final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getOSDSubstitute().doubleValue(), 0d, 10000d, 1d));
+                input.addChangeListener(new ChangeListener() {
+                    public void stateChanged(ChangeEvent e) {
+                        final ChangeEvent ev = e;
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                if (ev.getSource() == input) {
+                                    _ref.setOSDSubstitute((Double)input.getValue());
+                                    recalc();
+                                }
+                            }
+                        });
+                    }
+                });
                 input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
 
                 JPanel panelW = new JPanel();
@@ -699,7 +803,20 @@ public class PSQuoteForm {
             }
             {
                 c.gridx++;
-                JSpinner input = new JSpinner();
+                final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getOSTSubstitute().doubleValue(), 0d, 10000d, 1d));
+                input.addChangeListener(new ChangeListener() {
+                    public void stateChanged(ChangeEvent e) {
+                        final ChangeEvent ev = e;
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                if (ev.getSource() == input) {
+                                    _ref.setOSTSubstitute((Double)input.getValue());
+                                    recalc();
+                                }
+                            }
+                        });
+                    }
+                });
                 input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
 
                 JPanel panelW = new JPanel();
@@ -740,7 +857,21 @@ public class PSQuoteForm {
                 }
                 {
                     c.gridx++;
-                    JLabel label = new JLabel("99");
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            ((CustomJLabel) src).setText(df.format(_ref.getTotalValue()));
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    labelsToUpdate.add(label);
                     JPanel panel = new JPanel();
                     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                     label.setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -753,7 +884,21 @@ public class PSQuoteForm {
                 }
                 {
                     c.gridx++;
-                    JLabel label = new JLabel("99");
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            ((CustomJLabel) src).setText(df.format(_ref.getOnsiteTotalValue()));
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    labelsToUpdate.add(label);
                     JPanel panel = new JPanel();
                     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                     label.setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -766,7 +911,21 @@ public class PSQuoteForm {
                 }
                 {
                     c.gridx++;
-                    JLabel label = new JLabel("99");
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            ((CustomJLabel) src).setText(df.format(_ref.getTripTotalValue()));
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    labelsToUpdate.add(label);
                     JPanel panel = new JPanel();
                     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                     label.setBorder(new EmptyBorder(4, 4, 4, 4));

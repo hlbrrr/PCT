@@ -325,12 +325,40 @@ public class Service {
         } else if ("percentage".equals(getRecommendation().getRecommendationType())) {
             String keys[] = getRecommendation().getPercentageKeys().split("\\s+");
             for (int i = 0; i < keys.length; i++) {
-                Service s = proposal.getPSQuote().getServices().get(keys[i]);
-                if (s != null) {
-                    ret += s.getTotalValue();
+                //Service s = proposal.getPSQuote().getServices().get(keys[i]);
+                for(Service s:proposal.getPSQuote().getServices().values()){
+                    if(s.getService().getGroupKey().equals(keys[i]) || s.getService().getKey().equals(keys[i])){
+                        ret += s.getTotalValue();
+                    }
                 }
             }
+            ret = ret * getRecommendation().getMDValue();
+        } else {
 
+        }
+        ret = CommonUtils.getInstance().toNextInt(ret);
+        return ret;
+    }
+
+    public double getOnsiteMDRecommendationValue() {
+        double ret = 0d;
+        if ("static".equals(getRecommendation().getOnsiteRecommendationType())) {
+            ret = getRecommendation().getOnsiteValue();
+        } else if ("manday".equals(getRecommendation().getOnsiteRecommendationType())) {
+            ret = getTotalValue() * getRecommendation().getOnsiteValue();
+        } else {
+
+        }
+        ret = CommonUtils.getInstance().toNextInt(ret);
+        return ret;
+    }
+
+    public double getTripRecommendationValue() {
+        double ret = 0d;
+        if ("static".equals(getRecommendation().getOnsiteRecommendationType())) {
+            ret = getRecommendation().getTripValue();
+        } else if ("manday".equals(getRecommendation().getOnsiteRecommendationType())) {
+            ret = getTotalValue() * getRecommendation().getTripValue();
         } else {
 
         }
@@ -350,5 +378,39 @@ public class Service {
         double ret = 0d;
         ret = getSubstitute() > 0 ? getSubstitute() : getMDRecommendationValue() + getIncrement();
         return ret;
+    }
+    public double getOnsiteTotalValue() {
+        double ret = 0d;
+        ret = getOSDSubstitute() > 0 ? getOSDSubstitute() : getOnsiteMDRecommendationValue() + getOSDIncrement();
+        return ret;
+    }
+    public double getTripTotalValue() {
+        double ret = 0d;
+        ret = getOSTSubstitute() > 0 ? getOSTSubstitute() : getTripRecommendationValue() + getOSTIncrement();
+        return ret;
+    }
+
+    public void setIncrement(double val) {
+        this.increment = val;
+    }
+
+    public void setOSDIncrement(double val) {
+        this.osdIncrement = val;
+    }
+
+    public void setOSTIncrement(double val) {
+        this.ostIncrement = val;
+    }
+
+    public void setSubstitute(double val) {
+        this.substitute = val;
+    }
+
+    public void setOSDSubstitute(double val) {
+        this.osdSubstitute = val;
+    }
+
+    public void setOSTSubstitute(double val) {
+        this.ostSubstitute = val;
     }
 }

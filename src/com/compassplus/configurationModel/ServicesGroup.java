@@ -31,6 +31,10 @@ public class ServicesGroup {
         this.name = name;
     }
 
+    public String getKey(){
+        return this.key;
+    }
+
     public ServicesGroup(Node key, Node name, Node hint, Node hidden) throws PCTDataFormatException {
         this.setKey(key);
         this.setName(name);

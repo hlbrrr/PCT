@@ -327,7 +327,7 @@ public class Configuration {
             log.info("Found " + services.getLength() + " service(s)");
             for (int i = 0; i < services.getLength(); i++) {
                 try {
-                    Service tmpService = new Service(services.item(i));
+                    Service tmpService = new Service(services.item(i), servicesGroup.getKey());
                     servicesGroup.addService(tmpService.getKey(), tmpService);
                     this.getServices().put(tmpService.getKey(), tmpService);
                 } catch (PCTDataFormatException e) {
