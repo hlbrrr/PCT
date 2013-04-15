@@ -2,6 +2,7 @@ package com.compassplus.proposalModel;
 
 import com.compassplus.configurationModel.*;
 import com.compassplus.exception.PCTDataFormatException;
+import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
@@ -100,7 +101,7 @@ public class Service {
         return this.recommendation;
     }
 
-    private void setRecommendation(Recommendation recommendation){
+    private void setRecommendation(Recommendation recommendation) {
         this.recommendation = recommendation;
     }
 
@@ -266,11 +267,11 @@ public class Service {
         }
     }
 
-    public String getTriggeredByCapacity(){
+    public String getTriggeredByCapacity() {
         return triggeredByCapacity;
     }
 
-    public String getTriggeredByProduct(){
+    public String getTriggeredByProduct() {
         return triggeredByProduct;
     }
 
@@ -300,7 +301,7 @@ public class Service {
         return sb.toString();
     }
 
-    public boolean isRecommended(){
+    public boolean isRecommended() {
         return this.recommendation != null;
     }
 
@@ -320,12 +321,20 @@ public class Service {
             ret = getRecommendation().getMDValue();
         } else if ("capacity".equals(getRecommendation().getRecommendationType())) {
             Capacity capacity = getProposal().getProducts().get(getTriggeredByProduct()).getCapacities().get(getTriggeredByCapacity());//.getConfig().getProducts().get(getTriggeredByProduct()).getCapacities().get(getTriggeredByCapacity());
-            ret = capacity.getVal()*getRecommendation().getMDValue();
+            ret = capacity.getVal() * getRecommendation().getMDValue();
         } else if ("percentage".equals(getRecommendation().getRecommendationType())) {
+            String keys[] = getRecommendation().getPercentageKeys().split("\\s+");
+            for (int i = 0; i < keys.length; i++) {
+                Service s = proposal.getPSQuote().getServices().get(keys[i]);
+                if (s != null) {
+                    ret += s.getTotalValue();
+                }
+            }
 
         } else {
 
         }
+        ret = CommonUtils.getInstance().toNextInt(ret);
         return ret;
     }
 
@@ -336,4 +345,10 @@ public class Service {
     /*   public Double getPrice(Product product) {
         return this.getService().getPrice(product);
     }*/
+
+    public double getTotalValue() {
+        double ret = 0d;
+        ret = getSubstitute() > 0 ? getSubstitute() : getMDRecommendationValue() + getIncrement();
+        return ret;
+    }
 }
