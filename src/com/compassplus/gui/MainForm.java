@@ -996,11 +996,25 @@ public class MainForm {
 
 
                 final JTextField serviceName = new JTextField();
+
+                final JTextArea textArea = new JTextArea("");
+                textArea.setColumns(35);
+                textArea.setRows(10);
+                textArea.setLineWrap(true);
+                textArea.setEditable(true);
+                textArea.setWrapStyleWord(true);
+                JScrollPane spane = new JScrollPane(textArea);
+                textArea.setFont(spane.getFont());
+                /*JOptionPane.showMessageDialog(
+                        null, spane, "Description", JOptionPane.INFORMATION_MESSAGE);*/
+
+
                 final JOptionPane optionPane = new JOptionPane(
                         new JComponent[]{
                                 sgs.size() > 1 ? new JLabel("Service group") : null, serviceGroupField,
                                 new JLabel("Service"), serviceField,
-                                new JLabel("Name"), serviceName
+                                new JLabel("Name"), serviceName,
+                                new JLabel("Description"), spane
                         },
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.OK_CANCEL_OPTION);
@@ -1028,7 +1042,7 @@ public class MainForm {
                                                 int value = (Integer) optionPane.getValue();
                                                 if (value == JOptionPane.OK_OPTION) {
 
-                                                    getCurrentProposalForm().getProposal().getPSQuote().addService(new com.compassplus.proposalModel.Service(getCurrentProposalForm().getProposal(), serviceName.getText(), "ga", ((ListItem) serviceField.getSelectedItem()).getValue()));
+                                                    getCurrentProposalForm().getProposal().getPSQuote().addService(new com.compassplus.proposalModel.Service(getCurrentProposalForm().getProposal(), serviceName.getText(), textArea.getText(), ((ListItem) serviceField.getSelectedItem()).getValue()));
                                                     try{
                                                     getCurrentProposalForm().getPSForm().update();
                                                     }catch(Exception ee){

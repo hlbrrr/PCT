@@ -8,6 +8,7 @@ import org.w3c.dom.NodeList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -77,11 +78,87 @@ public class PSQuote {
         this.getServices().remove(key);
     }
 
-    public double getPrice(){
+    public double getPrice() {
         double ret = 0d;
-        for(Service s: getServices().values()){
+        for (Service s : getServices().values()) {
             ret += s.getRegionalPrice();
         }
         return ret;
+    }
+
+    public void setServices(Map<String, Service> services) {
+        this.services.clear();
+        this.services = services;
+    }
+
+    public void moveServiceUp(String key) {
+
+        LinkedHashMap<String, Service> lhm = ((LinkedHashMap<String, Service>) this.getServices());
+        LinkedHashMap<String, Service> tmp = new LinkedHashMap<String, Service>();
+
+        Service s = this.getServices().get(key);
+
+        String k_1 = null;
+        for (String k : lhm.keySet()) {
+            if (key.equals(k)) {
+                break;
+            }
+            if (lhm.get(k).getService().getGroupKey().equals(s.getService().getGroupKey()) &&
+                    lhm.get(k).getService().getKey().equals(s.getService().getKey())
+                    ) {
+                k_1 = k;
+            }
+        }
+        if (k_1 == null) {
+            return;
+        }
+        for (String k : lhm.keySet()) {
+            if (k.equals(key)) {
+
+            } else if (k.equals(k_1)) {
+                tmp.put(key, lhm.get(key));
+                tmp.put(k_1, lhm.get(k_1));
+            } else {
+                tmp.put(k, lhm.get(k));
+            }
+        }
+        setServices(tmp);
+    }
+
+    public void moveServiceDown(String key) {
+
+        LinkedHashMap<String, Service> lhm = ((LinkedHashMap<String, Service>) this.getServices());
+        LinkedHashMap<String, Service> tmp = new LinkedHashMap<String, Service>();
+
+        Service s = this.getServices().get(key);
+
+        boolean flag = false;
+        String k_1 = null;
+        for (String k : lhm.keySet()) {
+            if (key.equals(k)) {
+                flag = true;
+                continue;
+            }
+            if (lhm.get(k).getService().getGroupKey().equals(s.getService().getGroupKey()) &&
+                    lhm.get(k).getService().getKey().equals(s.getService().getKey()) && flag
+                    ) {
+                k_1 = k;
+                break;
+            }
+        }
+        if (k_1 == null) {
+            return;
+        }
+        for (String k : lhm.keySet()) {
+            if (k.equals(key)) {
+
+            } else if (k.equals(k_1)) {
+                tmp.put(k_1, lhm.get(k_1));
+                tmp.put(key, lhm.get(key));
+            } else {
+                tmp.put(k, lhm.get(k));
+            }
+        }
+        setServices(tmp);
     }
 }

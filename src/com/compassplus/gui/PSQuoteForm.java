@@ -12,6 +12,8 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
@@ -60,6 +62,7 @@ public class PSQuoteForm {
         priceLabels.clear();
         initForm();
         titleUpdater.act(this);
+        mainPanel.updateUI();
     }
 
     private void initForm() {
@@ -201,9 +204,15 @@ public class PSQuoteForm {
 
             gl.setBorder(new EmptyBorder(0, 4, 2, 0));
             labelPanel.add(gl, c);
+
+            JCheckBox cb = new JCheckBox("Export", true);
+            c.weightx = 0;
+            c.gridx++;
+            labelPanel.add(cb, c);
+
             if (!"".equals(sg.getHint())) {
                 JLabel hl = new JLabel("<html><b>[?]</b></html>");
-                hl.setBorder(new EmptyBorder(0, 4, 2, 2));
+                hl.setBorder(new EmptyBorder(0, 14, 2, 2));
                 hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 final String about = sg.getHint();
                 hl.addMouseListener(new MouseListener() {
@@ -232,9 +241,9 @@ public class PSQuoteForm {
                 labelPanel.add(hl, c);
             }
             if (!"".equals(sg.getHint())) {
-                c.gridwidth = 3;
+                c.gridwidth = 4;
             } else {
-                c.gridwidth = 2;
+                c.gridwidth = 3;
             }
             c.weightx = 1;
             c.gridy++;
@@ -260,12 +269,12 @@ public class PSQuoteForm {
         for (Service s : sg.getServices().values()) {
             JPanel service = new JPanel();
             boolean srvNotEmpty = false;
-            if (getFormFromService(service, s) > 0) {
+            JPanel labelPanel = new JPanel();
+            if (getFormFromService(service, s/*, parent, labelPanel*/) > 0) {
                 ret++;
             } else {
                 continue;
             }
-            JPanel labelPanel = new JPanel();
             labelPanel.setLayout(new GridBagLayout());
             labelPanel.setBorder(new EmptyBorder(first ? 10 : 5, 5, 5, 5));
             first = false;
@@ -347,9 +356,15 @@ public class PSQuoteForm {
 
             gl.setBorder(new EmptyBorder(0, 4, 2, 0));
             labelPanel.add(gl, c);
+
+            JCheckBox cb = new JCheckBox("Export", true);
+            c.weightx = 0;
+            c.gridx++;
+            labelPanel.add(cb, c);
+
             if (!"".equals(s.getHint())) {
                 JLabel hl = new JLabel("<html><b>[?]</b></html>");
-                hl.setBorder(new EmptyBorder(0, 4, 2, 2));
+                hl.setBorder(new EmptyBorder(0, 14, 2, 2));
                 hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 final String about = s.getHint();
                 hl.addMouseListener(new MouseListener() {
@@ -378,9 +393,9 @@ public class PSQuoteForm {
                 labelPanel.add(hl, c);
             }
             if (!"".equals(s.getHint())) {
-                c.gridwidth = 3;
+                c.gridwidth = 4;
             } else {
-                c.gridwidth = 2;
+                c.gridwidth = 3;
             }
             c.weightx = 1;
             c.gridy++;
@@ -392,7 +407,7 @@ public class PSQuoteForm {
         return ret;
     }
 
-    private int getFormFromService(JPanel parent, Service s) {
+    private int getFormFromService(JPanel parent, Service s/*, JPanel jPanel, Component component*/) {
         int ret = 0;
         parent.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         GridBagConstraints cg = new GridBagConstraints();
@@ -494,6 +509,109 @@ public class PSQuoteForm {
 
             gl.setBorder(new EmptyBorder(0, 4, 2, 0));
             labelPanel.add(gl, c);
+
+            JCheckBox cb = new JCheckBox("Charge", r.getCharge());
+            cb.addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent e) {
+                    JCheckBox src = (JCheckBox) e.getSource();
+                    _ref.setCharge(src.isSelected());
+                    recalc();
+                }
+            });
+            c.weightx = 0;
+            c.gridx++;
+            labelPanel.add(cb, c);
+
+            {
+                JLabel hl = new JLabel("<html><b>[Move up]</b></html>");
+                hl.setBorder(new EmptyBorder(0, 14, 2, 2));
+                hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                final String about = r.getHint();
+                hl.addMouseListener(new MouseListener() {
+                    public void mouseClicked(MouseEvent e) {
+                        proposal.getPSQuote().moveServiceUp(_ref.getKey());
+                        update();
+                    }
+
+                    public void mousePressed(MouseEvent e) {
+                    }
+
+                    public void mouseReleased(MouseEvent e) {
+                    }
+
+                    public void mouseEntered(MouseEvent e) {
+                    }
+
+                    public void mouseExited(MouseEvent e) {
+                    }
+                });
+                c.gridx++;
+                c.weightx = 0;
+                labelPanel.add(hl, c);
+
+            }
+
+            {
+                JLabel hl = new JLabel("<html><b>[Move down]</b></html>");
+                hl.setBorder(new EmptyBorder(0, 4, 2, 2));
+                hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                final String about = r.getHint();
+                hl.addMouseListener(new MouseListener() {
+                    public void mouseClicked(MouseEvent e) {
+                        proposal.getPSQuote().moveServiceDown(_ref.getKey());
+                        update();
+                    }
+
+                    public void mousePressed(MouseEvent e) {
+                    }
+
+                    public void mouseReleased(MouseEvent e) {
+                    }
+
+                    public void mouseEntered(MouseEvent e) {
+                    }
+
+                    public void mouseExited(MouseEvent e) {
+                    }
+                });
+                c.gridx++;
+                c.weightx = 0;
+                labelPanel.add(hl, c);
+
+            }
+
+            if (!r.isRecommended()) {
+                JLabel hl = new JLabel("<html><b>[Remove]</b></html>");
+                hl.setBorder(new EmptyBorder(0, 4, 2, 2));
+                hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                final String about = r.getHint();
+                /*final JPanel _jPanel = jPanel;
+                final Component _component = component;*/
+                hl.addMouseListener(new MouseListener() {
+                    public void mouseClicked(MouseEvent e) {
+                        proposal.getPSQuote().delService(_ref.getKey());
+                        update();
+                        //_jPanel.remove(_component);
+                        //getRoot().updateUI();
+                    }
+
+                    public void mousePressed(MouseEvent e) {
+                    }
+
+                    public void mouseReleased(MouseEvent e) {
+                    }
+
+                    public void mouseEntered(MouseEvent e) {
+                    }
+
+                    public void mouseExited(MouseEvent e) {
+                    }
+                });
+                c.gridx++;
+                c.weightx = 0;
+                labelPanel.add(hl, c);
+            }
+
             if (!"".equals(r.getHint())) {
                 JLabel hl = new JLabel("<html><b>[?]</b></html>");
                 hl.setBorder(new EmptyBorder(0, 4, 2, 2));
@@ -524,10 +642,14 @@ public class PSQuoteForm {
                 c.weightx = 0;
                 labelPanel.add(hl, c);
             }
+
             if (!"".equals(r.getHint())) {
-                c.gridwidth = 3;
+                c.gridwidth = 6;
             } else {
-                c.gridwidth = 2;
+                c.gridwidth = 5;
+            }
+            if (!r.isRecommended()) {
+                c.gridwidth++;
             }
             c.weightx = 1;
             c.gridy++;
@@ -577,7 +699,7 @@ public class PSQuoteForm {
                 panel.add(label);
                 panel.setBorder(border);
                 panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                panel.setPreferredSize(new Dimension(200, 25));
+                panel.setPreferredSize(new Dimension(100, 25));
                 productsTable.add(panel, c);
             }
             {
@@ -587,7 +709,7 @@ public class PSQuoteForm {
                 panel.add(label);
                 panel.setBorder(border);
                 panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                panel.setPreferredSize(new Dimension(200, 25));
+                panel.setPreferredSize(new Dimension(100, 25));
                 productsTable.add(panel, c);
             }
             {
@@ -597,7 +719,7 @@ public class PSQuoteForm {
                 panel.add(label);
                 panel.setBorder(border);
                 panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                panel.setPreferredSize(new Dimension(200, 25));
+                panel.setPreferredSize(new Dimension(100, 25));
                 productsTable.add(panel, c);
             }
             {
@@ -607,7 +729,7 @@ public class PSQuoteForm {
                 panel.add(label);
                 panel.setBorder(lborder);
                 panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                panel.setPreferredSize(new Dimension(200, 25));
+                panel.setPreferredSize(new Dimension(100, 25));
                 productsTable.add(panel, c);
             }
             if(s.isRecommended()){
@@ -1078,6 +1200,6 @@ public class PSQuoteForm {
         JScrollPane spane = new JScrollPane(textArea);
         textArea.setFont(spane.getFont());
         JOptionPane.showMessageDialog(
-                null, spane, "Help", JOptionPane.INFORMATION_MESSAGE);
+                null, spane, "Description", JOptionPane.INFORMATION_MESSAGE);
     }
 }

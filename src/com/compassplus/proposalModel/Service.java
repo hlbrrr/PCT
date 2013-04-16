@@ -26,12 +26,13 @@ public class Service {
 
     private Double increment = 0d;
     private Double substitute = 0d;
-    private Boolean charge = true;
     private Double osdIncrement = 0d;
     private Double osdSubstitute = 0d;
     private Double ostIncrement = 0d;
     private Double ostSubstitute = 0d;
     private String randomKey = null;
+
+    private boolean charge = true;
 
     private Proposal proposal = null;
     private String triggeredByCapacity = null;
@@ -192,6 +193,10 @@ public class Service {
             this.triggeredByProduct = xut.getString(triggeredByProduct);
         } catch (PCTDataFormatException e) {
         }
+    }
+
+    public void setCharge(boolean charge){
+        this.charge = charge;
     }
 
     private void setCharge(Node charge) throws PCTDataFormatException {
@@ -425,10 +430,12 @@ public class Service {
 
     public Double getRegionalPrice() {
         Double ret = 0d;
-        ret += getTotalValue() * proposal.getRegion().getMDRate();
-        ret += getOnsiteTotalValue() * proposal.getRegion().getOnsiteDailyCost();
-        ret += getTripTotalValue() * proposal.getRegion().getTripPrice();
-        ret = proposal.getCurrencyRate() * ret;
+        if(getCharge()){
+            ret += getTotalValue() * proposal.getRegion().getMDRate();
+            ret += getOnsiteTotalValue() * proposal.getRegion().getOnsiteDailyCost();
+            ret += getTripTotalValue() * proposal.getRegion().getTripPrice();
+            ret = proposal.getCurrencyRate() * ret;
+        }
         return CommonUtils.getInstance().toNextHundred(ret);
     }
 }
