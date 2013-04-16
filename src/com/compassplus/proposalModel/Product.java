@@ -9,10 +9,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,6 +33,7 @@ public class Product {
     private Double supportDiscount;
     private Double markUp;
     private License license;
+    private java.util.List<String> recommendations = new ArrayList<String>();
 
     public Proposal getProposal() {
         return this.proposal;
@@ -152,6 +150,7 @@ public class Product {
             for (String rKey : module.getRecommendations()) {
                 Recommendation r = proposal.getConfig().getRecommendations().get(rKey);
                 if (r != null) {
+                    recommendations.add(r.getKey());
                     proposal.getPSQuote().addService(new Service(r, proposal, null, null));
                 }
             }
@@ -165,6 +164,7 @@ public class Product {
             for (String rKey : capacity.getRecommendations()) {
                 Recommendation r = proposal.getConfig().getRecommendations().get(rKey);
                 if (r != null) {
+                    recommendations.add(r.getKey());
                     proposal.getPSQuote().addService(new Service(r, proposal, key, this.getName()));
                 }
             }
@@ -571,6 +571,7 @@ public class Product {
             for (String rKey : module.getRecommendations()) {
                 Recommendation r = proposal.getConfig().getRecommendations().get(rKey);
                 if (r != null) {
+                    recommendations.remove(r.getKey());
                     proposal.getPSQuote().delService(r.getKey());
                 }
             }
@@ -583,6 +584,7 @@ public class Product {
             for (String rKey : capacity.getRecommendations()) {
                 Recommendation r = proposal.getConfig().getRecommendations().get(rKey);
                 if (r != null) {
+                    recommendations.remove(r.getKey());
                     proposal.getPSQuote().delService(r.getKey());
                 }
             }
@@ -704,5 +706,9 @@ public class Product {
             sb.append("\nProduct ").append(p.getName()).append(" contains following error(s):").append(sbDependencies).append(sbDeprecated);
         }
         return sb.toString();
+    }
+
+    public List<String> getRecommendations() {
+        return recommendations;
     }
 }

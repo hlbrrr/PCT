@@ -1,6 +1,7 @@
 package com.compassplus.configurationModel;
 
 import com.compassplus.exception.PCTDataFormatException;
+import com.compassplus.proposalModel.PSQuote;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
@@ -150,4 +151,13 @@ public class Service {
         return CommonUtils.getInstance().toNextThousand(getCleanPrice(product))*product.getProposal().getRegion().getRate(product.getName());
     }*/
 
+    public double getRegionalPrice(PSQuote quote) {
+        double ret = 0d;
+        for(com.compassplus.proposalModel.Service s: quote.getServices().values()){
+            if(s.getService().getKey().equals(getKey())){
+                ret += s.getRegionalPrice();
+            }
+        }
+        return ret;
+    }
 }

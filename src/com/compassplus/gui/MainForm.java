@@ -1,9 +1,6 @@
 package com.compassplus.gui;
 
-import com.compassplus.configurationModel.AuthLevel;
-import com.compassplus.configurationModel.Capacity;
-import com.compassplus.configurationModel.Configuration;
-import com.compassplus.configurationModel.Module;
+import com.compassplus.configurationModel.*;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.proposalModel.Product;
 import com.compassplus.proposalModel.Proposal;
@@ -60,6 +57,7 @@ public class MainForm {
     private JMenuBar mainMenu;
     private JMenu fileMenu;
     private JMenu proposalMenu;
+    private JMenu psMenu;
     private JMenu helpMenu;
     //private JMenu viewMenu;
     private JMenuItem createProposal;
@@ -73,6 +71,7 @@ public class MainForm {
 
     private JMenuItem addPSQuote;
     private JMenuItem delPSQuote;
+    private JMenuItem addPSService;
 
     private JMenuItem addProduct;
     private JMenuItem delProduct;
@@ -94,6 +93,7 @@ public class MainForm {
         initFileMenu();
         initHelpMenu();
         initProposalMenu();
+        initPSMenu();
         // initViewMenu();
         initMainPanel();
 
@@ -101,6 +101,7 @@ public class MainForm {
         mainMenu.add(fileMenu);
         //mainMenu.add(viewMenu);
         mainMenu.add(proposalMenu);
+        mainMenu.add(psMenu);
         mainMenu.add(helpMenu);
     }
 
@@ -845,7 +846,7 @@ public class MainForm {
                 }
             }
         });
-        addPSQuote = new JMenuItem("Add PS quote");
+        /*addPSQuote = new JMenuItem("Add PS quote");
         delPSQuote = new JMenuItem("Remove PS quote");
         addPSQuote.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -857,7 +858,7 @@ public class MainForm {
             public void actionPerformed(ActionEvent e) {
                 getCurrentProposalForm().delPSForm();
             }
-        });
+        });*/
 
 
 
@@ -897,8 +898,8 @@ public class MainForm {
         });
 
         proposalMenu = new JMenu("Proposal");
-        proposalMenu.add(addPSQuote);
-        proposalMenu.add(delPSQuote);
+        /*proposalMenu.add(addPSQuote);
+        proposalMenu.add(delPSQuote);*/
         proposalMenu.setEnabled(false);
         proposalMenu.add(addProduct);
         proposalMenu.add(delProduct);
@@ -917,18 +918,158 @@ public class MainForm {
                     getDelProduct().setEnabled(false);
                 }
 
-                if (getCurrentProposalForm() != null && !getCurrentProposalForm().getProposal().getPSQuote().enabled()) {
+/*                if (getCurrentProposalForm() != null && !getCurrentProposalForm().getProposal().getPSQuote().enabled()) {
                     addPSQuote.setEnabled(true);
                     delPSQuote.setEnabled(false);
                 } else {
                     addPSQuote.setEnabled(false);
                     delPSQuote.setEnabled(true);
-                }
+                }*/
 
                 if (getCurrentProposalForm() != null && getCurrentProposalForm().getProposal().getProducts().size() > 0) {
                     rollUp.setEnabled(true);
                 } else {
                     rollUp.setEnabled(false);
+                }
+            }
+
+            public void menuDeselected(MenuEvent e) {
+            }
+
+            public void menuCanceled(MenuEvent e) {
+            }
+        });
+    }
+
+    private void initPSMenu() {
+        addPSQuote = new JMenuItem("Add PS quote");
+        delPSQuote = new JMenuItem("Remove PS quote");
+        addPSService = new JMenuItem("Add service");
+
+        addPSQuote.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                getCurrentProposalForm().getProposal().createPSQuote();
+                getCurrentProposalForm().addPSForm();
+            }
+        });
+        delPSQuote.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                getCurrentProposalForm().delPSForm();
+            }
+        });
+
+        addPSService.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                List<ListItem> sgs = new ArrayList<ListItem>();
+                List<ListItem> services = new ArrayList<ListItem>();
+                boolean first = true;
+                for(ServicesGroup sg : getCurrentProposalForm().getProposal().getConfig().getServicesRoot().getGroups()){
+                    sgs.add(new ListItem(sg.getName(), sg.getKey()));
+                    if(first){
+                        for(Service s: sg.getServices().values()){
+                            services.add(new ListItem(s.getName(), s.getKey()));
+                        }
+                        first = false;
+                    }
+                }
+
+
+                final JComboBox serviceGroupField = sgs.size() > 1 ? new JComboBox(sgs.toArray()) : null;
+                final JComboBox serviceField = new JComboBox(services.toArray());
+
+                serviceGroupField.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        ListItem li = (ListItem) serviceGroupField.getSelectedItem();
+                        serviceField.removeAllItems();
+                        for(ServicesGroup sg:getCurrentProposalForm().getProposal().getConfig().getServicesRoot().getGroups()){
+                            if(sg.getKey().equals(li.getValue())){
+                                for(Service s: sg.getServices().values()){
+                                    serviceField.addItem(new ListItem(s.getName(), s.getKey()));
+                                }
+                                break;
+                            }
+                        }
+                    }
+                });
+
+                serviceGroupField.setSelectedIndex(0);
+
+
+                final JTextField serviceName = new JTextField();
+                final JOptionPane optionPane = new JOptionPane(
+                        new JComponent[]{
+                                sgs.size() > 1 ? new JLabel("Service group") : null, serviceGroupField,
+                                new JLabel("Service"), serviceField,
+                                new JLabel("Name"), serviceName
+                        },
+                        JOptionPane.QUESTION_MESSAGE,
+                        JOptionPane.OK_CANCEL_OPTION);
+
+                final JDialog dialog = new JDialog(getFrame(), "Add service", true);
+                dialog.setResizable(false);
+                dialog.addWindowListener(new WindowAdapter() {
+                    public void windowClosing(WindowEvent we) {
+                        dialog.dispose();
+                    }
+                });
+                dialog.setContentPane(optionPane);
+                dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
+                optionPane.addPropertyChangeListener(
+                        new PropertyChangeListener() {
+                            public void propertyChange(PropertyChangeEvent e) {
+                                if (optionPane.getValue() != null) {
+                                    String prop = e.getPropertyName();
+                                    if (dialog.isVisible()
+                                            && (e.getSource() == optionPane)
+                                            && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
+                                        try {
+                                            if (optionPane.getValue() instanceof Integer) {
+                                                int value = (Integer) optionPane.getValue();
+                                                if (value == JOptionPane.OK_OPTION) {
+
+                                                    getCurrentProposalForm().getProposal().getPSQuote().addService(new com.compassplus.proposalModel.Service(getCurrentProposalForm().getProposal(), serviceName.getText(), "ga", ((ListItem) serviceField.getSelectedItem()).getValue()));
+                                                    try{
+                                                    getCurrentProposalForm().getPSForm().update();
+                                                    }catch(Exception ee){
+                                                        ee.printStackTrace();
+                                                    }
+
+                                                    dialog.dispose();
+                                                } else if (value == JOptionPane.CANCEL_OPTION) {
+                                                    dialog.dispose();
+                                                }
+                                            }
+                                        } catch (Exception exception) {
+                                            optionPane.setValue(null);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                );
+                dialog.pack();
+                dialog.setLocationRelativeTo(getRoot());
+                dialog.setVisible(true);
+            }
+        });
+
+        psMenu = new JMenu("Professional services");
+        psMenu.add(addPSQuote);
+        psMenu.add(delPSQuote);
+        psMenu.add(addPSService);
+        psMenu.setEnabled(false);
+
+        psMenu.addMenuListener(new MenuListener() {
+            public void menuSelected(MenuEvent e) {
+                if (getCurrentProposalForm() != null && !getCurrentProposalForm().getProposal().getPSQuote().enabled()) {
+                    addPSQuote.setEnabled(true);
+                    delPSQuote.setEnabled(false);
+                    addPSService.setEnabled(false);
+                } else {
+                    addPSQuote.setEnabled(false);
+                    delPSQuote.setEnabled(true);
+                    addPSService.setEnabled(true);
                 }
             }
 
@@ -984,8 +1125,10 @@ public class MainForm {
     private void setCurrentProposalForm(ProposalForm currentProposalForm) {
         if (currentProposalForm != null) {
             proposalMenu.setEnabled(true);
+            psMenu.setEnabled(true);
         } else {
             proposalMenu.setEnabled(false);
+            psMenu.setEnabled(false);
         }
         this.currentProposalForm = currentProposalForm;
     }
@@ -1046,7 +1189,6 @@ public class MainForm {
                     if(!pp.getConfig().isSalesSupport() && exceedDL){
                         status = 2;
                     }
-
 
                     if (getData("productTab") != null) {
                         int ind = proposalsTabs.indexOfComponent((Component) getData("productTab"));

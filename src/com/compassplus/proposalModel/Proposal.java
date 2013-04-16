@@ -328,9 +328,10 @@ public class Proposal {
     }
 
     public void delProduct(Product product) {
-
+        for(String key:product.getRecommendations()){
+            getPSQuote().delService(key);
+        }
         this.getProducts().remove(product.getName());
-
     }
 
     public void setName(String name) {
@@ -389,7 +390,6 @@ public class Proposal {
             sb.append(this.getPSQuote().toString());
         }
         sb.append("</root>");
-        System.out.println(sb.toString());
         return sb.toString();
     }
 

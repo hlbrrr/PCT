@@ -31,6 +31,7 @@ public class PSQuoteForm {
     private PCTChangedListener titleUpdater;
     private DecimalFormat df;
     private java.util.List<CustomJLabel> labelsToUpdate = new ArrayList<CustomJLabel>();
+    private java.util.List<CustomJLabel> priceLabels = new ArrayList<CustomJLabel>();
 
     public PSQuoteForm(Proposal proposal, PCTChangedListener titleUpdater, DecimalFormat df, JFrame frame) {
         this.titleUpdater = titleUpdater;
@@ -40,17 +41,25 @@ public class PSQuoteForm {
         mainPanel = new PSQuoteJPanel(this);
         mainPanel.setLayout(new GridBagLayout());
         initForm();
+        //titleUpdater.act(this);
     }
 
     public void recalc(){
         for(CustomJLabel c:labelsToUpdate){
             c.call();
         }
+        for(CustomJLabel c:priceLabels){
+            c.call();
+        }
+        titleUpdater.act(this);
     }
 
     public void update() {
         mainPanel.removeAll();
+        labelsToUpdate.clear();
+        priceLabels.clear();
         initForm();
+        titleUpdater.act(this);
     }
 
     private void initForm() {
@@ -152,7 +161,44 @@ public class PSQuoteForm {
             labelPanel.add(mm, c);
             c.gridx++;
             c.weightx = 1.0;
-            JLabel gl = new JLabel("<html><b>" + sg.getName() + "</b></html>");
+            //JLabel gl = new JLabel("<html><b>" + sg.getName() + "</b></html>");
+
+            final ServicesGroup _ref = sg;
+            final Proposal _pref = proposal;
+            CustomJLabel gl = new CustomJLabel(new PCTChangedListener() {
+                public void act(Object src) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("<html><b>");
+                    sb.append(_ref.getName());
+                    if(!proposal.getConfig().isSalesSupport()){
+                        sb.append(" (");
+                        if (proposal.getCurrency().getSymbol() != null) {
+                            sb.append(proposal.getCurrency().getSymbol());
+                            sb.append(" ");
+                        }
+                        sb.append(df.format(_ref.getRegionalPrice(_pref.getPSQuote())));
+                        if (proposal.getCurrency().getSymbol() == null) {
+                            sb.append(" ");
+                            sb.append(proposal.getCurrency().getName());
+                        }
+                        sb.append(")");
+                    }
+                    sb.append("</b></html>");
+                    ((CustomJLabel) src).setText(sb.toString());
+                }
+
+                public void setData(String key, Object data) {
+                    //To change body of implemented methods use File | Settings | File Templates.
+                }
+
+                public Object getData(String key) {
+                    return null;  //To change body of implemented methods use File | Settings | File Templates.
+                }
+            });
+            gl.call();
+            priceLabels.add(gl);
+
+
             gl.setBorder(new EmptyBorder(0, 4, 2, 0));
             labelPanel.add(gl, c);
             if (!"".equals(sg.getHint())) {
@@ -263,7 +309,42 @@ public class PSQuoteForm {
             labelPanel.add(mm, c);
             c.gridx++;
             c.weightx = 1.0;
-            JLabel gl = new JLabel("<html><b>" + s.getName() + "</b></html>");
+
+            final Service _ref = s;
+            final Proposal _pref = proposal;
+            CustomJLabel gl = new CustomJLabel(new PCTChangedListener() {
+                public void act(Object src) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("<html><b>");
+                    sb.append(_ref.getName());
+                    if(!proposal.getConfig().isSalesSupport()){
+                        sb.append(" (");
+                        if (proposal.getCurrency().getSymbol() != null) {
+                            sb.append(proposal.getCurrency().getSymbol());
+                            sb.append(" ");
+                        }
+                        sb.append(df.format(_ref.getRegionalPrice(_pref.getPSQuote())));
+                        if (proposal.getCurrency().getSymbol() == null) {
+                            sb.append(" ");
+                            sb.append(proposal.getCurrency().getName());
+                        }
+                        sb.append(")");
+                    }
+                    sb.append("</b></html>");
+                    ((CustomJLabel) src).setText(sb.toString());
+                }
+
+                public void setData(String key, Object data) {
+                    //To change body of implemented methods use File | Settings | File Templates.
+                }
+
+                public Object getData(String key) {
+                    return null;  //To change body of implemented methods use File | Settings | File Templates.
+                }
+            });
+            gl.call();
+            priceLabels.add(gl);
+
             gl.setBorder(new EmptyBorder(0, 4, 2, 0));
             labelPanel.add(gl, c);
             if (!"".equals(s.getHint())) {
@@ -375,7 +456,42 @@ public class PSQuoteForm {
             labelPanel.add(mm, c);
             c.gridx++;
             c.weightx = 1.0;
-            JLabel gl = new JLabel("<html><b>" + r.getName() + "</b></html>");
+
+            final com.compassplus.proposalModel.Service _ref = r;
+            //JLabel gl = new JLabel(sb.toString());
+            CustomJLabel gl = new CustomJLabel(new PCTChangedListener() {
+                public void act(Object src) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("<html><b>");
+                    sb.append(_ref.getName());
+                    if(!proposal.getConfig().isSalesSupport()){
+                        sb.append(" (");
+                        if (proposal.getCurrency().getSymbol() != null) {
+                            sb.append(proposal.getCurrency().getSymbol());
+                            sb.append(" ");
+                        }
+                        sb.append(df.format(_ref.getRegionalPrice()));
+                        if (proposal.getCurrency().getSymbol() == null) {
+                            sb.append(" ");
+                            sb.append(proposal.getCurrency().getName());
+                        }
+                        sb.append(")");
+                    }
+                    sb.append("</b></html>");
+                    ((CustomJLabel) src).setText(sb.toString());
+                }
+
+                public void setData(String key, Object data) {
+                    //To change body of implemented methods use File | Settings | File Templates.
+                }
+
+                public Object getData(String key) {
+                    return null;  //To change body of implemented methods use File | Settings | File Templates.
+                }
+            });
+            gl.call();
+            priceLabels.add(gl);
+
             gl.setBorder(new EmptyBorder(0, 4, 2, 0));
             labelPanel.add(gl, c);
             if (!"".equals(r.getHint())) {
@@ -461,6 +577,7 @@ public class PSQuoteForm {
                 panel.add(label);
                 panel.setBorder(border);
                 panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(200, 25));
                 productsTable.add(panel, c);
             }
             {
@@ -470,6 +587,7 @@ public class PSQuoteForm {
                 panel.add(label);
                 panel.setBorder(border);
                 panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(200, 25));
                 productsTable.add(panel, c);
             }
             {
@@ -479,6 +597,7 @@ public class PSQuoteForm {
                 panel.add(label);
                 panel.setBorder(border);
                 panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(200, 25));
                 productsTable.add(panel, c);
             }
             {
@@ -488,6 +607,7 @@ public class PSQuoteForm {
                 panel.add(label);
                 panel.setBorder(lborder);
                 panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(200, 25));
                 productsTable.add(panel, c);
             }
             if(s.isRecommended()){

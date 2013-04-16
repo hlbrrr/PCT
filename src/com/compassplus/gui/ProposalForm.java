@@ -29,6 +29,10 @@ public class ProposalForm {
     private boolean changed = false;
     private PCTChangedListener titleUpdater;
 
+    public PSQuoteForm getPSForm(){
+        return this.psForm;
+    }
+
     public ProposalForm(Proposal proposal, JFrame frame, PCTChangedListener titleUpdater) {
         this.titleUpdater = titleUpdater;
         this.frame = frame;
@@ -207,6 +211,9 @@ public class ProposalForm {
         this.getProposal().delProduct(productForm.getProduct());
         productsTabs.remove(productForm.getRoot());
         summaryForm.update();
+        if (psForm != null) {
+            psForm.update();
+        }
     }
 
     public JTabbedPane getProductsTabs() {
@@ -221,9 +228,30 @@ public class ProposalForm {
         if (proposal.getPSQuote().enabled()) {
             psForm = new PSQuoteForm(proposal, new PCTChangedListener() {
                 public void act(Object src) {
-                    if (src instanceof ProductForm) {
+                    if (src instanceof PSQuoteForm) {
                         titleUpdater.act(proposal);
                         summaryForm.update();
+                        Integer ti = productsTabs.indexOfComponent(psForm.getRoot());
+                        if (ti >= 0) {
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("PS quote");
+                            if(!proposal.getConfig().isSalesSupport()){
+                                sb.append(" (");
+                                if (proposal.getCurrency().getSymbol() != null) {
+                                    sb.append(proposal.getCurrency().getSymbol());
+                                    sb.append(" ");
+                                }
+
+                                sb.append(df.format(proposal.getPSQuote().getPrice()));
+                                if (proposal.getCurrency().getSymbol() == null) {
+                                    sb.append(" ");
+                                    sb.append(proposal.getCurrency().getName());
+                                }
+                                sb.append(")");
+                            }
+                            productsTabs.setTitleAt(ti, sb.toString());
+
+                        }
                     }
                 }
 
@@ -235,9 +263,10 @@ public class ProposalForm {
                     return null;  //To change body of implemented methods use File | Settings | File Templates.
                 }
             }, df, getFrame());
-
             //productsTabs.addTab("PS quote", psForm.getRoot());
             productsTabs.insertTab("PS quote", null, psForm.getRoot(), null, 1);
+
+            psForm.recalc();
 
             productsTabs.setSelectedComponent(psForm.getRoot());
         }

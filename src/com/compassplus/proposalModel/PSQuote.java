@@ -6,6 +6,7 @@ import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.NodeList;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -17,7 +18,7 @@ import java.util.Map;
  */
 public class PSQuote {
     private Proposal proposal;
-    private Map<String, Service> services = new HashMap<String, Service>();
+    private Map<String, Service> services = new LinkedHashMap<String, Service>();
     private Logger log = Logger.getInstance();
     private boolean enabled = false;
 
@@ -74,5 +75,13 @@ public class PSQuote {
 
     public void delService(String key) {
         this.getServices().remove(key);
+    }
+
+    public double getPrice(){
+        double ret = 0d;
+        for(Service s: getServices().values()){
+            ret += s.getRegionalPrice();
+        }
+        return ret;
     }
 }

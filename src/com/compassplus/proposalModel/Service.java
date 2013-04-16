@@ -97,6 +97,13 @@ public class Service {
         this.setService(getRecommendation().getServiceKey(), proposal.getConfig());
     }
 
+    public Service(Proposal proposal, String name, String hint, String serviceKey) throws PCTDataFormatException {
+        this.proposal = proposal;
+        this.name = name;
+        this.hint = hint;
+        this.setService(serviceKey, proposal.getConfig());
+    }
+
     public Recommendation getRecommendation() {
         return this.recommendation;
     }
@@ -326,8 +333,8 @@ public class Service {
             String keys[] = getRecommendation().getPercentageKeys().split("\\s+");
             for (int i = 0; i < keys.length; i++) {
                 //Service s = proposal.getPSQuote().getServices().get(keys[i]);
-                for(Service s:proposal.getPSQuote().getServices().values()){
-                    if(s.getService().getGroupKey().equals(keys[i]) || s.getService().getKey().equals(keys[i])){
+                for (Service s : proposal.getPSQuote().getServices().values()) {
+                    if (s.getService().getGroupKey().equals(keys[i]) || s.getService().getKey().equals(keys[i])) {
                         ret += s.getTotalValue();
                     }
                 }
@@ -376,17 +383,19 @@ public class Service {
 
     public double getTotalValue() {
         double ret = 0d;
-        ret = getSubstitute() > 0 ? getSubstitute() : getMDRecommendationValue() + getIncrement();
+        ret = getSubstitute() > 0 || !isRecommended() ? getSubstitute() : getMDRecommendationValue() + getIncrement();
         return ret;
     }
+
     public double getOnsiteTotalValue() {
         double ret = 0d;
-        ret = getOSDSubstitute() > 0 ? getOSDSubstitute() : getOnsiteMDRecommendationValue() + getOSDIncrement();
+        ret = getOSDSubstitute() > 0 || !isRecommended() ? getOSDSubstitute() : getOnsiteMDRecommendationValue() + getOSDIncrement();
         return ret;
     }
+
     public double getTripTotalValue() {
         double ret = 0d;
-        ret = getOSTSubstitute() > 0 ? getOSTSubstitute() : getTripRecommendationValue() + getOSTIncrement();
+        ret = getOSTSubstitute() > 0 || !isRecommended() ? getOSTSubstitute() : getTripRecommendationValue() + getOSTIncrement();
         return ret;
     }
 
@@ -412,5 +421,14 @@ public class Service {
 
     public void setOSTSubstitute(double val) {
         this.ostSubstitute = val;
+    }
+
+    public Double getRegionalPrice() {
+        Double ret = 0d;
+        ret += getTotalValue() * proposal.getRegion().getMDRate();
+        ret += getOnsiteTotalValue() * proposal.getRegion().getOnsiteDailyCost();
+        ret += getTripTotalValue() * proposal.getRegion().getTripPrice();
+        ret = proposal.getCurrencyRate() * ret;
+        return CommonUtils.getInstance().toNextHundred(ret);
     }
 }

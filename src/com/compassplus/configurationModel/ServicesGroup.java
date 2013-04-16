@@ -1,6 +1,7 @@
 package com.compassplus.configurationModel;
 
 import com.compassplus.exception.PCTDataFormatException;
+import com.compassplus.proposalModel.PSQuote;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
@@ -118,5 +119,15 @@ public class ServicesGroup {
             sb.append(sg.toString(pad + "  "));
         }
         return sb.toString();
+    }
+
+    public double getRegionalPrice(PSQuote quote) {
+        double ret = 0d;
+        for(com.compassplus.proposalModel.Service s: quote.getServices().values()){
+            if(getServices().containsKey(s.getService().getKey())){
+                ret += s.getRegionalPrice();
+            }
+        }
+        return ret;
     }
 }
