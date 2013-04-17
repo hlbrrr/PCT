@@ -96,9 +96,10 @@ public class SummaryForm {
             c.weighty = 0;
             c.gridwidth = 3;
             settingsWrap.add(productsTable, c);
-            c.gridy++;
-            settingsWrap.add(psTable, c);
-
+            if(!getProposal().getConfig().isSalesSupport()){
+                c.gridy++;
+                settingsWrap.add(psTable, c);
+            }
 
             JLabel em = new JLabel("");
             c.weighty = 1.0;   //request any extra vertical space
