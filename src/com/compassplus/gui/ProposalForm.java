@@ -234,7 +234,7 @@ public class ProposalForm {
                         Integer ti = productsTabs.indexOfComponent(psForm.getRoot());
                         if (ti >= 0) {
                             StringBuilder sb = new StringBuilder();
-                            sb.append("PS quote");
+                            sb.append("Professional service");
                             if(!proposal.getConfig().isSalesSupport()){
                                 sb.append(" (");
                                 if (proposal.getCurrency().getSymbol() != null) {
@@ -264,7 +264,7 @@ public class ProposalForm {
                 }
             }, df, getFrame());
             //productsTabs.addTab("PS quote", psForm.getRoot());
-            productsTabs.insertTab("PS quote", null, psForm.getRoot(), null, 1);
+            productsTabs.insertTab("Professional service", null, psForm.getRoot(), null, 1);
 
             psForm.recalc();
 

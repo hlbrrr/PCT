@@ -71,8 +71,11 @@ public class Configuration {
             this.checkExpiration(xut.getNode("/root/Expiration", initialData));
             this.setProducts(xut.getNodes("/root/Products/Product", initialData));
             this.setRegions(xut.getNodes("/root/Regions/Region", initialData));
-            this.setRecommendations(xut.getNodes("/root/Recommendations/Recommendation", initialData));
-            this.setServices(xut.getNode("/root/Services", initialData));
+            try {
+                this.setRecommendations(xut.getNodes("/root/Recommendations/Recommendation", initialData));
+                this.setServices(xut.getNode("/root/Services", initialData));
+            } catch (Exception e) {
+            }
             this.setCurrencies(xut.getNodes("/root/Currencies/Currency", initialData));
             this.setSupportPlans(xut.getNodes("/root/SupportPlans/SupportPlan", initialData));
             this.setAuthLevels(xut.getNodes("/root/AuthLevels/AuthLevel", initialData));

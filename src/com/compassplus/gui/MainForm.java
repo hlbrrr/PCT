@@ -1071,7 +1071,9 @@ public class MainForm {
         psMenu = new JMenu("Professional services");
         psMenu.add(addPSQuote);
         psMenu.add(delPSQuote);
-        psMenu.add(addPSService);
+        if(config.getServices().size() > 0){
+            psMenu.add(addPSService);
+        }
         psMenu.setEnabled(false);
 
         psMenu.addMenuListener(new MenuListener() {

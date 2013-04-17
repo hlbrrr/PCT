@@ -31,6 +31,7 @@ public class PSQuoteForm {
     private JPanel mainPanel;
     private Proposal proposal;
     private PCTChangedListener titleUpdater;
+    private JScrollPane modulesScroll;
     private DecimalFormat df;
     private java.util.List<CustomJLabel> labelsToUpdate = new ArrayList<CustomJLabel>();
     private java.util.List<CustomJLabel> priceLabels = new ArrayList<CustomJLabel>();
@@ -87,7 +88,9 @@ public class PSQuoteForm {
             mainPanel.add(modulesPanel, c);
 
             JPanel modules = new JPanel();
-            JScrollPane modulesScroll = new JScrollPane(modules);
+            modulesScroll = new JScrollPane(modules);
+
+
             modulesScroll.getVerticalScrollBar().setUnitIncrement(16);
             modulesPanel.add(modulesScroll, BorderLayout.CENTER);
             c = new GridBagConstraints();
@@ -205,7 +208,15 @@ public class PSQuoteForm {
             gl.setBorder(new EmptyBorder(0, 4, 2, 0));
             labelPanel.add(gl, c);
 
-            JCheckBox cb = new JCheckBox("Export", true);
+            JCheckBox cb = new JCheckBox("Export", proposal.getPSQuote().isExportable(sg.getKey()));
+
+            cb.addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent e) {
+                    JCheckBox src = (JCheckBox) e.getSource();
+                    proposal.getPSQuote().setExportable(src.isSelected(), _ref.getKey());
+                }
+            });
+
             c.weightx = 0;
             c.gridx++;
             labelPanel.add(cb, c);
@@ -357,7 +368,16 @@ public class PSQuoteForm {
             gl.setBorder(new EmptyBorder(0, 4, 2, 0));
             labelPanel.add(gl, c);
 
-            JCheckBox cb = new JCheckBox("Export", true);
+
+            JCheckBox cb = new JCheckBox("Export", proposal.getPSQuote().isExportable(s.getKey()));
+
+            cb.addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent e) {
+                    JCheckBox src = (JCheckBox) e.getSource();
+                    proposal.getPSQuote().setExportable(src.isSelected(), _ref.getKey());
+                }
+            });
+
             c.weightx = 0;
             c.gridx++;
             labelPanel.add(cb, c);
@@ -530,7 +550,9 @@ public class PSQuoteForm {
                 hl.addMouseListener(new MouseListener() {
                     public void mouseClicked(MouseEvent e) {
                         proposal.getPSQuote().moveServiceUp(_ref.getKey());
+                        Point zu = modulesScroll.getViewport().getViewPosition();
                         update();
+                        modulesScroll.getViewport().setViewPosition(zu);
                     }
 
                     public void mousePressed(MouseEvent e) {
@@ -559,7 +581,9 @@ public class PSQuoteForm {
                 hl.addMouseListener(new MouseListener() {
                     public void mouseClicked(MouseEvent e) {
                         proposal.getPSQuote().moveServiceDown(_ref.getKey());
+                        Point zu = modulesScroll.getViewport().getViewPosition();
                         update();
+                        modulesScroll.getViewport().setViewPosition(zu);
                     }
 
                     public void mousePressed(MouseEvent e) {
@@ -590,7 +614,9 @@ public class PSQuoteForm {
                 hl.addMouseListener(new MouseListener() {
                     public void mouseClicked(MouseEvent e) {
                         proposal.getPSQuote().delService(_ref.getKey());
+                        Point zu = modulesScroll.getViewport().getViewPosition();
                         update();
+                        modulesScroll.getViewport().setViewPosition(zu);
                         //_jPanel.remove(_component);
                         //getRoot().updateUI();
                     }

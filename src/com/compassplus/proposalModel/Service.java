@@ -63,10 +63,16 @@ public class Service {
             } catch (PCTDataFormatException e) {
                 if (this.getRecommendation() != null) this.name = getRecommendation().getName();
             }
+            if(this.name == null){
+                this.name = "";
+            }
             try {
                 this.setHint(xut.getNode("Hint", initialData));
             } catch (PCTDataFormatException e) {
                 if (this.getRecommendation() != null) this.hint = getRecommendation().getHint();
+            }
+            if(this.hint == null){
+                this.hint = "";
             }
 
             this.setIncrement(xut.getNode("Increment", initialData));

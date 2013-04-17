@@ -318,7 +318,8 @@ public class Proposal {
     private void setPSQuote(Document initialData) throws PCTDataFormatException {
         if (xut.getNode("/root/PSQuotePresent", initialData) != null) {
             NodeList services = xut.getNodes("/root/Services/Service", initialData);
-            this.psQuote = new PSQuote(services, this);
+            NodeList states = xut.getNodes("/root/SavedState/DoNotExport", initialData);
+            this.psQuote = new PSQuote(services, states, this);
             this.getPSQuote().setEnabled(true);
         }
     }

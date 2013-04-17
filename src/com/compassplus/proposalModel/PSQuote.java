@@ -5,10 +5,7 @@ import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.NodeList;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,6 +17,10 @@ import java.util.TreeMap;
 public class PSQuote {
     private Proposal proposal;
     private Map<String, Service> services = new LinkedHashMap<String, Service>();
+    private XMLUtils xut = XMLUtils.getInstance();
+
+    private List<String> doNotExport = new ArrayList<String>();
+
     private Logger log = Logger.getInstance();
     private boolean enabled = false;
 
@@ -35,7 +36,19 @@ public class PSQuote {
         return this.enabled;
     }
 
-    public PSQuote(NodeList services, Proposal proposal) {
+    public void setExportable(boolean exportable, String key){
+        if(exportable){
+            doNotExport.remove(key);
+        }else{
+            doNotExport.add(key);
+        }
+    }
+
+    public boolean isExportable(String key){
+        return !doNotExport.contains(key);
+    }
+
+    public PSQuote(NodeList services, NodeList states, Proposal proposal) {
         this.proposal = proposal;
 
         this.getServices().clear();
@@ -51,6 +64,19 @@ public class PSQuote {
             }
             log.info("Successfully parsed " + this.getServices().size() + " services(s)");
         }
+
+        this.doNotExport.clear();
+        if (states.getLength() > 0) {
+            log.info("Found " + states.getLength() + " saved state(s)");
+            for (int i = 0; i < states.getLength(); i++) {
+                try {
+                    this.doNotExport.add(xut.getString(states.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.doNotExport.size() + " saved state(s)");
+        }
     }
 
     public Map<String, Service> getServices() {
@@ -60,6 +86,15 @@ public class PSQuote {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("<PSQuotePresent>true</PSQuotePresent>");
+
+        sb.append("<SavedState>");
+        for (String s : this.doNotExport) {
+            sb.append("<DoNotExport>");
+            sb.append(s.toString());
+            sb.append("</DoNotExport>");
+        }
+        sb.append("</SavedState>");
+
         if (this.getServices() != null && this.getServices().size() > 0) {
             sb.append("<Services>");
             for (Service s : this.getServices().values()) {
