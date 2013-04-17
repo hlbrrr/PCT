@@ -101,7 +101,10 @@ public class MainForm {
         mainMenu.add(fileMenu);
         //mainMenu.add(viewMenu);
         mainMenu.add(proposalMenu);
-        mainMenu.add(psMenu);
+
+        if(config.getServices().size() > 0){
+            mainMenu.add(psMenu);
+        }
         mainMenu.add(helpMenu);
     }
 
@@ -1071,9 +1074,7 @@ public class MainForm {
         psMenu = new JMenu("Professional services");
         psMenu.add(addPSQuote);
         psMenu.add(delPSQuote);
-        if(config.getServices().size() > 0){
-            psMenu.add(addPSService);
-        }
+        psMenu.add(addPSService);
         psMenu.setEnabled(false);
 
         psMenu.addMenuListener(new MenuListener() {
