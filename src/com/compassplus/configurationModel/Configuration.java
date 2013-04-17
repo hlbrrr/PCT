@@ -40,6 +40,8 @@ public class Configuration {
     private String userName = "";
     private Double maxDiscount = 0d;
     private Double maxSupportDiscount = 0d;
+    private Double mdrDiscount = 0d;
+    private Double psDiscount = 0d;
     private String expDateString;
     private Integer minBuild;
     private Integer build;
@@ -60,6 +62,14 @@ public class Configuration {
 
     public Double getMaxSupportDiscount() {
         return maxSupportDiscount;
+    }
+
+    public Double getMDRDiscount() {
+        return mdrDiscount;
+    }
+
+    public Double getPSDiscount() {
+        return psDiscount;
     }
 
     private Configuration() {
@@ -85,6 +95,8 @@ public class Configuration {
             this.setUserName(xut.getNode("/root/Users/User/Name", initialData));
             this.setMaxDiscount(xut.getNode("/root/Users/User/MaxProductDiscount", initialData));
             this.setMaxSupportDiscount(xut.getNode("/root/Users/User/MaxSupportDiscount", initialData));
+            this.setMDRDiscount(xut.getNode("/root/Users/User/MDRDiscount", initialData));
+            this.setPSDiscount(xut.getNode("/root/Users/User/PSDiscount", initialData));
             this.setSalesSupport(xut.getNode("/root/Users/User/SalesSupport", initialData));
 
         } catch (PCTDataFormatException e) {
@@ -110,6 +122,24 @@ public class Configuration {
             this.maxSupportDiscount = this.maxSupportDiscount / 100d;
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("User max support discount is not defined correctly", e.getDetails());
+        }
+    }
+
+    private void setMDRDiscount(Node discount) throws PCTDataFormatException {
+        try {
+            this.mdrDiscount = xut.getDouble(discount);
+            this.mdrDiscount = this.mdrDiscount / 100d;
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("User MDR discount is not defined correctly", e.getDetails());
+        }
+    }
+
+    private void setPSDiscount(Node discount) throws PCTDataFormatException {
+        try {
+            this.psDiscount = xut.getDouble(discount);
+            this.psDiscount = this.psDiscount / 100d;
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("User PS discount is not defined correctly", e.getDetails());
         }
     }
 

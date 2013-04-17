@@ -435,9 +435,21 @@ public class Service {
     }
 
     public Double getRegionalPrice() {
+        return getRegionalMDPrice()+getRegionalOnsitePrice();
+    }
+
+    public Double getRegionalMDPrice() {
         Double ret = 0d;
         if(getCharge()){
-            ret += getTotalValue() * proposal.getRegion().getMDRate();
+            ret += getTotalValue() * proposal.getPSQuote().getMDRate();
+            ret = proposal.getCurrencyRate() * ret;
+        }
+        return CommonUtils.getInstance().toNextHundred(ret);
+    }
+
+    public Double getRegionalOnsitePrice() {
+        Double ret = 0d;
+        if(getCharge()){
             ret += getOnsiteTotalValue() * proposal.getRegion().getOnsiteDailyCost();
             ret += getTripTotalValue() * proposal.getRegion().getTripPrice();
             ret = proposal.getCurrencyRate() * ret;

@@ -319,7 +319,21 @@ public class Proposal {
         if (xut.getNode("/root/PSQuotePresent", initialData) != null) {
             NodeList services = xut.getNodes("/root/Services/Service", initialData);
             NodeList states = xut.getNodes("/root/SavedState/DoNotExport", initialData);
-            this.psQuote = new PSQuote(services, states, this);
+
+            double MDDiscount = 0d;
+            double PSDiscount = 0d;
+            try{
+                MDDiscount = xut.getDouble(xut.getNode("/root/MDDiscount", initialData));
+            }catch(Exception e){
+
+            }
+            try{
+                PSDiscount = xut.getDouble(xut.getNode("/root/PSDiscount", initialData));
+            }catch(Exception e){
+
+            }
+
+            this.psQuote = new PSQuote(services, states, this, MDDiscount, PSDiscount);
             this.getPSQuote().setEnabled(true);
         }
     }

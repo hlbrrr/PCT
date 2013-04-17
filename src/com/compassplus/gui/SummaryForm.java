@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,14 +39,20 @@ public class SummaryForm {
     private JSpinner planRateField;
     private JComboBox supportPlanField;
     private PCTChangedListener currChanged;
+    private PCTChangedListener psFormUpdater;
     private PCTChangedListener titleUpdater;
+
     private PCTChangedListener updated;
     private JPanel productsTable;
+    private JPanel psTable;
     private DecimalFormat df;
+    private JLabel mdLabel;
+    private JSpinner mdField;
 
-    public SummaryForm(Proposal proposal, PCTChangedListener currChanged, DecimalFormat df, PCTChangedListener updated, PCTChangedListener titleUpdater) {
+    public SummaryForm(Proposal proposal, PCTChangedListener currChanged, DecimalFormat df, PCTChangedListener updated, PCTChangedListener titleUpdater, PCTChangedListener psFormUpdater) {
         this.currChanged = currChanged;
         this.titleUpdater = titleUpdater;
+        this.psFormUpdater = psFormUpdater;
         this.updated = updated;
         this.df = df;
         this.proposal = proposal;
@@ -61,7 +68,11 @@ public class SummaryForm {
         settingsWrap.setLayout(new GridBagLayout());
         productsTable = new JPanel(new GridBagLayout());
         productsTable.setMinimumSize(new Dimension(0, 0));
-        productsTable.setBorder(new EmptyBorder(0, 8, 4, 8));
+        productsTable.setBorder(new EmptyBorder(10, 8, 4, 8));
+
+        psTable = new JPanel(new GridBagLayout());
+        psTable.setMinimumSize(new Dimension(0, 0));
+        psTable.setBorder(new EmptyBorder(10, 8, 4, 8));
         {
             GridBagConstraints c = new GridBagConstraints();
             c.gridx = 0;
@@ -82,9 +93,19 @@ public class SummaryForm {
             c.gridy = 1;
             c.gridx = 0;
             c.weightx = 1;
-            c.weighty = 1;
+            c.weighty = 0;
             c.gridwidth = 3;
             settingsWrap.add(productsTable, c);
+            c.gridy++;
+            settingsWrap.add(psTable, c);
+
+
+            JLabel em = new JLabel("");
+            c.weighty = 1.0;   //request any extra vertical space
+            c.anchor = GridBagConstraints.PAGE_END; //bottom of space
+            c.gridx = 0;       //aligned with button 2
+            c.gridy += 1;       //third row
+            settingsWrap.add(em, c);
         }
         settingsPanelLeft.setLayout(new BoxLayout(settingsPanelLeft, BoxLayout.Y_AXIS));
         settingsPanelLeft.setBorder(new EmptyBorder(4, 4, 4, 4));
@@ -103,6 +124,8 @@ public class SummaryForm {
     private void reloadPrices() {
         currChanged.act(this);
         updated.act(this);
+        mdLabel.setText("Region M/D rate (" + getProposal().getCurrency().getName() + ")");
+        mdField.setValue(getProposal().getRegion().getMDRate() * getProposal().getCurrencyRate());
     }
 
     private void initForm(Proposal proposal) {
@@ -159,26 +182,6 @@ public class SummaryForm {
             tmpPanel2.add(maxSupportDiscountField);
 
 
-
-
-            /*JPanel discounts = new JPanel(new GridBagLayout());
-
-            {
-                GridBagConstraints c = new GridBagConstraints();
-                c.gridx = 0;
-                c.gridy = 0;
-                c.weightx = 0.5;
-                c.fill = GridBagConstraints.BOTH;
-                c.anchor = GridBagConstraints.NORTHWEST;
-                discounts.add(tmpPanel, c);
-
-                c.gridx = 1;
-                c.anchor = GridBagConstraints.NORTHEAST;
-                discounts.add(tmpPanel2, c);
-
-            }*/
-
-
             if (!getProposal().getConfig().isSalesSupport()) {
                 settingsPanelCenter.add(tmpPanel);
                 settingsPanelRight.add(tmpPanel2);
@@ -221,6 +224,46 @@ public class SummaryForm {
             settingsPanelLeft.add(tmpPanel);
         }
         {
+            JSpinner maxDiscountField = new JSpinner(new SpinnerNumberModel(0, 0, 0, 0));
+            JLabel maxDiscountLabel = new JLabel("Max. M/D discount (%)");
+            maxDiscountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            maxDiscountField.setValue((int) (getProposal().getConfig().getMDRDiscount() * 100));
+            maxDiscountField.setEnabled(false);
+            maxDiscountField.setAlignmentX(Component.LEFT_ALIGNMENT);
+            maxDiscountField.setMaximumSize(new Dimension(maxDiscountField.getMaximumSize().width, 23));
+            maxDiscountField.setMinimumSize(new Dimension(maxDiscountField.getMinimumSize().width, 23));
+
+            JSpinner maxSupportDiscountField = new JSpinner(new SpinnerNumberModel(0, 0, 0, 0));
+            JLabel maxSupportDiscountLabel = new JLabel("Max. prof. service discount (%)");
+            maxSupportDiscountLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            maxSupportDiscountField.setValue((int) (getProposal().getConfig().getPSDiscount() * 100));
+            maxSupportDiscountField.setEnabled(false);
+            maxSupportDiscountField.setAlignmentX(Component.LEFT_ALIGNMENT);
+            maxSupportDiscountField.setMaximumSize(new Dimension(maxSupportDiscountField.getMaximumSize().width, 23));
+            maxSupportDiscountField.setMinimumSize(new Dimension(maxSupportDiscountField.getMinimumSize().width, 23));
+
+
+            JPanel tmpPanel = new JPanel();
+            tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
+            tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
+            tmpPanel.add(maxDiscountLabel);
+            tmpPanel.add(maxDiscountField);
+
+            JPanel tmpPanel2 = new JPanel();
+            tmpPanel2.setLayout(new BoxLayout(tmpPanel2, BoxLayout.Y_AXIS));
+            tmpPanel2.setBorder(new EmptyBorder(4, 4, 4, 4));
+            tmpPanel2.add(maxSupportDiscountLabel);
+            tmpPanel2.add(maxSupportDiscountField);
+
+
+            if (!getProposal().getConfig().isSalesSupport()) {
+                settingsPanelCenter.add(tmpPanel);
+                settingsPanelRight.add(tmpPanel2);
+            }
+        }
+        {
             JLabel projectNameLabel = new JLabel("Project name");
             projectNameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -259,7 +302,7 @@ public class SummaryForm {
             tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
             tmpPanel.add(projectNameLabel);
             tmpPanel.add(projectNameField);
-            settingsPanelCenter.add(tmpPanel);
+            settingsPanelLeft.add(tmpPanel);
         }
         {
             JLabel regionLabel = new JLabel("Region");
@@ -285,7 +328,7 @@ public class SummaryForm {
             tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
             tmpPanel.add(regionLabel);
             tmpPanel.add(regionField);
-            settingsPanelLeft.add(tmpPanel);
+            settingsPanelCenter.add(tmpPanel);
         }
         {
             JLabel dateLabel = new JLabel("Creation date");
@@ -414,20 +457,39 @@ public class SummaryForm {
             tmpPanel2.add(supportPlanField);
             if (!getProposal().getConfig().isSalesSupport()) {
                 settingsPanelLeft.add(tmpPanel2);
-                settingsPanelCenter.add(tmpPanel);
+                settingsPanelLeft.add(tmpPanel);
                 JPanel tmpPanelE = new JPanel();
                 tmpPanelE.setSize(1, 50);
-                settingsPanelRight.add(tmpPanelE);
-            }else{
+                settingsPanelCenter.add(tmpPanelE);
+            } else {
                 JPanel tmpPanelE1 = new JPanel();
                 tmpPanelE1.setSize(1, 50);
                 settingsPanelCenter.add(tmpPanelE1);
                 JPanel tmpPanelE2 = new JPanel();
                 tmpPanelE2.setSize(1, 50);
                 settingsPanelRight.add(tmpPanelE2);
-                JPanel tmpPanelE3 = new JPanel();
-                tmpPanelE3.setSize(1, 50);
-                settingsPanelRight.add(tmpPanelE3);
+            }
+        }
+
+        {
+            mdField = new JSpinner(new SpinnerNumberModel(0d, 0d, 0d, 0d));
+            mdLabel = new JLabel("");
+            mdLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            //mdField.setValue(getProposal().getRegion().getMDRate() * getProposal().getCurrencyRate());
+            mdField.setEnabled(false);
+            mdField.setAlignmentX(Component.LEFT_ALIGNMENT);
+            mdField.setMaximumSize(new Dimension(mdField.getMaximumSize().width, 23));
+            mdField.setMinimumSize(new Dimension(mdField.getMinimumSize().width, 23));
+
+            JPanel tmpPanel = new JPanel();
+            tmpPanel.setLayout(new BoxLayout(tmpPanel, BoxLayout.Y_AXIS));
+            tmpPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
+            tmpPanel.add(mdLabel);
+            tmpPanel.add(mdField);
+
+            if (!getProposal().getConfig().isSalesSupport()) {
+                settingsPanelRight.add(tmpPanel);
             }
         }
         //maxDiscountField.setMaximumSize(new Dimension(planRateField.getMaximumSize().width, planRateField.getMinimumSize().height));
@@ -443,7 +505,6 @@ public class SummaryForm {
             rateField.setValue(((Currency) src.getSelectedItem()).getRate());
             rateLabel.setText("Currency rate (USD/" + ((Currency) src.getSelectedItem()).getName() + ")");
             reloadPrices();
-
             initSupportPlans(getProposal().getSupportPlan());
         }
         // }
@@ -497,6 +558,7 @@ public class SummaryForm {
             planRateField.setValue((int) (proposal.getSupportRate() * 100));
         }
         makeProductList();
+        makePSList();
     }
 
     public JPanel getRoot() {
@@ -510,6 +572,7 @@ public class SummaryForm {
     public void update() {
         initSupportPlans(null);
         makeProductList();
+        makePSList();
         updated.act(this);
     }
 
@@ -528,7 +591,7 @@ public class SummaryForm {
                 Border lborder = BorderFactory.createMatteBorder(1, 1, 0, 1, Color.black);
                 {
                     c.gridx = 0;
-                    JLabel label = new JLabel("Product Name");
+                    JLabel label = new JLabel("Product name");
                     JPanel panel = new JPanel();
                     panel.add(label);
                     panel.setBorder(border);
@@ -558,7 +621,8 @@ public class SummaryForm {
                         panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
                         productsTable.add(panel, c);
                     }
-                    /*if (getProposal().getRegion().getRate() != 1d)*/ {
+                    /*if (getProposal().getRegion().getRate() != 1d)*/
+                    {
                         c.gridx++;
                         JLabel label = new JLabel("Regional list price");
                         JPanel panel = new JPanel();
@@ -692,7 +756,7 @@ public class SummaryForm {
                 int lastProductIndex = 0;
                 for (Product p : getProposal().getProducts().values()) {
                     lastProductIndex++;
-                    if(getProposal().getConfig().isSalesSupport() && lastProductIndex==getProposal().getProducts().values().size()){
+                    if (getProposal().getConfig().isSalesSupport() && lastProductIndex == getProposal().getProducts().values().size()) {
                         border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
                         lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
                     }
@@ -743,7 +807,8 @@ public class SummaryForm {
                             panel.setBackground(Color.white);
                             productsTable.add(panel, c);
                         }
-                        /*if (getProposal().getRegion().getRate() != 1d)*/ {
+                        /*if (getProposal().getRegion().getRate() != 1d)*/
+                        {
                             {
                                 c.gridx++;
                                 JLabel label = new JLabel((p.getProposal().getCurrency().getSymbol() != null ?
@@ -761,72 +826,12 @@ public class SummaryForm {
                             }
                         }
                         final Product prod = p;
-                        /*final CustomJLabel eulabel = new CustomJLabel(new PCTChangedListener() {
-                            public void act(Object src) {
-                                Double price = 0d;
-                                price = prod.getEndUserPrice();
-
-                                ((CustomJLabel) src).setText((prod.getProposal().getCurrency().getSymbol() != null ?
-                                        prod.getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (prod.getProposal().getCurrency().getSymbol() == null ?
-                                        " " + prod.getProposal().getCurrency().getName() : ""));
-                            }
-
-                            public void setData(String key, Object data) {
-                                //To change body of implemented methods use File | Settings | File Templates.
-                            }
-
-                            public Object getData(String key) {
-                                return null;  //To change body of implemented methods use File | Settings | File Templates.
-                            }
-                        });
-
-                        final CustomJLabel muplabel = new CustomJLabel(new PCTChangedListener() {
-                            public void act(Object src) {
-                                Double price = 0d;
-                                price = prod.getRegionPrice();
-
-                                ((CustomJLabel) src).setText((prod.getProposal().getCurrency().getSymbol() != null ?
-                                        prod.getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (prod.getProposal().getCurrency().getSymbol() == null ?
-                                        " " + prod.getProposal().getCurrency().getName() : ""));
-                            }
-
-                            public void setData(String key, Object data) {
-                                //To change body of implemented methods use File | Settings | File Templates.
-                            }
-
-                            public Object getData(String key) {
-                                return null;  //To change body of implemented methods use File | Settings | File Templates.
-                            }
-                        });
-
-
-                        final CustomJLabel splabel = new CustomJLabel(new PCTChangedListener() {
-                            public void act(Object src) {
-                                if (planRateField != null) {
-                                    Double price = prod.getSupportPrice();
-
-                                    ((CustomJLabel) src).setText((prod.getProposal().getCurrency().getSymbol() != null ?
-                                            prod.getProposal().getCurrency().getSymbol() + " " : "") + df.format(price) + (prod.getProposal().getCurrency().getSymbol() == null ?
-                                            " " + prod.getProposal().getCurrency().getName() : ""));
-                                }
-                            }
-
-                            public void setData(String key, Object data) {
-                                //To change body of implemented methods use File | Settings | File Templates.
-                            }
-
-                            public Object getData(String key) {
-                                return null;  //To change body of implemented methods use File | Settings | File Templates.
-                            }
-                        });*/
-                        //final JSpinner productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (prod.getDiscount() * 100), 0d, (getProposal().getConfig().getMaxDiscount() * 100), 1d, prod, false);
-                        //final JSpinner supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (prod.getSupportDiscount() * 100), 0d, (getProposal().getConfig().getMaxSupportDiscount() * 100), 1d, prod, true);
 
                         final JSpinner supportDiscount = new JSpinner(new SpinnerNumberModel((prod.getSupportDiscount() * 100), 0d, 100d, 1d));
                         final JSpinner productDiscount = new JSpinner(new SpinnerNumberModel((prod.getDiscount() * 100), 0d, 100d, 1d));
                         final JSpinner markUp = new JSpinner(new SpinnerNumberModel((prod.getMarkUp() - 1) * 100d, 0d, 100d, 1d));
 
-                        final SpinnerNumberModel markUpSNP = new SpinnerNumberModel(prod.getRegionPrice().doubleValue(), prod.getRegionPrice(true).doubleValue(), prod.getRegionPrice(true).doubleValue()*2, 1000d);
+                        final SpinnerNumberModel markUpSNP = new SpinnerNumberModel(prod.getRegionPrice().doubleValue(), prod.getRegionPrice(true).doubleValue(), prod.getRegionPrice(true).doubleValue() * 2, 1000d);
                         final JSpinner markUpSpinner = new JSpinner(markUpSNP);
 
                         final SpinnerNumberModel productDiscountSpinnerSNP = new SpinnerNumberModel(prod.getEndUserPrice().doubleValue(), 0d, prod.getRegionPrice().doubleValue(), 1000d);
@@ -845,17 +850,6 @@ public class SummaryForm {
                                         if (ev.getSource() == markUp) {
                                             prod.setMarkUp(1d + (Double) markUp.getValue() / 100d);
                                             markUpSpinner.setValue(prod.getRegionPrice());
-                                            //eulabel.call();
-                                            //gleulabel.call();
-                                            //splabel.call();
-                                            //glsplabel.call();
-                                            //glmuplabel.call();
-                                            //muplabel.call();
-
-                                            //updated.act(that);
-                                            //productDiscount.setValue(productDiscount.getValue());
-                                            //supportDiscount.setValue(supportDiscount.getValue());
-                                            //titleUpdater.act(proposal);
                                         }
                                     }
                                 });
@@ -868,17 +862,14 @@ public class SummaryForm {
                                     public void run() {
                                         if (ev.getSource() == markUpSpinner) {
                                             markUp.removeChangeListener(markUpCL);
-                                            Double mu = (100 *(Double)markUpSpinner.getValue())/prod.getRegionPrice(true)-100;
+                                            Double mu = (100 * (Double) markUpSpinner.getValue()) / prod.getRegionPrice(true) - 100;
                                             markUp.setValue(mu);
                                             markUp.addChangeListener(markUpCL);
 
                                             prod.setMarkUp(1d + (Double) markUp.getValue() / 100d);
-                                            //eulabel.call();
                                             gleulabel.call();
-                                            //splabel.call();
                                             glsplabel.call();
                                             glmuplabel.call();
-                                            //muplabel.call();
                                             productDiscountSpinnerSNP.setMaximum(prod.getRegionPrice());
                                             productDiscountSpinner.setValue(prod.getEndUserPrice());
 
@@ -886,8 +877,6 @@ public class SummaryForm {
                                             supportDiscountSpinner.setValue(prod.getSupportPrice());
 
                                             updated.act(that);
-                                            //productDiscount.setValue(productDiscount.getValue());
-                                            //supportDiscount.setValue(supportDiscount.getValue());
                                             titleUpdater.act(proposal);
                                         }
                                     }
@@ -921,7 +910,7 @@ public class SummaryForm {
                                     public void run() {
                                         if (ev.getSource() == productDiscountSpinner) {
                                             productDiscount.removeChangeListener(productDiscountCL);
-                                            Double mu = (1d - ((Double)productDiscountSpinner.getValue())/prod.getRegionPrice())*100;
+                                            Double mu = (1d - ((Double) productDiscountSpinner.getValue()) / prod.getRegionPrice()) * 100;
                                             productDiscount.setValue(mu);
                                             productDiscount.addChangeListener(productDiscountCL);
 
@@ -963,7 +952,7 @@ public class SummaryForm {
                                     public void run() {
                                         if (ev.getSource() == supportDiscountSpinner) {
                                             supportDiscount.removeChangeListener(supportDiscountCL);
-                                            Double mu = (1d - ((Double)supportDiscountSpinner.getValue())/prod.getSupportPriceUndiscounted())*100;
+                                            Double mu = (1d - ((Double) supportDiscountSpinner.getValue()) / prod.getSupportPriceUndiscounted()) * 100;
                                             supportDiscount.setValue(mu);
                                             supportDiscount.addChangeListener(supportDiscountCL);
 
@@ -1023,26 +1012,10 @@ public class SummaryForm {
                             panel.setBackground(Color.white);
                             productsTable.add(panel, c);
                         }
-                       /* {
-                            c.gridx++;
-                            JPanel panel = new JPanel();
-                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                            panel.setBorder(new EmptyBorder(4, 4, 4, 4));
-                            mupSpinner.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                            panel.setPreferredSize(new Dimension(0, 32));
-                            //panel.add(muplabel);
-                            panel.add(mupSpinner);
-                            panel.setBorder(border);
-                            panel.setBackground(Color.white);
-                            productsTable.add(panel, c);
-                        }*/
 
                         {
                             c.gridx++;
-                            //final JSpinner sp = new DiscountJSpinner("Maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1);
-                            //productDiscount = new DiscountJSpinner("Current maximum product discount is ", getRoot(), (int) (prod.getDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxDiscount() * 100), 1, prod, false);
 
-                            //productDiscount.addChangeListener(productDiscountCL);
                             productDiscount.setMaximumSize(new Dimension(productDiscount.getMaximumSize().width, productDiscount.getMinimumSize().height));
 
                             JPanel panelW = new JPanel();
@@ -1064,8 +1037,7 @@ public class SummaryForm {
                         }
                         {
                             c.gridx++;
-                            //supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
-                            //supportDiscount.addChangeListener(supportDiscountCL);
+
                             productDiscountSpinner.setMaximumSize(new Dimension(productDiscountSpinner.getMaximumSize().width, productDiscountSpinner.getMinimumSize().height));
 
                             JPanel panelW = new JPanel();
@@ -1085,18 +1057,7 @@ public class SummaryForm {
                             panel.setBackground(Color.white);
                             productsTable.add(panel, c);
                         }
-                        /*{
-                            c.gridx++;
-                            JPanel panel = new JPanel();
-                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                            eulabel.setBorder(new EmptyBorder(4, 4, 4, 4));
-                            eulabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                            panel.setPreferredSize(new Dimension(0, 32));
-                            panel.add(eulabel);
-                            panel.setBorder(border);
-                            panel.setBackground(Color.white);
-                            productsTable.add(panel, c);
-                        }*/
+
                         {
                             c.gridx++;
                             //supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
@@ -1119,23 +1080,7 @@ public class SummaryForm {
                             panel.setBackground(Color.white);
                             productsTable.add(panel, c);
                         }
-/*                        {
-                            c.gridx++;
-                            *//*if (planRateField != null) {
-                                label.setText((p.getProposal().getCurrency().getSymbol() != null ?
-                                        p.getProposal().getCurrency().getSymbol() + " " : "") + df.format(p.getPrice() * getProposal().getRegion().getRate() * ((Integer) planRateField.getValue() / 100d)) + (p.getProposal().getCurrency().getSymbol() == null ?
-                                        " " + p.getProposal().getCurrency().getName() : ""));
-                            }*//*
-                            JPanel panel = new JPanel();
-                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                            splabel.setBorder(new EmptyBorder(4, 4, 4, 4));
-                            splabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                            panel.setPreferredSize(new Dimension(0, 32));
-                            panel.add(splabel);
-                            panel.setBorder(lborder);
-                            panel.setBackground(Color.white);
-                            productsTable.add(panel, c);
-                        }*/
+
                         {
                             c.gridx++;
                             //supportDiscount = new DiscountJSpinner("Current maximum support discount is ", getRoot(), (int) (prod.getSupportDiscount() * 100), 0, (int) (getProposal().getConfig().getMaxSupportDiscount() * 100), 1, prod, true);
@@ -1213,7 +1158,8 @@ public class SummaryForm {
                         panel.setBackground(Color.white);
                         productsTable.add(panel, c);
                     }
-                    /*if (getProposal().getRegion().getRate() != 1d)*/ {
+                    /*if (getProposal().getRegion().getRate() != 1d)*/
+                    {
                         c.gridx++;
                         JLabel label = new JLabel((getProposal().getCurrency().getSymbol() != null ?
                                 getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getRegionalPrice()) + (getProposal().getCurrency().getSymbol() == null ?
@@ -1308,12 +1254,341 @@ public class SummaryForm {
                     glsplabel.call();
                     glmuplabel.call();
                 }
-                JLabel em = new JLabel("");
-                c.weighty = 1.0;   //request any extra vertical space
-                c.anchor = GridBagConstraints.PAGE_END; //bottom of space
-                c.gridx = 0;       //aligned with button 2
-                c.gridy += 1;       //third row
-                productsTable.add(em, c);
+            }
+        }
+    }
+
+    private void makePSList() {
+        if (psTable != null) {
+            final SummaryForm that = this;
+            psTable.removeAll();
+            if (getProposal().getPSQuote().enabled()) {
+                GridBagConstraints c = new GridBagConstraints();
+                c.gridy = 0;
+                c.weightx = 1;
+                c.fill = GridBagConstraints.HORIZONTAL;
+                c.anchor = GridBagConstraints.PAGE_START;
+                Border border = BorderFactory.createMatteBorder(1, 1, 0, 0, Color.black);
+                Border lborder = BorderFactory.createMatteBorder(1, 1, 0, 1, Color.black);
+                {
+                    c.gridx = 0;
+                    JLabel label = new JLabel("M/D price");
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                    psTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    JLabel label = new JLabel("M/D rate (" + getProposal().getCurrency().getName() + ")");
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.setBorder(border);
+                    if (getProposal().getConfig().isSalesSupport()) {
+                        panel.setBorder(lborder);
+                    }
+                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                    psTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    JLabel label = new JLabel("M/D discount (%)");
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                    psTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    JLabel label = new JLabel("PS discount (%)");
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                    psTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    JLabel label = new JLabel("M/D total price");
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                    psTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    JLabel label = new JLabel("Onsite budget");
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                    psTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    JLabel label = new JLabel("Total");
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.setBorder(lborder);
+                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                    psTable.add(panel, c);
+                }
+
+                final java.util.List<CustomJLabel> lbls = new ArrayList<CustomJLabel>();
+
+                border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
+                lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
+
+                c.gridy++;
+                {
+                    c.gridx = 0;
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?
+                                    getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPSQuote().getMDPrice()) + (getProposal().getCurrency().getSymbol() == null ?
+                                    " " + getProposal().getCurrency().getName() : ""));
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    lbls.add(label);
+
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    psTable.add(panel, c);
+                }
+                final JSpinner mdRateF = new JSpinner(new SpinnerNumberModel(getProposal().getPSQuote().getMDRate() * getProposal().getCurrencyRate(), 0d, getProposal().getRegion().getMDRate() * getProposal().getCurrencyRate(), 1d));
+                final JSpinner mdDiscountF = new JSpinner(new SpinnerNumberModel(getProposal().getPSQuote().getMDDiscount() * 100, 0d, 100d, 1d));
+
+                final ChangeListener mdDiscountFCL = new ChangeListener() {
+                    public void stateChanged(ChangeEvent e) {
+                        final ChangeEvent ev = e;
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                if (ev.getSource() == mdDiscountF) {
+                                    getProposal().getPSQuote().setMDDiscount((Double) mdDiscountF.getValue() / 100d);
+                                    mdRateF.setValue(getProposal().getPSQuote().getMDRate()*getProposal().getCurrencyRate());
+                                    /*for(CustomJLabel l:lbls){
+                                        l.call();
+                                    }
+                                    psFormUpdater.act(null);*/
+                                }
+                            }
+                        });
+                    }
+                };
+                ChangeListener mdRateFCL = new ChangeListener() {
+                    public void stateChanged(ChangeEvent e) {
+                        final ChangeEvent ev = e;
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                if (ev.getSource() == mdRateF) {
+                                    mdDiscountF.removeChangeListener(mdDiscountFCL);
+                                    Double mu = 100 * (1 - (Double) mdRateF.getValue() / (getProposal().getRegion().getMDRate()*getProposal().getCurrencyRate()));
+                                    mdDiscountF.setValue(mu);
+                                    mdDiscountF.addChangeListener(mdDiscountFCL);
+                                    getProposal().getPSQuote().setMDDiscount((Double) mdDiscountF.getValue() / 100d);
+
+                                    for(CustomJLabel l:lbls){
+                                        l.call();
+                                    }
+                                    psFormUpdater.act(null);
+                                    titleUpdater.act(proposal);
+                                }
+                            }
+                        });
+                    }
+                };
+                {
+                    c.gridx++;
+
+                    mdRateF.setMaximumSize(new Dimension(mdRateF.getMaximumSize().width, mdRateF.getMinimumSize().height));
+                    mdRateF.addChangeListener(mdRateFCL);
+
+                    JPanel panelW = new JPanel();
+                    panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                    panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    panelW.add(mdRateF);
+                    panelW.setBackground(Color.white);
+
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                    mdRateF.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(panelW);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    psTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+
+                    mdDiscountF.setMaximumSize(new Dimension(mdDiscountF.getMaximumSize().width, mdDiscountF.getMinimumSize().height));
+                    mdDiscountF.addChangeListener(mdDiscountFCL);
+
+                    JPanel panelW = new JPanel();
+                    panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                    panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    panelW.add(mdDiscountF);
+                    panelW.setBackground(Color.white);
+
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                    mdDiscountF.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(panelW);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    psTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    final JSpinner productDiscount = new JSpinner(new SpinnerNumberModel(getProposal().getPSQuote().getPSDiscount() * 100, 0d, 100d, 1d));
+                    productDiscount.setMaximumSize(new Dimension(productDiscount.getMaximumSize().width, productDiscount.getMinimumSize().height));
+                    productDiscount.addChangeListener(new ChangeListener() {
+                        public void stateChanged(ChangeEvent e) {
+                            final ChangeEvent ev = e;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    if (ev.getSource() == productDiscount) {
+                                        getProposal().getPSQuote().setPSDiscount((Double) productDiscount.getValue() / 100d);
+                                        for (CustomJLabel l : lbls) {
+                                            l.call();
+                                        }
+                                        titleUpdater.act(proposal);
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    JPanel panelW = new JPanel();
+                    panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                    panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    panelW.add(productDiscount);
+                    panelW.setBackground(Color.white);
+
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                    productDiscount.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(panelW);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    psTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?
+                                    getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPSQuote().getMDTotalPrice()) + (getProposal().getCurrency().getSymbol() == null ?
+                                    " " + getProposal().getCurrency().getName() : ""));
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    lbls.add(label);
+
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    psTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?
+                                    getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPSQuote().getOnsitePrice()) + (getProposal().getCurrency().getSymbol() == null ?
+                                    " " + getProposal().getCurrency().getName() : ""));
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    lbls.add(label);
+
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    psTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?
+                                    getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPSQuote().getGrandTotal()) + (getProposal().getCurrency().getSymbol() == null ?
+                                    " " + getProposal().getCurrency().getName() : ""));
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    lbls.add(label);
+
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(lborder);
+                    panel.setBackground(Color.white);
+                    psTable.add(panel, c);
+                }
             }
         }
     }

@@ -23,6 +23,8 @@ public class PSQuote {
 
     private Logger log = Logger.getInstance();
     private boolean enabled = false;
+    private double MDDiscount = 0d;
+    private double PSDiscount = 0d;
 
     public PSQuote(Proposal proposal) {
         this.proposal = proposal;
@@ -36,20 +38,22 @@ public class PSQuote {
         return this.enabled;
     }
 
-    public void setExportable(boolean exportable, String key){
-        if(exportable){
+    public void setExportable(boolean exportable, String key) {
+        if (exportable) {
             doNotExport.remove(key);
-        }else{
+        } else {
             doNotExport.add(key);
         }
     }
 
-    public boolean isExportable(String key){
+    public boolean isExportable(String key) {
         return !doNotExport.contains(key);
     }
 
-    public PSQuote(NodeList services, NodeList states, Proposal proposal) {
+    public PSQuote(NodeList services, NodeList states, Proposal proposal, double MDDiscount, double PSDiscount) {
         this.proposal = proposal;
+        this.MDDiscount = MDDiscount;
+        this.PSDiscount = PSDiscount;
 
         this.getServices().clear();
         if (services.getLength() > 0) {
@@ -86,6 +90,8 @@ public class PSQuote {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("<PSQuotePresent>true</PSQuotePresent>");
+        sb.append("<MDDiscount>" + MDDiscount + "</MDDiscount>");
+        sb.append("<PSDiscount>" + PSDiscount + "</PSDiscount>");
 
         sb.append("<SavedState>");
         for (String s : this.doNotExport) {
@@ -195,5 +201,49 @@ public class PSQuote {
             }
         }
         setServices(tmp);
+    }
+
+    public double getMDPrice() {
+        double ret = 0d;
+        for (Service s : getServices().values()) {
+            ret += s.getRegionalMDPrice();
+        }
+        return ret;
+    }
+
+    public double getOnsitePrice() {
+        double ret = 0d;
+        for (Service s : getServices().values()) {
+            ret += s.getRegionalOnsitePrice();
+        }
+        return ret;
+    }
+
+    public double getMDRate() {
+        return proposal.getRegion().getMDRate() * (1 - this.getMDDiscount());
+    }
+
+    public double getMDDiscount() {
+        return MDDiscount;
+    }
+
+    public double getPSDiscount() {
+        return PSDiscount;
+    }
+
+    public void setMDDiscount(double MDDiscount) {
+        this.MDDiscount = MDDiscount;
+    }
+
+    public void setPSDiscount(double PSDiscount) {
+        this.PSDiscount = PSDiscount;
+    }
+
+    public double getMDTotalPrice() {
+        return getMDPrice() * (1 - getPSDiscount());
+    }
+
+    public double getGrandTotal() {
+        return getMDTotalPrice() + getOnsitePrice();
     }
 }

@@ -118,7 +118,7 @@ public class ProposalForm {
     private void addAuthPage(Proposal proposal, PCTChangedListener alUpdater) {
         if (!proposal.getConfig().isSalesSupport() && proposal.getConfig().getAuthLevels().size() > 0) {
             authForm = new AuthLevelsForm(proposal, alUpdater);
-            productsTabs.addTab("Authority Levels", authForm.getRoot());
+            productsTabs.addTab("Authority levels", authForm.getRoot());
         }
     }
 
@@ -158,7 +158,21 @@ public class ProposalForm {
             public Object getData(String key) {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
-        }, titleUpdater
+        }, titleUpdater, new PCTChangedListener() {
+            public void act(Object src) {
+                if(psForm!=null){
+                    psForm.recalc();
+                }
+            }
+
+            public void setData(String key, Object data) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public Object getData(String key) {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        }
         );
         titleUpdater.setData("summaryForm", summaryForm);
         productsTabs.addTab("Summary", summaryForm.getRoot());

@@ -102,7 +102,7 @@ public class MainForm {
         //mainMenu.add(viewMenu);
         mainMenu.add(proposalMenu);
 
-        if(config.getServices().size() > 0){
+        if (config.getServices().size() > 0) {
             mainMenu.add(psMenu);
         }
         mainMenu.add(helpMenu);
@@ -864,7 +864,6 @@ public class MainForm {
         });*/
 
 
-
         addProduct = new JMenuItem("Add product");
         addProduct.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -966,10 +965,10 @@ public class MainForm {
                 List<ListItem> sgs = new ArrayList<ListItem>();
                 List<ListItem> services = new ArrayList<ListItem>();
                 boolean first = true;
-                for(ServicesGroup sg : getCurrentProposalForm().getProposal().getConfig().getServicesRoot().getGroups()){
+                for (ServicesGroup sg : getCurrentProposalForm().getProposal().getConfig().getServicesRoot().getGroups()) {
                     sgs.add(new ListItem(sg.getName(), sg.getKey()));
-                    if(first){
-                        for(Service s: sg.getServices().values()){
+                    if (first) {
+                        for (Service s : sg.getServices().values()) {
                             services.add(new ListItem(s.getName(), s.getKey()));
                         }
                         first = false;
@@ -984,9 +983,9 @@ public class MainForm {
                     public void actionPerformed(ActionEvent actionEvent) {
                         ListItem li = (ListItem) serviceGroupField.getSelectedItem();
                         serviceField.removeAllItems();
-                        for(ServicesGroup sg:getCurrentProposalForm().getProposal().getConfig().getServicesRoot().getGroups()){
-                            if(sg.getKey().equals(li.getValue())){
-                                for(Service s: sg.getServices().values()){
+                        for (ServicesGroup sg : getCurrentProposalForm().getProposal().getConfig().getServicesRoot().getGroups()) {
+                            if (sg.getKey().equals(li.getValue())) {
+                                for (Service s : sg.getServices().values()) {
                                     serviceField.addItem(new ListItem(s.getName(), s.getKey()));
                                 }
                                 break;
@@ -1046,9 +1045,9 @@ public class MainForm {
                                                 if (value == JOptionPane.OK_OPTION) {
 
                                                     getCurrentProposalForm().getProposal().getPSQuote().addService(new com.compassplus.proposalModel.Service(getCurrentProposalForm().getProposal(), serviceName.getText(), textArea.getText(), ((ListItem) serviceField.getSelectedItem()).getValue()));
-                                                    try{
-                                                    getCurrentProposalForm().getPSForm().update();
-                                                    }catch(Exception ee){
+                                                    try {
+                                                        getCurrentProposalForm().getPSForm().update();
+                                                    } catch (Exception ee) {
                                                         ee.printStackTrace();
                                                     }
 
@@ -1071,7 +1070,7 @@ public class MainForm {
             }
         });
 
-        psMenu = new JMenu("Professional services");
+        psMenu = new JMenu("Professional service");
         psMenu.add(addPSQuote);
         psMenu.add(delPSQuote);
         psMenu.add(addPSService);
@@ -1166,7 +1165,7 @@ public class MainForm {
         exit.addActionListener(actionListener);
     }
 
-    private boolean isNormalDiscount(Number value, Product product, Comparable maximumDiscount, boolean isSupport){
+    private boolean isNormalDiscount(Number value, Product product, Comparable maximumDiscount, boolean isSupport) {
         Double maximumDiscountedSum = ((1 - ((Number) maximumDiscount).doubleValue())) * (isSupport ? product.getSupportPriceUndiscounted(true) : product.getRegionPrice(true));
 
         final Double newMax = (Math.round(10000d * (1 - maximumDiscountedSum / (isSupport ? product.getSupportPriceUndiscounted() : product.getRegionPrice()))) / 100d);
@@ -1174,13 +1173,14 @@ public class MainForm {
         //if (!value.equals(this.value)) {
         if (newMax.compareTo(((Number) value).doubleValue()) < 0) {
             return false;
-        }else{
+        } else {
             return true;
         }
 
     }
 
     public void addProposalForm(Proposal proposal, JFrame frame, boolean dropChanged) {
+        final Proposal _proposal = proposal;
         ProposalForm proposalForm = new ProposalForm(proposal, getFrame(), new PCTChangedListener() {
             Map<String, Object> data = new HashMap<String, Object>();
 
@@ -1189,21 +1189,27 @@ public class MainForm {
                     com.compassplus.proposalModel.Proposal pp = ((com.compassplus.proposalModel.Proposal) src);
                     int status = 0;
                     boolean exceedDL = false;
-                    for(Product p : pp.getProducts().values()){
-                        if(!isNormalDiscount(p.getSupportDiscount()*100d, p, p.getProposal().getConfig().getMaxSupportDiscount(), true) ||
-                                !isNormalDiscount(p.getDiscount()*100d, p, p.getProposal().getConfig().getMaxDiscount(), false) ){
+
+                    if (_proposal.getPSQuote().enabled() && (_proposal.getPSQuote().getMDDiscount() > _proposal.getConfig().getMDRDiscount() ||
+                            _proposal.getPSQuote().getPSDiscount() > _proposal.getConfig().getPSDiscount())) {
+                        exceedDL = true;
+                    }
+
+                    for (Product p : pp.getProducts().values()) {
+                        if (!isNormalDiscount(p.getSupportDiscount() * 100d, p, p.getProposal().getConfig().getMaxSupportDiscount(), true) ||
+                                !isNormalDiscount(p.getDiscount() * 100d, p, p.getProposal().getConfig().getMaxDiscount(), false)) {
                             exceedDL = true;
                             break;
                         }
                     }
-                    if (pp.getConfig().getAuthLevels().size()==0 || !pp.isAllAlsDefined() || pp.getConfig().isSalesSupport()) {
+                    if (pp.getConfig().getAuthLevels().size() == 0 || !pp.isAllAlsDefined() || pp.getConfig().isSalesSupport()) {
 
                     } else if (pp.isApproved()) {
                         status = 1;
                     } else {
                         status = 2;
                     }
-                    if(!pp.getConfig().isSalesSupport() && exceedDL){
+                    if (!pp.getConfig().isSalesSupport() && exceedDL) {
                         status = 2;
                     }
 
@@ -1384,12 +1390,12 @@ public class MainForm {
             }
             b.put("VAR$" + prod.getName().replaceAll("\\s", "_") + "$PRIMARY_MODE", p != null ? !p.getSecondarySale() : "");
         }
-        for(com.compassplus.configurationModel.AuthLevel al : proposal.getConfig().getAuthLevels().values()){
+        for (com.compassplus.configurationModel.AuthLevel al : proposal.getConfig().getAuthLevels().values()) {
             String key = "AL$" + al.getKey().replace("-", "_");
             String alValue = proposal.getSelectedAls().get(al.getKey());
             String alText = proposal.getAlsTxt().get(al.getKey());
-            b.put(key + "$VALUE", alValue!=null?alValue:"");
-            b.put(key + "$TEXT", alText!=null?alText:"");
+            b.put(key + "$VALUE", alValue != null ? alValue : "");
+            b.put(key + "$TEXT", alText != null ? alText : "");
         }
         return b;
     }
