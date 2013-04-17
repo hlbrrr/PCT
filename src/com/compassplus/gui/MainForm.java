@@ -1192,7 +1192,7 @@ public class MainForm {
 
                     if (_proposal.getPSQuote().enabled() && (_proposal.getPSQuote().getMDDiscount() > _proposal.getConfig().getMDRDiscount() ||
                             _proposal.getPSQuote().getPSDiscount() > _proposal.getConfig().getPSDiscount())) {
-                        exceedDL = true;
+                        exceedDL = true ;
                     }
 
                     for (Product p : pp.getProducts().values()) {
