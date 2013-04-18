@@ -379,9 +379,9 @@ public class MainForm {
                             sheets.size() > 1 ? new JLabel("Products sheet") : null, sheetIndexField,
                             new JLabel("Products row index"), rowIndexField,
                             new JLabel("Products cell index"), cellIndexField,
-                            (sheets.size() > 1 && isPSQ) ? new JLabel("Prof. service sheet") : null, isPSQ ? psSheetIndexField : null,
-                            isPSQ ? new JLabel("Prof. service row index") : null, isPSQ ? psRowIndexField : null,
-                            isPSQ ? new JLabel("Prof. service cell index") : null, isPSQ ? psCellIndexField : null
+                            (sheets.size() > 1 && isPSQ) ? new JLabel("Prof. services sheet") : null, isPSQ ? psSheetIndexField : null,
+                            isPSQ ? new JLabel("Prof. services row index") : null, isPSQ ? psRowIndexField : null,
+                            isPSQ ? new JLabel("Prof. services cell index") : null, isPSQ ? psCellIndexField : null
                     },
                     JOptionPane.QUESTION_MESSAGE,
                     JOptionPane.OK_CANCEL_OPTION);
@@ -431,6 +431,13 @@ public class MainForm {
                                                 }
 
 
+                                                if(getCurrentProposalForm().getProposal().getPSQuote().enabled()){
+                                                    if(s.equals(psS)){
+                                                        JOptionPane.showMessageDialog(getRoot(), "Products and prof. services can't be exported on the same sheet", "Error", JOptionPane.ERROR_MESSAGE);
+                                                        throw new Exception();
+                                                    }
+                                                }
+
                                                 Integer rowIndex = null;
                                                 try {
                                                     rowIndex = Integer.parseInt(rowIndexField.getText());
@@ -452,12 +459,11 @@ public class MainForm {
                                                 } catch (Exception exception) {
                                                 }
                                                 if ((psRowIndex == null || psRowIndex < 0) && isPSQ) {
-                                                    JOptionPane.showMessageDialog(getRoot(), "Prof. service row index is not valid", "Error", JOptionPane.ERROR_MESSAGE);
+                                                    JOptionPane.showMessageDialog(getRoot(), "Prof. services row index is not valid", "Error", JOptionPane.ERROR_MESSAGE);
                                                     psRowIndexField.requestFocus();
                                                     psRowIndexField.selectAll();
                                                     throw new Exception();
                                                 }
-
 
                                                 Integer cellIndex = null;
                                                 try {
@@ -480,7 +486,7 @@ public class MainForm {
                                                 } catch (Exception exception) {
                                                 }
                                                 if ((psCellIndex == null || psCellIndex < 0) && isPSQ) {
-                                                    JOptionPane.showMessageDialog(getRoot(), "Prof. service cell index is not valid", "Error", JOptionPane.ERROR_MESSAGE);
+                                                    JOptionPane.showMessageDialog(getRoot(), "Prof. services cell index is not valid", "Error", JOptionPane.ERROR_MESSAGE);
                                                     psCellIndexField.requestFocus();
                                                     psCellIndexField.selectAll();
                                                     throw new Exception();
@@ -1903,7 +1909,7 @@ public class MainForm {
             }
         });
 
-        psMenu = new JMenu("Professional service");
+        psMenu = new JMenu("Professional services");
         psMenu.add(addPSQuote);
         psMenu.add(delPSQuote);
         psMenu.add(addPSService);

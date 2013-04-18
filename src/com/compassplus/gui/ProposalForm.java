@@ -248,7 +248,7 @@ public class ProposalForm {
                         Integer ti = productsTabs.indexOfComponent(psForm.getRoot());
                         if (ti >= 0) {
                             StringBuilder sb = new StringBuilder();
-                            sb.append("Professional service");
+                            sb.append("Professional services");
                             if(!proposal.getConfig().isSalesSupport()){
                                 sb.append(" (");
                                 if (proposal.getCurrency().getSymbol() != null) {

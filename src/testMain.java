@@ -44,11 +44,11 @@ public class testMain {
         logger = java.util.logging.Logger.getLogger("stdout");
         LoggingOutputStream los;
         los = new LoggingOutputStream(logger, StdOutErrLevel.STDOUT);
-        //System.setOut(new PrintStream(los, true));
+        System.setOut(new PrintStream(los, true));
 
         logger = java.util.logging.Logger.getLogger("stderr");
         los = new LoggingOutputStream(logger, StdOutErrLevel.STDERR);
-        //System.setErr(new PrintStream(los, true));
+        System.setErr(new PrintStream(los, true));
 
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
