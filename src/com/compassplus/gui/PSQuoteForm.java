@@ -530,7 +530,7 @@ public class PSQuoteForm {
             gl.setBorder(new EmptyBorder(0, 4, 2, 0));
             labelPanel.add(gl, c);
 
-            JCheckBox cb = new JCheckBox("Charge", r.getCharge());
+            JCheckBox cb = new JCheckBox("Charge M/D", r.getCharge());
             cb.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
                     JCheckBox src = (JCheckBox) e.getSource();

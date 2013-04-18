@@ -2,6 +2,7 @@ package com.compassplus.gui;
 
 import com.compassplus.configurationModel.*;
 import com.compassplus.exception.PCTDataFormatException;
+import com.compassplus.proposalModel.PSQuote;
 import com.compassplus.proposalModel.Product;
 import com.compassplus.proposalModel.Proposal;
 import com.compassplus.utils.CommonUtils;
@@ -325,18 +326,22 @@ public class MainForm {
                             psRowIndexInt = Integer.parseInt(rowIndexCell.getStringCellValue());
                             psRowIndexInt++;
                             psCellIndexInt++;
+                            System.out.println("psRowIndexInt = " + psRowIndexInt);
+                            System.out.println("psRowsCountInt = " + psRowsCountInt);
                             //sheetIndexInt = Integer.parseInt(sheetIndexCell.getStringCellValue());
                             psSheetIndexStr = sheetIndexCell.getStringCellValue();
                             if (wb.getSheet(psSheetIndexStr) != null) {
                                 //sheetIndexStr = wb.getSheetAt(sheetIndexInt).getSheetName();
                                 for (int j = 0; j < psRowsCountInt; j++) {
+                                    System.out.println("removing " + j);
                                     RowStyle rowStyle = new RowStyle();
                                     rowStyle.init(wb, wb.getSheet(psSheetIndexStr).getRow(psRowIndexInt - 1));
                                     psRowStyles.add(rowStyle);
-                                    removeRow(wb.getSheet(psSheetIndexStr), psRowIndexInt - 1, wb);
+                                    removeRow(wb.getSheet(psSheetIndexStr), psRowIndexInt - 1, wb, true);
                                 }
                             }
                         } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
                     }
                 } else {
@@ -374,9 +379,9 @@ public class MainForm {
                             sheets.size() > 1 ? new JLabel("Products sheet") : null, sheetIndexField,
                             new JLabel("Products row index"), rowIndexField,
                             new JLabel("Products cell index"), cellIndexField,
-                            (sheets.size() > 1 && isPSQ) ? new JLabel("Prof. service sheet") : null, isPSQ?psSheetIndexField:null,
-                            isPSQ?new JLabel("Prof. service row index"):null, isPSQ?psRowIndexField:null,
-                            isPSQ?new JLabel("Prof. service cell index"):null, isPSQ?psCellIndexField:null
+                            (sheets.size() > 1 && isPSQ) ? new JLabel("Prof. service sheet") : null, isPSQ ? psSheetIndexField : null,
+                            isPSQ ? new JLabel("Prof. service row index") : null, isPSQ ? psRowIndexField : null,
+                            isPSQ ? new JLabel("Prof. service cell index") : null, isPSQ ? psCellIndexField : null
                     },
                     JOptionPane.QUESTION_MESSAGE,
                     JOptionPane.OK_CANCEL_OPTION);
@@ -495,6 +500,14 @@ public class MainForm {
                                                         rowStyle.init(wb, s.getRow(rowIndex));
                                                         rowStyles.add(rowStyle);
                                                     }
+
+                                                    //PS
+                                                    if (psRowStyles.size() == 0) {
+                                                        RowStyle rowStyle = new RowStyle();
+                                                        rowStyle.init(wb, psS.getRow(psRowIndex));
+                                                        psRowStyles.add(rowStyle);
+                                                    }
+
                                                     String regPriceCol = CellReference.convertNumToColString(1 + cellIndex);
                                                     String regPriceDiscount = CellReference.convertNumToColString(2 + cellIndex);
                                                     String supPriceCol = CellReference.convertNumToColString(4 + cellIndex);
@@ -535,7 +548,6 @@ public class MainForm {
                                                         Cell c3 = r.createCell(2 + cellIndex);
                                                         CellStyle cs3 = rowStyle.getCellStyle(2 + cellIndex, wb.createCellStyle());
                                                         cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%"));
-                                                        //cs3.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%;;@"));
                                                         c3.setCellStyle(cs3);
                                                         c3.setCellValue(p.getProposal().getConfig().isSalesSupport() ? 0 : p.getDiscount());
 
@@ -545,7 +557,6 @@ public class MainForm {
                                                             cs4.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                         c4.setCellStyle(cs4);
                                                         int rowIndexTotal = rowIndex + i + 1;
-                                                        //c4.setCellValue(p.getEndUserPrice());
                                                         c4.setCellFormula("CEILING(" + regPriceCol + rowIndexTotal + "*(1-" + regPriceDiscount + rowIndexTotal + "),1)");
 
                                                         Cell c5 = r.createCell(4 + cellIndex);
@@ -566,7 +577,6 @@ public class MainForm {
                                                         if (!fSameCurrency)
                                                             cs7.setDataFormat(s.getWorkbook().createDataFormat().getFormat(format));
                                                         c7.setCellStyle(cs7);
-                                                        //c7.setCellValue(p.getSupportPrice());
                                                         c7.setCellFormula("CEILING(" + supPriceCol + rowIndexTotal + "*(1-" + supPriceDiscount + rowIndexTotal + "),1)");
 
                                                         for (int y = 7 + cellIndex; y <= rowStyle.getLast(); y++) {
@@ -578,11 +588,714 @@ public class MainForm {
                                                         }
                                                         i++;
                                                     }
+
+                                                    PSQuote psq = getCurrentProposalForm().getProposal().getPSQuote();
+                                                    //PS
+                                                    i = 0;
+                                                    currentRowIndex = 0;
+                                                    if (isPSQ) {
+                                                        int currentRowIndexFrom = -1;
+                                                        int currentRowIndexTo = -1;
+                                                        String rCol = CellReference.convertNumToColString(1 + psCellIndex);
+                                                        String chargeCol = CellReference.convertNumToColString(2 + psCellIndex);
+                                                        String totalCol = CellReference.convertNumToColString(3 + psCellIndex);
+                                                        String format = (getCurrentProposalForm().getProposal().getCurrency().getSymbol() != null ?
+                                                                "\"" + getCurrentProposalForm().getProposal().getCurrency().getSymbol() + "\" " : "") + "#,##0" +
+                                                                (getCurrentProposalForm().getProposal().getCurrency().getSymbol() == null ?
+                                                                        " \"" + getCurrentProposalForm().getProposal().getCurrency().getName() + "\"" : "");
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("Man-day rate:");
+                                                            c1.setCellStyle(cs1);
+
+
+                                                            Cell c2 = r.createCell(1 + psCellIndex);
+                                                            CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
+                                                            cs2.setWrapText(true);
+                                                            c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?getCurrentProposalForm().getProposal().getRegion().getMDRate() * getCurrentProposalForm().getProposal().getCurrency().getRate():0);
+                                                            if (!fSameCurrency)
+                                                                cs2.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
+                                                            c2.setCellStyle(cs2);
+
+                                                            for (int y = 2 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+
+                                                            i++;
+                                                        }
+
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("Man-day discount:");
+                                                            c1.setCellStyle(cs1);
+
+
+                                                            Cell c2 = r.createCell(1 + psCellIndex);
+                                                            CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
+                                                            cs2.setDataFormat(psS.getWorkbook().createDataFormat().getFormat("0%;-0%"));
+                                                            c2.setCellStyle(cs2);
+                                                            c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?psq.getMDDiscount():0);
+
+                                                            for (int y = 2 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+
+                                                            i++;
+                                                        }
+
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("");
+                                                            c1.setCellStyle(cs1);
+
+                                                            for (int y = 1 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            i++;
+                                                        }
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("Onsite daily rate:");
+                                                            c1.setCellStyle(cs1);
+
+
+                                                            Cell c2 = r.createCell(1 + psCellIndex);
+                                                            CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
+                                                            cs2.setWrapText(true);
+                                                            c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?getCurrentProposalForm().getProposal().getRegion().getOnsiteDailyCost() * getCurrentProposalForm().getProposal().getCurrency().getRate():0);
+                                                            if (!fSameCurrency)
+                                                                cs2.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
+                                                            c2.setCellStyle(cs2);
+
+                                                            for (int y = 2 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+
+                                                            i++;
+                                                        }
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("Onsite trip rate:");
+                                                            c1.setCellStyle(cs1);
+
+
+                                                            Cell c2 = r.createCell(1 + psCellIndex);
+                                                            CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
+                                                            cs2.setWrapText(true);
+                                                            c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?getCurrentProposalForm().getProposal().getRegion().getTripPrice() * getCurrentProposalForm().getProposal().getCurrency().getRate():0);
+                                                            if (!fSameCurrency)
+                                                                cs2.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
+                                                            c2.setCellStyle(cs2);
+
+                                                            for (int y = 2 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+
+                                                            i++;
+                                                        }
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("");
+                                                            c1.setCellStyle(cs1);
+
+                                                            for (int y = 1 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            i++;
+                                                        }
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("");
+                                                            c1.setCellStyle(cs1);
+
+                                                            for (int y = 1 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            i++;
+                                                        }
+
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("Professional Services Description:");
+                                                            c1.setCellStyle(cs1);
+
+                                                            Cell c2 = r.createCell(1 + psCellIndex);
+                                                            CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
+                                                            cs2.setWrapText(true);
+                                                            c2.setCellValue("M/D:");
+                                                            c2.setCellStyle(cs2);
+
+                                                            Cell c3 = r.createCell(2 + psCellIndex);
+                                                            CellStyle cs3 = rowStyle.getCellStyle(2 + psCellIndex, wb.createCellStyle());
+                                                            cs3.setWrapText(true);
+                                                            c3.setCellValue("Chargeable:");
+                                                            c3.setCellStyle(cs3);
+
+                                                            Cell c4 = r.createCell(3 + psCellIndex);
+                                                            CellStyle cs4 = rowStyle.getCellStyle(3 + psCellIndex, wb.createCellStyle());
+                                                            cs4.setWrapText(true);
+                                                            c4.setCellValue("$$:");
+                                                            c4.setCellStyle(cs4);
+
+                                                            Cell c5 = r.createCell(4 + psCellIndex);
+                                                            CellStyle cs5 = rowStyle.getCellStyle(4 + psCellIndex, wb.createCellStyle());
+                                                            cs5.setWrapText(true);
+                                                            c5.setCellValue("Onsite days:");
+                                                            c5.setCellStyle(cs5);
+
+                                                            Cell c6 = r.createCell(5 + psCellIndex);
+                                                            CellStyle cs6 = rowStyle.getCellStyle(5 + psCellIndex, wb.createCellStyle());
+                                                            cs6.setWrapText(true);
+                                                            c6.setCellValue("Onsite trips:");
+                                                            c6.setCellStyle(cs6);
+
+                                                            for (int y = 6 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+
+                                                            i++;
+                                                        }
+
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("");
+                                                            c1.setCellStyle(cs1);
+
+                                                            for (int y = 1 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            i++;
+                                                        }
+
+
+                                                        for (ServicesGroup sg : getCurrentProposalForm().getProposal().getConfig().getServicesRoot().getGroups()) {
+                                                            if (sg.notEmpty(psq)) {
+                                                                //vigrujaem gruppu
+                                                                {
+                                                                    if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                        psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                                    }
+                                                                    RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                                    currentRowIndex++;
+                                                                    if(currentRowIndexFrom < 0){
+                                                                        currentRowIndexFrom = currentRowIndex;
+                                                                    }
+                                                                    Row r = psS.createRow(psRowIndex + i);
+                                                                    for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                        CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                        if (tcs != null) {
+                                                                            Cell tc = r.createCell(y);
+                                                                            tc.setCellStyle(tcs);
+                                                                        }
+                                                                    }
+                                                                    Cell c1 = r.createCell(0 + psCellIndex);
+                                                                    CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                                    cs1.setWrapText(true);
+                                                                    c1.setCellValue(sg.getName());
+                                                                    c1.setCellStyle(cs1);
+                                                                    if (psq.isExportable(sg.getKey())) {
+                                                                        Cell c2 = r.createCell(1 + psCellIndex);
+                                                                        CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
+                                                                        c2.setCellValue(sg.getTotalMD(psq));
+                                                                        c2.setCellStyle(cs2);
+
+                                                                        Cell c3 = r.createCell(2 + psCellIndex);
+                                                                        CellStyle cs3 = rowStyle.getCellStyle(2 + psCellIndex, wb.createCellStyle());
+                                                                        c3.setCellValue(sg.getChargeableMD(psq));
+                                                                        c3.setCellStyle(cs3);
+
+                                                                        Cell c4 = r.createCell(3 + psCellIndex);
+                                                                        CellStyle cs4 = rowStyle.getCellStyle(3 + psCellIndex, wb.createCellStyle());
+                                                                        c4.setCellFormula(rCol + (psRowIndex + 1) + "*" + chargeCol + (psRowIndex + currentRowIndex) + "*(1-" + rCol + (psRowIndex + 2) + ")");
+                                                                        if (!fSameCurrency)
+                                                                            cs4.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
+                                                                        c4.setCellStyle(cs4);
+
+                                                                        Cell c5 = r.createCell(4 + psCellIndex);
+                                                                        CellStyle cs5 = rowStyle.getCellStyle(4 + psCellIndex, wb.createCellStyle());
+                                                                        c5.setCellValue(sg.getTotalOnsiteMD(psq));
+                                                                        c5.setCellStyle(cs5);
+
+                                                                        Cell c6 = r.createCell(5 + psCellIndex);
+                                                                        CellStyle cs6 = rowStyle.getCellStyle(5 + psCellIndex, wb.createCellStyle());
+                                                                        c6.setCellValue(sg.getTotalOnsiteTrips(psq));
+                                                                        c6.setCellStyle(cs6);
+                                                                    }
+
+                                                                    for (int y = 6 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                        CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                        if (tcs != null) {
+                                                                            Cell tc = r.createCell(y);
+                                                                            tc.setCellStyle(tcs);
+                                                                        }
+                                                                    }
+                                                                    i++;
+                                                                }
+                                                                if (!psq.isExportable(sg.getKey())) {
+                                                                    for (Service srv : sg.getServices().values()) {
+                                                                        if (srv.notEmpty(psq)) {
+                                                                            if (psq.isExportable(sg.getKey())) {
+                                                                                //vigrujaem service
+                                                                                {
+                                                                                    if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                                        psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                                                    }
+                                                                                    RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                                                    currentRowIndex++;
+                                                                                    Row r = psS.createRow(psRowIndex + i);
+                                                                                    for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                                        CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                                        if (tcs != null) {
+                                                                                            Cell tc = r.createCell(y);
+                                                                                            tc.setCellStyle(tcs);
+                                                                                        }
+                                                                                    }
+                                                                                    Cell c1 = r.createCell(0 + psCellIndex);
+                                                                                    CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                                                    cs1.setWrapText(true);
+                                                                                    c1.setCellValue(srv.getName());
+                                                                                    c1.setCellStyle(cs1);
+                                                                                    Cell c2 = r.createCell(1 + psCellIndex);
+                                                                                    CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
+                                                                                    c2.setCellValue(srv.getTotalMD(psq));
+                                                                                    c2.setCellStyle(cs2);
+
+                                                                                    Cell c3 = r.createCell(2 + psCellIndex);
+                                                                                    CellStyle cs3 = rowStyle.getCellStyle(2 + psCellIndex, wb.createCellStyle());
+                                                                                    c3.setCellValue(srv.getChargeableMD(psq));
+                                                                                    c3.setCellStyle(cs3);
+
+                                                                                    Cell c4 = r.createCell(3 + psCellIndex);
+                                                                                    CellStyle cs4 = rowStyle.getCellStyle(3 + psCellIndex, wb.createCellStyle());
+                                                                                    c4.setCellFormula(rCol + (psRowIndex + 1) + "*" + chargeCol + (psRowIndex + currentRowIndex) + "*(1-" + rCol + (psRowIndex + 2) + ")");
+                                                                                    if (!fSameCurrency)
+                                                                                        cs4.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
+                                                                                    c4.setCellStyle(cs4);
+
+                                                                                    Cell c5 = r.createCell(4 + psCellIndex);
+                                                                                    CellStyle cs5 = rowStyle.getCellStyle(4 + psCellIndex, wb.createCellStyle());
+                                                                                    c5.setCellValue(srv.getTotalOnsiteMD(psq));
+                                                                                    c5.setCellStyle(cs5);
+
+                                                                                    Cell c6 = r.createCell(5 + psCellIndex);
+                                                                                    CellStyle cs6 = rowStyle.getCellStyle(5 + psCellIndex, wb.createCellStyle());
+                                                                                    c6.setCellValue(srv.getTotalOnsiteTrips(psq));
+                                                                                    c6.setCellStyle(cs6);
+
+                                                                                    for (int y = 6 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                                        CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                                        if (tcs != null) {
+                                                                                            Cell tc = r.createCell(y);
+                                                                                            tc.setCellStyle(tcs);
+                                                                                        }
+                                                                                    }
+                                                                                    i++;
+                                                                                }
+                                                                            } else {
+                                                                                for (com.compassplus.proposalModel.Service inst : psq.getServices().values()) {
+                                                                                    if (inst.getService().getGroupKey().equals(sg.getKey()) && inst.getService().getKey().equals(srv.getKey())) {
+                                                                                        {
+                                                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                                                            }
+                                                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                                                            currentRowIndex++;
+                                                                                            Row r = psS.createRow(psRowIndex + i);
+                                                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                                                if (tcs != null) {
+                                                                                                    Cell tc = r.createCell(y);
+                                                                                                    tc.setCellStyle(tcs);
+                                                                                                }
+                                                                                            }
+                                                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                                                            cs1.setWrapText(true);
+                                                                                            c1.setCellValue(inst.getName() + " " + i);
+                                                                                            c1.setCellStyle(cs1);
+                                                                                            Cell c2 = r.createCell(1 + psCellIndex);
+                                                                                            CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
+                                                                                            c2.setCellValue(inst.getTotalValue());
+                                                                                            c2.setCellStyle(cs2);
+
+                                                                                            Cell c3 = r.createCell(2 + psCellIndex);
+                                                                                            CellStyle cs3 = rowStyle.getCellStyle(2 + psCellIndex, wb.createCellStyle());
+                                                                                            c3.setCellValue(inst.getCharge() ? inst.getTotalValue() : 0);
+                                                                                            c3.setCellStyle(cs3);
+
+                                                                                            Cell c4 = r.createCell(3 + psCellIndex);
+                                                                                            CellStyle cs4 = rowStyle.getCellStyle(3 + psCellIndex, wb.createCellStyle());
+                                                                                            c4.setCellFormula(rCol + (psRowIndex + 1) + "*" + chargeCol + (psRowIndex + currentRowIndex) + "*(1-" + rCol + (psRowIndex + 2) + ")");
+                                                                                            if (!fSameCurrency)
+                                                                                                cs4.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
+                                                                                            c4.setCellStyle(cs4);
+
+                                                                                            Cell c5 = r.createCell(4 + psCellIndex);
+                                                                                            CellStyle cs5 = rowStyle.getCellStyle(4 + psCellIndex, wb.createCellStyle());
+                                                                                            c5.setCellValue(inst.getOnsiteTotalValue());
+                                                                                            c5.setCellStyle(cs5);
+
+                                                                                            Cell c6 = r.createCell(5 + psCellIndex);
+                                                                                            CellStyle cs6 = rowStyle.getCellStyle(5 + psCellIndex, wb.createCellStyle());
+                                                                                            c6.setCellValue(inst.getTripTotalValue());
+                                                                                            c6.setCellStyle(cs6);
+
+                                                                                            for (int y = 6 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                                                if (tcs != null) {
+                                                                                                    Cell tc = r.createCell(y);
+                                                                                                    tc.setCellStyle(tcs);
+                                                                                                }
+                                                                                            }
+                                                                                            i++;
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        currentRowIndexTo = currentRowIndex;
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("");
+                                                            c1.setCellStyle(cs1);
+
+                                                            for (int y = 1 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            i++;
+                                                        }
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("Grand total:");
+                                                            c1.setCellStyle(cs1);
+
+
+                                                            Cell c2 = r.createCell(1 + psCellIndex);
+                                                            CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
+                                                            c2.setCellFormula("SUM(" + rCol + (psRowIndex + currentRowIndexFrom) + ":" + rCol + (psRowIndex + currentRowIndexTo) + ")");
+                                                            c2.setCellStyle(cs2);
+
+
+                                                            Cell c3 = r.createCell(2 + psCellIndex);
+                                                            CellStyle cs3 = rowStyle.getCellStyle(2 + psCellIndex, wb.createCellStyle());
+                                                            cs3.setWrapText(true);
+                                                            c3.setCellValue("");
+                                                            c3.setCellStyle(cs3);
+
+                                                            Cell c4 = r.createCell(3 + psCellIndex);
+                                                            CellStyle cs4 = rowStyle.getCellStyle(3 + psCellIndex, wb.createCellStyle());
+                                                            c4.setCellFormula("SUM(" + totalCol + (psRowIndex + currentRowIndexFrom) + ":" + totalCol + (psRowIndex + currentRowIndexTo) + ")");
+                                                            if (!fSameCurrency)
+                                                                cs4.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
+                                                            c4.setCellStyle(cs4);
+
+                                                            for (int y = 4 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+
+                                                            i++;
+                                                        }
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("");
+                                                            c1.setCellStyle(cs1);
+
+                                                            for (int y = 1 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            i++;
+                                                        }
+                                                        {
+                                                            if (psS.getLastRowNum() >= psRowIndex + i) {
+                                                                psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
+                                                            }
+                                                            RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
+                                                            currentRowIndex++;
+                                                            Row r = psS.createRow(psRowIndex + i);
+                                                            for (int y = rowStyle.getFirst(); y < 0 + psCellIndex; y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+                                                            Cell c1 = r.createCell(0 + psCellIndex);
+                                                            CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
+                                                            cs1.setWrapText(true);
+                                                            c1.setCellValue("Total cost discount:");
+                                                            c1.setCellStyle(cs1);
+
+
+                                                            Cell c2 = r.createCell(1 + psCellIndex);
+                                                            CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
+                                                            c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?psq.getPSDiscount():0);
+                                                            cs2.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%"));
+                                                            c2.setCellStyle(cs2);
+
+
+                                                            Cell c3 = r.createCell(2 + psCellIndex);
+                                                            CellStyle cs3 = rowStyle.getCellStyle(2 + psCellIndex, wb.createCellStyle());
+                                                            cs3.setWrapText(true);
+                                                            c3.setCellValue("");
+                                                            c3.setCellStyle(cs3);
+
+                                                            Cell c4 = r.createCell(3 + psCellIndex);
+                                                            CellStyle cs4 = rowStyle.getCellStyle(3 + psCellIndex, wb.createCellStyle());
+                                                            c4.setCellFormula("(1-" + rCol+(psRowIndex + currentRowIndex) + ")*" + totalCol + (psRowIndex + currentRowIndex -2));
+                                                            if (!fSameCurrency)
+                                                                cs4.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
+                                                            c4.setCellStyle(cs4);
+
+                                                            for (int y = 4 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                CellStyle tcs = rowStyle.getCellStyle(y, null);
+                                                                if (tcs != null) {
+                                                                    Cell tc = r.createCell(y);
+                                                                    tc.setCellStyle(tcs);
+                                                                }
+                                                            }
+
+                                                            i++;
+                                                        }
+                                                    }
+
                                                     ArrayList<Row> rowsToRemove = new ArrayList();
                                                     ScriptEngineManager factory = new ScriptEngineManager();
                                                     ScriptEngine engine = factory.getEngineByName("JavaScript");
                                                     Bindings bindings = getBindings(getCurrentProposalForm().getProposal(), engine);
                                                     int dec = 0;
+                                                    int psDec = 0;
                                                     for (int si = 0; si < wb.getNumberOfSheets(); si++) {
                                                         Sheet sis = wb.getSheetAt(si);
                                                         Iterator<Row> riter = sis.rowIterator();
@@ -594,6 +1307,9 @@ public class MainForm {
                                                                 if (analyzeCell(wb, sis, row, cell, engine, bindings)) {
                                                                     if (sis.getSheetName() == s.getSheetName() && row.getRowNum() < rowIndex) {
                                                                         dec++;
+                                                                    }
+                                                                    if (sis.getSheetName() == psS.getSheetName() && row.getRowNum() < psRowIndex) {
+                                                                        psDec++;
                                                                     }
                                                                     if (!rowsToRemove.contains(row)) {
                                                                         rowsToRemove.add(row);
@@ -608,6 +1324,7 @@ public class MainForm {
                                                         rowsToRemove.clear();
                                                     }
                                                     rowIndex = rowIndex - dec;
+                                                    psRowIndex = psRowIndex - psDec;
 
                                                     Row settingsRow = settingsSheet.getRow(0);
                                                     if (settingsRow == null) {
@@ -618,6 +1335,15 @@ public class MainForm {
                                                     CellUtil.createCell(settingsRow, 2, cellIndex.toString());
                                                     CellUtil.createCell(settingsRow, 3, rowIndex.toString());
                                                     CellUtil.createCell(settingsRow, 4, s.getSheetName());
+
+                                                    //PS
+                                                    if (isPSQ) {
+                                                        CellUtil.createCell(settingsRow, 5, new Integer(i).toString());
+                                                        CellUtil.createCell(settingsRow, 6, psCellIndex.toString());
+                                                        CellUtil.createCell(settingsRow, 7, psRowIndex.toString());
+                                                        CellUtil.createCell(settingsRow, 8, psS.getSheetName());
+                                                    }
+
                                                     wb.setSheetHidden(wb.getSheetIndex(settingsSheet), true);
                                                     OutputStream out = new FileOutputStream(sfile);
                                                     wb.write(out);
@@ -1299,7 +2025,7 @@ public class MainForm {
 
                     if (_proposal.getPSQuote().enabled() && (_proposal.getPSQuote().getMDDiscount() > _proposal.getConfig().getMDRDiscount() ||
                             _proposal.getPSQuote().getPSDiscount() > _proposal.getConfig().getPSDiscount())) {
-                        exceedDL = true ;
+                        exceedDL = true;
                     }
 
                     for (Product p : pp.getProducts().values()) {
@@ -1380,26 +2106,11 @@ public class MainForm {
     }
 
     private void removeRow(Sheet sheet, int rowIndex, Workbook wb) {
+        removeRow(sheet, rowIndex, wb, false);
+    }
+
+    private void removeRow(Sheet sheet, int rowIndex, Workbook wb, boolean debug) {
         ArrayList<CellRangeAddress> cras = new ArrayList<CellRangeAddress>();
-        /*HashMap<Cell, String> cellFormulas = new HashMap<Cell, String>();
-        for (Row row : sheet) {
-          for (Cell cell : row) {
-            try{
-                String formula = cell.getCellFormula();
-                cellFormulas.put(cell, formula);
-            }catch(Exception e){
-
-            }
-          }
-        }*/
-        /*for (Row row : sheet) {
-          for (Cell cell : row) {
-            try{
-            }catch(Exception e){
-
-            }
-          }
-        }*/
         for (int i = 0; i < sheet.getNumMergedRegions(); i++) {
             cras.add(sheet.getMergedRegion(i));
         }
@@ -1408,15 +2119,14 @@ public class MainForm {
         }
         int lastRowNum = sheet.getLastRowNum();
 
+        if(debug){
+           System.out.println("lastRowNum = " + lastRowNum);
+            System.out.println("rowIndex = " + rowIndex);
+        }
 
         if (rowIndex >= 0 && rowIndex < lastRowNum) {
             Row removingRow = sheet.getRow(rowIndex);
 
-            /* Iterator<Cell> ci = removingRow.iterator();
-            while(ci.hasNext()){
-                Cell nx = ci.next();
-                fe.notifyDeleteCell(nx);
-            }*/
             sheet.removeRow(removingRow);
             sheet.shiftRows(rowIndex + 1, lastRowNum, -1);
         }
@@ -1439,27 +2149,7 @@ public class MainForm {
                 sheet.addMergedRegion(cra);
             }
         }
-        /*for (Row row : sheet) {
-          for (Cell cell : row) {
-            try{
-                System.out.println(cellFormulas.containsKey(cell));
-                if(cellFormulas.containsKey(cell)){
-                    cell.setCellFormula(cellFormulas.get(cell));
-                }
-            }catch(Exception e){
 
-            }
-          }
-        }*/
-
-        /*FormulaEvaluator fe;
-        if(sheet instanceof XSSFSheet){
-            fe = new XSSFFormulaEvaluator((XSSFWorkbook)wb);
-            fe.evaluateAll();
-        }else {
-            fe = new HSSFFormulaEvaluator((HSSFWorkbook)wb);
-            fe.evaluateAll();
-        }*/
     }
 
     public JMenuItem getCloseProposal() {

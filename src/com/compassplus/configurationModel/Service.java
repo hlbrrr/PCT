@@ -170,4 +170,54 @@ public class Service {
         }
         return ret;
     }
+
+    public boolean notEmpty(PSQuote quote) {
+        for(com.compassplus.proposalModel.Service s: quote.getServices().values()){
+            if(s.getService().getKey().equals(this.getKey())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public double getTotalMD(PSQuote quote) {
+        double ret = 0;
+        for(com.compassplus.proposalModel.Service s: quote.getServices().values()){
+            if(s.getService().getKey().equals(this.getKey())){
+                ret += s.getTotalValue();
+            }
+        }
+        return ret;
+    }
+    public double getChargeableMD(PSQuote quote) {
+        double ret = 0;
+        for(com.compassplus.proposalModel.Service s: quote.getServices().values()){
+            if(s.getService().getKey().equals(this.getKey())){
+                if(s.getCharge()){
+                    ret += s.getTotalValue();
+                }
+            }
+        }
+        return ret;
+    }
+
+    public double getTotalOnsiteMD(PSQuote quote) {
+        double ret = 0;
+        for(com.compassplus.proposalModel.Service s: quote.getServices().values()){
+            if(s.getService().getKey().equals(this.getKey())){
+                ret += s.getOnsiteTotalValue();
+            }
+        }
+        return ret;
+    }
+
+    public double getTotalOnsiteTrips(PSQuote quote) {
+        double ret = 0;
+        for(com.compassplus.proposalModel.Service s: quote.getServices().values()){
+            if(s.getService().getKey().equals(this.getKey())){
+                ret += s.getTripTotalValue();
+            }
+        }
+        return ret;
+    }
 }

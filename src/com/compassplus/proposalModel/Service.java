@@ -448,7 +448,7 @@ public class Service {
             ret += getTotalValue() * proposal.getPSQuote().getMDRate();
             ret = proposal.getCurrencyRate() * ret;
         }
-        return CommonUtils.getInstance().toNextHundred(ret);
+        return ret;//CommonUtils.getInstance().toNextHundred(ret);
     }
 
     public Double getCleanMDPrice() {
@@ -457,7 +457,7 @@ public class Service {
             ret += getTotalValue() * proposal.getRegion().getMDRate();
             ret = proposal.getCurrencyRate() * ret;
         }
-        return CommonUtils.getInstance().toNextHundred(ret);
+        return ret;//CommonUtils.getInstance().toNextHundred(ret);
     }
 
     public Double getCleanOnsitePrice() {
@@ -466,11 +466,11 @@ public class Service {
 
     public Double getRegionalOnsitePrice() {
         Double ret = 0d;
-        if(getCharge()){
+        //if(getCharge()){
             ret += getOnsiteTotalValue() * proposal.getRegion().getOnsiteDailyCost();
             ret += getTripTotalValue() * proposal.getRegion().getTripPrice();
             ret = proposal.getCurrencyRate() * ret;
-        }
-        return CommonUtils.getInstance().toNextHundred(ret);
+        //}
+        return ret;//CommonUtils.getInstance().toNextHundred(ret);
     }
 }
