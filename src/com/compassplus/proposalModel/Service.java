@@ -438,6 +438,10 @@ public class Service {
         return getRegionalMDPrice()+getRegionalOnsitePrice();
     }
 
+    public Double getCleanPrice() {
+        return getCleanMDPrice()+getCleanOnsitePrice();
+    }
+
     public Double getRegionalMDPrice() {
         Double ret = 0d;
         if(getCharge()){
@@ -445,6 +449,19 @@ public class Service {
             ret = proposal.getCurrencyRate() * ret;
         }
         return CommonUtils.getInstance().toNextHundred(ret);
+    }
+
+    public Double getCleanMDPrice() {
+        Double ret = 0d;
+        if(getCharge()){
+            ret += getTotalValue() * proposal.getRegion().getMDRate();
+            ret = proposal.getCurrencyRate() * ret;
+        }
+        return CommonUtils.getInstance().toNextHundred(ret);
+    }
+
+    public Double getCleanOnsitePrice() {
+        return getRegionalOnsitePrice();
     }
 
     public Double getRegionalOnsitePrice() {

@@ -1409,8 +1409,8 @@ public class SummaryForm {
                                     for(CustomJLabel l:lbls){
                                         l.call();
                                     }
-                                    psFormUpdater.act(null);
-                                    titleUpdater.act(proposal);
+                                    //psFormUpdater.act(null);
+                                    //titleUpdater.act(proposal);
                                 }
                             }
                         });

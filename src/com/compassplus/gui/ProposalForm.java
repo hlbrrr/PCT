@@ -256,7 +256,7 @@ public class ProposalForm {
                                     sb.append(" ");
                                 }
 
-                                sb.append(df.format(proposal.getPSQuote().getPrice()));
+                                sb.append(df.format(proposal.getPSQuote().getCleanPrice()));
                                 if (proposal.getCurrency().getSymbol() == null) {
                                     sb.append(" ");
                                     sb.append(proposal.getCurrency().getName());

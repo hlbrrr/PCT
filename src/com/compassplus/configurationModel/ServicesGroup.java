@@ -130,4 +130,14 @@ public class ServicesGroup {
         }
         return ret;
     }
+
+    public double getCleanPrice(PSQuote quote) {
+        double ret = 0d;
+        for(com.compassplus.proposalModel.Service s: quote.getServices().values()){
+            if(getServices().containsKey(s.getService().getKey())){
+                ret += s.getCleanPrice();
+            }
+        }
+        return ret;
+    }
 }

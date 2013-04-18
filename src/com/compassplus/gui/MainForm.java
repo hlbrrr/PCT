@@ -7,17 +7,11 @@ import com.compassplus.proposalModel.Proposal;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import net.iharder.dnd.FileDrop;
-import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.ss.util.CellUtil;
-import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
@@ -249,8 +243,17 @@ public class MainForm {
             Integer rowIndexInt = null;
             String sheetIndexStr = null;
             Integer sheetIndexInt = null;
+
+
+            Integer psRowsCountInt = null;
+            Integer psCellIndexInt = null;
+            Integer psRowIndexInt = null;
+            String psSheetIndexStr = null;
+            Integer psSheetIndexInt = null;
+
             Sheet settingsSheet = wb.getSheet("PCTSettings");
             final List<RowStyle> rowStyles = new ArrayList<RowStyle>();
+            final List<RowStyle> psRowStyles = new ArrayList<RowStyle>();
             boolean sameCurrency = false;
             if (settingsSheet != null) {
                 Row currentSettingsRow = settingsSheet.getRow(0);
@@ -296,6 +299,50 @@ public class MainForm {
                 }
             }
 
+            if (settingsSheet != null) {
+                Row currentSettingsRow = settingsSheet.getRow(0);
+                if (currentSettingsRow != null) {
+                    Cell oldProposalCell = currentSettingsRow.getCell(0);
+                    Cell rowsCountCell = currentSettingsRow.getCell(5);
+                    Cell cellIndexCell = currentSettingsRow.getCell(6);
+                    Cell rowIndexCell = currentSettingsRow.getCell(7);
+                    Cell sheetIndexCell = currentSettingsRow.getCell(8);
+                    try {
+                        Proposal oldProposal = new Proposal(config);
+                        String proposalString = oldProposalCell.getStringCellValue();
+                        if (proposalString != null) {
+                            oldProposal.init(CommonUtils.getInstance().getDocumentFromString(proposalString));
+                            sameCurrency = getCurrentProposalForm().getProposal().getCurrency().getName().equals(oldProposal.getCurrency().getName());
+                        }
+                    } catch (Exception e) {
+
+                    }
+
+                    if (rowsCountCell != null && rowIndexCell != null && sheetIndexCell != null && cellIndexCell != null) {
+                        try {
+                            psRowsCountInt = Integer.parseInt(rowsCountCell.getStringCellValue());
+                            psCellIndexInt = Integer.parseInt(cellIndexCell.getStringCellValue());
+                            psRowIndexInt = Integer.parseInt(rowIndexCell.getStringCellValue());
+                            psRowIndexInt++;
+                            psCellIndexInt++;
+                            //sheetIndexInt = Integer.parseInt(sheetIndexCell.getStringCellValue());
+                            psSheetIndexStr = sheetIndexCell.getStringCellValue();
+                            if (wb.getSheet(psSheetIndexStr) != null) {
+                                //sheetIndexStr = wb.getSheetAt(sheetIndexInt).getSheetName();
+                                for (int j = 0; j < psRowsCountInt; j++) {
+                                    RowStyle rowStyle = new RowStyle();
+                                    rowStyle.init(wb, wb.getSheet(psSheetIndexStr).getRow(psRowIndexInt - 1));
+                                    psRowStyles.add(rowStyle);
+                                    removeRow(wb.getSheet(psSheetIndexStr), psRowIndexInt - 1, wb);
+                                }
+                            }
+                        } catch (Exception ex) {
+                        }
+                    }
+                } else {
+                }
+            }
+
             final JComboBox sheetIndexField = sheets.size() > 1 ? new JComboBox(sheets.toArray()) : null;
             if (sheetIndexField != null && sheetIndexStr != null) {
                 for (String key : sheets) {
@@ -305,13 +352,31 @@ public class MainForm {
                     }
                 }
             }
+
+            final JComboBox psSheetIndexField = sheets.size() > 1 ? new JComboBox(sheets.toArray()) : null;
+            if (psSheetIndexField != null && psSheetIndexStr != null) {
+                for (String key : sheets) {
+                    if (key.equals(psSheetIndexStr)) {
+                        psSheetIndexField.setSelectedItem(key);
+                        break;
+                    }
+                }
+            }
+
             final JTextField rowIndexField = new JTextField(rowIndexInt != null ? rowIndexInt.toString() : "1");
             final JTextField cellIndexField = new JTextField(cellIndexInt != null ? cellIndexInt.toString() : "1");
+
+            final JTextField psRowIndexField = new JTextField(psRowIndexInt != null ? psRowIndexInt.toString() : "1");
+            final JTextField psCellIndexField = new JTextField(psCellIndexInt != null ? psCellIndexInt.toString() : "1");
+            final boolean isPSQ = getCurrentProposalForm().getProposal().getPSQuote().enabled();
             final JOptionPane optionPane = new JOptionPane(
                     new JComponent[]{
-                            sheets.size() > 1 ? new JLabel("Sheet") : null, sheetIndexField,
-                            new JLabel("Row index"), rowIndexField,
-                            new JLabel("Cell index"), cellIndexField
+                            sheets.size() > 1 ? new JLabel("Products sheet") : null, sheetIndexField,
+                            new JLabel("Products row index"), rowIndexField,
+                            new JLabel("Products cell index"), cellIndexField,
+                            (sheets.size() > 1 && isPSQ) ? new JLabel("Prof. service sheet") : null, isPSQ?psSheetIndexField:null,
+                            isPSQ?new JLabel("Prof. service row index"):null, isPSQ?psRowIndexField:null,
+                            isPSQ?new JLabel("Prof. service cell index"):null, isPSQ?psCellIndexField:null
                     },
                     JOptionPane.QUESTION_MESSAGE,
                     JOptionPane.OK_CANCEL_OPTION);
@@ -340,6 +405,7 @@ public class MainForm {
                                             int value = (Integer) optionPane.getValue();
                                             if (value == JOptionPane.OK_OPTION) {
                                                 Sheet s = null;
+                                                Sheet psS = null;
                                                 if (sheetIndexField != null) {
                                                     try {
                                                         s = wb.getSheet((String) sheetIndexField.getSelectedItem());
@@ -349,6 +415,17 @@ public class MainForm {
                                                     s = wb.getSheet(sheets.get(0));
                                                 }
 
+                                                //PS
+                                                if (psSheetIndexField != null) {
+                                                    try {
+                                                        psS = wb.getSheet((String) psSheetIndexField.getSelectedItem());
+                                                    } catch (Exception exception) {
+                                                    }
+                                                } else {
+                                                    psS = wb.getSheet(sheets.get(0));
+                                                }
+
+
                                                 Integer rowIndex = null;
                                                 try {
                                                     rowIndex = Integer.parseInt(rowIndexField.getText());
@@ -356,11 +433,26 @@ public class MainForm {
                                                 } catch (Exception exception) {
                                                 }
                                                 if (rowIndex == null || rowIndex < 0) {
-                                                    JOptionPane.showMessageDialog(getRoot(), "Row index is not valid", "Error", JOptionPane.ERROR_MESSAGE);
+                                                    JOptionPane.showMessageDialog(getRoot(), "Products row index is not valid", "Error", JOptionPane.ERROR_MESSAGE);
                                                     rowIndexField.requestFocus();
                                                     rowIndexField.selectAll();
                                                     throw new Exception();
                                                 }
+
+                                                //PS
+                                                Integer psRowIndex = null;
+                                                try {
+                                                    psRowIndex = Integer.parseInt(psRowIndexField.getText());
+                                                    psRowIndex--;
+                                                } catch (Exception exception) {
+                                                }
+                                                if ((psRowIndex == null || psRowIndex < 0) && isPSQ) {
+                                                    JOptionPane.showMessageDialog(getRoot(), "Prof. service row index is not valid", "Error", JOptionPane.ERROR_MESSAGE);
+                                                    psRowIndexField.requestFocus();
+                                                    psRowIndexField.selectAll();
+                                                    throw new Exception();
+                                                }
+
 
                                                 Integer cellIndex = null;
                                                 try {
@@ -369,11 +461,26 @@ public class MainForm {
                                                 } catch (Exception exception) {
                                                 }
                                                 if (cellIndex == null || cellIndex < 0) {
-                                                    JOptionPane.showMessageDialog(getRoot(), "Cell index is not valid", "Error", JOptionPane.ERROR_MESSAGE);
+                                                    JOptionPane.showMessageDialog(getRoot(), "Products cell index is not valid", "Error", JOptionPane.ERROR_MESSAGE);
                                                     cellIndexField.requestFocus();
                                                     cellIndexField.selectAll();
                                                     throw new Exception();
                                                 }
+
+
+                                                Integer psCellIndex = null;
+                                                try {
+                                                    psCellIndex = Integer.parseInt(psCellIndexField.getText());
+                                                    psCellIndex--;
+                                                } catch (Exception exception) {
+                                                }
+                                                if ((psCellIndex == null || psCellIndex < 0) && isPSQ) {
+                                                    JOptionPane.showMessageDialog(getRoot(), "Prof. service cell index is not valid", "Error", JOptionPane.ERROR_MESSAGE);
+                                                    psCellIndexField.requestFocus();
+                                                    psCellIndexField.selectAll();
+                                                    throw new Exception();
+                                                }
+
                                                 dialog.dispose();
                                                 try {
                                                     int i = 0;

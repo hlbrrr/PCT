@@ -182,7 +182,7 @@ public class PSQuoteForm {
                             sb.append(proposal.getCurrency().getSymbol());
                             sb.append(" ");
                         }
-                        sb.append(df.format(_ref.getRegionalPrice(_pref.getPSQuote())));
+                        sb.append(df.format(_ref.getCleanPrice(_pref.getPSQuote())));
                         if (proposal.getCurrency().getSymbol() == null) {
                             sb.append(" ");
                             sb.append(proposal.getCurrency().getName());
@@ -343,7 +343,7 @@ public class PSQuoteForm {
                             sb.append(proposal.getCurrency().getSymbol());
                             sb.append(" ");
                         }
-                        sb.append(df.format(_ref.getRegionalPrice(_pref.getPSQuote())));
+                        sb.append(df.format(_ref.getCleanPrice(_pref.getPSQuote())));
                         if (proposal.getCurrency().getSymbol() == null) {
                             sb.append(" ");
                             sb.append(proposal.getCurrency().getName());
@@ -505,7 +505,7 @@ public class PSQuoteForm {
                             sb.append(proposal.getCurrency().getSymbol());
                             sb.append(" ");
                         }
-                        sb.append(df.format(_ref.getRegionalPrice()));
+                        sb.append(df.format(_ref.getCleanPrice()));
                         if (proposal.getCurrency().getSymbol() == null) {
                             sb.append(" ");
                             sb.append(proposal.getCurrency().getName());

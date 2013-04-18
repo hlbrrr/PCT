@@ -119,6 +119,14 @@ public class PSQuote {
         this.getServices().remove(key);
     }
 
+    public double getCleanPrice() {
+        double ret = 0d;
+        for (Service s : getServices().values()) {
+            ret += s.getCleanPrice();
+        }
+        return ret;
+    }
+
     public double getPrice() {
         double ret = 0d;
         for (Service s : getServices().values()) {
