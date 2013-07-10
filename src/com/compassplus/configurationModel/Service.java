@@ -2,14 +2,9 @@ package com.compassplus.configurationModel;
 
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.proposalModel.PSQuote;
-import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.

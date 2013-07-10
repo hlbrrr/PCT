@@ -1,5 +1,6 @@
 package com.compassplus.proposalModel;
 
+import com.compassplus.configurationModel.ServicesGroup;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
@@ -28,6 +29,17 @@ public class PSQuote {
 
     public PSQuote(Proposal proposal) {
         this.proposal = proposal;
+        for(ServicesGroup s : proposal.getConfig().getServicesRoot().getGroups()){
+            if(s.isHidden()){
+                doNotExport.add(s.getKey());
+            }
+        }
+        for(com.compassplus.configurationModel.Service srv : proposal.getConfig().getServices().values()){
+            if(srv.isHidden()){
+                doNotExport.add(srv.getKey());
+            }
+        }
+
     }
 
     public void setEnabled(boolean enabled) {

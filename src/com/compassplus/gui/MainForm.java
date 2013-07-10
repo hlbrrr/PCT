@@ -357,11 +357,19 @@ public class MainForm {
                     }
                 }
             }
+            String selectedSheet1 = (String) sheetIndexField.getSelectedItem();
 
             final JComboBox psSheetIndexField = sheets.size() > 1 ? new JComboBox(sheets.toArray()) : null;
             if (psSheetIndexField != null && psSheetIndexStr != null) {
                 for (String key : sheets) {
                     if (key.equals(psSheetIndexStr)) {
+                        psSheetIndexField.setSelectedItem(key);
+                        break;
+                    }
+                }
+            }else{
+                for (String key : sheets) {
+                    if (!key.equals(selectedSheet1)) {
                         psSheetIndexField.setSelectedItem(key);
                         break;
                     }
@@ -1011,7 +1019,9 @@ public class MainForm {
                                                                 if (!psq.isExportable(sg.getKey())) {
                                                                     for (Service srv : sg.getServices().values()) {
                                                                         if (srv.notEmpty(psq)) {
-                                                                            if (psq.isExportable(sg.getKey())) {
+                                                                            //System.out.println("\n\nsg.getKey()="+sg.getKey());
+                                                                            //System.out.println("psq.isHidden(sg.getKey())="+psq.isHidden(sg.getKey()));
+                                                                            if (psq.isExportable(srv.getKey())) {
                                                                                 //vigrujaem service
                                                                                 {
                                                                                     if (psS.getLastRowNum() >= psRowIndex + i) {
@@ -1088,7 +1098,7 @@ public class MainForm {
                                                                                             Cell c1 = r.createCell(0 + psCellIndex);
                                                                                             CellStyle cs1 = rowStyle.getCellStyle(0 + psCellIndex, wb.createCellStyle());
                                                                                             cs1.setWrapText(true);
-                                                                                            c1.setCellValue(inst.getName() + " " + i);
+                                                                                            c1.setCellValue(inst.getName());
                                                                                             c1.setCellStyle(cs1);
                                                                                             Cell c2 = r.createCell(1 + psCellIndex);
                                                                                             CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());

@@ -43,8 +43,8 @@ public class Proposal {
     private PSQuote psQuote;
 
     public Proposal(Configuration config) {
-        psQuote = new PSQuote(this);
         this.setConfig(config);
+        psQuote = new PSQuote(this);
         userName = config.getUserName();
         for (AuthLevel l : config.getAuthLevels().values()) {
             this.alsTxt.put(l.getKey(), l.getMemoText());
