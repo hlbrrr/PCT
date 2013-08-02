@@ -695,7 +695,7 @@ public class MainForm {
                                                             i++;
                                                         }
 
-                                                        {
+                                                        /*{
                                                             if (psS.getLastRowNum() >= psRowIndex + i) {
                                                                 psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
                                                             }
@@ -801,7 +801,7 @@ public class MainForm {
                                                             }
 
                                                             i++;
-                                                        }
+                                                        }*/
                                                         {
                                                             if (psS.getLastRowNum() >= psRowIndex + i) {
                                                                 psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
@@ -899,7 +899,7 @@ public class MainForm {
                                                             c4.setCellValue("$$:");
                                                             c4.setCellStyle(cs4);
 
-                                                            Cell c5 = r.createCell(4 + psCellIndex);
+                                                            /*Cell c5 = r.createCell(4 + psCellIndex);
                                                             CellStyle cs5 = rowStyle.getCellStyle(4 + psCellIndex, wb.createCellStyle());
                                                             cs5.setWrapText(true);
                                                             c5.setCellValue("Onsite days:");
@@ -909,9 +909,9 @@ public class MainForm {
                                                             CellStyle cs6 = rowStyle.getCellStyle(5 + psCellIndex, wb.createCellStyle());
                                                             cs6.setWrapText(true);
                                                             c6.setCellValue("Onsite trips:");
-                                                            c6.setCellStyle(cs6);
+                                                            c6.setCellStyle(cs6);*/
 
-                                                            for (int y = 6 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                            for (int y = 4 + psCellIndex; y <= rowStyle.getLast(); y++) {
                                                                 CellStyle tcs = rowStyle.getCellStyle(y, null);
                                                                 if (tcs != null) {
                                                                     Cell tc = r.createCell(y);
@@ -996,7 +996,7 @@ public class MainForm {
                                                                             cs4.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
                                                                         c4.setCellStyle(cs4);
 
-                                                                        Cell c5 = r.createCell(4 + psCellIndex);
+                                                                        /*Cell c5 = r.createCell(4 + psCellIndex);
                                                                         CellStyle cs5 = rowStyle.getCellStyle(4 + psCellIndex, wb.createCellStyle());
                                                                         c5.setCellValue(sg.getTotalOnsiteMD(psq));
                                                                         c5.setCellStyle(cs5);
@@ -1004,10 +1004,10 @@ public class MainForm {
                                                                         Cell c6 = r.createCell(5 + psCellIndex);
                                                                         CellStyle cs6 = rowStyle.getCellStyle(5 + psCellIndex, wb.createCellStyle());
                                                                         c6.setCellValue(sg.getTotalOnsiteTrips(psq));
-                                                                        c6.setCellStyle(cs6);
+                                                                        c6.setCellStyle(cs6);*/
                                                                     }
 
-                                                                    for (int y = 6 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                    for (int y = 4 + psCellIndex; y <= rowStyle.getLast(); y++) {
                                                                         CellStyle tcs = rowStyle.getCellStyle(y, null);
                                                                         if (tcs != null) {
                                                                             Cell tc = r.createCell(y);
@@ -1059,7 +1059,7 @@ public class MainForm {
                                                                                         cs4.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
                                                                                     c4.setCellStyle(cs4);
 
-                                                                                    Cell c5 = r.createCell(4 + psCellIndex);
+                                                                                    /*Cell c5 = r.createCell(4 + psCellIndex);
                                                                                     CellStyle cs5 = rowStyle.getCellStyle(4 + psCellIndex, wb.createCellStyle());
                                                                                     c5.setCellValue(srv.getTotalOnsiteMD(psq));
                                                                                     c5.setCellStyle(cs5);
@@ -1067,9 +1067,9 @@ public class MainForm {
                                                                                     Cell c6 = r.createCell(5 + psCellIndex);
                                                                                     CellStyle cs6 = rowStyle.getCellStyle(5 + psCellIndex, wb.createCellStyle());
                                                                                     c6.setCellValue(srv.getTotalOnsiteTrips(psq));
-                                                                                    c6.setCellStyle(cs6);
+                                                                                    c6.setCellStyle(cs6);*/
 
-                                                                                    for (int y = 6 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                                    for (int y = 4 + psCellIndex; y <= rowStyle.getLast(); y++) {
                                                                                         CellStyle tcs = rowStyle.getCellStyle(y, null);
                                                                                         if (tcs != null) {
                                                                                             Cell tc = r.createCell(y);
@@ -1117,7 +1117,7 @@ public class MainForm {
                                                                                                 cs4.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
                                                                                             c4.setCellStyle(cs4);
 
-                                                                                            Cell c5 = r.createCell(4 + psCellIndex);
+                                                                                            /*Cell c5 = r.createCell(4 + psCellIndex);
                                                                                             CellStyle cs5 = rowStyle.getCellStyle(4 + psCellIndex, wb.createCellStyle());
                                                                                             c5.setCellValue(inst.getOnsiteTotalValue());
                                                                                             c5.setCellStyle(cs5);
@@ -1125,9 +1125,9 @@ public class MainForm {
                                                                                             Cell c6 = r.createCell(5 + psCellIndex);
                                                                                             CellStyle cs6 = rowStyle.getCellStyle(5 + psCellIndex, wb.createCellStyle());
                                                                                             c6.setCellValue(inst.getTripTotalValue());
-                                                                                            c6.setCellStyle(cs6);
+                                                                                            c6.setCellStyle(cs6);*/
 
-                                                                                            for (int y = 6 + psCellIndex; y <= rowStyle.getLast(); y++) {
+                                                                                            for (int y = 4 + psCellIndex; y <= rowStyle.getLast(); y++) {
                                                                                                 CellStyle tcs = rowStyle.getCellStyle(y, null);
                                                                                                 if (tcs != null) {
                                                                                                     Cell tc = r.createCell(y);
@@ -2136,7 +2136,7 @@ public class MainForm {
         int lastRowNum = sheet.getLastRowNum();
 
         if(debug){
-           System.out.println("lastRowNum = " + lastRowNum);
+            System.out.println("lastRowNum = " + lastRowNum);
             System.out.println("rowIndex = " + rowIndex);
         }
 

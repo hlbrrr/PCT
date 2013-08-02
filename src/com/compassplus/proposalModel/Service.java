@@ -467,9 +467,9 @@ public class Service {
     public Double getRegionalOnsitePrice() {
         Double ret = 0d;
         //if(getCharge()){
-            ret += getOnsiteTotalValue() * proposal.getRegion().getOnsiteDailyCost();
+            /*ret += getOnsiteTotalValue() * proposal.getRegion().getOnsiteDailyCost();
             ret += getTripTotalValue() * proposal.getRegion().getTripPrice();
-            ret = proposal.getCurrencyRate() * ret;
+            ret = proposal.getCurrencyRate() * ret;      */
         //}
         return ret;//CommonUtils.getInstance().toNextHundred(ret);
     }

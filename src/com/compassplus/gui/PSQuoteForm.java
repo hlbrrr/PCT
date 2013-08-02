@@ -733,12 +733,12 @@ public class PSQuoteForm {
                 JLabel label = new JLabel("M/Ds");
                 JPanel panel = new JPanel();
                 panel.add(label);
-                panel.setBorder(border);
+                panel.setBorder(lborder);
                 panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
                 panel.setPreferredSize(new Dimension(100, 25));
                 productsTable.add(panel, c);
             }
-            {
+            /*{
                 c.gridx++;
                 JLabel label = new JLabel("Onsite days");
                 JPanel panel = new JPanel();
@@ -757,7 +757,7 @@ public class PSQuoteForm {
                 panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
                 panel.setPreferredSize(new Dimension(100, 25));
                 productsTable.add(panel, c);
-            }
+            }*/
             if(s.isRecommended()){
                 c.gridy++;
                 // second row
@@ -797,11 +797,11 @@ public class PSQuoteForm {
                     label.setAlignmentX(Component.RIGHT_ALIGNMENT);
                     //panel.setPreferredSize(new Dimension(0, 32));
                     panel.add(label);
-                    panel.setBorder(border);
+                    panel.setBorder(lborder);
                     panel.setBackground(Color.white);
                     productsTable.add(panel, c);
                 }
-                {
+                /*{
                     c.gridx++;
                     CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
                         public void act(Object src) {
@@ -854,7 +854,7 @@ public class PSQuoteForm {
                     panel.setBorder(lborder);
                     panel.setBackground(Color.white);
                     productsTable.add(panel, c);
-                }
+                }*/
 
                 c.gridy++;
                 //third row
@@ -903,11 +903,11 @@ public class PSQuoteForm {
                     input.setAlignmentX(Component.RIGHT_ALIGNMENT);
                     panel.setPreferredSize(new Dimension(0, 32));
                     panel.add(panelW);
-                    panel.setBorder(border);
+                    panel.setBorder(lborder);
                     panel.setBackground(Color.white);
                     productsTable.add(panel, c);
                 }
-                {
+                /*{
                     c.gridx++;
                     final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getOSDIncrement().doubleValue(), 0d, 10000d, 1d));
                     input.addChangeListener(new ChangeListener() {
@@ -976,7 +976,7 @@ public class PSQuoteForm {
                     panel.setBorder(lborder);
                     panel.setBackground(Color.white);
                     productsTable.add(panel, c);
-                }
+                }*/
             }
 
             c.gridy++;
@@ -1030,11 +1030,11 @@ public class PSQuoteForm {
                 input.setAlignmentX(Component.RIGHT_ALIGNMENT);
                 panel.setPreferredSize(new Dimension(0, 32));
                 panel.add(panelW);
-                panel.setBorder(border);
+                panel.setBorder(lborder);
                 panel.setBackground(Color.white);
                 productsTable.add(panel, c);
             }
-            {
+            /*{
                 c.gridx++;
                 final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getOSDSubstitute().doubleValue(), 0d, 10000d, 1d));
                 input.addChangeListener(new ChangeListener() {
@@ -1103,7 +1103,7 @@ public class PSQuoteForm {
                 panel.setBorder(lborder);
                 panel.setBackground(Color.white);
                 productsTable.add(panel, c);
-            }
+            }*/
 
             if(s.isRecommended()){
                 c.gridy++;
@@ -1146,11 +1146,11 @@ public class PSQuoteForm {
                     label.setAlignmentX(Component.RIGHT_ALIGNMENT);
                     //panel.setPreferredSize(new Dimension(0, 32));
                     panel.add(label);
-                    panel.setBorder(border);
+                    panel.setBorder(lborder);
                     panel.setBackground(Color.white);
                     productsTable.add(panel, c);
                 }
-                {
+                /*{
                     c.gridx++;
                     CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
                         public void act(Object src) {
@@ -1203,7 +1203,7 @@ public class PSQuoteForm {
                     panel.setBorder(lborder);
                     panel.setBackground(Color.white);
                     productsTable.add(panel, c);
-                }
+                }*/
             }
         }
     }

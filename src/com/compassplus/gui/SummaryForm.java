@@ -1327,7 +1327,7 @@ public class SummaryForm {
                     panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
                     psTable.add(panel, c);
                 }
-                {
+                /*{
                     c.gridx++;
                     JLabel label = new JLabel("Onsite budget");
                     JPanel panel = new JPanel();
@@ -1335,7 +1335,7 @@ public class SummaryForm {
                     panel.setBorder(border);
                     panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
                     psTable.add(panel, c);
-                }
+                }*/
                 {
                     c.gridx++;
                     JLabel label = new JLabel("Total");
@@ -1541,7 +1541,7 @@ public class SummaryForm {
                     panel.setBackground(Color.white);
                     psTable.add(panel, c);
                 }
-                {
+                /*{
                     c.gridx++;
                     CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
                         public void act(Object src) {
@@ -1570,7 +1570,7 @@ public class SummaryForm {
                     panel.setBorder(border);
                     panel.setBackground(Color.white);
                     psTable.add(panel, c);
-                }
+                }*/
                 {
                     c.gridx++;
                     CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
