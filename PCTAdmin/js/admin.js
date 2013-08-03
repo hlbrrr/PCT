@@ -515,6 +515,7 @@
                 _authLevels:$('#AuthLevels', dom).get(),
                 _currencies:$('#Currencies', dom).get(),
                 _recommendations:$('#Recommendations', dom).get(),
+                _trainingCourses:$('#TrainingCourses', dom).get(),
                 _users:$('#Users', dom).get(),
                 _files:$('#Files', dom).get(),
                 _addProduct:$('#AddProduct', dom).get(),
@@ -523,7 +524,7 @@
                 _addAuthLevel:$('#AddAuthLevel', dom).get(),
                 _addServicesGroup:$('#AddServicesGroup', dom).get(),
                 _addCurrency:$('#AddCurrency', dom).get(),
-                _addRecommendation:$('#AddRecommendation', dom).get(),
+                _addTrainingCourse:$('#AddTrainingCourse', dom).get(),
                 _addUser:$('#AddUser', dom).get(),
                 /*_addFile:$('#AddFile', dom).get(),*/
                 _home:$('#Home', dom).get(),
@@ -563,6 +564,10 @@
             $(this._recommendations, dom).sortable({
                 revert:true,
                 handle: '.recommendationDrag'
+            });
+            $(this._trainingCourses, dom).sortable({
+                revert:true,
+                handle: '.trainingCourseDrag'
             });
             $(this._users, dom).sortable({
                 revert:true,
@@ -618,6 +623,9 @@
             });
             $(this._addRecommendation).click(function() {
                 that.addRecommendation();
+            });
+            $(this._addTrainingCourse).click(function() {
+                that.addTrainingCourse();
             });
             $(this._addUser).click(function() {
                 that.addUser();
@@ -726,8 +734,13 @@
                             config += $.data($(this)[0], 'pct').getXML();
                     });
                     config += '</Recommendations>';
+                    config += '<TrainingCourses>';
+                    $(that._trainingCourses).children().each(function() {
+                        if ($(this).hasClass('divTrainingCourse'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</TrainingCourses>';
                     config += '</root>';
-                    console.log(config);
                     return config;
                 }
             });
@@ -799,6 +812,16 @@
                     $('root>Recommendation', xml).each(function() {
                         var rt = that.addRecommendation((new PCT.recommendation()).setRoot(that._recommendations).init(this));
                         $('.recommendationKey', rt).each(function() {
+                            $(this).val(PCT.randomString(15)).change();
+                        });
+                    });
+                }
+            });
+            $.data($(this._trainingCourses)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>TrainingCourse', xml).each(function() {
+                        var rt = that.addTrainingCourse((new PCT.trainingCourse()).setRoot(that._trainingCourses).init(this));
+                        $('.trainingCourseKey', rt).each(function() {
                             $(this).val(PCT.randomString(15)).change();
                         });
                     });
@@ -985,6 +1008,9 @@
                     $('>Recommendations>Recommendation', initialData).each(function() {
                         that.addRecommendation((new PCT.recommendation()).setRoot(that._recommendations).init(this));
                     });
+                    $('>TrainingCourses>TrainingCourse', initialData).each(function() {
+                        that.addTrainingCourse((new PCT.trainingCourse()).setRoot(that._trainingCourses).init(this));
+                    });
                     $('>Users>User', initialData).each(function() {
                         that.addUser((new PCT.user()).setRoot(that._users).init(this));
                     });
@@ -1102,6 +1128,16 @@
                         return this.addRecommendation((new PCT.recommendation()).setRoot(that._recommendations));
                     }
                 },
+                addTrainingCourse:function(trainingCourse) {
+                    if (trainingCourse) {
+                        $('html, body').animate({
+                            scrollTop: $(trainingCourse.getHead()).offset().top
+                        }, 200);
+                        return trainingCourse.getHead();
+                    } else {
+                        return this.addTrainingCourse((new PCT.trainingCourse()).setRoot(that._trainingCourses));
+                    }
+                },
                 addUser:function(user) {
                     if (user) {
                         $('html, body').animate({
@@ -1141,6 +1177,8 @@
                 _modules:$('#Modules', dom).get(),
                 _licenses:$('#Licenses', dom).get(),
                 _addLicense:$('#AddLicense', dom).get(),
+                _dependencies:$('#Dependencies', dom).get(),
+                _addDependency:$('#AddDependency', dom).get(),
                 _capacities:$('#Capacities', dom).get(),
                 _productTitle:$('#ProductTitle', dom).get(),
                 _settings:$('#Settings', dom).get(),
@@ -1170,6 +1208,12 @@
                             config += $.data($(this)[0], 'pct').getXML();
                     });
                     config += '</Licenses>';
+                    config += '<Dependencies>';
+                    $(that._dependencies).children().each(function() {
+                        if ($(this).hasClass('trainingCourseDependency'))
+                            config += '<TrainingCourse>' + $.data($(this)[0], 'pct').getXML() + '</TrainingCourse>';
+                    });
+                    config += '</Dependencies>';
                     $(that._modules).children().each(function() {
                         if ($(this).hasClass('divModulesGroup'))
                             config += $.data($(this)[0], 'pct').getXML();
@@ -1184,8 +1228,11 @@
             });
             $(this._licenses, dom).sortable({
                 revert:true,
-                handle: '.licenseDrag',
-                connectWith: '.divProductLicenses'
+                handle: '.licenseDrag'
+            });
+            $(this._dependencies, dom).sortable({
+                revert:true,
+                handle: '.dependencyDrag'
             });
             $.data($(this._modules)[0], 'pct', {
                 updateTotal:function() {
@@ -1202,12 +1249,26 @@
                     });
                 }
             });
+            $.data($(this._dependencies)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Dependency', xml).each(function() {
+                        var rt = that.addDependency((new PCT.dependency()).setRoot(that._dependencies).init(this));
+                    });
+                }
+            });
             $(this._addLicense).click(function() {
                 if ($(that._content).hasClass('hidden')) {
                     $(that._content).removeClass('hidden');
                     $(that._expand).html('Collapse');
                 }
                 that.addLicense();
+            });
+            $(this._addDependency).click(function() {
+                if ($(that._content).hasClass('hidden')) {
+                    $(that._content).removeClass('hidden');
+                    $(that._expand).html('Collapse');
+                }
+                that.addDependency();
             });
             $(this._remove).click(function() {
                 if (confirm('Remove product?')) {
@@ -1269,6 +1330,9 @@
                     $('>Licenses>License', initialData).each(function() {
                         that.addLicense((new PCT.license()).setRoot(that._licenses).init(this));
                     });
+                    $('>Dependencies>TrainingCourse', initialData).each(function() {
+                        that.addDependency((new PCT.dependency()).setRoot(that._dependencies).setType('trainingCourse', true).init($(this).text()));
+                    });
                     $(this._maximumFunctionalityPrice).val($('>MaximumFunctionalityPrice', initialData).text()).change();
                     $(this._minimumPrice).val($('>MinimumPrice', initialData).text()).change();
                     $(this._secondarySalesRate).val($('>SecondarySalesRate', initialData).text()).change();
@@ -1297,6 +1361,16 @@
                         return license.getHead();
                     } else {
                         return this.addLicense((new PCT.license()).setRoot(that._licenses));
+                    }
+                },
+                addDependency:function(dependency) {
+                    if (dependency) {
+                        $('html, body').animate({
+                            scrollTop: $(dependency.getHead()).offset().top
+                        }, 000);
+                        return dependency.getHead();
+                    } else {
+                        return this.addDependency((new PCT.dependency()).setRoot(that._dependencies).setType('trainingCourse', true));
                     }
                 },
                 addCapacitiesRoot:function(capacitiesGroup) {
@@ -1612,6 +1686,10 @@
                         if ($(this).hasClass('recommendationDependency'))
                             config += '<Recommendation>' + $.data($(this)[0], 'pct').getXML() + '</Recommendation>';
                     });
+                    $(that._dependencies).children().each(function() {
+                        if ($(this).hasClass('trainingCourseDependency'))
+                            config += '<TrainingCourse>' + $.data($(this)[0], 'pct').getXML() + '</TrainingCourse>';
+                    });
                     config += '</Dependencies>';
                     config += '</Module>';
                     return config;
@@ -1697,6 +1775,9 @@
                     $('>Dependencies>Recommendation', initialData).each(function() {
                         that.addDependency((new PCT.dependency()).setRoot(that._dependencies).setType('recommendation').init($(this).text()));
                     });
+                    $('>Dependencies>TrainingCourse', initialData).each(function() {
+                        that.addDependency((new PCT.dependency()).setRoot(that._dependencies).setType('trainingCourse').init($(this).text()));
+                    });
                     return this;
                 },
                 addDependency:function(dependency) {
@@ -1767,22 +1848,27 @@
             $(this._type).change(function() {
                 if ($(this).val() == 'require') {
                     $(that._dependencyBody).addClass('requireDependency');
-                    $(that._dependencyBody).removeClass('excludeDependency').removeClass('requireCapacityDependency').removeClass('recommendationDependency');
+                    $(that._dependencyBody).removeClass('excludeDependency').removeClass('requireCapacityDependency').removeClass('recommendationDependency').removeClass('trainingCourseDependency');
                     $(that._keyTitle).html('Key(s):');
                     $(that._value).removeClass('validate').change();
                 } else if ($(this).val() == 'exclude') {
                     $(that._dependencyBody).addClass('excludeDependency');
-                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('recommendationDependency');
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('recommendationDependency').removeClass('trainingCourseDependency');
                     $(that._keyTitle).html('Key:');
                     $(that._value).removeClass('validate').change();
                 } else if ($(this).val() == 'capacity') {
                     $(that._dependencyBody).addClass('requireCapacityDependency');
                     $(that._keyTitle).html('Key:');
                     $(that._value).addClass('validate').change();
-                    $(that._dependencyBody).removeClass('requireDependency').removeClass('excludeDependency').removeClass('recommendationDependency');
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('excludeDependency').removeClass('recommendationDependency').removeClass('trainingCourseDependency');
                 } else if ($(this).val() == 'recommendation') {
                     $(that._dependencyBody).addClass('recommendationDependency');
-                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('excludeDependency');
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('excludeDependency').removeClass('trainingCourseDependency');
+                    $(that._keyTitle).html('Key:');
+                    $(that._value).removeClass('validate').change();
+                } else if ($(this).val() == 'trainingCourse') {
+                    $(that._dependencyBody).addClass('trainingCourseDependency');
+                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('excludeDependency').removeClass('recommendationDependency');
                     $(that._keyTitle).html('Key:');
                     $(that._value).removeClass('validate').change();
                 }
@@ -1803,8 +1889,11 @@
                     $(this._remove).addClass('hidden');
                     return this;
                 },
-                setType:function(type) {
+                setType:function(type, disable) {
                     $(this._type).val(type).change();
+                    if(disable){
+                        $(this._type).attr('disabled', 'disabled');
+                    }
                     return this;
                 },
                 setValue:function(value) {
@@ -3384,6 +3473,87 @@
                     $(this._onsiteValue).val($('>OnsiteValue', initialData).text()).change();
                     $(this._tripValue).val($('>TripValue', initialData).text()).change();
                     $(this._referenceKey).val($('>ReferenceKey', initialData).text()).change();
+                    $(this._remove).addClass('hidden');
+                    $(this._settingsPane).addClass('hidden');
+                    var that = this;
+                    return this;
+                }
+            });
+        },
+        trainingCourse:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('trainingCourse');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _key:$('#Key', dom).get(),
+                _name:$('#Name', dom).get(),
+                _trainingCourseTitle:$('#Title', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _clone:$('#Clone', dom).get(),
+                _hint:$('#Hint', dom).get(),
+                _minAttendees:$('#MinAttendees', dom).get(),
+                _maxAttendees:$('#MaxAttendees', dom).get(),
+                _length:$('#Length', dom).get(),
+                _mandatory:$('#Mandatory', dom).get(),
+                _price:$('#Price', dom).get(),
+                _core:$('#Core', dom).get(),
+                _percentageKeysArea:$('#PercentageKeysArea', dom).get(),
+            });
+            var that = this;
+
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<TrainingCourse>';
+                    config += '<Hint>' + $(that._hint).val() + '</Hint>';
+                    config += '<MinAttendees>' + $(that._minAttendees).val() + '</MinAttendees>';
+                    config += '<MaxAttendees>' + $(that._maxAttendees).val() + '</MaxAttendees>';
+                    config += '<Length>' + $(that._length).val() + '</Length>';
+                    config += '<Price>' + $(that._price).val() + '</Price>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Mandatory>' + ($(that._mandatory).prop('checked') ? 'true' : 'false') + '</Mandatory>';
+                    config += '</TrainingCourse>';
+                    return config;
+                }
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove training course?')) {
+                    if (confirm('Removing training course can result in broken backward compatibility. Remove training course?')) {
+                        $(that._body).remove();
+                    }
+                }
+            });
+            $(this._key).val(PCT.randomString(15)).change();
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divModelTrainingCourses')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+            $(this._name).change(function() {
+                $(that._trainingCourseTitle).html($(this).val());
+            });
+            $(this._name).val('').change();
+            $(this._trainingCourseTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._hint).val($('>Hint', initialData).text()).change();
+                    $(this._minAttendees).val($('>MinAttendees', initialData).text()).change();
+                    $(this._maxAttendees).val($('>MaxAttendees', initialData).text()).change();
+                    $(this._length).val($('>Length', initialData).text()).change();
+                    $(this._price).val($('>Price', initialData).text()).change();
+                    $(this._key).val('').val($('>Key', initialData).text()).change();
+                    $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._mandatory).prop('checked', ($('>Mandatory', initialData).text() == 'true')).change();
                     $(this._remove).addClass('hidden');
                     $(this._settingsPane).addClass('hidden');
                     var that = this;

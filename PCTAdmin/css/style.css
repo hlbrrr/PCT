@@ -90,7 +90,12 @@ body, input, select, textarea {
     padding-right: 10px;
 }
 
-.divProduct, .divRegion, .divSupportPlan, .divAuthLevel, .divCurrency, .divUser, .divFile, .divLicense, .divRecommendation {
+.divProductDependencies {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.divProduct, .divRegion, .divSupportPlan, .divAuthLevel, .divCurrency, .divUser, .divFile, .divLicense, .divRecommendation, .divTrainingCourse {
     border: 1px solid #000;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -104,11 +109,11 @@ body, input, select, textarea {
     margin-top: 10px;
 }
 
-.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans, .divModelAuthLevels, .divModelUsers, .divModelRecommendations, .divModelFiles, .divModelServices {
+.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans, .divModelAuthLevels, .divModelUsers, .divModelTrainingCourses, .divModelRecommendations, .divModelFiles, .divModelServices {
     margin: 10px;
 }
 
-.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divAuthLevelTitle, .divCurrencyTitle, .divUserTitle, .divRecommendationTitle, .divFileTitle, .divLicenseTitle {
+.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divAuthLevelTitle, .divCurrencyTitle, .divUserTitle, .divTrainingCourseTitle, .divRecommendationTitle, .divFileTitle, .divLicenseTitle {
     background-color: #444;
     color: white;
 }
@@ -338,12 +343,21 @@ body, input, select, textarea {
     border-color: #E8E856;
 }
 
+.divDependency.trainingCourseDependency {
+    border-color: #56DEE8;
+}
+
 .divDependency {
     border: 1px solid;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
     border-radius: 5px;
     -webkit-border-radius: 5px;
+}
+
+.divProductDependencies .divDependency {
+    margin-bottom: 0px !important;
+    margin-top: 10px !important;
 }
 
 .divModuleTitle {
@@ -386,6 +400,10 @@ body, input, select, textarea {
 
 .divDependency.recommendationDependency .divDependencyTitle {
     background-color: #FFF788;
+}
+
+.divDependency.trainingCourseDependency .divDependencyTitle {
+    background-color: #88F7FF;
 }
 
 .divDependencyTitle {
@@ -459,7 +477,7 @@ body, input, select, textarea {
 .divSupportPlanTitle>.titleTable>.titleTableCellButton:hover, .divAuthLevelTitle>.titleTable>.titleTableCellButton:hover,
 .divUserTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyTitle>.titleTable>.titleTableCellButton:hover,
 .divRecommendationTitle>.titleTable>.titleTableCellButton:hover, .divFileTitle>.titleTable>.titleTableCellButton:hover,
-.divLicenseTitle>.titleTable>.titleTableCellButton:hover {
+.divTrainingCourseTitle>.titleTable>.titleTableCellButton:hover, .divLicenseTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #777;
 }
 
@@ -510,6 +528,9 @@ body, input, select, textarea {
 }
 .divDependency.recommendationDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #FEFCB5;
+}
+.divDependency.trainingCourseDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #B5F9FE;
 }
 
 
@@ -677,7 +698,7 @@ input.validate.error, textarea.validate.error {
     background-color: red;
 }
 
-.divServicesGroup, .divService, .divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan, .divAuthLevel, .divCurrency, .divUser, .divRecommendation, .divFile {
+.divServicesGroup, .divService, .divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan, .divAuthLevel, .divCurrency, .divUser, .divTrainingCourse, .divRecommendation, .divFile {
     background-color: #fff;
 }
 

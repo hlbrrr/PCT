@@ -34,7 +34,7 @@
                     Home
                 </div>
                 <div id="DownloadsTab" bind="#DownloadsWrap" class="titleTableCell titleTableCellButton tab">
-                    Downloads
+                    Files
                 </div>
                 <div id="ProductsTab" bind="#ProductsWrap" class="titleTableCell titleTableCellButton tab">
                     Products
@@ -46,7 +46,7 @@
                     Sup. Plans
                 </div>
                 <div id="CurrenciesTab" bind="#CurrenciesWrap" class="titleTableCell titleTableCellButton tab">
-                    Currencies
+                    Curr.
                 </div>
                 <div id="UsersTab" bind="#UsersWrap" class="titleTableCell titleTableCellButton tab">
                     Users
@@ -58,7 +58,10 @@
                     Services
                 </div>
                 <div id="RecommendationsTab" bind="#RecommendationsWrap" class="titleTableCell titleTableCellButton tab">
-                    Recommendations
+                    Recommend.
+                </div>
+                <div id="TrainingCoursesTab" bind="#TrainingCoursesWrap" class="titleTableCell titleTableCellButton tab">
+                    Train. Courses
                 </div>
                 <div id="SystemTab" bind="#SystemWrap" class="titleTableCell titleTableCellButton tab">
                     System
@@ -140,6 +143,16 @@
             </div>
             <div id="Recommendations" class="divModelRecommendations"></div>
         </div>
+        <div id="TrainingCoursesWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="AddTrainingCourse" class="titleTableCell titleTableCellButton">
+                    Add Training Course
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="TrainingCourses" class="divModelTrainingCourses"></div>
+        </div>
         <div id="DownloadsWrap" class="hidden">
             <div class="titleTable divModelSubTitle" id="Uploader">
                 <!--<div id="AddFile" class="titleTableCell titleTableCellButton">
@@ -216,6 +229,9 @@
                 <div id="AddLicense" class="titleTableCell titleTableCellButton">
                     Add Licensing Model
                 </div>
+                <div id="AddDependency" class="titleTableCell titleTableCellButton">
+                    Add Dependency
+                </div>
                 <div id="Expand" class="titleTableCell titleTableCellButton">
                     Collapse
                 </div>
@@ -290,6 +306,7 @@
             </div>
         </div>
         <div id="Content">
+            <div id="Dependencies" class="divProductDependencies"></div>
             <div id="Licenses" class="divProductLicenses"></div>
             <div class="divProductContent">
                 <div id="Modules" class="divProductModules"></div>
@@ -981,6 +998,7 @@
                                 <option value="exclude">Exclude Module</option>
                                 <option value="capacity">Require Capacity</option>
                                 <option value="recommendation">Recommendation</option>
+                                <option value="trainingCourse">Training Course</option>
                             </select>
                         </div>
                     </div>
@@ -1475,6 +1493,99 @@
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <input id="TripValue" autocomplete="off" class="settingInput"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="template" id="trainingCourse">
+    <div class="divTrainingCourse" id="Core">
+        <div class="divTrainingCourseTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton trainingCourseDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate trainingCourseKey"
+                                   validclass="unique" unique=".trainingCourseKey" uniqueroot=".divModelTrainingCourses"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Description:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <textarea id="Hint" autocomplete="off" class="settingInput validate"
+                                      validclass="mempty"></textarea>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow capacitySetting">
+                        <div class="settingsTableCell settingsTitle">
+                            Mandatory:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="Mandatory" autocomplete="off" type="checkbox"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Min. Attendees:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="MinAttendees" autocomplete="off" class="settingInput validate"
+                                   validclass="int"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Max. Attendees:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="MaxAttendees" autocomplete="off" class="settingInput validate"
+                                   validclass="int"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Length (days):
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Length" autocomplete="off" class="settingInput validate"
+                                   validclass="int"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Price (p/a):
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Price" autocomplete="off" class="settingInput validate"
+                                   validclass="summ"/>
                         </div>
                     </div>
                 </div>
