@@ -49,6 +49,7 @@ public class TrainingCourse {
 
     public TrainingCourse(com.compassplus.configurationModel.TrainingCourse trainingCourse, Proposal proposal) throws PCTDataFormatException {
         this.proposal = proposal;
+        setInclude(trainingCourse.isMandatory());
         setTrainingCourse(trainingCourse.getKey(), proposal.getConfig());
     }
 
