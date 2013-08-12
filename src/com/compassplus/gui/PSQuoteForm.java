@@ -4,6 +4,7 @@ import com.compassplus.configurationModel.Recommendation;
 import com.compassplus.configurationModel.Service;
 import com.compassplus.configurationModel.ServicesGroup;
 import com.compassplus.proposalModel.Proposal;
+import com.compassplus.proposalModel.TrainingCourse;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -34,6 +35,7 @@ public class PSQuoteForm {
     private JScrollPane modulesScroll;
     private DecimalFormat df;
     private java.util.List<CustomJLabel> labelsToUpdate = new ArrayList<CustomJLabel>();
+    private java.util.List<CustomJLabel> tcLabelsToUpdate = new ArrayList<CustomJLabel>();
     private java.util.List<CustomJLabel> priceLabels = new ArrayList<CustomJLabel>();
 
     public PSQuoteForm(Proposal proposal, PCTChangedListener titleUpdater, DecimalFormat df, JFrame frame) {
@@ -57,9 +59,17 @@ public class PSQuoteForm {
         titleUpdater.act(this);
     }
 
+    public void recalcTC(){
+        for(CustomJLabel c:tcLabelsToUpdate){
+            c.call();
+        }
+        titleUpdater.act(this);
+    }
+
     public void update() {
         mainPanel.removeAll();
         labelsToUpdate.clear();
+        tcLabelsToUpdate.clear();
         priceLabels.clear();
         initForm();
         titleUpdater.act(this);
@@ -115,6 +125,398 @@ public class PSQuoteForm {
         cg.weightx = 1.0;
         cg.gridwidth = 1;
         parent.setLayout(new GridBagLayout());
+
+
+        if(proposal.getPSQuote().getTrainingCourses().size() > 0){
+            Border tpB = BorderFactory.createTitledBorder("Training courses");
+
+            JPanel trainingCoursesPanelWrap = new JPanel(new GridBagLayout());
+
+            JPanel trainingCoursesPanel = new JPanel(new GridBagLayout());
+            trainingCoursesPanel.setMinimumSize(new Dimension(0, 0));
+            trainingCoursesPanel.setBorder(tpB);
+
+
+            trainingCoursesPanelWrap.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+            {
+                GridBagConstraints c = new GridBagConstraints();
+                c.gridy = 0;
+                c.weightx = 1;
+                c.fill = GridBagConstraints.HORIZONTAL;
+                c.anchor = GridBagConstraints.PAGE_START;
+                trainingCoursesPanelWrap.add(trainingCoursesPanel, c);
+            }
+
+
+            GridBagConstraints c = new GridBagConstraints();
+            c.gridy = 0;
+            c.weightx = 1;
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.anchor = GridBagConstraints.PAGE_START;
+            Border border = BorderFactory.createMatteBorder(1, 1, 0, 0, Color.black);
+            Border lborder = BorderFactory.createMatteBorder(1, 1, 0, 1, Color.black);
+            {
+                c.gridx = 0;
+                JLabel label = new JLabel("Key");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(120, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("Name");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(300, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("Days");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(50, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("Attendees");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(100, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("Price (p/a)");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(100, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("Include");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(50, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("Total");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(100, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(lborder);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(100, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            int k = 0;
+            for(TrainingCourse tc : proposal.getPSQuote().getTrainingCourses().values()){
+                k++;
+                final TrainingCourse _tc = tc;
+                final com.compassplus.configurationModel.TrainingCourse tcTemplate = proposal.getConfig().getTrainingCourses().get(tc.getKey());
+                c.gridy++;
+
+                if(k == proposal.getPSQuote().getTrainingCourses().size()){
+                    border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
+                    lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
+                }
+
+                {
+                    c.gridx = 0;
+                    JLabel label = new JLabel(tcTemplate.getTrainingCourseKey());
+                    JPanel panel = new JPanel();
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    // panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    trainingCoursesPanel.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    JLabel label = new JLabel(tcTemplate.getName());
+                    JPanel panel = new JPanel();
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    // panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    trainingCoursesPanel.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    JLabel label = new JLabel(tcTemplate.getLength() + "");
+                    JPanel panel = new JPanel();
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    // panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    trainingCoursesPanel.add(panel, c);
+                }
+                /*{
+                    c.gridx++;
+                    JLabel label = new JLabel(tc.getAttendees() + "");
+                    JPanel panel = new JPanel();
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    // panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    trainingCoursesPanel.add(panel, c);
+                }*/
+                {
+                    c.gridx++;
+                    final JSpinner input = new JSpinner(new SpinnerNumberModel(tc.getAttendees(), tcTemplate.getMinAttendees(), tcTemplate.getMaxAttendees(), new Integer(1)));
+                    input.addChangeListener(new ChangeListener() {
+                        public void stateChanged(ChangeEvent e) {
+                            final ChangeEvent ev = e;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    if (ev.getSource() == input) {
+                                        _tc.setAttendees((Integer)input.getValue());
+                                        recalcTC();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
+
+                    JPanel panelW = new JPanel();
+                    panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                    panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    panelW.add(input);
+                    panelW.setBackground(Color.white);
+
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                    input.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(panelW);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    trainingCoursesPanel.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    StringBuilder sb = new StringBuilder();
+                    if (proposal.getCurrency().getSymbol() != null) {
+                        sb.append(proposal.getCurrency().getSymbol());
+                        sb.append(" ");
+                    }
+                    sb.append(df.format(tc.getPricePerAttendee()));
+                    if (proposal.getCurrency().getSymbol() == null) {
+                        sb.append(" ");
+                        sb.append(proposal.getCurrency().getName());
+                    }
+
+                    JLabel label = new JLabel(sb.toString());
+                    JPanel panel = new JPanel();
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    // panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    trainingCoursesPanel.add(panel, c);
+                }
+                {
+                    c.gridx++;
+
+                    JCheckBox cb = new JCheckBox("", tc.getInclude());
+
+                    cb.addItemListener(new ItemListener() {
+                        public void itemStateChanged(ItemEvent e) {
+                            JCheckBox src = (JCheckBox) e.getSource();
+                            _tc.setInclude(src.isSelected());
+
+                            recalcTC();
+                        }
+                    });
+
+                    JPanel panel = new JPanel();
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    cb.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    // panel.setPreferredSize(new Dimension(0, 32));
+                    cb.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    panel.add(cb);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    trainingCoursesPanel.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            StringBuilder sb = new StringBuilder();
+                            if (proposal.getCurrency().getSymbol() != null) {
+                                sb.append(proposal.getCurrency().getSymbol());
+                                sb.append(" ");
+                            }
+                            sb.append(df.format(_tc.getCleanPrice()));
+                            if (proposal.getCurrency().getSymbol() == null) {
+                                sb.append(" ");
+                                sb.append(proposal.getCurrency().getName());
+                            }
+
+                            ((CustomJLabel) src).setText(sb.toString());
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    tcLabelsToUpdate.add(label);
+                    JPanel panel = new JPanel();
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    //panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    trainingCoursesPanel.add(panel, c);
+                }
+                {
+
+                    GridBagConstraints c2 = new GridBagConstraints();
+                    c2.weightx = 0;
+                    c2.gridwidth = 1;
+                    c2.gridx = 0;
+                    c2.gridy = 0;
+
+                    c.gridx++;
+                    JPanel panel = new JPanel(new GridBagLayout());
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    //panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    // panel.setPreferredSize(new Dimension(0, 32));
+                    //panel.add(label);
+
+
+                    if (tc.isRemovable()) {
+                        JLabel hl = new JLabel("<html><b>[Remove]</b></html>");
+                        hl.setBorder(new EmptyBorder(0, 4, 2, 2));
+                        hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                        final String about = tcTemplate.getHint();
+                        hl.addMouseListener(new MouseListener() {
+                            public void mouseClicked(MouseEvent e) {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        proposal.getPSQuote().delTrainingCourse(tcTemplate.getKey());
+                                        Point zu = modulesScroll.getViewport().getViewPosition();
+                                        update();
+                                        modulesScroll.getViewport().setViewPosition(zu);
+                                    }
+                                });
+                            }
+
+                            public void mousePressed(MouseEvent e) {
+                            }
+
+                            public void mouseReleased(MouseEvent e) {
+                            }
+
+                            public void mouseEntered(MouseEvent e) {
+                            }
+
+                            public void mouseExited(MouseEvent e) {
+                            }
+                        });
+
+                        panel.add(hl, c2);
+                        c2.gridx++;
+                    }
+
+                    if (!"".equals(tcTemplate.getHint())) {
+                        JLabel hl = new JLabel("<html><b>[?]</b></html>");
+                        hl.setBorder(new EmptyBorder(0, 4, 2, 2));
+                        hl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                        final String about = tcTemplate.getHint();
+                        hl.addMouseListener(new MouseListener() {
+                            public void mouseClicked(MouseEvent e) {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        showHint(about);
+                                    }
+                                });
+                            }
+
+                            public void mousePressed(MouseEvent e) {
+                            }
+
+                            public void mouseReleased(MouseEvent e) {
+                            }
+
+                            public void mouseEntered(MouseEvent e) {
+                            }
+
+                            public void mouseExited(MouseEvent e) {
+                            }
+                        });
+                        panel.add(hl, c2);
+                    }
+
+                    panel.setBorder(lborder);
+                    panel.setBackground(Color.white);
+                    trainingCoursesPanel.add(panel, c);
+                }
+            }
+
+            parent.add(trainingCoursesPanelWrap, cg);
+            cg.gridy += 1;
+        }
+
 
         boolean first = true;
         for (ServicesGroup sg : proposal.getConfig().getServicesRoot().getGroups()) {
@@ -687,6 +1089,227 @@ public class PSQuoteForm {
         return ret;
     }
 
+    private void getFormFromRecommendationNew(JPanel parent, com.compassplus.proposalModel.Service s) {
+        final com.compassplus.proposalModel.Service _ref = s;
+        final DecimalFormat df = new DecimalFormat("#");
+        JPanel settingsWrap = new JPanel();
+        parent.setLayout(new BoxLayout(parent, BoxLayout.Y_AXIS));
+        //JScrollPane scroll = new JScrollPane(settingsWrap);
+        parent.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+        parent.setBorder(new EmptyBorder(4, 0, 4, 0));
+        //parent.add(settingsWrap, BorderLayout.CENTER);
+
+        settingsWrap.setLayout(new GridBagLayout());
+        JPanel productsTable = new JPanel(new GridBagLayout());
+        productsTable.setMinimumSize(new Dimension(0, 0));
+        productsTable.setBorder(new EmptyBorder(0, 0, 4, 0));
+        {
+            GridBagConstraints c = new GridBagConstraints();
+            c.gridy = 1;
+            c.gridx = 0;
+            c.weightx = 1;
+            c.weighty = 1;
+            c.gridwidth = 1;
+            parent.add(productsTable, c);
+        }
+        {
+            GridBagConstraints c = new GridBagConstraints();
+            c.gridy = 0;
+            c.weightx = 1;
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.anchor = GridBagConstraints.PAGE_START;
+            Border border = BorderFactory.createMatteBorder(1, 1, 0, 0, Color.black);
+            Border lborder = BorderFactory.createMatteBorder(1, 1, 0, 1, Color.black);
+            {
+                c.gridx = 0;
+                JLabel label = new JLabel("Recommended");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(100, 25));
+                productsTable.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("Increment");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(lborder);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(100, 25));
+                productsTable.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("Substitute");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(lborder);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(100, 25));
+                productsTable.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("Total");
+                JPanel panel = new JPanel();
+                panel.add(label);
+                panel.setBorder(lborder);
+                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                panel.setPreferredSize(new Dimension(100, 25));
+                productsTable.add(panel, c);
+            }
+            /*if(s.isRecommended())*/{
+                c.gridy++;
+                // second row
+                {
+                    c.gridx = 0;
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            ((CustomJLabel) src).setText(df.format(_ref.getMDRecommendationValue()));
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    labelsToUpdate.add(label);
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    //panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(lborder);
+                    panel.setBackground(Color.white);
+                    productsTable.add(panel, c);
+                }
+
+                //c.gridy++;
+                //third row
+                {
+                    c.gridx++;
+                    final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getIncrement().doubleValue(), 0d, 10000d, 1d));
+                    input.addChangeListener(new ChangeListener() {
+                        public void stateChanged(ChangeEvent e) {
+                            final ChangeEvent ev = e;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    if (ev.getSource() == input) {
+                                        _ref.setIncrement((Double)input.getValue());
+                                        recalc();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
+
+                    JPanel panelW = new JPanel();
+                    panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                    panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    panelW.add(input);
+                    panelW.setBackground(Color.white);
+
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                    input.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(panelW);
+                    panel.setBorder(lborder);
+                    panel.setBackground(Color.white);
+                    productsTable.add(panel, c);
+                }
+            }
+
+            //c.gridy++;
+            //fourth row
+            /*if(!s.isRecommended()){
+                border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
+                lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
+            }*/
+
+            {
+                c.gridx++;
+                final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getSubstitute().doubleValue(), 0d, 10000d, 1d));
+                input.addChangeListener(new ChangeListener() {
+                    public void stateChanged(ChangeEvent e) {
+                        final ChangeEvent ev = e;
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                if (ev.getSource() == input) {
+                                    _ref.setSubstitute((Double)input.getValue());
+                                    recalc();
+                                }
+                            }
+                        });
+                    }
+                });
+                input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
+
+                JPanel panelW = new JPanel();
+                panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                panelW.add(input);
+                panelW.setBackground(Color.white);
+
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                input.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                panel.setPreferredSize(new Dimension(0, 32));
+                panel.add(panelW);
+                panel.setBorder(lborder);
+                panel.setBackground(Color.white);
+                productsTable.add(panel, c);
+            }
+
+            /*if(s.isRecommended())*/{
+                // total row
+                border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
+                lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
+
+                {
+                    c.gridx++;
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            ((CustomJLabel) src).setText(df.format(_ref.getTotalValue()));
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    labelsToUpdate.add(label);
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    //panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(lborder);
+                    panel.setBackground(Color.white);
+                    productsTable.add(panel, c);
+                }
+
+            }
+        }
+    }
+
     private void getFormFromRecommendation(JPanel parent, com.compassplus.proposalModel.Service s) {
         final com.compassplus.proposalModel.Service _ref = s;
         final DecimalFormat df = new DecimalFormat("#");
@@ -738,26 +1361,6 @@ public class PSQuoteForm {
                 panel.setPreferredSize(new Dimension(100, 25));
                 productsTable.add(panel, c);
             }
-            /*{
-                c.gridx++;
-                JLabel label = new JLabel("Onsite days");
-                JPanel panel = new JPanel();
-                panel.add(label);
-                panel.setBorder(border);
-                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                panel.setPreferredSize(new Dimension(100, 25));
-                productsTable.add(panel, c);
-            }
-            {
-                c.gridx++;
-                JLabel label = new JLabel("Onsite trips");
-                JPanel panel = new JPanel();
-                panel.add(label);
-                panel.setBorder(lborder);
-                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                panel.setPreferredSize(new Dimension(100, 25));
-                productsTable.add(panel, c);
-            }*/
             if(s.isRecommended()){
                 c.gridy++;
                 // second row
@@ -768,7 +1371,7 @@ public class PSQuoteForm {
                     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                     label.setBorder(new EmptyBorder(4, 4, 4, 4));
                     label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                   // panel.setPreferredSize(new Dimension(0, 32));
+                    // panel.setPreferredSize(new Dimension(0, 32));
                     panel.add(label);
                     panel.setBorder(border);
                     panel.setBackground(Color.white);
@@ -801,60 +1404,6 @@ public class PSQuoteForm {
                     panel.setBackground(Color.white);
                     productsTable.add(panel, c);
                 }
-                /*{
-                    c.gridx++;
-                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
-                        public void act(Object src) {
-                            ((CustomJLabel) src).setText(df.format(_ref.getOnsiteMDRecommendationValue()));
-                        }
-
-                        public void setData(String key, Object data) {
-                            //To change body of implemented methods use File | Settings | File Templates.
-                        }
-
-                        public Object getData(String key) {
-                            return null;  //To change body of implemented methods use File | Settings | File Templates.
-                        }
-                    });
-                    label.call();
-                    labelsToUpdate.add(label);
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    //panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
-                        public void act(Object src) {
-                            ((CustomJLabel) src).setText(df.format(_ref.getTripRecommendationValue()));
-                        }
-
-                        public void setData(String key, Object data) {
-                            //To change body of implemented methods use File | Settings | File Templates.
-                        }
-
-                        public Object getData(String key) {
-                            return null;  //To change body of implemented methods use File | Settings | File Templates.
-                        }
-                    });
-                    label.call();
-                    labelsToUpdate.add(label);
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    //panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(lborder);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }*/
 
                 c.gridy++;
                 //third row
@@ -907,76 +1456,6 @@ public class PSQuoteForm {
                     panel.setBackground(Color.white);
                     productsTable.add(panel, c);
                 }
-                /*{
-                    c.gridx++;
-                    final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getOSDIncrement().doubleValue(), 0d, 10000d, 1d));
-                    input.addChangeListener(new ChangeListener() {
-                        public void stateChanged(ChangeEvent e) {
-                            final ChangeEvent ev = e;
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    if (ev.getSource() == input) {
-                                        _ref.setOSDIncrement((Double)input.getValue());
-                                        recalc();
-                                    }
-                                }
-                            });
-                        }
-                    });
-                    input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
-
-                    JPanel panelW = new JPanel();
-                    panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
-                    panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    panelW.add(input);
-                    panelW.setBackground(Color.white);
-
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
-
-                    input.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(panelW);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getOSTIncrement().doubleValue(), 0d, 10000d, 1d));
-                    input.addChangeListener(new ChangeListener() {
-                        public void stateChanged(ChangeEvent e) {
-                            final ChangeEvent ev = e;
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    if (ev.getSource() == input) {
-                                        _ref.setOSTIncrement((Double)input.getValue());
-                                        recalc();
-                                    }
-                                }
-                            });
-                        }
-                    });
-                    input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
-
-                    JPanel panelW = new JPanel();
-                    panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
-                    panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    panelW.add(input);
-                    panelW.setBackground(Color.white);
-
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
-
-                    input.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(panelW);
-                    panel.setBorder(lborder);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }*/
             }
 
             c.gridy++;
@@ -1034,76 +1513,6 @@ public class PSQuoteForm {
                 panel.setBackground(Color.white);
                 productsTable.add(panel, c);
             }
-            /*{
-                c.gridx++;
-                final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getOSDSubstitute().doubleValue(), 0d, 10000d, 1d));
-                input.addChangeListener(new ChangeListener() {
-                    public void stateChanged(ChangeEvent e) {
-                        final ChangeEvent ev = e;
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                if (ev.getSource() == input) {
-                                    _ref.setOSDSubstitute((Double)input.getValue());
-                                    recalc();
-                                }
-                            }
-                        });
-                    }
-                });
-                input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
-
-                JPanel panelW = new JPanel();
-                panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
-                panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
-                panelW.add(input);
-                panelW.setBackground(Color.white);
-
-                JPanel panel = new JPanel();
-                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
-
-                input.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                panel.setPreferredSize(new Dimension(0, 32));
-                panel.add(panelW);
-                panel.setBorder(border);
-                panel.setBackground(Color.white);
-                productsTable.add(panel, c);
-            }
-            {
-                c.gridx++;
-                final JSpinner input = new JSpinner(new SpinnerNumberModel(_ref.getOSTSubstitute().doubleValue(), 0d, 10000d, 1d));
-                input.addChangeListener(new ChangeListener() {
-                    public void stateChanged(ChangeEvent e) {
-                        final ChangeEvent ev = e;
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                if (ev.getSource() == input) {
-                                    _ref.setOSTSubstitute((Double)input.getValue());
-                                    recalc();
-                                }
-                            }
-                        });
-                    }
-                });
-                input.setMaximumSize(new Dimension(input.getMaximumSize().width, input.getMinimumSize().height));
-
-                JPanel panelW = new JPanel();
-                panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
-                panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
-                panelW.add(input);
-                panelW.setBackground(Color.white);
-
-                JPanel panel = new JPanel();
-                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
-
-                input.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                panel.setPreferredSize(new Dimension(0, 32));
-                panel.add(panelW);
-                panel.setBorder(lborder);
-                panel.setBackground(Color.white);
-                productsTable.add(panel, c);
-            }*/
 
             if(s.isRecommended()){
                 c.gridy++;
@@ -1150,60 +1559,7 @@ public class PSQuoteForm {
                     panel.setBackground(Color.white);
                     productsTable.add(panel, c);
                 }
-                /*{
-                    c.gridx++;
-                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
-                        public void act(Object src) {
-                            ((CustomJLabel) src).setText(df.format(_ref.getOnsiteTotalValue()));
-                        }
 
-                        public void setData(String key, Object data) {
-                            //To change body of implemented methods use File | Settings | File Templates.
-                        }
-
-                        public Object getData(String key) {
-                            return null;  //To change body of implemented methods use File | Settings | File Templates.
-                        }
-                    });
-                    label.call();
-                    labelsToUpdate.add(label);
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    //panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }
-                {
-                    c.gridx++;
-                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
-                        public void act(Object src) {
-                            ((CustomJLabel) src).setText(df.format(_ref.getTripTotalValue()));
-                        }
-
-                        public void setData(String key, Object data) {
-                            //To change body of implemented methods use File | Settings | File Templates.
-                        }
-
-                        public Object getData(String key) {
-                            return null;  //To change body of implemented methods use File | Settings | File Templates.
-                        }
-                    });
-                    label.call();
-                    labelsToUpdate.add(label);
-                    JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                   // panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(lborder);
-                    panel.setBackground(Color.white);
-                    productsTable.add(panel, c);
-                }*/
             }
         }
     }

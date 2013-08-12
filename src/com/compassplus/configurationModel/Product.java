@@ -7,10 +7,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.transform.Result;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,6 +28,7 @@ public class Product {
     private Map<String, Module> modules = new HashMap<String, Module>();
     private Map<String, Capacity> capacities = new HashMap<String, Capacity>();
     private Double secondarySalesRate;
+    private ArrayList<String> trainingCourses = new ArrayList<String>(0);
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
@@ -54,6 +52,7 @@ public class Product {
             this.setModules(xut.getNode("Modules", initialData));
             this.setCapacities(xut.getNode("Capacities", initialData));
             this.setSecondarySalesRate(xut.getNode("SecondarySalesRate", initialData));
+            this.setTrainingCourses(xut.getNodes("Dependencies/TrainingCourse", initialData));
 
 
             for (Capacity c : this.getCapacities().values()) {
@@ -83,6 +82,26 @@ public class Product {
                     "\nStructure: \n" + modulesRoot.toString() + "\n" + capacitiesRoot.toString());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Product is not defined correctly: \nName: " + this.getName(), e.getDetails());
+        }
+    }
+
+    public ArrayList<String> getTrainingCourses() {
+        return trainingCourses;
+    }
+
+    private void setTrainingCourses(NodeList trainingCourses) {
+        this.getTrainingCourses().clear();
+        if (trainingCourses.getLength() > 0) {
+
+            log.info("Found " + trainingCourses.getLength() + " training course(s)");
+            for (int i = 0; i < trainingCourses.getLength(); i++) {
+                try {
+                    this.getTrainingCourses().add(xut.getString(trainingCourses.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getTrainingCourses().size() + " product training course(s)");
         }
     }
 

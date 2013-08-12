@@ -57,7 +57,7 @@ public class Recommendation {
             log.info("Recommendation successfully parsed: \nName: " + this.getName() +
                     "\nKey: " + this.getKey());
         } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Region is not defined correctly: \nName: " + this.getName(), e.getDetails());
+            throw new PCTDataFormatException("Recommendation is not defined correctly: \nName: " + this.getName(), e.getDetails());
         }
     }
 

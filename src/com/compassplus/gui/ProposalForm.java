@@ -162,6 +162,7 @@ public class ProposalForm {
             public void act(Object src) {
                 if(psForm!=null){
                     psForm.recalc();
+                    psForm.recalcTC();
                 }
             }
 
@@ -281,6 +282,7 @@ public class ProposalForm {
             productsTabs.insertTab("Professional service", null, psForm.getRoot(), null, 1);
 
             psForm.recalc();
+            psForm.recalcTC();
 
             productsTabs.setSelectedComponent(psForm.getRoot());
         }

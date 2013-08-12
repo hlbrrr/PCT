@@ -3498,6 +3498,7 @@
                 _hint:$('#Hint', dom).get(),
                 _minAttendees:$('#MinAttendees', dom).get(),
                 _maxAttendees:$('#MaxAttendees', dom).get(),
+                _trainingCourseKey:$('#TrainingCourseKey', dom).get(),
                 _length:$('#Length', dom).get(),
                 _mandatory:$('#Mandatory', dom).get(),
                 _price:$('#Price', dom).get(),
@@ -3512,6 +3513,7 @@
                     config += '<Hint>' + $(that._hint).val() + '</Hint>';
                     config += '<MinAttendees>' + $(that._minAttendees).val() + '</MinAttendees>';
                     config += '<MaxAttendees>' + $(that._maxAttendees).val() + '</MaxAttendees>';
+                    config += '<TrainingCourseKey>' + $(that._trainingCourseKey).val() + '</TrainingCourseKey>';
                     config += '<Length>' + $(that._length).val() + '</Length>';
                     config += '<Price>' + $(that._price).val() + '</Price>';
                     config += '<Key>' + $(that._key).val() + '</Key>';
@@ -3549,6 +3551,7 @@
                     $(this._hint).val($('>Hint', initialData).text()).change();
                     $(this._minAttendees).val($('>MinAttendees', initialData).text()).change();
                     $(this._maxAttendees).val($('>MaxAttendees', initialData).text()).change();
+                    $(this._trainingCourseKey).val($('>TrainingCourseKey', initialData).text()).change();
                     $(this._length).val($('>Length', initialData).text()).change();
                     $(this._price).val($('>Price', initialData).text()).change();
                     $(this._key).val('').val($('>Key', initialData).text()).change();

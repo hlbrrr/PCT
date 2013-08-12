@@ -18,6 +18,7 @@ import java.util.*;
 public class PSQuote {
     private Proposal proposal;
     private Map<String, Service> services = new LinkedHashMap<String, Service>();
+    private Map<String, TrainingCourse> trainingCourses = new LinkedHashMap<String, TrainingCourse>();
     private XMLUtils xut = XMLUtils.getInstance();
 
     private List<String> doNotExport = new ArrayList<String>();
@@ -62,7 +63,7 @@ public class PSQuote {
         return !doNotExport.contains(key);
     }
 
-    public PSQuote(NodeList services, NodeList states, Proposal proposal, double MDDiscount, double PSDiscount) {
+    public PSQuote(NodeList services, NodeList trainingCourses, NodeList states, Proposal proposal, double MDDiscount, double PSDiscount) {
         this.proposal = proposal;
         this.MDDiscount = MDDiscount;
         this.PSDiscount = PSDiscount;
@@ -81,6 +82,20 @@ public class PSQuote {
             log.info("Successfully parsed " + this.getServices().size() + " services(s)");
         }
 
+        this.getTrainingCourses().clear();
+        if (trainingCourses.getLength() > 0) {
+            log.info("Found " + trainingCourses.getLength() + " training course(s)");
+            for (int i = 0; i < trainingCourses.getLength(); i++) {
+                try {
+                    TrainingCourse tmpTrainingCourse = new TrainingCourse(trainingCourses.item(i), proposal);
+                    this.getTrainingCourses().put(tmpTrainingCourse.getKey(), tmpTrainingCourse);
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getTrainingCourses().size() + " training course(s)");
+        }
+
         this.doNotExport.clear();
         if (states.getLength() > 0) {
             log.info("Found " + states.getLength() + " saved state(s)");
@@ -97,6 +112,10 @@ public class PSQuote {
 
     public Map<String, Service> getServices() {
         return this.services;
+    }
+
+    public Map<String, TrainingCourse> getTrainingCourses() {
+        return this.trainingCourses;
     }
 
     public String toString() {
@@ -120,6 +139,14 @@ public class PSQuote {
             }
             sb.append("</Services>");
         }
+
+        if (this.getTrainingCourses() != null && this.getTrainingCourses().size() > 0) {
+            sb.append("<TrainingCourses>");
+            for (TrainingCourse s : this.getTrainingCourses().values()) {
+                sb.append(s.toString());
+            }
+            sb.append("</TrainingCourses>");
+        }
         return sb.toString();
     }
 
@@ -131,9 +158,36 @@ public class PSQuote {
         this.getServices().remove(key);
     }
 
+    public void addTrainingCourse(TrainingCourse trainingCourse) {
+        this.getTrainingCourses().put(trainingCourse.getKey(), trainingCourse);
+    }
+
+    public void delTrainingCourse(String tKey) {
+        TrainingCourse tc = this.getTrainingCourses().get(tKey);
+        if(tc!=null){
+            tc.setUserDefined(false);
+        }
+        if(tc.isUnused()){
+            this.getTrainingCourses().remove(tKey);
+        }
+    }
+
+    public void delTrainingCourse(String tKey, String sKey) {
+        TrainingCourse tc = this.getTrainingCourses().get(tKey);
+        if(tc!=null){
+            tc.removeSubscription(sKey);
+            if(tc.isUnused()){
+                this.getTrainingCourses().remove(tKey);
+            }
+        }
+    }
+
     public double getCleanPrice() {
         double ret = 0d;
         for (Service s : getServices().values()) {
+            ret += s.getCleanPrice();
+        }
+        for (TrainingCourse s : getTrainingCourses().values()) {
             ret += s.getCleanPrice();
         }
         return ret;
@@ -142,6 +196,9 @@ public class PSQuote {
     public double getPrice() {
         double ret = 0d;
         for (Service s : getServices().values()) {
+            ret += s.getRegionalPrice();
+        }
+        for (TrainingCourse s : getTrainingCourses().values()) {
             ret += s.getRegionalPrice();
         }
         return ret;
@@ -263,7 +320,19 @@ public class PSQuote {
         return getMDPrice() * (1 - getPSDiscount());
     }
 
+    public double getTrainingCoursesPrice() {
+        double ret = 0d;
+        for (TrainingCourse s : getTrainingCourses().values()) {
+            ret += s.getRegionalPrice();
+        }
+        return ret;
+    }
+
     public double getGrandTotal() {
-        return getMDTotalPrice() + getOnsitePrice();
+        return getMDTotalPrice() + getOnsitePrice() + getTrainingCoursesTotalPrice();
+    }
+
+    public double getTrainingCoursesTotalPrice() {
+        return getTrainingCoursesPrice() * (1-getPSDiscount());
     }
 }

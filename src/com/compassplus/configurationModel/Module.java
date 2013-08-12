@@ -28,6 +28,7 @@ public class Module {
     private Double weight;
     private Double secondarySalesPrice;
     private ArrayList<String> recommendations = new ArrayList<String>(0);
+    private ArrayList<String> trainingCourses = new ArrayList<String>(0);
     private ArrayList<String> requireModules = new ArrayList<String>(0);
     private ArrayList<String> excludeModules = new ArrayList<String>(0);
     private HashMap<String, RequireCapacity> requireCapacities = new HashMap<String, RequireCapacity>(0);
@@ -61,6 +62,7 @@ public class Module {
             this.setHint(xut.getNode("Hint", initialData));
             this.setRequireModules(xut.getNodes("Dependencies/Require", initialData));
             this.setRecommendations(xut.getNodes("Dependencies/Recommendation", initialData));
+            this.setTrainingCourses(xut.getNodes("Dependencies/TrainingCourse", initialData));
             this.setExcludeModules(xut.getNodes("Dependencies/Exclude", initialData));
             this.setRequireCapacities(xut.getNodes("Dependencies/RequireCapacity", initialData));
 
@@ -146,6 +148,22 @@ public class Module {
         }
     }
 
+    private void setTrainingCourses(NodeList trainingCourses) {
+        this.getTrainingCourses().clear();
+        if (trainingCourses.getLength() > 0) {
+
+            log.info("Found " + trainingCourses.getLength() + " training course(s)");
+            for (int i = 0; i < trainingCourses.getLength(); i++) {
+                try {
+                    this.getTrainingCourses().add(xut.getString(trainingCourses.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getTrainingCourses().size() + " module training course(s)");
+        }
+    }
+
     private void setExcludeModules(NodeList excludeModules) {
         this.getExcludeModules().clear();
         if (excludeModules.getLength() > 0) {
@@ -185,6 +203,10 @@ public class Module {
 
     public ArrayList<String> getRecommendations() {
         return recommendations;
+    }
+
+    public ArrayList<String> getTrainingCourses() {
+        return trainingCourses;
     }
 
     public ArrayList<String> getExcludeModules() {

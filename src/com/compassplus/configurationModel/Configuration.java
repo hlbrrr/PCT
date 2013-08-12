@@ -25,6 +25,8 @@ public class Configuration {
     private Map<String, Currency> currencies = new LinkedHashMap<String, Currency>();
     private Map<String, Region> regions = new LinkedHashMap<String, Region>();
     private Map<String, Recommendation> recommendations = new LinkedHashMap<String, Recommendation>();
+    private Map<String, TrainingCourse> trainingCourses = new LinkedHashMap<String, TrainingCourse>();
+
     private ServicesGroup servicesRoot = new ServicesGroup("Modules", "");
     private Map<String, Service> services = new LinkedHashMap<String, Service>();
     private Map<String, SupportPlan> supportPlans = new LinkedHashMap<String, SupportPlan>();
@@ -86,6 +88,7 @@ public class Configuration {
                 this.setServices(xut.getNode("/root/Services", initialData));
             } catch (Exception e) {
             }
+            this.setTrainingCourses(xut.getNodes("/root/TrainingCourses/TrainingCourse", initialData));
             this.setCurrencies(xut.getNodes("/root/Currencies/Currency", initialData));
             this.setSupportPlans(xut.getNodes("/root/SupportPlans/SupportPlan", initialData));
             this.setAuthLevels(xut.getNodes("/root/AuthLevels/AuthLevel", initialData));
@@ -331,6 +334,26 @@ public class Configuration {
                 }
             }
             log.info("Successfully parsed " + this.getRecommendations().size() + " recommendations(s)");
+        }
+    }
+
+    public Map<String, TrainingCourse> getTrainingCourses() {
+        return this.trainingCourses;
+    }
+
+    private void setTrainingCourses(NodeList trainingCourses) throws PCTDataFormatException {
+        this.getTrainingCourses().clear();
+        if (trainingCourses.getLength() > 0) {
+            log.info("Found " + trainingCourses.getLength() + " training course(s)");
+            for (int i = 0; i < trainingCourses.getLength(); i++) {
+                try {
+                    TrainingCourse tmpTrainingCourse = new TrainingCourse(trainingCourses.item(i));
+                    this.getTrainingCourses().put(tmpTrainingCourse.getKey(), tmpTrainingCourse);
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getTrainingCourses().size() + " training course(s)");
         }
     }
 

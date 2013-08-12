@@ -1327,6 +1327,15 @@ public class SummaryForm {
                     panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
                     psTable.add(panel, c);
                 }
+                {
+                    c.gridx++;
+                    JLabel label = new JLabel("TC total price");
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                    psTable.add(panel, c);
+                }
                 /*{
                     c.gridx++;
                     JLabel label = new JLabel("Onsite budget");
@@ -1517,6 +1526,36 @@ public class SummaryForm {
                         public void act(Object src) {
                             ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?
                                     getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPSQuote().getMDTotalPrice()) + (getProposal().getCurrency().getSymbol() == null ?
+                                    " " + getProposal().getCurrency().getName() : ""));
+                        }
+
+                        public void setData(String key, Object data) {
+                            //To change body of implemented methods use File | Settings | File Templates.
+                        }
+
+                        public Object getData(String key) {
+                            return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        }
+                    });
+                    label.call();
+                    lbls.add(label);
+
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    panel.setPreferredSize(new Dimension(0, 32));
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.white);
+                    psTable.add(panel, c);
+                }
+                {
+                    c.gridx++;
+                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                        public void act(Object src) {
+                            ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?
+                                    getProposal().getCurrency().getSymbol() + " " : "") + df.format(getProposal().getPSQuote().getTrainingCoursesTotalPrice()) + (getProposal().getCurrency().getSymbol() == null ?
                                     " " + getProposal().getCurrency().getName() : ""));
                         }
 

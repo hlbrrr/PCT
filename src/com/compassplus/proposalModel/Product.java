@@ -1,6 +1,7 @@
 package com.compassplus.proposalModel;
 
 import com.compassplus.configurationModel.*;
+import com.compassplus.configurationModel.TrainingCourse;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
@@ -141,8 +142,31 @@ public class Product {
         Module tmpModule = new Module(module, key);
         this.getModules().put(tmpModule.getKey(), tmpModule);
         addModuleRecommendation(key);
+        addModuleTrainingCourse(key);
     }
 
+    private void addModuleTrainingCourse(String key){
+        com.compassplus.configurationModel.Module module = proposal.getConfig().getProducts().get(this.getName()).getModules().get(key);
+        if (module.getTrainingCourses().size() > 0) {
+            for (String rKey : module.getTrainingCourses()) {
+                TrainingCourse r = proposal.getConfig().getTrainingCourses().get(rKey);
+                if (r != null) {
+                    //recommendations.add(r.getKey());
+                    com.compassplus.proposalModel.TrainingCourse tc = null;
+                    if(proposal.getPSQuote().getTrainingCourses().containsKey(rKey)){
+                        tc = proposal.getPSQuote().getTrainingCourses().get(rKey);
+                    }else{
+                        try{
+                        tc = new com.compassplus.proposalModel.TrainingCourse(r, proposal);
+                        }catch(Exception e){}
+                        proposal.getPSQuote().addTrainingCourse(tc);
+                    }
+                    tc.addSubscription(key);
+                }
+            }
+        }else{
+        }
+    }
 
     private void addModuleRecommendation(String key) throws PCTDataFormatException {
         com.compassplus.configurationModel.Module module = proposal.getConfig().getProducts().get(this.getName()).getModules().get(key);
@@ -591,6 +615,14 @@ public class Product {
         }
     }
 
+    private void removeModuleTrainingCourse(String key){
+        com.compassplus.configurationModel.Module module = proposal.getConfig().getProducts().get(this.getName()).getModules().get(key);
+        if (module.getTrainingCourses().size() > 0) {
+            for (String rKey : module.getTrainingCourses()) {
+                proposal.getPSQuote().delTrainingCourse(rKey, key);
+            }
+        }
+    }
     public void delCapacity(String key) {
         getCapacities().remove(key);
         removeCapacityRecommendation(key);

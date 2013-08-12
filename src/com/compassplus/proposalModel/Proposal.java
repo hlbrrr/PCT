@@ -318,6 +318,7 @@ public class Proposal {
     private void setPSQuote(Document initialData) throws PCTDataFormatException {
         if (xut.getNode("/root/PSQuotePresent", initialData) != null) {
             NodeList services = xut.getNodes("/root/Services/Service", initialData);
+            NodeList trainingCourses = xut.getNodes("/root/TrainingCourses/TrainingCourse", initialData);
             NodeList states = xut.getNodes("/root/SavedState/DoNotExport", initialData);
 
             double MDDiscount = 0d;
@@ -333,18 +334,47 @@ public class Proposal {
 
             }
 
-            this.psQuote = new PSQuote(services, states, this, MDDiscount, PSDiscount);
+            this.psQuote = new PSQuote(services, trainingCourses,  states, this, MDDiscount, PSDiscount);
             this.getPSQuote().setEnabled(true);
         }
     }
 
     public void addProduct(Product product) {
         this.getProducts().put(product.getName(), product);
+
+        com.compassplus.configurationModel.Product cProduct = getConfig().getProducts().get(product.getName());
+
+        if (cProduct.getTrainingCourses().size() > 0) {
+            for (String rKey : cProduct.getTrainingCourses()) {
+                com.compassplus.configurationModel.TrainingCourse r = getConfig().getTrainingCourses().get(rKey);
+                if (r != null) {
+                    //recommendations.add(r.getKey());
+                    com.compassplus.proposalModel.TrainingCourse tc = null;
+                    if(getPSQuote().getTrainingCourses().containsKey(rKey)){
+                        tc = getPSQuote().getTrainingCourses().get(rKey);
+                    }else{
+                        try{
+                            tc = new com.compassplus.proposalModel.TrainingCourse(r, this);
+                        }catch(Exception e){}
+                        getPSQuote().addTrainingCourse(tc);
+                    }
+                    tc.addSubscription(product.getName());
+                }
+            }
+        }else{
+        }
+
     }
 
     public void delProduct(Product product) {
         for(String key:product.getRecommendations()){
             getPSQuote().delService(key);
+        }
+        for(String key:getConfig().getTrainingCourses().keySet()){
+            for(String mKey:product.getModules().keySet()){
+                getPSQuote().delTrainingCourse(key, mKey);
+            }
+            getPSQuote().delTrainingCourse(key, product.getName());
         }
         this.getProducts().remove(product.getName());
     }
