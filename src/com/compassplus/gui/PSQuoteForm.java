@@ -243,10 +243,10 @@ public class PSQuoteForm {
                 final com.compassplus.configurationModel.TrainingCourse tcTemplate = proposal.getConfig().getTrainingCourses().get(tc.getKey());
                 c.gridy++;
 
-                if(k == proposal.getPSQuote().getTrainingCourses().size()){
+                /*if(k == proposal.getPSQuote().getTrainingCourses().size()){
                     border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
                     lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
-                }
+                }*/
 
                 {
                     c.gridx = 0;
@@ -255,7 +255,7 @@ public class PSQuoteForm {
                     panel.setPreferredSize(new Dimension(0, 32));
                     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                     label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    label.setAlignmentX(Component.LEFT_ALIGNMENT);
                     // panel.setPreferredSize(new Dimension(0, 32));
                     panel.add(label);
                     panel.setBorder(border);
@@ -269,7 +269,7 @@ public class PSQuoteForm {
                     panel.setPreferredSize(new Dimension(0, 32));
                     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                     label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                    label.setAlignmentX(Component.LEFT_ALIGNMENT);
                     // panel.setPreferredSize(new Dimension(0, 32));
                     panel.add(label);
                     panel.setBorder(border);
@@ -511,6 +511,121 @@ public class PSQuoteForm {
                     panel.setBackground(Color.white);
                     trainingCoursesPanel.add(panel, c);
                 }
+            }
+            border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
+            lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
+
+            c.gridy++;
+            {
+                c.gridx = 0;
+                JLabel label = new JLabel("Total");
+                label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                label.setAlignmentX(Component.LEFT_ALIGNMENT);
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                panel.setBackground(Color.white);
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setPreferredSize(new Dimension(120, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("");
+                JPanel panel = new JPanel();
+                panel.setBackground(Color.white);
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setPreferredSize(new Dimension(300, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("");
+                JPanel panel = new JPanel();
+                panel.setBackground(Color.white);
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setPreferredSize(new Dimension(50, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("");
+                JPanel panel = new JPanel();
+                panel.setBackground(Color.white);
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setPreferredSize(new Dimension(100, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("");
+                JPanel panel = new JPanel();
+                panel.setBackground(Color.white);
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setPreferredSize(new Dimension(100, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("");
+                JPanel panel = new JPanel();
+                panel.setBackground(Color.white);
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setPreferredSize(new Dimension(50, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                    public void act(Object src) {
+                        StringBuilder sb = new StringBuilder();
+                        if (proposal.getCurrency().getSymbol() != null) {
+                            sb.append(proposal.getCurrency().getSymbol());
+                            sb.append(" ");
+                        }
+                        sb.append(df.format(proposal.getPSQuote().getTrainingCoursesPrice()));
+                        if (proposal.getCurrency().getSymbol() == null) {
+                            sb.append(" ");
+                            sb.append(proposal.getCurrency().getName());
+                        }
+
+                        ((CustomJLabel) src).setText(sb.toString());
+                    }
+
+                    public void setData(String key, Object data) {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public Object getData(String key) {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+                });
+                label.call();
+                tcLabelsToUpdate.add(label);
+                label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                panel.setBackground(Color.white);
+                panel.add(label);
+                panel.setBorder(border);
+                panel.setPreferredSize(new Dimension(100, 25));
+                trainingCoursesPanel.add(panel, c);
+            }
+            {
+                c.gridx++;
+                JLabel label = new JLabel("");
+                JPanel panel = new JPanel();
+                panel.setBackground(Color.white);
+                panel.add(label);
+                panel.setBorder(lborder);
+                panel.setPreferredSize(new Dimension(100, 25));
+                trainingCoursesPanel.add(panel, c);
             }
 
             parent.add(trainingCoursesPanelWrap, cg);
