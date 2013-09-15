@@ -1234,7 +1234,7 @@ public class MainForm {
 
                                                         int currentRowIndexFromTC = -1;
                                                         int currentRowIndexToTC = -1;
-                                                        if(psq.getTrainingCourses().size()>0){
+                                                        if(psq.getTrainingCoursesCount()>0){
                                                             {
                                                                 if (psS.getLastRowNum() >= psRowIndex + i) {
                                                                     psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
@@ -1374,6 +1374,9 @@ public class MainForm {
                                                                 i++;
                                                             }
                                                             for(TrainingCourse ttc : psq.getTrainingCourses().values()){
+                                                                if(!ttc.getInclude()){
+                                                                    continue;
+                                                                }
                                                                 if(currentRowIndexFromTC < 0){
                                                                     currentRowIndexFromTC = currentRowIndex + 1;
                                                                 }

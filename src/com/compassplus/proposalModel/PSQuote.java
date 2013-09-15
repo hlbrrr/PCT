@@ -118,6 +118,17 @@ public class PSQuote {
         return this.trainingCourses;
     }
 
+
+    public int getTrainingCoursesCount() {
+        int result = 0;
+        for(TrainingCourse ttc: getTrainingCourses().values()){
+            if(ttc.getInclude()){
+                result++;
+            }
+        }
+        return result;
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("<PSQuotePresent>true</PSQuotePresent>");
