@@ -196,15 +196,17 @@ public class PSQuoteForm {
                 panel.setPreferredSize(new Dimension(100, 25));
                 trainingCoursesPanel.add(panel, c);
             }
-            {
-                c.gridx++;
-                JLabel label = new JLabel("Price (p/a)");
-                JPanel panel = new JPanel();
-                panel.add(label);
-                panel.setBorder(border);
-                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                panel.setPreferredSize(new Dimension(100, 25));
-                trainingCoursesPanel.add(panel, c);
+            if(!proposal.getConfig().isSalesSupport()){
+                {
+                    c.gridx++;
+                    JLabel label = new JLabel("Price (p/a)");
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                    panel.setPreferredSize(new Dimension(100, 25));
+                    trainingCoursesPanel.add(panel, c);
+                }
             }
             {
                 c.gridx++;
@@ -216,15 +218,17 @@ public class PSQuoteForm {
                 panel.setPreferredSize(new Dimension(50, 25));
                 trainingCoursesPanel.add(panel, c);
             }
-            {
-                c.gridx++;
-                JLabel label = new JLabel("Total");
-                JPanel panel = new JPanel();
-                panel.add(label);
-                panel.setBorder(border);
-                panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
-                panel.setPreferredSize(new Dimension(100, 25));
-                trainingCoursesPanel.add(panel, c);
+            if(!proposal.getConfig().isSalesSupport()){
+                {
+                    c.gridx++;
+                    JLabel label = new JLabel("Total");
+                    JPanel panel = new JPanel();
+                    panel.add(label);
+                    panel.setBorder(border);
+                    panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                    panel.setPreferredSize(new Dimension(100, 25));
+                    trainingCoursesPanel.add(panel, c);
+                }
             }
             {
                 c.gridx++;
@@ -243,10 +247,10 @@ public class PSQuoteForm {
                 final com.compassplus.configurationModel.TrainingCourse tcTemplate = proposal.getConfig().getTrainingCourses().get(tc.getKey());
                 c.gridy++;
 
-                /*if(k == proposal.getPSQuote().getTrainingCourses().size()){
+                if(proposal.getConfig().isSalesSupport() && k == proposal.getPSQuote().getTrainingCourses().size()){
                     border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
                     lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
-                }*/
+                }
 
                 {
                     c.gridx = 0;
@@ -339,30 +343,32 @@ public class PSQuoteForm {
                     panel.setBackground(Color.white);
                     trainingCoursesPanel.add(panel, c);
                 }
-                {
-                    c.gridx++;
-                    StringBuilder sb = new StringBuilder();
-                    if (proposal.getCurrency().getSymbol() != null) {
-                        sb.append(proposal.getCurrency().getSymbol());
-                        sb.append(" ");
-                    }
-                    sb.append(df.format(tc.getPricePerAttendee()));
-                    if (proposal.getCurrency().getSymbol() == null) {
-                        sb.append(" ");
-                        sb.append(proposal.getCurrency().getName());
-                    }
+                if(!proposal.getConfig().isSalesSupport()){
+                    {
+                        c.gridx++;
+                        StringBuilder sb = new StringBuilder();
+                        if (proposal.getCurrency().getSymbol() != null) {
+                            sb.append(proposal.getCurrency().getSymbol());
+                            sb.append(" ");
+                        }
+                        sb.append(df.format(tc.getPricePerAttendee()));
+                        if (proposal.getCurrency().getSymbol() == null) {
+                            sb.append(" ");
+                            sb.append(proposal.getCurrency().getName());
+                        }
 
-                    JLabel label = new JLabel(sb.toString());
-                    JPanel panel = new JPanel();
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    // panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    trainingCoursesPanel.add(panel, c);
+                        JLabel label = new JLabel(sb.toString());
+                        JPanel panel = new JPanel();
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        // panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        trainingCoursesPanel.add(panel, c);
+                    }
                 }
                 {
                     c.gridx++;
@@ -389,44 +395,46 @@ public class PSQuoteForm {
                     panel.setBackground(Color.white);
                     trainingCoursesPanel.add(panel, c);
                 }
-                {
-                    c.gridx++;
-                    CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
-                        public void act(Object src) {
-                            StringBuilder sb = new StringBuilder();
-                            if (proposal.getCurrency().getSymbol() != null) {
-                                sb.append(proposal.getCurrency().getSymbol());
-                                sb.append(" ");
+                if(!proposal.getConfig().isSalesSupport()){
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                StringBuilder sb = new StringBuilder();
+                                if (proposal.getCurrency().getSymbol() != null) {
+                                    sb.append(proposal.getCurrency().getSymbol());
+                                    sb.append(" ");
+                                }
+                                sb.append(df.format(_tc.getCleanPrice()));
+                                if (proposal.getCurrency().getSymbol() == null) {
+                                    sb.append(" ");
+                                    sb.append(proposal.getCurrency().getName());
+                                }
+
+                                ((CustomJLabel) src).setText(sb.toString());
                             }
-                            sb.append(df.format(_tc.getCleanPrice()));
-                            if (proposal.getCurrency().getSymbol() == null) {
-                                sb.append(" ");
-                                sb.append(proposal.getCurrency().getName());
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
                             }
 
-                            ((CustomJLabel) src).setText(sb.toString());
-                        }
-
-                        public void setData(String key, Object data) {
-                            //To change body of implemented methods use File | Settings | File Templates.
-                        }
-
-                        public Object getData(String key) {
-                            return null;  //To change body of implemented methods use File | Settings | File Templates.
-                        }
-                    });
-                    label.call();
-                    tcLabelsToUpdate.add(label);
-                    JPanel panel = new JPanel();
-                    panel.setPreferredSize(new Dimension(0, 32));
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                    label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                    //panel.setPreferredSize(new Dimension(0, 32));
-                    panel.add(label);
-                    panel.setBorder(border);
-                    panel.setBackground(Color.white);
-                    trainingCoursesPanel.add(panel, c);
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        tcLabelsToUpdate.add(label);
+                        JPanel panel = new JPanel();
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        //panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        trainingCoursesPanel.add(panel, c);
+                    }
                 }
                 {
 
@@ -512,6 +520,7 @@ public class PSQuoteForm {
                     trainingCoursesPanel.add(panel, c);
                 }
             }
+            if(!proposal.getConfig().isSalesSupport()){
             border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
             lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
 
@@ -627,7 +636,7 @@ public class PSQuoteForm {
                 panel.setPreferredSize(new Dimension(100, 25));
                 trainingCoursesPanel.add(panel, c);
             }
-
+            }
             parent.add(trainingCoursesPanelWrap, cg);
             cg.gridy += 1;
         }

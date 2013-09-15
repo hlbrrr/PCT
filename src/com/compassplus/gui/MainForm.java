@@ -1402,7 +1402,7 @@ public class MainForm {
 
                                                                 Cell c2 = r.createCell(1 + psCellIndex);
                                                                 CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
-                                                                c2.setCellValue(ttc.getPricePerAttendee());
+                                                                c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?ttc.getPricePerAttendee():0);
                                                                 if (!fSameCurrency)
                                                                     cs2.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
                                                                 c2.setCellStyle(cs2);
@@ -1416,7 +1416,7 @@ public class MainForm {
 
                                                                 Cell c4 = r.createCell(3 + psCellIndex);
                                                                 CellStyle cs4 = rowStyle.getCellStyle(3 + psCellIndex, wb.createCellStyle());
-                                                                c4.setCellValue(ttc.getRegionalPrice());
+                                                                c4.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?ttc.getRegionalPrice():0);
                                                                 if (!fSameCurrency)
                                                                     cs4.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
                                                                 c4.setCellStyle(cs4);
