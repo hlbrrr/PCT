@@ -514,6 +514,7 @@
                 _supportPlans:$('#SupportPlans', dom).get(),
                 _authLevels:$('#AuthLevels', dom).get(),
                 _currencies:$('#Currencies', dom).get(),
+                _oracle:$('#Oracle', dom).get(),
                 _recommendations:$('#Recommendations', dom).get(),
                 _trainingCourses:$('#TrainingCourses', dom).get(),
                 _users:$('#Users', dom).get(),
@@ -524,6 +525,8 @@
                 _addAuthLevel:$('#AddAuthLevel', dom).get(),
                 _addServicesGroup:$('#AddServicesGroup', dom).get(),
                 _addCurrency:$('#AddCurrency', dom).get(),
+                _addOracleLicense:$('#AddOracleLicense', dom).get(),
+                _addOracleOption:$('#AddOracleOption', dom).get(),
                 _addTrainingCourse:$('#AddTrainingCourse', dom).get(),
                 _addUser:$('#AddUser', dom).get(),
                 /*_addFile:$('#AddFile', dom).get(),*/
@@ -560,6 +563,10 @@
             $(this._currencies, dom).sortable({
                 revert:true,
                 handle: '.currencyDrag'
+            });
+            $(this._oracle, dom).sortable({
+                revert:true,
+                handle: '.oracleDrag'
             });
             $(this._recommendations, dom).sortable({
                 revert:true,
@@ -620,6 +627,12 @@
             });
             $(this._addCurrency).click(function() {
                 that.addCurrency();
+            });
+            $(this._addOracleLicense).click(function() {
+                that.addOracleLicense();
+            });
+            $(this._addOracleOption).click(function() {
+                that.addOracleOption();
             });
             $(this._addRecommendation).click(function() {
                 that.addRecommendation();
@@ -709,6 +722,14 @@
                             config += $.data($(this)[0], 'pct').getXML();
                     });
                     config += '</Currencies>';
+                    config += '<Oracle>';
+                    $(that._oracle).children().each(function() {
+                        if ($(this).hasClass('divOracleLicense'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                        if ($(this).hasClass('divOracleOption'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Oracle>';
                     config += '<Users>';
                     $(that._users).children().each(function() {
                         if ($(this).hasClass('divUser'))
@@ -804,6 +825,23 @@
                         $('.currencyName', rt).each(function() {
                             $(this).val('').change();
                         });
+                    });
+                }
+            });
+            $.data($(this._oracle)[0], 'pct', {
+                cloneTree:function(xml) {
+                    $('root>Oracle', xml).each(function() {
+                        if($('>Type', this).text() == 'Option'){
+                            var rt = that.addOracleOption((new PCT.oracleOption()).setRoot(that._oracle).init(this));
+                            $('.oracleOptionKey', rt).each(function() {
+                                $(this).val(PCT.randomString(15)).change();
+                            });
+                        }else if($('>Type', this).text() == 'License'){
+                            var rt = that.addOracleLicense((new PCT.oracleLicense()).setRoot(that._oracle).init(this));
+                            $('.oracleLicenseKey', rt).each(function() {
+                                $(this).val(PCT.randomString(15)).change();
+                            });
+                        }
                     });
                 }
             });
@@ -1005,6 +1043,13 @@
                     $('>Currencies>Currency', initialData).each(function() {
                         that.addCurrency((new PCT.currency()).setRoot(that._currencies).init(this));
                     });
+                    $('>Oracle>Oracle', initialData).each(function() {
+                        if($('>Type', this).text() == 'Option'){
+                            that.addOracleOption((new PCT.oracleOption()).setRoot(that._oracle).init(this));
+                        }else if($('>Type', this).text() == 'License'){
+                            that.addOracleLicense((new PCT.oracleLicense()).setRoot(that._oracle).init(this));
+                        }
+                    });
                     $('>Recommendations>Recommendation', initialData).each(function() {
                         that.addRecommendation((new PCT.recommendation()).setRoot(that._recommendations).init(this));
                     });
@@ -1118,6 +1163,26 @@
                         return this.addCurrency((new PCT.currency()).setRoot(that._currencies));
                     }
                 },
+                addOracleLicense:function(license) {
+                    if (license) {
+                        $('html, body').animate({
+                            scrollTop: $(license.getHead()).offset().top
+                        }, 200);
+                        return license.getHead();
+                    } else {
+                        return this.addOracleLicense((new PCT.oracleLicense()).setRoot(that._oracle));
+                    }
+                },
+                addOracleOption:function(option) {
+                    if (option) {
+                        $('html, body').animate({
+                            scrollTop: $(option.getHead()).offset().top
+                        }, 200);
+                        return option.getHead();
+                    } else {
+                        return this.addOracleOption((new PCT.oracleOption()).setRoot(that._oracle));
+                    }
+                },
                 addRecommendation:function(recommendation) {
                     if (recommendation) {
                         $('html, body').animate({
@@ -1212,6 +1277,10 @@
                     $(that._dependencies).children().each(function() {
                         if ($(this).hasClass('trainingCourseDependency'))
                             config += '<TrainingCourse>' + $.data($(this)[0], 'pct').getXML() + '</TrainingCourse>';
+                        if ($(this).hasClass('oracleLicenseDependency'))
+                            config += '<OracleLicense>' + $.data($(this)[0], 'pct').getXML() + '</OracleLicense>';
+                        if ($(this).hasClass('oracleOptionDependency'))
+                            config += '<OracleOption>' + $.data($(this)[0], 'pct').getXML() + '</OracleOption>';
                     });
                     config += '</Dependencies>';
                     $(that._modules).children().each(function() {
@@ -1332,6 +1401,12 @@
                     });
                     $('>Dependencies>TrainingCourse', initialData).each(function() {
                         that.addDependency((new PCT.dependency()).setRoot(that._dependencies).setType('trainingCourse', true).init($(this).text()));
+                    });
+                    $('>Dependencies>OracleLicense', initialData).each(function() {
+                        that.addDependency((new PCT.dependency()).setRoot(that._dependencies).setType('oracleLicense', true).init($(this).text()));
+                    });
+                    $('>Dependencies>OracleOption', initialData).each(function() {
+                        that.addDependency((new PCT.dependency()).setRoot(that._dependencies).setType('oracleOption', true).init($(this).text()));
                     });
                     $(this._maximumFunctionalityPrice).val($('>MaximumFunctionalityPrice', initialData).text()).change();
                     $(this._minimumPrice).val($('>MinimumPrice', initialData).text()).change();
@@ -1848,27 +1923,37 @@
             $(this._type).change(function() {
                 if ($(this).val() == 'require') {
                     $(that._dependencyBody).addClass('requireDependency');
-                    $(that._dependencyBody).removeClass('excludeDependency').removeClass('requireCapacityDependency').removeClass('recommendationDependency').removeClass('trainingCourseDependency');
+                    $(that._dependencyBody).removeClass('oracleLicenseDependency').removeClass('oracleOptionDependency').removeClass('excludeDependency').removeClass('requireCapacityDependency').removeClass('recommendationDependency').removeClass('trainingCourseDependency');
                     $(that._keyTitle).html('Key(s):');
                     $(that._value).removeClass('validate').change();
                 } else if ($(this).val() == 'exclude') {
                     $(that._dependencyBody).addClass('excludeDependency');
-                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('recommendationDependency').removeClass('trainingCourseDependency');
+                    $(that._dependencyBody).removeClass('oracleLicenseDependency').removeClass('oracleOptionDependency').removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('recommendationDependency').removeClass('trainingCourseDependency');
                     $(that._keyTitle).html('Key:');
                     $(that._value).removeClass('validate').change();
                 } else if ($(this).val() == 'capacity') {
                     $(that._dependencyBody).addClass('requireCapacityDependency');
                     $(that._keyTitle).html('Key:');
                     $(that._value).addClass('validate').change();
-                    $(that._dependencyBody).removeClass('requireDependency').removeClass('excludeDependency').removeClass('recommendationDependency').removeClass('trainingCourseDependency');
+                    $(that._dependencyBody).removeClass('oracleLicenseDependency').removeClass('oracleOptionDependency').removeClass('requireDependency').removeClass('excludeDependency').removeClass('recommendationDependency').removeClass('trainingCourseDependency');
                 } else if ($(this).val() == 'recommendation') {
                     $(that._dependencyBody).addClass('recommendationDependency');
-                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('excludeDependency').removeClass('trainingCourseDependency');
+                    $(that._dependencyBody).removeClass('oracleLicenseDependency').removeClass('oracleOptionDependency').removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('excludeDependency').removeClass('trainingCourseDependency');
                     $(that._keyTitle).html('Key:');
                     $(that._value).removeClass('validate').change();
                 } else if ($(this).val() == 'trainingCourse') {
                     $(that._dependencyBody).addClass('trainingCourseDependency');
-                    $(that._dependencyBody).removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('excludeDependency').removeClass('recommendationDependency');
+                    $(that._dependencyBody).removeClass('oracleLicenseDependency').removeClass('oracleOptionDependency').removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('excludeDependency').removeClass('recommendationDependency');
+                    $(that._keyTitle).html('Key:');
+                    $(that._value).removeClass('validate').change();
+                } else if ($(this).val() == 'oracleLicense') {
+                    $(that._dependencyBody).addClass('oracleLicenseDependency');
+                    $(that._dependencyBody).removeClass('trainingCourseDependency').removeClass('oracleOptionDependency').removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('excludeDependency').removeClass('recommendationDependency');
+                    $(that._keyTitle).html('Key:');
+                    $(that._value).removeClass('validate').change();
+                } else if ($(this).val() == 'oracleOption') {
+                    $(that._dependencyBody).addClass('oracleOptionDependency');
+                    $(that._dependencyBody).removeClass('oracleLicenseDependency').removeClass('trainingCourseDependency').removeClass('requireDependency').removeClass('requireCapacityDependency').removeClass('excludeDependency').removeClass('recommendationDependency');
                     $(that._keyTitle).html('Key:');
                     $(that._value).removeClass('validate').change();
                 }
@@ -1889,10 +1974,20 @@
                     $(this._remove).addClass('hidden');
                     return this;
                 },
-                setType:function(type, disable) {
+                setType:function(type, product) {
                     $(this._type).val(type).change();
-                    if(disable){
-                        $(this._type).attr('disabled', 'disabled');
+                    if(product){
+                        $('option', this._type).each(function(){
+                            if(!$(this).hasClass('product')){
+                                $(this).remove();
+                            }
+                        });
+                    }else{
+                        $('option', this._type).each(function(){
+                            if(!$(this).hasClass('module')){
+                                $(this).remove();
+                            }
+                        });
                     }
                     return this;
                 },
@@ -3271,6 +3366,283 @@
                     $(this._settingsPane).addClass('hidden');
                     $(this._dependencies).addClass('hidden');
                     $(this._remove).addClass('hidden');
+                    return this;
+                }
+            });
+        },
+        oracleLicense:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('oracleLicense');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _name:$('#Name', dom).get(),
+                _key:$('#Key', dom).get(),
+                _oracleLicenseTitle:$('#Title', dom).get(),
+                _addCoefficient:$('#AddCoefficient', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _coefficients:$('#Coefficients', dom).get(),
+                _expand:$('#Expand', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _basePrice:$('#BasePrice', dom).get(),
+                _FUDiscount:$('#FUDiscount', dom).get(),
+                _ASFUDiscount:$('#ASFUDiscount', dom).get(),
+                _supportRate:$('#SupportRate', dom).get(),
+                _hint:$('#Hint', dom).get(),
+                _clone:$('#Clone', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $(this._coefficients, dom).sortable({
+                revert:true,
+                handle: '.coefficientDrag',
+                connectWith: '.divCoefficients'
+            });
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Oracle>';
+                    config += '<Type>License</Type>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Hint>' + $(that._hint).val() + '</Hint>';
+                    config += '<BasePrice>' + $(that._basePrice).val() + '</BasePrice>';
+                    config += '<FUDiscount>' + $(that._FUDiscount).val() + '</FUDiscount>';
+                    config += '<ASFUDiscount>' + $(that._ASFUDiscount).val() + '</ASFUDiscount>';
+                    config += '<SupportRate>' + $(that._supportRate).val() + '</SupportRate>';
+
+                    config += '<Coefficients>';
+                    $(that._coefficients).children().each(function() {
+                        if ($(this).hasClass('divCoefficient'))
+                            config += $.data($(this)[0], 'pct').getXML();
+                    });
+                    config += '</Coefficients>';
+                    config += '</Oracle>';
+                    return config;
+                }
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove oracle license?')) {
+                    if (confirm('Removing oracle license can result in broken backward compatibility. Remove oracle license?')) {
+                        $(that._body).remove();
+                    }
+                }
+            });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divModelOracle')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+
+            $(this._name).change(function() {
+                $(that._oracleLicenseTitle).html($(this).val());
+            });
+            $(this._key).val(PCT.randomString(15)).change();
+
+            $(this._expand).click(function(arg) {
+                $(that._coefficients).toggleClass('hidden');
+                if ($(that._coefficients).hasClass('hidden')) {
+                    $(that._expand).html('Expand');
+                } else {
+                    $(that._expand).html('Collapse');
+                }
+            });
+            $(this._addCoefficient).click(function() {
+                if ($(that._coefficients).hasClass('hidden')) {
+                    $(that._coefficients).removeClass('hidden');
+                    $(that._expand).html('Collapse');
+                }
+                that.addCoefficient();
+            });
+            $(this._oracleLicenseTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._key).val('').val($('>Key', initialData).text()).change();
+                    $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._hint).val($('>Hint', initialData).text()).change();
+                    $(this._basePrice).val($('>BasePrice', initialData).text()).change();
+                    $(this._FUDiscount).val($('>FUDiscount', initialData).text()).change();
+                    $(this._ASFUDiscount).val($('>ASFUDiscount', initialData).text()).change();
+                    $(this._supportRate).val($('>SupportRate', initialData).text()).change();
+
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._coefficients).addClass('hidden');
+                    $(this._expand).html('Expand');
+                    $(this._remove).addClass('hidden');
+                    var that = this;
+                    $('>Coefficients>Coefficient', initialData).each(function() {
+                        that.addCoefficient((new PCT.coefficient()).setRoot(that._coefficients).init(this));
+                    });
+                    return this;
+                },
+                addCoefficient:function(region) {
+                    if (region) {
+                        $('html, body').animate({
+                            scrollTop: $(region.getHead()).offset().top
+                        }, 000);
+                    } else {
+                        this.addCoefficient((new PCT.coefficient()).setRoot(this._coefficients));
+                    }
+                }
+            });
+        },
+        oracleOption:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('oracleOption');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _name:$('#Name', dom).get(),
+                _shortName:$('#ShortName', dom).get(),
+                _key:$('#Key', dom).get(),
+                _include:$('#Include', dom).get(),
+                _oracleOptionTitle:$('#Title', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _expand:$('#Expand', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _basePrice:$('#BasePrice', dom).get(),
+                _hint:$('#Hint', dom).get(),
+                _clone:$('#Clone', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Oracle>';
+                    config += '<Type>Option</Type>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<ShortName>' + $(that._shortName).val() + '</ShortName>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Hint>' + $(that._hint).val() + '</Hint>';
+                    config += '<BasePrice>' + $(that._basePrice).val() + '</BasePrice>';
+                    config += '<Include>' + ($(that._include).prop('checked') ? 'true' : 'false') + '</Include>';
+                    config += '</Oracle>';
+                    return config;
+                }
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove oracle option?')) {
+                    if (confirm('Removing oracle option can result in broken backward compatibility. Remove oracle option?')) {
+                        $(that._body).remove();
+                    }
+                }
+            });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divModelOracle')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+
+            $(this._name).change(function() {
+                $(that._oracleOptionTitle).html($(this).val());
+            });
+            $(this._key).val(PCT.randomString(15)).change();
+
+            $(this._expand).click(function(arg) {
+                $(that._coefficients).toggleClass('hidden');
+                if ($(that._coefficients).hasClass('hidden')) {
+                    $(that._expand).html('Expand');
+                } else {
+                    $(that._expand).html('Collapse');
+                }
+            });
+            $(this._oracleOptionTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._key).val('').val($('>Key', initialData).text()).change();
+                    $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._shortName).val($('>ShortName', initialData).text()).change();
+                    $(this._hint).val($('>Hint', initialData).text()).change();
+                    $(this._basePrice).val($('>BasePrice', initialData).text()).change();
+                    $(this._include).prop('checked', ($('>Include', initialData).text() == 'true')).change();
+
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._coefficients).addClass('hidden');
+                    $(this._expand).html('Expand');
+                    $(this._remove).addClass('hidden');
+                    var that = this;
+                    return this;
+                }
+            });
+        },
+        coefficient:function(dom) {
+            if (!dom) {
+                dom = PCT.getTemplate('coefficient');
+            }
+            dom = $('<div></div>').append(dom);
+            $.extend(this, {
+                _head:$(dom).children().first().get(),
+                _body:$(dom).contents(),
+                _name:$('#Name', dom).get(),
+                _key:$('#Key', dom).get(),
+                _coefficientTitle:$('#Title', dom).get(),
+                _settings:$('#Settings', dom).get(),
+                _settingsPane:$('#SettingsPane', dom).get(),
+                _remove:$('#Remove', dom).get(),
+                _value:$('#Value', dom).get(),
+                _clone:$('#Clone', dom).get(),
+                _core:$('#Core', dom).get()
+            });
+            var that = this;
+            $.data($(this._core)[0], 'pct', {
+                getXML:function() {
+                    var config = '<Coefficient>';
+                    config += '<Key>' + $(that._key).val() + '</Key>';
+                    config += '<Name>' + $(that._name).val() + '</Name>';
+                    config += '<Value>' + $(that._value).val() + '</Value>';
+                    config += '</Coefficient>';
+                    return config;
+                }
+            });
+            $(this._remove).click(function() {
+                if (confirm('Remove coefficient?')) {
+                    if (confirm('Removing coefficient can result in broken backward compatibility. Remove coefficient?')) {
+                        $(that._body).remove();
+                    }
+                }
+            });
+            $(this._clone).click(function() {
+                $.data($(that._core).parents('.divCoefficients')[0], 'pct').cloneTree($.parseXML('<root>' + $.data($(that._core)[0], 'pct').getXML() + '</root>'));
+            });
+
+            $(this._name).change(function() {
+                $(that._coefficientTitle).html($(this).val());
+            });
+            $(this._key).val(PCT.randomString(15)).change();
+
+            $(this._coefficientTitle).click(function() {
+                $(that._remove).toggleClass('hidden');
+                $(that._settingsPane).toggleClass('hidden');
+            });
+            $.extend(this, PCT.base, {
+                root:$('<div></div>').append(dom.contents()),
+                getHead:function() {
+                    return this._head;
+                },
+                init:function(initialData) {
+                    $(this._key).val('').val($('>Key', initialData).text()).change();
+                    $(this._name).val($('>Name', initialData).text()).change();
+                    $(this._value).val($('>Value', initialData).text()).change();
+
+                    $(this._settingsPane).addClass('hidden');
+                    $(this._expand).html('Expand');
+                    $(this._remove).addClass('hidden');
+                    var that = this;
                     return this;
                 }
             });

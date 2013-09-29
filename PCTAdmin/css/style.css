@@ -95,7 +95,7 @@ body, input, select, textarea {
     padding-right: 10px;
 }
 
-.divProduct, .divRegion, .divSupportPlan, .divAuthLevel, .divCurrency, .divUser, .divFile, .divLicense, .divRecommendation, .divTrainingCourse {
+.divProduct, .divRegion, .divSupportPlan, .divAuthLevel, .divCurrency, .divOracleOption, .divOracleLicense, .divCoefficient, .divUser, .divFile, .divLicense, .divRecommendation, .divTrainingCourse {
     border: 1px solid #000;
     margin-bottom: 10px;
     -moz-border-radius: 5px;
@@ -104,17 +104,27 @@ body, input, select, textarea {
     background-color: #fff;
 }
 
+.divOracleLicense {
+    border: 1px solid #000;
+}
+
+
 .divLicense {
     margin-bottom: 0px;
     margin-top: 10px;
 }
 
-.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelSupportPlans, .divModelAuthLevels, .divModelUsers, .divModelTrainingCourses, .divModelRecommendations, .divModelFiles, .divModelServices {
+.divModelProducts, .divModelRegions, .divModelCurrencies, .divModelOracle, .divCoefficients, .divModelSupportPlans, .divModelAuthLevels, .divModelUsers, .divModelTrainingCourses, .divModelRecommendations, .divModelFiles, .divModelServices {
     margin: 10px;
 }
 
-.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divAuthLevelTitle, .divCurrencyTitle, .divUserTitle, .divTrainingCourseTitle, .divRecommendationTitle, .divFileTitle, .divLicenseTitle {
+.divProductTitle, .divRegionTitle, .divSupportPlanTitle, .divAuthLevelTitle, .divOracleOptionTitle, .divOracleLicenseTitle, .divCoefficientTitle, .divCurrencyTitle, .divUserTitle, .divTrainingCourseTitle, .divRecommendationTitle, .divFileTitle, .divLicenseTitle {
     background-color: #444;
+    color: white;
+}
+
+.divOracleLicenseTitle {
+    background-color: #9E0000;
     color: white;
 }
 
@@ -346,6 +356,12 @@ body, input, select, textarea {
 .divDependency.trainingCourseDependency {
     border-color: #56DEE8;
 }
+.divDependency.oracleLicenseDependency {
+    border-color: #e85656;
+}
+.divDependency.oracleOptionDependency {
+    border-color: #7a6767;
+}
 
 .divDependency {
     border: 1px solid;
@@ -404,6 +420,12 @@ body, input, select, textarea {
 
 .divDependency.trainingCourseDependency .divDependencyTitle {
     background-color: #88F7FF;
+}
+.divDependency.oracleLicenseDependency .divDependencyTitle {
+    background-color: #ff8888;
+}
+.divDependency.oracleOptionDependency .divDependencyTitle {
+    background-color: #969696;
 }
 
 .divDependencyTitle {
@@ -477,8 +499,13 @@ body, input, select, textarea {
 .divSupportPlanTitle>.titleTable>.titleTableCellButton:hover, .divAuthLevelTitle>.titleTable>.titleTableCellButton:hover,
 .divUserTitle>.titleTable>.titleTableCellButton:hover, .divCurrencyTitle>.titleTable>.titleTableCellButton:hover,
 .divRecommendationTitle>.titleTable>.titleTableCellButton:hover, .divFileTitle>.titleTable>.titleTableCellButton:hover,
-.divTrainingCourseTitle>.titleTable>.titleTableCellButton:hover, .divLicenseTitle>.titleTable>.titleTableCellButton:hover {
+.divTrainingCourseTitle>.titleTable>.titleTableCellButton:hover, .divLicenseTitle>.titleTable>.titleTableCellButton:hover,
+.divCoefficientTitle>.titleTable>.titleTableCellButton:hover, .divOracleLicenseTitle>.titleTable>.titleTableCellButton:hover, .divOracleOptionTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #777;
+}
+
+.divOracleLicenseTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #A34646;
 }
 
 .divModulesGroup>.divGroupTitle>.titleTable>.titleTableCellButton:hover {
@@ -531,6 +558,12 @@ body, input, select, textarea {
 }
 .divDependency.trainingCourseDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
     background-color: #B5F9FE;
+}
+.divDependency.oracleLicenseDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #feb5b5;
+}
+.divDependency.oracleOptionDependency .divDependencyTitle>.titleTable>.titleTableCellButton:hover {
+    background-color: #b3b3b3;
 }
 
 
@@ -698,7 +731,7 @@ input.validate.error, textarea.validate.error {
     background-color: red;
 }
 
-.divServicesGroup, .divService, .divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan, .divAuthLevel, .divCurrency, .divUser, .divTrainingCourse, .divRecommendation, .divFile {
+.divServicesGroup, .divService, .divModulesGroup, .divModule, .divCapacitiesGroup, .divCapacity, .divSupportPlan, .divAuthLevel, .divCurrency, .divOracleLicense, .divOracleOption, .divCoefficient, .divUser, .divTrainingCourse, .divRecommendation, .divFile {
     background-color: #fff;
 }
 

@@ -63,6 +63,9 @@
                 <div id="TrainingCoursesTab" bind="#TrainingCoursesWrap" class="titleTableCell titleTableCellButton tab">
                     Train. Courses
                 </div>
+                <div id="OracleTab" bind="#OracleWrap" class="titleTableCell titleTableCellButton tab">
+                    Oracle
+                </div>
                 <div id="SystemTab" bind="#SystemWrap" class="titleTableCell titleTableCellButton tab">
                     System
                 </div>
@@ -122,6 +125,19 @@
                 </div>
             </div>
             <div id="Currencies" class="divModelCurrencies"></div>
+        </div>
+        <div id="OracleWrap" class="hidden">
+            <div class="titleTable divModelSubTitle">
+                <div id="AddOracleLicense" class="titleTableCell titleTableCellButton">
+                    Add License
+                </div>
+                <div id="AddOracleOption" class="titleTableCell titleTableCellButton">
+                    Add Option
+                </div>
+                <div class="titleTableCell titleTableCellFill">
+                </div>
+            </div>
+            <div id="Oracle" class="divModelOracle"></div>
         </div>
         <div id="UsersWrap" class="hidden">
             <div class="titleTable divModelSubTitle">
@@ -994,11 +1010,13 @@
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <select id="Type" autocomplete="off" class="settingInput">
-                                <option value="require">Require Module</option>
-                                <option value="exclude">Exclude Module</option>
-                                <option value="capacity">Require Capacity</option>
-                                <option value="recommendation">Recommendation</option>
-                                <option value="trainingCourse">Training Course</option>
+                                <option value="require" class="module">Require Module</option>
+                                <option value="exclude" class="module">Exclude Module</option>
+                                <option value="capacity" class="module">Require Capacity</option>
+                                <option value="recommendation" class="module">Recommendation</option>
+                                <option value="trainingCourse" class="product module">Training Course</option>
+                                <option value="oracleLicense" class="product">Oracle License</option>
+                                <option value="oracleOption" class="product">Oracle Option</option>
                             </select>
                         </div>
                     </div>
@@ -1296,6 +1314,213 @@
                         </div>
                         <div class="settingsTableCell settingsValue">
                             <input id="Rate" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="template" id="coefficient">
+    <div class="divCoefficient" id="Core">
+        <div class="divCoefficientTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton coefficientDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Value:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Value" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="template" id="oracleLicense">
+    <div class="divOracleLicense" id="Core">
+        <div class="divOracleLicenseTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton oracleDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
+                <div id="AddCoefficient" class="titleTableCell titleTableCellButton">
+                    Add Coefficient
+                </div>
+                <div id="Expand" class="titleTableCell titleTableCellButton">
+                    Collapse
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate oracleLicenseKey"
+                                   validclass="unique" unique=".oracleLicenseKey" uniqueroot=".divModelOracle"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Description:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <textarea id="Hint" autocomplete="off" class="settingInput validate"
+                                      validclass="mempty"></textarea>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Base Price:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="BasePrice" autocomplete="off" class="settingInput validate"
+                                   validclass="summ"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            FU Discount:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="FUDiscount" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            ASFU Discount:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="ASFUDiscount" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Support Rate:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="SupportRate" autocomplete="off" class="settingInput validate" validclass="summ"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="Coefficients" class="divCoefficients"></div>
+    </div>
+</div>
+<div class="template" id="oracleOption">
+    <div class="divOracleOption" id="Core">
+        <div class="divOracleOptionTitle">
+            <div class="titleTable">
+                <div id="Drag" class="titleTableCell titleTableCellButton oracleDrag">
+                    #
+                </div>
+                <div id="Title" class="titleTableCell titleTableCellButton titleText titleTableCellFill">
+                </div>
+                <div id="Remove" class="titleTableCell titleTableCellButton removeButton">
+                    Remove
+                </div>
+                <div id="Clone" class="titleTableCell titleTableCellButton">
+                    Clone
+                </div>
+            </div>
+            <div id="SettingsPane" class="divSettingsPane">
+                <div class="settingsTable">
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Key:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Key" autocomplete="off" class="settingInput validate oracleOptionKey"
+                                   validclass="unique" unique=".oracleOption" uniqueroot=".divModelOracle"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="Name" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Short Name:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="ShortName" autocomplete="off" class="settingInput validate"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Description:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <textarea id="Hint" autocomplete="off" class="settingInput validate"
+                                      validclass="mempty"></textarea>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow">
+                        <div class="settingsTableCell settingsTitle">
+                            Base Price:
+                        </div>
+                        <div class="settingsTableCell settingsValue">
+                            <input id="BasePrice" autocomplete="off" class="settingInput validate"
+                                   validclass="summ"/>
+                        </div>
+                    </div>
+                    <div class="settingsTableRow capacitySetting">
+                        <div class="settingsTableCell settingsTitle">
+                            Include in Sup. Calculation:
+                        </div>
+                        <div class="settingsTableCell settingsValueCb">
+                            <input id="Include" checked="checked" autocomplete="off" type="checkbox"/>
                         </div>
                     </div>
                 </div>
