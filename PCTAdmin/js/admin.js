@@ -4007,6 +4007,7 @@
                 _maxSupportDiscount:$('#MaxSupportDiscount', dom).get(),
                 _mdrDiscount:$('#MDRDiscount', dom).get(),
                 _psDiscount:$('#PSDiscount', dom).get(),
+                _oracleDiscount:$('#OracleDiscount', dom).get(),
                 _trainingDiscount:$('#TrainingDiscount', dom).get(),
                 _name:$('#Name', dom).get(),
                 _email:$('#Email', dom).get(),
@@ -4035,6 +4036,7 @@
                     config += '<MaxSupportDiscount>' + $(that._maxSupportDiscount).val() + '</MaxSupportDiscount>';
                     config += '<MDRDiscount>' + $(that._mdrDiscount).val() + '</MDRDiscount>';
                     config += '<PSDiscount>' + $(that._psDiscount).val() + '</PSDiscount>';
+                    config += '<OracleDiscount>' + $(that._oracleDiscount).val() + '</OracleDiscount>';
                     config += '<TrainingDiscount>' + $(that._trainingDiscount).val() + '</TrainingDiscount>';
                     config += '<Name>' + $(that._name).val() + '</Name>';
                     config += '<Email>' + $(that._email).val() + '</Email>';
@@ -4126,6 +4128,7 @@
                     $(this._maxSupportDiscount).val($('>MaxSupportDiscount', initialData).text()).change();
                     $(this._mdrDiscount).val($('>MDRDiscount', initialData).text()).change();
                     $(this._psDiscount).val($('>PSDiscount', initialData).text()).change();
+                    $(this._oracleDiscount).val($('>OracleDiscount', initialData).text()).change();
                     $(this._trainingDiscount).val($('>TrainingDiscount', initialData).text()).change();
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._email).val($('>Email', initialData).text()).change();
