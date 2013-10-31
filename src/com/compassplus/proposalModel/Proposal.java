@@ -1,6 +1,7 @@
 package com.compassplus.proposalModel;
 
 import com.compassplus.configurationModel.*;
+import com.compassplus.configurationModel.OracleLicense;
 import com.compassplus.exception.PCTDataFormatException;
 import com.compassplus.utils.Logger;
 import com.compassplus.utils.XMLUtils;
@@ -41,10 +42,12 @@ public class Proposal {
     private com.compassplus.configurationModel.Currency currency;
     private SupportPlan supportPlan;
     private PSQuote psQuote;
+    private OracleQuote oracleQuote;
 
     public Proposal(Configuration config) {
         this.setConfig(config);
         psQuote = new PSQuote(this);
+        oracleQuote = new OracleQuote(this);
         userName = config.getUserName();
         for (AuthLevel l : config.getAuthLevels().values()) {
             this.alsTxt.put(l.getKey(), l.getMemoText());
@@ -114,6 +117,7 @@ public class Proposal {
 
             this.setProducts(xut.getNodes("/root/Products/Product", initialData));
             this.setPSQuote(initialData);
+            this.setOracleQuote(initialData);
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Bad proposal", e.getDetails());
         }
@@ -318,8 +322,8 @@ public class Proposal {
     private void setPSQuote(Document initialData) throws PCTDataFormatException {
         if (xut.getNode("/root/PSQuotePresent", initialData) != null) {
             NodeList services = xut.getNodes("/root/Services/Service", initialData);
-            NodeList trainingCourses = xut.getNodes("/root/TrainingCourses/TrainingCourse", initialData);
             NodeList states = xut.getNodes("/root/SavedState/DoNotExport", initialData);
+            NodeList oracleLicenses = xut.getNodes("/root/OracleLicenses/OracleLicense", initialData);
 
             double MDDiscount = 0d;
             double PSDiscount = 0d;
@@ -334,8 +338,25 @@ public class Proposal {
 
             }
 
-            this.psQuote = new PSQuote(services, trainingCourses,  states, this, MDDiscount, PSDiscount);
+            this.psQuote = new PSQuote(services, oracleLicenses,  states, this, MDDiscount, PSDiscount);
             this.getPSQuote().setEnabled(true);
+        }
+    }
+
+    private void setOracleQuote(Document initialData) throws PCTDataFormatException {
+        if (xut.getNode("/root/OracleQuotePresent", initialData) != null) {
+            NodeList states = xut.getNodes("/root/OracleSavedState/DoNotExport", initialData);
+            NodeList oracleLicenses = xut.getNodes("/root/OracleLicenses/OracleLicense", initialData);
+
+            double oracleDiscount = 0d;
+            try{
+                oracleDiscount = xut.getDouble(xut.getNode("/root/OracleDiscount", initialData));
+            }catch(Exception e){
+
+            }
+
+            this.oracleQuote = new OracleQuote(oracleLicenses,  states, this, oracleDiscount);
+            this.getOracleQuote().setEnabled(true);
         }
     }
 
@@ -364,6 +385,26 @@ public class Proposal {
         }else{
         }
 
+        if (cProduct.getOracleLicenses().size() > 0) {
+            for (String rKey : cProduct.getOracleLicenses()) {
+                OracleLicense r = getConfig().getOracleLicenses().get(rKey);
+                if (r != null) {
+                    //recommendations.add(r.getKey());
+                    com.compassplus.proposalModel.OracleLicense tc = null;
+                    if(getOracleQuote().getOracleLicenses().containsKey(cProduct.getName())){
+                        tc = getOracleQuote().getOracleLicenses().get(cProduct.getName());
+                    }else{
+                        try{
+                            tc = new com.compassplus.proposalModel.OracleLicense(r, this, cProduct);
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                        getOracleQuote().addOracleLicense(tc);
+                    }
+                }
+            }
+        }else{
+        }
     }
 
     public void delProduct(Product product) {
@@ -376,6 +417,8 @@ public class Proposal {
             }
             getPSQuote().delTrainingCourse(key, product.getName());
         }
+
+        getOracleQuote().delOracleLicense(product.getName());
         this.getProducts().remove(product.getName());
     }
 
@@ -434,6 +477,9 @@ public class Proposal {
         if (this.getPSQuote().enabled()) {
             sb.append(this.getPSQuote().toString());
         }
+        if (this.getOracleQuote().enabled()) {
+            sb.append(this.getOracleQuote().toString());
+        }
         sb.append("</root>");
         return sb.toString();
     }
@@ -474,6 +520,11 @@ public class Proposal {
     public PSQuote getPSQuote() {
         return this.psQuote;
     }
+
+    public OracleQuote getOracleQuote() {
+        return this.oracleQuote;
+    }
+
 
     public void createPSQuote() {
         this.getPSQuote().setEnabled(true);

@@ -3508,7 +3508,6 @@
                 _oracleOptionTitle:$('#Title', dom).get(),
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
-                _expand:$('#Expand', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _basePrice:$('#BasePrice', dom).get(),
                 _hint:$('#Hint', dom).get(),
@@ -3546,14 +3545,6 @@
             });
             $(this._key).val(PCT.randomString(15)).change();
 
-            $(this._expand).click(function(arg) {
-                $(that._coefficients).toggleClass('hidden');
-                if ($(that._coefficients).hasClass('hidden')) {
-                    $(that._expand).html('Expand');
-                } else {
-                    $(that._expand).html('Collapse');
-                }
-            });
             $(this._oracleOptionTitle).click(function() {
                 $(that._remove).toggleClass('hidden');
                 $(that._settingsPane).toggleClass('hidden');
@@ -3572,8 +3563,6 @@
                     $(this._include).prop('checked', ($('>Include', initialData).text() == 'true')).change();
 
                     $(this._settingsPane).addClass('hidden');
-                    $(this._coefficients).addClass('hidden');
-                    $(this._expand).html('Expand');
                     $(this._remove).addClass('hidden');
                     var that = this;
                     return this;

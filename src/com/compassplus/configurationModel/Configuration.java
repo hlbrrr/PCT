@@ -48,6 +48,9 @@ public class Configuration {
     private Integer minBuild;
     private Integer build;
     private Boolean salesSupport;
+    private Map<String,OracleLicense> oracleLicenses = new HashMap<String, OracleLicense>();
+    private Map<String, OracleOption> oracleOptions = new HashMap<String, OracleOption>();
+    private Double oracleDiscount = 0d;
 
     public boolean isSalesSupport() {
         //return true;
@@ -74,6 +77,10 @@ public class Configuration {
         return psDiscount;
     }
 
+    public Double getOracleDiscount() {
+        return oracleDiscount;
+    }
+
     private Configuration() {
     }
 
@@ -92,6 +99,8 @@ public class Configuration {
             this.setCurrencies(xut.getNodes("/root/Currencies/Currency", initialData));
             this.setSupportPlans(xut.getNodes("/root/SupportPlans/SupportPlan", initialData));
             this.setAuthLevels(xut.getNodes("/root/AuthLevels/AuthLevel", initialData));
+            this.setOracleLicenses(xut.getNodes("/root/Oracle/Oracle[Type=\"License\"]", initialData));
+            this.setOracleOptions(xut.getNodes("/root/Oracle/Oracle[Type=\"Option\"]", initialData));
 
             this.setUserLevels(xut.getNodes("/root/Users/User/Levels/Level", initialData));
 
@@ -100,6 +109,7 @@ public class Configuration {
             this.setMaxSupportDiscount(xut.getNode("/root/Users/User/MaxSupportDiscount", initialData));
             this.setMDRDiscount(xut.getNode("/root/Users/User/MDRDiscount", initialData));
             this.setPSDiscount(xut.getNode("/root/Users/User/PSDiscount", initialData));
+            this.setOracleDiscount(xut.getNode("/root/Users/User/OracleDiscount", initialData));
             this.setSalesSupport(xut.getNode("/root/Users/User/SalesSupport", initialData));
 
         } catch (PCTDataFormatException e) {
@@ -143,6 +153,15 @@ public class Configuration {
             this.psDiscount = this.psDiscount / 100d;
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("User PS discount is not defined correctly", e.getDetails());
+        }
+    }
+
+    private void setOracleDiscount(Node discount) throws PCTDataFormatException {
+        try {
+            this.oracleDiscount = xut.getDouble(discount);
+            this.oracleDiscount = this.oracleDiscount / 100d;
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("User Oracle discount is not defined correctly", e.getDetails());
         }
     }
 
@@ -242,7 +261,7 @@ public class Configuration {
                     log.error(e);
                 }
             }
-            log.info("Successfully parsed " + this.getUserLevels().size() + " user levels(s)");
+            log.info("Successfully parsed " + this.getUserLevels().size() + " user level(s)");
         }
     }
 
@@ -258,13 +277,53 @@ public class Configuration {
                     log.error(e);
                 }
             }
-            log.info("Successfully parsed " + this.getAuthLevels().size() + " authority levels(s)");
+            log.info("Successfully parsed " + this.getAuthLevels().size() + " authority level(s)");
         } /*else {
             throw new PCTDataFormatException("No authority levels defined");
         }
         if (this.getAuthLevels().size() == 0) {
             throw new PCTDataFormatException("Authority levels are not defined correctly");
         }*/
+    }
+
+    private void setOracleLicenses(NodeList oracleLicenses) throws PCTDataFormatException {
+        this.getOracleLicenses().clear();
+        if (oracleLicenses.getLength() > 0) {
+            log.info("Found " + oracleLicenses.getLength() + " oracle license(s)");
+            for (int i = 0; i < oracleLicenses.getLength(); i++) {
+                try {
+                    OracleLicense oracleLicense = new OracleLicense(oracleLicenses.item(i));
+                    this.getOracleLicenses().put(oracleLicense.getKey(), oracleLicense);
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getAuthLevels().size() + " oracle license(s)");
+        }
+    }
+
+    private void setOracleOptions(NodeList oracleOptions) throws PCTDataFormatException {
+        this.getOracleOptions().clear();
+        if (oracleOptions.getLength() > 0) {
+            log.info("Found " + oracleOptions.getLength() + " oracle option(s)");
+            for (int i = 0; i < oracleOptions.getLength(); i++) {
+                try {
+                    OracleOption oracleOption = new OracleOption(oracleOptions.item(i));
+                    this.getOracleOptions().put(oracleOption.getKey(), oracleOption);
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getAuthLevels().size() + " oracle option(s)");
+        }
+    }
+
+    public Map<String, OracleOption> getOracleOptions() {
+        return this.oracleOptions;
+    }
+
+    public Map<String, OracleLicense> getOracleLicenses() {
+        return this.oracleLicenses;
     }
 
     public Map<String, Currency> getCurrencies() {

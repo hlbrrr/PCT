@@ -175,6 +175,7 @@ public class ProposalForm {
             }
         }
         );
+        summaryForm.setFrame(getFrame());
         titleUpdater.setData("summaryForm", summaryForm);
         productsTabs.addTab("Summary", summaryForm.getRoot());
         productsTabs.setSelectedComponent(summaryForm.getRoot());

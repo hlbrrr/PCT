@@ -2424,6 +2424,12 @@ public class MainForm {
                     }
 
                     for (Product p : pp.getProducts().values()) {
+
+                        if (_proposal.getOracleQuote().enabled() && _proposal.getOracleQuote().getOracleLicenses().get(p.getName())!= null &&
+                                (_proposal.getOracleQuote().getOracleLicenses().get(p.getName()).getDiscount() > _proposal.getConfig().getOracleDiscount())) {
+                            exceedDL = true;
+                        }
+
                         if (!isNormalDiscount(p.getSupportDiscount() * 100d, p, p.getProposal().getConfig().getMaxSupportDiscount(), true) ||
                                 !isNormalDiscount(p.getDiscount() * 100d, p, p.getProposal().getConfig().getMaxDiscount(), false)) {
                             exceedDL = true;

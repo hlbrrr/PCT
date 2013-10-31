@@ -743,4 +743,23 @@ public class Product {
     public List<String> getRecommendations() {
         return recommendations;
     }
+    /*
+    private double getOptionPrice(OracleOption o){
+        return  CommonUtils.getInstance().toNextHundred(o.getBasePrice() * getProposal().getCurrencyRate());
+    }
+
+    public double getOptionsPrice() {
+        double optionsPrice = 0d;
+        for(String s:getProduct().getOracleOptions()){
+            OracleOption o = getProposal().getConfig().getOracleOptions().get(s);
+            if(o != null){
+                optionsPrice += getOptionPrice(o);
+            }
+        }
+        return optionsPrice;
+    }
+
+    public double getOracleSupportPrice() {
+        return CommonUtils.getInstance().toNextHundred(getProposal().getOracleQuote().getOracleLicenses().get(getProduct().getName()).getOracleLicense().getSupportRate() * getOptionsPrice());
+    }   */
 }

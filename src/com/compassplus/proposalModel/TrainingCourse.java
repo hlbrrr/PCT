@@ -147,6 +147,7 @@ public class TrainingCourse {
         return sb.toString();
     }
 
+
     public String getKey() {
         return this.trainingCourse.getKey();
     }

@@ -1,8 +1,7 @@
 package com.compassplus.gui;
 
-import com.compassplus.configurationModel.Currency;
-import com.compassplus.configurationModel.Region;
-import com.compassplus.configurationModel.SupportPlan;
+import com.compassplus.configurationModel.*;
+import com.compassplus.proposalModel.OracleLicense;
 import com.compassplus.proposalModel.Product;
 import com.compassplus.proposalModel.Proposal;
 import com.compassplus.utils.CommonUtils;
@@ -15,8 +14,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -33,6 +33,7 @@ public class SummaryForm {
     private JPanel settingsPanelRight;
     private JPanel settingsPanelCenter;
     private JPanel settingsWrap;
+    private JFrame frame;
     private JComboBox currencyField;
     private JLabel rateLabel;
     private JSpinner rateField;
@@ -45,6 +46,7 @@ public class SummaryForm {
     private PCTChangedListener updated;
     private JPanel productsTable;
     private JPanel psTable;
+    private JPanel oracleTable;
     private DecimalFormat df;
     private JLabel mdLabel;
     private JSpinner mdField;
@@ -63,6 +65,7 @@ public class SummaryForm {
         settingsWrap = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         JScrollPane scroll = new JScrollPane(settingsWrap);
+        scroll.getVerticalScrollBar().setUnitIncrement(16);
         mainPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
         mainPanel.add(scroll, BorderLayout.CENTER);
         settingsWrap.setLayout(new GridBagLayout());
@@ -73,6 +76,10 @@ public class SummaryForm {
         psTable = new JPanel(new GridBagLayout());
         psTable.setMinimumSize(new Dimension(0, 0));
         psTable.setBorder(new EmptyBorder(10, 8, 4, 8));
+
+        oracleTable = new JPanel(new GridBagLayout());
+        oracleTable.setMinimumSize(new Dimension(0, 0));
+        oracleTable.setBorder(new EmptyBorder(10, 8, 4, 8));
         {
             GridBagConstraints c = new GridBagConstraints();
             c.gridx = 0;
@@ -99,6 +106,8 @@ public class SummaryForm {
             if(!getProposal().getConfig().isSalesSupport()){
                 c.gridy++;
                 settingsWrap.add(psTable, c);
+                c.gridy++;
+                settingsWrap.add(oracleTable, c);
             }
 
             JLabel em = new JLabel("");
@@ -108,6 +117,7 @@ public class SummaryForm {
             c.gridy += 1;       //third row
             settingsWrap.add(em, c);
         }
+
         settingsPanelLeft.setLayout(new BoxLayout(settingsPanelLeft, BoxLayout.Y_AXIS));
         settingsPanelLeft.setBorder(new EmptyBorder(4, 4, 4, 4));
         settingsPanelCenter.setLayout(new BoxLayout(settingsPanelCenter, BoxLayout.Y_AXIS));
@@ -568,6 +578,7 @@ public class SummaryForm {
         }
         makeProductList();
         makePSList();
+        makeOracleList();
     }
 
     public JPanel getRoot() {
@@ -582,6 +593,7 @@ public class SummaryForm {
         initSupportPlans(null);
         makeProductList();
         makePSList();
+        makeOracleList();
         updated.act(this);
     }
 
@@ -1642,5 +1654,1369 @@ public class SummaryForm {
                 }
             }
         }
+    }
+
+    private void makeOracleList() {
+        if (oracleTable != null) {
+            final java.util.List<CustomJLabel> glbls = new ArrayList<CustomJLabel>();
+            final SummaryForm that = this;
+            oracleTable.removeAll();
+            if (getProposal().getOracleQuote().enabled()) {
+                GridBagConstraints c = new GridBagConstraints();
+                c.gridy = 0;
+                c.weightx = 1;
+                c.fill = GridBagConstraints.HORIZONTAL;
+                c.anchor = GridBagConstraints.PAGE_START;
+                Border border = BorderFactory.createMatteBorder(1, 1, 0, 0, Color.black);
+                Border lborder = BorderFactory.createMatteBorder(1, 1, 0, 1, Color.black);
+                for(OracleLicense lic:getProposal().getOracleQuote().getOracleLicenses().values()){
+                    final OracleLicense _lic = lic;
+                    {
+                        GridBagConstraints cc = new GridBagConstraints();
+                        cc.weightx = 1.0;
+                        cc.gridwidth = 1;
+                        cc.gridx = 0;
+                        cc.gridy = 0;
+                        cc.fill = GridBagConstraints.HORIZONTAL;
+
+                        c.gridwidth = 10;
+                        c.gridx = 0;
+                        JLabel label = new JLabel();
+                        String jLabelText = lic.getProduct().getName() + " Oracle Box" + (_lic.isMemberOfAnotherBox()?(" -> " + _lic.getParentName()):"");
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        Font newLabelFont=new Font(label.getFont().getName(),Font.BOLD,label.getFont().getSize());
+
+                        if(_lic.isMemberOfAnotherBox()){
+                            jLabelText = "<html><font color=\"gray\">" + jLabelText + "</font></html>";
+                        }
+                        label.setText(jLabelText);
+
+                        Font newLabelFontBtn=new Font(label.getFont().getName(),Font.BOLD,label.getFont().getSize());
+
+                        label.setFont(newLabelFont);
+
+                        JPanel panel = new JPanel();
+                        //panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        panel.setLayout(new GridBagLayout());
+                        panel.add(label, cc);
+
+                        if(_lic.canBeMoved() && !_lic.isMemberOfAnotherBox()){
+                            JLabel mlabel = new JLabel("[Move to]");
+                            mlabel.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            mlabel.setFont(newLabelFontBtn);
+                            mlabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+                            mlabel.addMouseListener(new MouseListener() {
+                                public void mouseClicked(MouseEvent e) {
+                                    if(_lic.canBeMoved()){
+                                        ArrayList<OracleLicenseStr> licenseArray = new ArrayList<OracleLicenseStr>();
+                                        for(OracleLicense ol:getProposal().getOracleQuote().getOracleLicenses().values()){
+                                            if(ol.containsAllOptions(_lic)){
+                                                licenseArray.add(new OracleLicenseStr(ol));
+                                            }
+                                        }
+
+                                        final JComboBox licCombo = new JComboBox(licenseArray.toArray());
+
+                                        final JOptionPane licPane = new JOptionPane(
+                                            new JComponent[]{
+                                                    new JLabel("Move to"), licCombo
+                                            },
+                                            JOptionPane.QUESTION_MESSAGE,
+                                            JOptionPane.OK_CANCEL_OPTION);
+
+                                        final JDialog dialog = new JDialog(getFrame(), "Move to", true);
+                                        dialog.setResizable(false);
+                                        dialog.addWindowListener(new WindowAdapter() {
+                                            public void windowClosing(WindowEvent we) {
+                                                dialog.dispose();
+                                            }
+                                        });
+                                        dialog.setContentPane(licPane);
+                                        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+                                        licPane.addPropertyChangeListener(
+                                            new PropertyChangeListener() {
+                                                public void propertyChange(PropertyChangeEvent e) {
+                                                    if (licPane.getValue() != null) {
+                                                        String prop = e.getPropertyName();
+                                                        if (dialog.isVisible()
+                                                                && (e.getSource() == licPane)
+                                                                && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
+                                                            try {
+                                                                if (licPane.getValue() instanceof Integer) {
+                                                                    int value = (Integer) licPane.getValue();
+                                                                    if (value == JOptionPane.OK_OPTION) {
+                                                                        ((OracleLicenseStr)licCombo.getSelectedItem()).getLicense().addChild(_lic.getProductKey());
+                                                                        makeOracleList();
+                                                                        updated.act(this);
+                                                                        dialog.dispose();
+                                                                    } else if (value == JOptionPane.CANCEL_OPTION) {
+                                                                        dialog.dispose();
+                                                                    }
+                                                                }
+                                                            } catch (Exception exception) {
+                                                                licPane.setValue(null);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        );
+
+                                        dialog.pack();
+                                        dialog.setLocationRelativeTo(getRoot());
+                                        dialog.setVisible(true);
+                                    }
+                                }
+
+                                public void mousePressed(MouseEvent e) {
+                                }
+
+                                public void mouseReleased(MouseEvent e) {
+                                }
+
+                                public void mouseEntered(MouseEvent e) {
+                                }
+
+                                public void mouseExited(MouseEvent e) {
+                                }
+                            });
+                            cc.gridx++;
+                            cc.weightx = 0d;
+                                panel.add(mlabel, cc);
+                        }
+
+                        if(_lic.isMemberOfAnotherBox()){
+                            JLabel mlabel = new JLabel("[Restore box]");
+                            mlabel.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            mlabel.setFont(newLabelFontBtn);
+                            mlabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+                            mlabel.addMouseListener(new MouseListener() {
+                                public void mouseClicked(MouseEvent e) {
+                                    for(OracleLicense ol:getProposal().getOracleQuote().getOracleLicenses().values()){
+                                        ol.delChild(_lic.getProductKey());
+                                    }
+                                    makeOracleList();
+                                    updated.act(this);
+                                }
+
+                                public void mousePressed(MouseEvent e) {
+                                }
+
+                                public void mouseReleased(MouseEvent e) {
+                                }
+
+                                public void mouseEntered(MouseEvent e) {
+                                }
+
+                                public void mouseExited(MouseEvent e) {
+                                }
+                            });
+                            cc.gridx++;
+                            cc.weightx = 0d;
+                            panel.add(mlabel, cc);
+                        }
+
+                        panel.setBorder(lborder);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+
+                    /*{
+                        c.gridwidth = 1;
+                        c.gridx++;
+                        JLabel label = new JLabel("[Move to]");
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        Font newLabelFont=new Font(label.getFont().getName(),Font.BOLD,label.getFont().getSize());
+                        label.setFont(newLabelFont);
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        panel.add(label);
+                        panel.setBorder(lborder);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }*/
+                    c.gridwidth = 1;
+                    c.weightx = 1;
+                    c.gridy++;
+                    {
+                        c.weightx = 3;
+                        c.gridx = 0;
+                        JLabel label = new JLabel(" ");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        oracleTable.add(panel, c);
+                        c.weightx = 1;
+                    }
+                    {
+                        c.weightx = 2;
+                        c.gridx++;
+                        JLabel label = new JLabel(" ");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        oracleTable.add(panel, c);
+                        c.weightx = 1;
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("License price");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("Options price");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("Support price");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("Total price");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("Discount (%)");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("CP price");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("Customer price");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("Margin");
+                        JPanel panel = new JPanel();
+                        panel.add(label);
+                        panel.setBorder(lborder);
+                        panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
+                        oracleTable.add(panel, c);
+                    }
+
+                    final java.util.List<CustomJLabel> lbls = new ArrayList<CustomJLabel>();
+
+                    //border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
+                    //lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
+
+                    c.gridy++;
+                    // row 1
+                    {
+                        c.gridx = 0;
+                        JLabel label = new JLabel("License type");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel(lic.getOracleLicense().getName());
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+
+                                        df.format(_lic.getLicensePrice()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        lbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(_lic.getOptionsPrice()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        lbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(_lic.getOracleSupportPrice()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        lbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(_lic.getOracleTotalPrice()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        lbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        final JSpinner productDiscount = new JSpinner(new SpinnerNumberModel(_lic.getDiscount().doubleValue() * 100d, 0d, _lic.getCPDiscount(), 1d));
+                        productDiscount.setMaximumSize(new Dimension(productDiscount.getMaximumSize().width, productDiscount.getMinimumSize().height));
+                        productDiscount.addChangeListener(new ChangeListener() {
+                            public void stateChanged(ChangeEvent e) {
+                                final ChangeEvent ev = e;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        if (ev.getSource() == productDiscount) {
+                                            _lic.setDiscount((Double) productDiscount.getValue() / 100d);
+                                            for (CustomJLabel l : lbls) {
+                                                l.call();
+                                            }
+                                            for (CustomJLabel l : glbls) {
+                                                l.call();
+                                            }
+                                            titleUpdater.act(proposal);
+                                            updated.act(that);
+                                        }
+                                    }
+                                });
+                            }
+                        });
+
+                        if(_lic.isMemberOfAnotherBox()){
+                            productDiscount.setEnabled(false);
+                        }
+
+                        JPanel panelW = new JPanel();
+                        panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                        panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        panelW.add(productDiscount);
+                        panelW.setBackground(Color.white);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                        productDiscount.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(panelW);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(_lic.getOracleCPPrice()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        lbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(_lic.getOracleCustomerPrice()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        lbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(_lic.getOracleCPMargin()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        lbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(lborder);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    c.gridy++;
+                    // row 2
+                    {
+                        c.gridx = 0;
+                        JLabel label = new JLabel("Number of cores");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        final JSpinner cores = new JSpinner(new SpinnerNumberModel(lic.getCores().intValue(), 1, 1000, 1));
+                        cores.setMaximumSize(new Dimension(cores.getMaximumSize().width, cores.getMinimumSize().height));
+                        cores.addChangeListener(new ChangeListener() {
+                            public void stateChanged(ChangeEvent e) {
+                                final ChangeEvent ev = e;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        if (ev.getSource() == cores) {
+                                            //getProposal().getPSQuote().setPSDiscount((Double) cores.getValue() / 100d);
+                                            _lic.setCores((Integer)cores.getValue());
+                                            for (CustomJLabel l : lbls) {
+                                                l.call();
+                                            }
+                                            for (CustomJLabel l : glbls) {
+                                                l.call();
+                                            }
+                                            titleUpdater.act(proposal);
+                                            updated.act(that);
+                                        }
+                                    }
+                                });
+                            }
+                        });
+
+                        if(_lic.isMemberOfAnotherBox()){
+                            cores.setEnabled(false);
+                        }
+
+                        JPanel panelW = new JPanel();
+                        panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                        panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        panelW.add(cores);
+                        panelW.setBackground(Color.white);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                        cores.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(panelW);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    for(int i = 0; i< 8; i++){
+                        {
+                            c.gridx++;
+                            JLabel label = new JLabel(" ");
+
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(label);
+                            if(i==7){
+                                panel.setBorder(lborder);
+                            }else{
+                                panel.setBorder(border);
+                            }
+                            panel.setBackground(Color.white);
+                            oracleTable.add(panel, c);
+                        }
+                    }
+                    c.gridy++;
+                    // row 3
+                    {
+                        c.gridx = 0;
+                        JLabel label = new JLabel("Model");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel(lic.getLicensingModel());
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    for(int i = 0; i< 8; i++){
+                        {
+                            c.gridx++;
+                            JLabel label = new JLabel(" ");
+
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(label);
+                            if(i==7){
+                                panel.setBorder(lborder);
+                            }else{
+                                panel.setBorder(border);
+                            }
+                            panel.setBackground(Color.white);
+                            oracleTable.add(panel, c);
+                        }
+                    }
+                    c.gridy++;
+                    // row 4
+                    {
+                        c.gridx = 0;
+                        JLabel label = new JLabel("Coefficient");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    /*{
+                        c.gridx++;
+                        JLabel label = new JLabel(lic.getCoefficient().getName());
+
+
+                        JComboBox combo = new JComboBox();
+                        combo.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                final ActionEvent ev = e;
+                                //SwingUtilities.invokeLater(new Runnable() {
+                                //public void run() {
+                                JComboBox src = (JComboBox) ev.getSource();
+                                getProposal().setSupportPlan((SupportPlan) src.getSelectedItem());
+                                initPlanRate();
+                                updated.act(that);
+                                //}
+                                //});
+                            }
+                        });
+
+                        combo.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        combo.setMaximumSize(new Dimension(combo.getMaximumSize().width, 23));
+                        combo.setMinimumSize(new Dimension(combo.getMinimumSize().width, 23));
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }    */
+                    {
+                        c.gridx++;
+                        JComboBox combo = new JComboBox(_lic.getOracleLicense().getCoefficients().toArray());
+                        combo.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                final ActionEvent ev = e;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        JComboBox src = (JComboBox) ev.getSource();
+                                        //getProposal().setSupportPlan((SupportPlan) src.getSelectedItem());
+                                        _lic.setCoefficient((Coefficient) src.getSelectedItem());
+                                        for (CustomJLabel l : lbls) {
+                                            l.call();
+                                        }
+                                        for (CustomJLabel l : glbls) {
+                                            l.call();
+                                        }
+                                        titleUpdater.act(proposal);
+                                        updated.act(that);
+                                    }
+                                });
+                            }
+                        });
+                        combo.setMaximumSize(new Dimension(combo.getMaximumSize().width, combo.getMinimumSize().height));
+                        //combo.setMaximumSize(new Dimension(combo.getMaximumSize().width, 23));
+                        //combo.setMinimumSize(new Dimension(combo.getMinimumSize().width, 23));
+
+                        combo.setSelectedItem(_lic.getCoefficient());
+
+                        if(_lic.isMemberOfAnotherBox()){
+                            combo.setEnabled(false);
+                        }
+
+                        JPanel panelW = new JPanel();
+                        panelW.setLayout(new BoxLayout(panelW, BoxLayout.Y_AXIS));
+                        panelW.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        panelW.add(combo);
+                        panelW.setBackground(Color.white);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        panel.setMinimumSize(new Dimension(panel.getMinimumSize().width, 32));
+
+                        combo.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(panelW);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    for(int i = 0; i< 8; i++){
+                        {
+                            c.gridx++;
+                            JLabel label = new JLabel(" ");
+
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(label);
+                            if(i==7){
+                                panel.setBorder(lborder);
+                            }else{
+                                panel.setBorder(border);
+                            }
+                            panel.setBackground(Color.white);
+                            oracleTable.add(panel, c);
+                        }
+                    }
+                    c.gridy++;
+                    // row 5
+                    {
+                        c.gridx = 0;
+                        JLabel label = new JLabel("Included options");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        String options = "";
+                        for(String s:lic.getProduct().getOracleOptions()){
+                            OracleOption op = getProposal().getConfig().getOracleOptions().get(s);
+                            options += ", " + op.getShortName();
+                        }
+                        JLabel label = new JLabel(options.substring(1));
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    for(int i = 0; i< 8; i++){
+                        {
+                            c.gridx++;
+                            JLabel label = new JLabel(" ");
+
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(label);
+                            if(i==7){
+                                panel.setBorder(lborder);
+                            }else{
+                                panel.setBorder(border);
+                            }
+                            panel.setBackground(Color.white);
+                            oracleTable.add(panel, c);
+                        }
+                    }
+                    c.gridy++;
+                    // row 6
+                    {
+                        c.gridx = 0;
+                        JLabel label = new JLabel("Support rate");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel(df.format(100d * lic.getOracleLicense().getSupportRate()) + "%");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    for(int i = 0; i< 8; i++){
+                        {
+                            c.gridx++;
+                            JLabel label = new JLabel(" ");
+
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(label);
+                            if(i==7){
+                                panel.setBorder(lborder);
+                            }else{
+                                panel.setBorder(border);
+                            }
+                            panel.setBackground(Color.white);
+                            oracleTable.add(panel, c);
+                        }
+                    }
+                    c.gridy++;
+                    // row 7
+                    {
+                        c.gridx = 0;
+                        JLabel label = new JLabel("Maximum discount");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel(df.format(lic.getCPDiscount()) + "%");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    for(int i = 0; i< 8; i++){
+                        {
+                            c.gridx++;
+                            JLabel label = new JLabel(" ");
+
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(label);
+                            if(i==7){
+                                panel.setBorder(lborder);
+                            }else{
+                                panel.setBorder(border);
+                            }
+                            panel.setBackground(Color.white);
+                            oracleTable.add(panel, c);
+                        }
+                    }
+                    c.gridy++;
+                    // row 7
+                    {
+                        c.gridx = 0;
+                        JLabel label = new JLabel("Shared");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        c.gridwidth = 9;
+                        String sharedString = "Yes, with";
+                        for(String s:lic.getChildren()){
+                            sharedString += " " + s + "," ;
+                        }
+                        JLabel label = new JLabel(lic.isShared()?sharedString.substring(0, sharedString.length() - 1):"No");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(lborder);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                        c.gridwidth = 1;
+                    }
+                    /*for(int i = 0; i< 8; i++){
+                        {
+                            c.gridx++;
+                            JLabel label = new JLabel(" ");
+
+                            JPanel panel = new JPanel();
+                            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                            label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                            label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                            panel.setPreferredSize(new Dimension(0, 32));
+                            panel.add(label);
+                            if(i==7){
+                                panel.setBorder(lborder);
+                            }else{
+                                panel.setBorder(border);
+                            }
+                            panel.setBackground(Color.white);
+                            oracleTable.add(panel, c);
+                        }
+                    } */
+                    c.gridy++;
+                }
+                if(getProposal()!=null && getProposal().getOracleQuote()!=null && getProposal().getOracleQuote().getOracleLicenses().size() > 0){
+                    {
+                        c.gridx = 0;
+                        c.gridwidth = 10;
+                        GridBagConstraints cc = new GridBagConstraints();
+                        cc.weightx = 1.0;
+                        cc.gridwidth = 1;
+                        cc.gridx = 0;
+                        cc.gridy = 0;
+                        cc.fill = GridBagConstraints.HORIZONTAL;
+
+                        JLabel label = new JLabel(" ");
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        Font newLabelFont=new Font(label.getFont().getName(),Font.BOLD,label.getFont().getSize());
+
+                        label.setFont(newLabelFont);
+
+                        JPanel panel = new JPanel();
+                        //panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        panel.setLayout(new GridBagLayout());
+                        panel.add(label, cc);
+
+
+                        panel.setBorder(lborder);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                        c.gridwidth = 1;
+                    }
+                    c.gridy++;
+
+                    border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
+                    lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
+                    {
+                        c.gridx = 0;
+                        JLabel label = new JLabel("Total");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(getProposal().getOracleQuote().getLicenseTotal()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        glbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(getProposal().getOracleQuote().getOptionsTotal()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        glbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(getProposal().getOracleQuote().getSupportTotal()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        glbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(getProposal().getOracleQuote().getTotalTotal()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        glbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        JLabel label = new JLabel("");
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(getProposal().getOracleQuote().getCPTotal()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        glbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(getProposal().getOracleQuote().getCustomerTotal()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        glbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(border);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                    {
+                        c.gridx++;
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                ((CustomJLabel) src).setText((getProposal().getCurrency().getSymbol() != null ?getProposal().getCurrency().getSymbol() + " " : "") +
+                                        df.format(getProposal().getOracleQuote().getTotalMargin()) +
+                                        //df.format(getProposal().getPSQuote().getMDTotalPrice()) +
+
+                                        (getProposal().getCurrency().getSymbol() == null ? " " + getProposal().getCurrency().getName() : ""));
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        glbls.add(label);
+
+                        JPanel panel = new JPanel();
+                        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                        label.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        panel.setPreferredSize(new Dimension(0, 32));
+                        panel.add(label);
+                        panel.setBorder(lborder);
+                        panel.setBackground(Color.white);
+                        oracleTable.add(panel, c);
+                    }
+                }
+            }
+        }
+    }
+
+    private JFrame getFrame() {
+        return frame;
+    }
+
+    public void setFrame(JFrame frame) {
+        this.frame = frame;
     }
 }

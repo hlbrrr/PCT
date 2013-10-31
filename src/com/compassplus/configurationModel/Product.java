@@ -29,6 +29,8 @@ public class Product {
     private Map<String, Capacity> capacities = new HashMap<String, Capacity>();
     private Double secondarySalesRate;
     private ArrayList<String> trainingCourses = new ArrayList<String>(0);
+    private ArrayList<String> oracleOptions = new ArrayList<String>(0);
+    private ArrayList<String> oracleLicenses = new ArrayList<String>(0);
     private Logger log = Logger.getInstance();
     private XMLUtils xut = XMLUtils.getInstance();
 
@@ -53,6 +55,8 @@ public class Product {
             this.setCapacities(xut.getNode("Capacities", initialData));
             this.setSecondarySalesRate(xut.getNode("SecondarySalesRate", initialData));
             this.setTrainingCourses(xut.getNodes("Dependencies/TrainingCourse", initialData));
+            this.setOracleOptions(xut.getNodes("Dependencies/OracleOption", initialData));
+            this.setOracleLicenses(xut.getNodes("Dependencies/OracleLicense", initialData));
 
 
             for (Capacity c : this.getCapacities().values()) {
@@ -102,6 +106,46 @@ public class Product {
                 }
             }
             log.info("Successfully parsed " + this.getTrainingCourses().size() + " product training course(s)");
+        }
+    }
+
+    public ArrayList<String> getOracleOptions() {
+        return oracleOptions;
+    }
+
+    private void setOracleOptions(NodeList oracleOptions) {
+        this.getOracleOptions().clear();
+        if (oracleOptions.getLength() > 0) {
+
+            log.info("Found " + oracleOptions.getLength() + " oracle option(s)");
+            for (int i = 0; i < oracleOptions.getLength(); i++) {
+                try {
+                    this.getOracleOptions().add(xut.getString(oracleOptions.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getOracleOptions().size() + " product oracle option(s)");
+        }
+    }
+
+    public ArrayList<String> getOracleLicenses() {
+        return oracleLicenses;
+    }
+
+    private void setOracleLicenses(NodeList oracleLicenses) {
+        this.getOracleLicenses().clear();
+        if (oracleLicenses.getLength() > 0) {
+
+            log.info("Found " + oracleLicenses.getLength() + " oracle license(s)");
+            for (int i = 0; i < oracleLicenses.getLength(); i++) {
+                try {
+                    this.getOracleLicenses().add(xut.getString(oracleLicenses.item(i)));
+                } catch (PCTDataFormatException e) {
+                    log.error(e);
+                }
+            }
+            log.info("Successfully parsed " + this.getOracleOptions().size() + " product oracle license(s)");
         }
     }
 
