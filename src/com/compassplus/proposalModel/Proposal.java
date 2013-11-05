@@ -323,7 +323,7 @@ public class Proposal {
         if (xut.getNode("/root/PSQuotePresent", initialData) != null) {
             NodeList services = xut.getNodes("/root/Services/Service", initialData);
             NodeList states = xut.getNodes("/root/SavedState/DoNotExport", initialData);
-            NodeList oracleLicenses = xut.getNodes("/root/OracleLicenses/OracleLicense", initialData);
+            NodeList trainingCourses = xut.getNodes("/root/TrainingCourses/TrainingCourse", initialData);
 
             double MDDiscount = 0d;
             double PSDiscount = 0d;
@@ -338,7 +338,7 @@ public class Proposal {
 
             }
 
-            this.psQuote = new PSQuote(services, oracleLicenses,  states, this, MDDiscount, PSDiscount);
+            this.psQuote = new PSQuote(services, trainingCourses,  states, this, MDDiscount, PSDiscount);
             this.getPSQuote().setEnabled(true);
         }
     }

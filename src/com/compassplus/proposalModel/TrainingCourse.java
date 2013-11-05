@@ -87,6 +87,7 @@ public class TrainingCourse {
             String keyString = xut.getString(key);
             trainingCourse = config.getTrainingCourses().get(keyString);
             if (trainingCourse == null) {
+                System.out.println("zzz="+keyString);
                 throw new PCTDataFormatException("No such training course");
             }
         } catch (PCTDataFormatException e) {

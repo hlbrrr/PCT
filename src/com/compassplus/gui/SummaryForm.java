@@ -135,10 +135,10 @@ public class SummaryForm {
     private void reloadPrices() {
         currChanged.act(this);
         updated.act(this);
-        if(getProposal().getPSQuote().enabled()){
+        //if(getProposal().getPSQuote().enabled()){
             mdLabel.setText("Region M/D rate (" + getProposal().getCurrency().getName() + ")");
             mdField.setValue(getProposal().getRegion().getMDRate() * getProposal().getCurrencyRate());
-        }
+        //}
     }
 
     private void initForm(Proposal proposal) {
@@ -502,13 +502,13 @@ public class SummaryForm {
             tmpPanel.add(mdField);
 
             if (!getProposal().getConfig().isSalesSupport()) {
-                if(getProposal().getPSQuote().enabled()){
+                //if(getProposal().getPSQuote().enabled()){
                     settingsPanelRight.add(tmpPanel);
-                }else{
+               /* }else{
                     JPanel tmpPanelE2 = new JPanel();
                     tmpPanelE2.setSize(1, 50);
                     settingsPanelRight.add(tmpPanelE2);
-                }
+                }*/
             }
         }
         //maxDiscountField.setMaximumSize(new Dimension(planRateField.getMaximumSize().width, planRateField.getMinimumSize().height));
@@ -1657,6 +1657,9 @@ public class SummaryForm {
     }
 
     private void makeOracleList() {
+        if(getProposal().getConfig().isSalesSupport()){
+            return;
+        }
         if (oracleTable != null) {
             final java.util.List<CustomJLabel> glbls = new ArrayList<CustomJLabel>();
             final SummaryForm that = this;

@@ -281,11 +281,11 @@ public class OracleLicense {
     }
 
     public Double getLicensePrice() {
-        return CommonUtils.getInstance().toNextHundred(getOracleLicense().getBasePrice() * getProposal().getCurrencyRate() * CommonUtils.getInstance().toNextInt(getCoefficient().getValue() * getCores()));
+        return CommonUtils.getInstance().toNextInt(getOracleLicense().getBasePrice() * getProposal().getCurrencyRate() * CommonUtils.getInstance().toNextInt(getCoefficient().getValue() * getCores()));
     }
 
     private double getOptionPrice(OracleOption o){
-        return  CommonUtils.getInstance().toNextHundred(o.getBasePrice() * getProposal().getCurrencyRate());
+        return  CommonUtils.getInstance().toNextInt(o.getBasePrice() * getProposal().getCurrencyRate());
     }
 
     public double getOptionsPrice(boolean isSupportPrice) {
@@ -306,7 +306,7 @@ public class OracleLicense {
     }
 
     public double getOracleSupportPrice() {
-        return CommonUtils.getInstance().toNextHundred(getProposal().getOracleQuote().getOracleLicenses().get(getProduct().getName()).getOracleLicense().getSupportRate() * (getOptionsPrice(true) + getLicensePrice()));
+        return CommonUtils.getInstance().toNextInt(getProposal().getOracleQuote().getOracleLicenses().get(getProduct().getName()).getOracleLicense().getSupportRate() * (getOptionsPrice(true) + getLicensePrice()));
     }
 
     public double getOracleTotalPrice() {
@@ -314,11 +314,11 @@ public class OracleLicense {
     }
 
     public double getOracleCPPrice() {
-        return CommonUtils.getInstance().toNextHundred(getOracleTotalPrice() * (100d - getCPDiscount()) / 100d);
+        return CommonUtils.getInstance().toNextInt(getOracleTotalPrice() * (100d - getCPDiscount()) / 100d);
     }
 
     public double getOracleCustomerPrice() {
-        return CommonUtils.getInstance().toNextHundred(getOracleTotalPrice() * (1 - getDiscount()));
+        return CommonUtils.getInstance().toNextInt(getOracleTotalPrice() * (1 - getDiscount()));
     }
 
     public double getOracleCPMargin(){

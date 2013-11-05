@@ -153,7 +153,7 @@ public class OracleQuote {
 
         for(OracleLicense ol:getOracleLicenses().values()){
             if(!ol.isMemberOfAnotherBox()){
-                total += ol.getOracleTotalPrice();
+                total += ol.getOracleSupportPrice();
             }
         }
 
