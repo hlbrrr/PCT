@@ -2534,9 +2534,20 @@
                         $(that._body).remove();
                     }
                 });
-            $(this._key).change(function() {
+            /*$(this._key).change(function() {
                 $(that._dependencyTitle).html($(this).val());
-            });
+            });*/
+            $(this._key).change(function() {
+                var key = $(this).val();
+                var name = '';
+                $('input[id="Key"]', '#Recommendations').add('input[id="Key"]', '#TrainingCourses').add('input[id="Key"]', '#Services').add('input[id="Key"]', '#Oracle').each(function(){
+                    if($(this).val() == key){
+                        name = ' - ' + $('#Name', $(this).parents('#SettingsPane')).val();
+                    }
+                });
+
+                $(that._dependencyTitle).html(key + name);
+            }).addClass('magicField');
             $(this._type).change(function() {
                 if ($(this).val() == 'require') {
                     $(that._dependencyBody).addClass('requireDependency');
