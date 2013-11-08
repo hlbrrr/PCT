@@ -127,6 +127,10 @@ public class OracleLicense {
         this.cores = val;
     }
 
+    public double getLicCount() {
+        return CommonUtils.getInstance().toNextInt(getCoefficient().getValue() * getCores());
+    }
+
     public Integer getCores() {
         return this.cores;
     }
@@ -281,32 +285,41 @@ public class OracleLicense {
     }
 
     public Double getLicensePrice() {
-        return CommonUtils.getInstance().toNextInt(getOracleLicense().getBasePrice() * getProposal().getCurrencyRate() * CommonUtils.getInstance().toNextInt(getCoefficient().getValue() * getCores()));
+        return CommonUtils.getInstance().toNextInt(getOracleLicense().getBasePrice() * getProposal().getCurrencyRate() * getLicCount());
     }
 
     private double getOptionPrice(OracleOption o){
-        return  CommonUtils.getInstance().toNextInt(o.getBasePrice() * getProposal().getCurrencyRate());
+        return CommonUtils.getInstance().toNextInt(o.getBasePrice() * getProposal().getCurrencyRate());
     }
 
-    public double getOptionsPrice(boolean isSupportPrice) {
+    private double getOptionSupportPrice(OracleOption o){
+        return CommonUtils.getInstance().toNextInt(o.getSupportPrice() * getProposal().getCurrencyRate());
+    }
+
+    public double getOptionsPrice() {
         double optionsPrice = 0d;
         for(String s:getProduct().getOracleOptions()){
             OracleOption o = getProposal().getConfig().getOracleOptions().get(s);
             if(o != null){
-                if(isSupportPrice && o.isInclude() || !isSupportPrice){
                     optionsPrice += getOptionPrice(o);
-                }
             }
         }
-        return optionsPrice;
-    }
-
-    public double getOptionsPrice() {
-        return getOptionsPrice(false);
+        return CommonUtils.getInstance().toNextInt(optionsPrice * getLicCount());
     }
 
     public double getOracleSupportPrice() {
-        return CommonUtils.getInstance().toNextInt(getProposal().getOracleQuote().getOracleLicenses().get(getProduct().getName()).getOracleLicense().getSupportRate() * (getOptionsPrice(true) + getLicensePrice()));
+        double optionsPrice = 0d;
+        for(String s:getProduct().getOracleOptions()){
+            OracleOption o = getProposal().getConfig().getOracleOptions().get(s);
+            if(o != null){
+                optionsPrice += getOptionSupportPrice(o);
+            }
+        }
+        optionsPrice = CommonUtils.getInstance().toNextInt(optionsPrice * getLicCount());
+
+        double licSupportPrice = CommonUtils.getInstance().toNextInt(getProposal().getOracleQuote().getOracleLicenses().get(getProduct().getName()).getOracleLicense().getSupportPrice() * getLicCount());
+
+        return optionsPrice + licSupportPrice;
     }
 
     public double getOracleTotalPrice() {

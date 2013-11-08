@@ -25,7 +25,7 @@ public class OracleLicense {
     private Double basePrice;
     private Double FUDiscount;
     private Double ASFUDiscount;
-    private Double supportRate;
+    private Double supportPrice;
     private List<Coefficient> coefficients = new ArrayList<Coefficient>(0);
 
     /*
@@ -54,7 +54,7 @@ public class OracleLicense {
             this.setHint(xut.getNode("Hint", initialData));
             this.setFUDiscount(xut.getNode("FUDiscount", initialData));
             this.setASFUDiscount(xut.getNode("ASFUDiscount", initialData));
-            this.setSupportRate(xut.getNode("SupportRate", initialData));
+            this.setSupportPrice(xut.getNode("SupportPrice", initialData));
 
             this.setCoefficients(xut.getNodes("Coefficients/Coefficient", initialData));
 
@@ -66,15 +66,15 @@ public class OracleLicense {
         }
     }
 
-    public Double getSupportRate() {
-        return supportRate;
+    public Double getSupportPrice() {
+        return supportPrice;
     }
 
-    private void setSupportRate(Node supportRate) throws PCTDataFormatException {
+    private void setSupportPrice(Node supportPrice) throws PCTDataFormatException {
         try {
-            this.supportRate = xut.getDouble(supportRate);
+            this.supportPrice = xut.getDouble(supportPrice);
         } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Oracle license supportRate is not defined correctly", e.getDetails());
+            throw new PCTDataFormatException("Oracle license supportPrice is not defined correctly", e.getDetails());
         }
     }
 

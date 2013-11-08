@@ -468,6 +468,7 @@
             $.extend(PCT, {
                 currentModel:(new PCT.model()).init($('root', initialData)).setRoot(root)
             });
+            $('.magicField').change();
         },
         sendData:function (url, data, method) {
             if (url && data) {
@@ -1918,8 +1919,16 @@
                     }
                 });
             $(this._key).change(function() {
-                $(that._dependencyTitle).html($(this).val());
-            });
+                var key = $(this).val();
+                var name = '';
+                $('input[id="Key"]', '#Recommendations').add('input[id="Key"]', '#TrainingCourses').add('input[id="Key"]', '#Services').add('input[id="Key"]', '#Oracle').each(function(){
+                    if($(this).val() == key){
+                        name = ' - ' + $('#Name', $(this).parents('#SettingsPane')).val();
+                    }
+                });
+
+                $(that._dependencyTitle).html(key + name);
+            }).addClass('magicField');
             $(this._type).change(function() {
                 if ($(this).val() == 'require') {
                     $(that._dependencyBody).addClass('requireDependency');
@@ -3390,7 +3399,7 @@
                 _basePrice:$('#BasePrice', dom).get(),
                 _FUDiscount:$('#FUDiscount', dom).get(),
                 _ASFUDiscount:$('#ASFUDiscount', dom).get(),
-                _supportRate:$('#SupportRate', dom).get(),
+                _supportPrice:$('#SupportPrice', dom).get(),
                 _hint:$('#Hint', dom).get(),
                 _clone:$('#Clone', dom).get(),
                 _core:$('#Core', dom).get()
@@ -3411,7 +3420,7 @@
                     config += '<BasePrice>' + $(that._basePrice).val() + '</BasePrice>';
                     config += '<FUDiscount>' + $(that._FUDiscount).val() + '</FUDiscount>';
                     config += '<ASFUDiscount>' + $(that._ASFUDiscount).val() + '</ASFUDiscount>';
-                    config += '<SupportRate>' + $(that._supportRate).val() + '</SupportRate>';
+                    config += '<SupportPrice>' + $(that._supportPrice).val() + '</SupportPrice>';
 
                     config += '<Coefficients>';
                     $(that._coefficients).children().each(function() {
@@ -3470,7 +3479,7 @@
                     $(this._basePrice).val($('>BasePrice', initialData).text()).change();
                     $(this._FUDiscount).val($('>FUDiscount', initialData).text()).change();
                     $(this._ASFUDiscount).val($('>ASFUDiscount', initialData).text()).change();
-                    $(this._supportRate).val($('>SupportRate', initialData).text()).change();
+                    $(this._supportPrice).val($('>SupportPrice', initialData).text()).change();
 
                     $(this._settingsPane).addClass('hidden');
                     $(this._coefficients).addClass('hidden');
@@ -3504,10 +3513,10 @@
                 _name:$('#Name', dom).get(),
                 _shortName:$('#ShortName', dom).get(),
                 _key:$('#Key', dom).get(),
-                _include:$('#Include', dom).get(),
                 _oracleOptionTitle:$('#Title', dom).get(),
                 _settings:$('#Settings', dom).get(),
                 _settingsPane:$('#SettingsPane', dom).get(),
+                _supportPrice:$('#SupportPrice', dom).get(),
                 _remove:$('#Remove', dom).get(),
                 _basePrice:$('#BasePrice', dom).get(),
                 _hint:$('#Hint', dom).get(),
@@ -3524,7 +3533,7 @@
                     config += '<Name>' + $(that._name).val() + '</Name>';
                     config += '<Hint>' + $(that._hint).val() + '</Hint>';
                     config += '<BasePrice>' + $(that._basePrice).val() + '</BasePrice>';
-                    config += '<Include>' + ($(that._include).prop('checked') ? 'true' : 'false') + '</Include>';
+                    config += '<SupportPrice>' + $(that._supportPrice).val() + '</SupportPrice>';
                     config += '</Oracle>';
                     return config;
                 }
@@ -3559,6 +3568,7 @@
                     $(this._name).val($('>Name', initialData).text()).change();
                     $(this._shortName).val($('>ShortName', initialData).text()).change();
                     $(this._hint).val($('>Hint', initialData).text()).change();
+                    $(this._supportPrice).val($('>SupportPrice', initialData).text()).change();
                     $(this._basePrice).val($('>BasePrice', initialData).text()).change();
                     $(this._include).prop('checked', ($('>Include', initialData).text() == 'true')).change();
 

@@ -1673,6 +1673,8 @@ public class SummaryForm {
                 Border border = BorderFactory.createMatteBorder(1, 1, 0, 0, Color.black);
                 Border lborder = BorderFactory.createMatteBorder(1, 1, 0, 1, Color.black);
                 for(OracleLicense lic:getProposal().getOracleQuote().getOracleLicenses().values()){
+
+                    final java.util.List<CustomJLabel> lbls = new ArrayList<CustomJLabel>();
                     final OracleLicense _lic = lic;
                     {
                         GridBagConstraints cc = new GridBagConstraints();
@@ -1684,26 +1686,48 @@ public class SummaryForm {
 
                         c.gridwidth = 10;
                         c.gridx = 0;
-                        JLabel label = new JLabel();
-                        String jLabelText = lic.getProduct().getName() + " Oracle Box" + (_lic.isMemberOfAnotherBox()?(" -> " + _lic.getParentName()):"");
-                        label.setBorder(new EmptyBorder(4, 4, 4, 4));
-                        Font newLabelFont=new Font(label.getFont().getName(),Font.BOLD,label.getFont().getSize());
 
-                        if(_lic.isMemberOfAnotherBox()){
-                            jLabelText = "<html><font color=\"gray\">" + jLabelText + "</font></html>";
-                        }
-                        label.setText(jLabelText);
+
+
+                        CustomJLabel label = new CustomJLabel(new PCTChangedListener() {
+                            public void act(Object src) {
+                                String jLabelText = _lic.getProduct().getName() + " Oracle Box" + (!_lic.isMemberOfAnotherBox()?(" (Total licenses: " + (int)_lic.getLicCount()) + ")":"") + (_lic.isMemberOfAnotherBox()?(" -> " + _lic.getParentName()):"");
+
+                                CustomJLabel _label = ((CustomJLabel) src);
+
+                                _label.setBorder(new EmptyBorder(4, 4, 4, 4));
+                                Font newLabelFont=new Font(_label.getFont().getName(),Font.BOLD,_label.getFont().getSize());
+
+                                if(_lic.isMemberOfAnotherBox()){
+                                    jLabelText = "<html><font color=\"gray\">" + jLabelText + "</font></html>";
+                                }
+                                _label.setText(jLabelText);
+                                _label.setFont(newLabelFont);
+
+                            }
+
+                            public void setData(String key, Object data) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+
+                            public Object getData(String key) {
+                                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+                        label.call();
+                        lbls.add(label);
+
+                        Font newLabelFont=new Font(label.getFont().getName(),Font.BOLD,
+                                label.getFont().getSize());
 
                         Font newLabelFontBtn=new Font(label.getFont().getName(),Font.BOLD,label.getFont().getSize());
-
-                        label.setFont(newLabelFont);
 
                         JPanel panel = new JPanel();
                         //panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
                         panel.setLayout(new GridBagLayout());
                         panel.add(label, cc);
 
-                        if(_lic.canBeMoved() && !_lic.isMemberOfAnotherBox()){
+                        if(_lic.canBeMoved() && !_lic.isMemberOfAnotherBox() && _lic.getChildren().size() == 0){
                             JLabel mlabel = new JLabel("[Move to]");
                             mlabel.setBorder(new EmptyBorder(4, 4, 4, 4));
                             mlabel.setFont(newLabelFontBtn);
@@ -1939,8 +1963,6 @@ public class SummaryForm {
                         panel.setBackground(Color.getHSBColor(294f, 0.03f, 0.7f));
                         oracleTable.add(panel, c);
                     }
-
-                    final java.util.List<CustomJLabel> lbls = new ArrayList<CustomJLabel>();
 
                     //border = BorderFactory.createMatteBorder(1, 1, 1, 0, Color.black);
                     //lborder = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black);
@@ -2556,7 +2578,7 @@ public class SummaryForm {
                     }
                     c.gridy++;
                     // row 6
-                    {
+                    /*{
                         c.gridx = 0;
                         JLabel label = new JLabel("Support rate");
 
@@ -2604,7 +2626,7 @@ public class SummaryForm {
                             oracleTable.add(panel, c);
                         }
                     }
-                    c.gridy++;
+                    c.gridy++;*/
                     // row 7
                     {
                         c.gridx = 0;

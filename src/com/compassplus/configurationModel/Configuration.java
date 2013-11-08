@@ -53,8 +53,8 @@ public class Configuration {
     private Double oracleDiscount = 0d;
 
     public boolean isSalesSupport() {
-        return true;
-        //return salesSupport != null ? salesSupport : false;
+        //return true;
+        return salesSupport != null ? salesSupport : false;
     }
 
     public static Configuration getInstance() {

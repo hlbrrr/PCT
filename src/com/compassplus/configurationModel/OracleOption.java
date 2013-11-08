@@ -24,7 +24,7 @@ public class OracleOption {
     private String shortName;
     private String hint;
     private Double basePrice;
-    private Boolean include;
+    private Double supportPrice;
 
     public OracleOption(Node initialData) throws PCTDataFormatException {
         init(initialData);
@@ -39,13 +39,25 @@ public class OracleOption {
             this.setKey(xut.getNode("Key", initialData));
             this.setBasePrice(xut.getNode("BasePrice", initialData));
             this.setHint(xut.getNode("Hint", initialData));
-            this.setInclude(xut.getNode("Include", initialData));
+            this.setSupportPrice(xut.getNode("SupportPrice", initialData));
 
             log.info("Oracle option successfully parsed: \nName: " + this.getName() +
                     "\nKey: " + this.getKey() +
                     "\nBasePrice: " + this.getBasePrice());
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Oracle option is not defined correctly: \nKey: " + this.getKey(), e.getDetails());
+        }
+    }
+
+    public Double getSupportPrice() {
+        return supportPrice;
+    }
+
+    private void setSupportPrice(Node supportPrice) throws PCTDataFormatException {
+        try {
+            this.supportPrice = xut.getDouble(supportPrice);
+        } catch (PCTDataFormatException e) {
+            throw new PCTDataFormatException("Oracle license supportPrice is not defined correctly", e.getDetails());
         }
     }
 
@@ -107,18 +119,6 @@ public class OracleOption {
         } catch (PCTDataFormatException e) {
             throw new PCTDataFormatException("Oracle option hint is not defined correctly", e.getDetails());
         }
-    }
-
-    private void setInclude(Node include) throws PCTDataFormatException {
-        try {
-            this.include = xut.getBoolean(include, true);
-        } catch (PCTDataFormatException e) {
-            throw new PCTDataFormatException("Oracle include-flag is not defined correctly", e.getDetails());
-        }
-    }
-
-    public Boolean isInclude() {
-        return this.include != null ? this.include : false;
     }
 
     @Override

@@ -2179,7 +2179,7 @@ public class MainForm {
 
                                                                 i++;
                                                             }
-                                                            {
+                                                            /*{
                                                                 if (oS.getLastRowNum() >= oRowIndex + i) {
                                                                     oS.shiftRows(oRowIndex + i, oS.getLastRowNum(), 1);
                                                                 }
@@ -2215,7 +2215,7 @@ public class MainForm {
                                                                 }
 
                                                                 i++;
-                                                            }
+                                                            }*/
                                                             {
                                                                 if (oS.getLastRowNum() >= oRowIndex + i) {
                                                                     oS.shiftRows(oRowIndex + i, oS.getLastRowNum(), 1);
