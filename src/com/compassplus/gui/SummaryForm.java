@@ -2544,7 +2544,7 @@ public class SummaryForm {
                             OracleOption op = getProposal().getConfig().getOracleOptions().get(s);
                             options += ", " + op.getShortName();
                         }
-                        JLabel label = new JLabel(options.substring(1));
+                        JLabel label = new JLabel(options.length()>0?options.substring(1):"");
 
                         JPanel panel = new JPanel();
                         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

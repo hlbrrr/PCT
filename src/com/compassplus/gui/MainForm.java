@@ -2166,7 +2166,7 @@ public class MainForm {
                                                                 Cell c2 = r.createCell(1 + oCellIndex);
                                                                 CellStyle cs2 = rowStyle.getCellStyle(1 + oCellIndex, wb.createCellStyle());
                                                                 cs2.setWrapText(true);
-                                                                c2.setCellValue(options.substring(1));
+                                                                c2.setCellValue(options.length()>0?options.substring(1):"");
                                                                 c2.setCellStyle(cs2);
 
                                                                 for (int y = 2 + oCellIndex; y <= rowStyle.getLast(); y++) {
@@ -2527,6 +2527,7 @@ public class MainForm {
                                                     getCurrentProposalForm().setChanged(false);
                                                     JOptionPane.showMessageDialog(getRoot(), "Proposal successfully exported", "Result", JOptionPane.INFORMATION_MESSAGE);
                                                 } catch (Exception exception) {
+                                                    exception.printStackTrace();
                                                     JOptionPane.showMessageDialog(getRoot(), "Proposal can't be exported", "Error", JOptionPane.ERROR_MESSAGE);
                                                 }
                                             } else if (value == JOptionPane.CANCEL_OPTION) {
