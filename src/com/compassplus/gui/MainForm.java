@@ -6,7 +6,6 @@ import com.compassplus.proposalModel.PSQuote;
 import com.compassplus.proposalModel.Product;
 import com.compassplus.proposalModel.Proposal;
 import com.compassplus.proposalModel.TrainingCourse;
-
 import com.compassplus.utils.CommonUtils;
 import com.compassplus.utils.Logger;
 import net.iharder.dnd.FileDrop;
@@ -399,7 +398,7 @@ public class MainForm {
             }
 
             final boolean isPSQ = getCurrentProposalForm().getProposal().getPSQuote().enabled();
-            final boolean isOQ =  !getCurrentProposalForm().getProposal().getConfig().isSalesSupport() && getCurrentProposalForm().getProposal().getOracleQuote().enabled() && getCurrentProposalForm().getProposal().getOracleQuote().getOracleLicenses().size() > 0;
+            final boolean isOQ = !getCurrentProposalForm().getProposal().getConfig().isSalesSupport() && getCurrentProposalForm().getProposal().getOracleQuote().enabled() && getCurrentProposalForm().getProposal().getOracleQuote().getOracleLicenses().size() > 0;
 
             final JComboBox sheetIndexField = sheets.size() > 1 ? new JComboBox(sheets.toArray()) : null;
             if (sheetIndexField != null && sheetIndexStr != null) {
@@ -410,7 +409,7 @@ public class MainForm {
                     }
                 }
             }
-            String selectedSheet1 = sheetIndexField!=null ? (String) sheetIndexField.getSelectedItem():null;
+            String selectedSheet1 = sheetIndexField != null ? (String) sheetIndexField.getSelectedItem() : null;
 
             final JComboBox psSheetIndexField = sheets.size() > 1 && isPSQ ? new JComboBox(sheets.toArray()) : null;
             if (psSheetIndexField != null && psSheetIndexStr != null) {
@@ -420,7 +419,7 @@ public class MainForm {
                         break;
                     }
                 }
-            }else if (psSheetIndexField != null){
+            } else if (psSheetIndexField != null) {
                 for (String key : sheets) {
                     if (!key.equals(selectedSheet1)) {
                         psSheetIndexField.setSelectedItem(key);
@@ -428,7 +427,7 @@ public class MainForm {
                     }
                 }
             }
-            String selectedSheet2 = psSheetIndexField!=null ? (String) psSheetIndexField.getSelectedItem():null;
+            String selectedSheet2 = psSheetIndexField != null ? (String) psSheetIndexField.getSelectedItem() : null;
 
             final JComboBox oSheetIndexField = sheets.size() > 1 && isOQ
                     ? new JComboBox(sheets.toArray()) : null;
@@ -439,7 +438,7 @@ public class MainForm {
                         break;
                     }
                 }
-            }else if (oSheetIndexField != null){
+            } else if (oSheetIndexField != null) {
                 for (String key : sheets) {
                     if (!key.equals(selectedSheet1) && !key.equals(selectedSheet2)) {
                         oSheetIndexField.setSelectedItem(key);
@@ -457,7 +456,7 @@ public class MainForm {
             final JTextField oCellIndexField = new JTextField(oCellIndexInt != null ? oCellIndexInt.toString() : "1");
             final JOptionPane optionPane = new JOptionPane(
                     new JComponent[]{
-                            sheets.size() > 1 ? new JLabel("Products sheet"):null, sheetIndexField,
+                            sheets.size() > 1 ? new JLabel("Products sheet") : null, sheetIndexField,
                             new JLabel("Products row index"), rowIndexField,
                             new JLabel("Products cell index"), cellIndexField,
                             (sheets.size() > 1 && isPSQ) ? new JLabel("Prof. services sheet") : null, isPSQ ? psSheetIndexField : null,
@@ -527,24 +526,24 @@ public class MainForm {
                                                 }
 
 
-                                                if(getCurrentProposalForm().getProposal().getPSQuote().enabled()){
-                                                    if(s.equals(psS)){
+                                                if (getCurrentProposalForm().getProposal().getPSQuote().enabled()) {
+                                                    if (s.equals(psS)) {
                                                         JOptionPane.showMessageDialog(getRoot(), "Products and prof. services can't be exported on the same sheet", "Error", JOptionPane.ERROR_MESSAGE);
                                                         throw new Exception();
                                                     }
                                                 }
 
 
-                                                if(getCurrentProposalForm().getProposal().getPSQuote().enabled() && isOQ){
-                                                    if(psS.equals(oS)){
+                                                if (getCurrentProposalForm().getProposal().getPSQuote().enabled() && isOQ) {
+                                                    if (psS.equals(oS)) {
                                                         JOptionPane.showMessageDialog(getRoot(), "Oracle calculation and prof. services can't be exported on the same sheet", "Error", JOptionPane.ERROR_MESSAGE);
                                                         throw new Exception();
                                                     }
                                                 }
 
 
-                                                if(isOQ){
-                                                    if(s.equals(oS)){
+                                                if (isOQ) {
+                                                    if (s.equals(oS)) {
                                                         JOptionPane.showMessageDialog(getRoot(), "Products and oracle calculation can't be exported on the same sheet", "Error", JOptionPane.ERROR_MESSAGE);
                                                         throw new Exception();
                                                     }
@@ -783,7 +782,7 @@ public class MainForm {
                                                             Cell c2 = r.createCell(1 + psCellIndex);
                                                             CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
                                                             cs2.setWrapText(true);
-                                                            c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?getCurrentProposalForm().getProposal().getRegion().getMDRate() * getCurrentProposalForm().getProposal().getCurrency().getRate():0);
+                                                            c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? getCurrentProposalForm().getProposal().getRegion().getMDRate() * getCurrentProposalForm().getProposal().getCurrency().getRate() : 0);
                                                             if (!fSameCurrency)
                                                                 cs2.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
                                                             c2.setCellStyle(cs2);
@@ -824,7 +823,7 @@ public class MainForm {
                                                             CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
                                                             cs2.setDataFormat(psS.getWorkbook().createDataFormat().getFormat("0%;-0%"));
                                                             c2.setCellStyle(cs2);
-                                                            c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?psq.getMDDiscount():0);
+                                                            c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? psq.getMDDiscount() : 0);
 
                                                             for (int y = 2 + psCellIndex; y <= rowStyle.getLast(); y++) {
                                                                 CellStyle tcs = rowStyle.getCellStyle(y, null);
@@ -1104,7 +1103,7 @@ public class MainForm {
                                                                     }
                                                                     RowStyle rowStyle = psRowStyles.get((int) (currentRowIndex - psRowStyles.size() * Math.floor(currentRowIndex / psRowStyles.size())));
                                                                     currentRowIndex++;
-                                                                    if(currentRowIndexFrom < 0){
+                                                                    if (currentRowIndexFrom < 0) {
                                                                         currentRowIndexFrom = currentRowIndex;
                                                                     }
                                                                     Row r = psS.createRow(psRowIndex + i);
@@ -1370,7 +1369,7 @@ public class MainForm {
 
                                                         int currentRowIndexFromTC = -1;
                                                         int currentRowIndexToTC = -1;
-                                                        if(psq.getTrainingCoursesCount()>0){
+                                                        if (psq.getTrainingCoursesCount() > 0) {
                                                             {
                                                                 if (psS.getLastRowNum() >= psRowIndex + i) {
                                                                     psS.shiftRows(psRowIndex + i, psS.getLastRowNum(), 1);
@@ -1509,11 +1508,11 @@ public class MainForm {
                                                                 }
                                                                 i++;
                                                             }
-                                                            for(TrainingCourse ttc : psq.getTrainingCourses().values()){
-                                                                if(!ttc.getInclude()){
+                                                            for (TrainingCourse ttc : psq.getTrainingCourses().values()) {
+                                                                if (!ttc.getInclude()) {
                                                                     continue;
                                                                 }
-                                                                if(currentRowIndexFromTC < 0){
+                                                                if (currentRowIndexFromTC < 0) {
                                                                     currentRowIndexFromTC = currentRowIndex + 1;
                                                                 }
                                                                 if (psS.getLastRowNum() >= psRowIndex + i) {
@@ -1538,7 +1537,7 @@ public class MainForm {
 
                                                                 Cell c2 = r.createCell(1 + psCellIndex);
                                                                 CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
-                                                                c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?ttc.getPricePerAttendee():0);
+                                                                c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? ttc.getPricePerAttendee() : 0);
                                                                 if (!fSameCurrency)
                                                                     cs2.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
                                                                 c2.setCellStyle(cs2);
@@ -1552,7 +1551,7 @@ public class MainForm {
 
                                                                 Cell c4 = r.createCell(3 + psCellIndex);
                                                                 CellStyle cs4 = rowStyle.getCellStyle(3 + psCellIndex, wb.createCellStyle());
-                                                                c4.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?ttc.getRegionalPrice():0);
+                                                                c4.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? ttc.getRegionalPrice() : 0);
                                                                 if (!fSameCurrency)
                                                                     cs4.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
                                                                 c4.setCellStyle(cs4);
@@ -1704,7 +1703,7 @@ public class MainForm {
 
                                                             Cell c2 = r.createCell(1 + psCellIndex);
                                                             CellStyle cs2 = rowStyle.getCellStyle(1 + psCellIndex, wb.createCellStyle());
-                                                            c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?psq.getPSDiscount():0);
+                                                            c2.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? psq.getPSDiscount() : 0);
                                                             cs2.setDataFormat(s.getWorkbook().createDataFormat().getFormat("0%;-0%"));
                                                             c2.setCellStyle(cs2);
 
@@ -1717,7 +1716,7 @@ public class MainForm {
 
                                                             Cell c4 = r.createCell(3 + psCellIndex);
                                                             CellStyle cs4 = rowStyle.getCellStyle(3 + psCellIndex, wb.createCellStyle());
-                                                            c4.setCellFormula("(1-" + rCol+(psRowIndex + currentRowIndex) + ")*(" + totalCol + (psRowIndex + sTotal +1) + "+" + totalCol +(psRowIndex + tTotal+1) + ")");
+                                                            c4.setCellFormula("(1-" + rCol + (psRowIndex + currentRowIndex) + ")*(" + totalCol + (psRowIndex + sTotal + 1) + "+" + totalCol + (psRowIndex + tTotal + 1) + ")");
                                                             if (!fSameCurrency)
                                                                 cs4.setDataFormat(psS.getWorkbook().createDataFormat().getFormat(format));
                                                             c4.setCellStyle(cs4);
@@ -1760,11 +1759,11 @@ public class MainForm {
                                                                 (getCurrentProposalForm().getProposal().getCurrency().getSymbol() == null ?
                                                                         " \"" + getCurrentProposalForm().getProposal().getCurrency().getName() + "\"" : "");
                                                         boolean first = true;
-                                                        for(com.compassplus.proposalModel.OracleLicense ol : oq.getOracleLicenses().values()){
-                                                            if(ol.isMemberOfAnotherBox()){
+                                                        for (com.compassplus.proposalModel.OracleLicense ol : oq.getOracleLicenses().values()) {
+                                                            if (ol.isMemberOfAnotherBox()) {
                                                                 continue;
                                                             }
-                                                            if(!first){
+                                                            if (!first) {
                                                                 if (oS.getLastRowNum() >= oRowIndex + i) {
                                                                     oS.shiftRows(oRowIndex + i, oS.getLastRowNum(), 1);
                                                                 }
@@ -1792,7 +1791,7 @@ public class MainForm {
                                                                     }
                                                                 }
                                                                 i++;
-                                                            }else{
+                                                            } else {
                                                                 first = false;
                                                             }
                                                             {
@@ -1955,28 +1954,28 @@ public class MainForm {
 
                                                                 Cell c3 = r.createCell(2 + oCellIndex);
                                                                 CellStyle cs3 = rowStyle.getCellStyle(2 + oCellIndex, wb.createCellStyle());
-                                                                c3.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?ol.getLicensePrice():0);
+                                                                c3.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? ol.getLicensePrice() : 0);
                                                                 if (!fSameCurrency)
                                                                     cs3.setDataFormat(oS.getWorkbook().createDataFormat().getFormat(format));
                                                                 c3.setCellStyle(cs3);
 
                                                                 Cell c4 = r.createCell(3 + oCellIndex);
                                                                 CellStyle cs4 = rowStyle.getCellStyle(3 + oCellIndex, wb.createCellStyle());
-                                                                c4.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?ol.getOptionsPrice():0);
+                                                                c4.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? ol.getOptionsPrice() : 0);
                                                                 if (!fSameCurrency)
                                                                     cs4.setDataFormat(oS.getWorkbook().createDataFormat().getFormat(format));
                                                                 c4.setCellStyle(cs4);
 
                                                                 Cell c5 = r.createCell(4 + oCellIndex);
                                                                 CellStyle cs5 = rowStyle.getCellStyle(4 + oCellIndex, wb.createCellStyle());
-                                                                c5.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?ol.getOracleSupportPrice():0);
+                                                                c5.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? ol.getOracleSupportPrice() : 0);
                                                                 if (!fSameCurrency)
                                                                     cs5.setDataFormat(oS.getWorkbook().createDataFormat().getFormat(format));
                                                                 c5.setCellStyle(cs5);
 
                                                                 Cell c6 = r.createCell(5 + oCellIndex);
                                                                 CellStyle cs6 = rowStyle.getCellStyle(5 + oCellIndex, wb.createCellStyle());
-                                                                c6.setCellFormula("SUM(" + licCol + (oRowIndex+currentRowIndex) + ":" + supCol + (oRowIndex+currentRowIndex) + ")");
+                                                                c6.setCellFormula("SUM(" + licCol + (oRowIndex + currentRowIndex) + ":" + supCol + (oRowIndex + currentRowIndex) + ")");
                                                                 //System.out.println("SUM(" + licCol + oRowIndex + ":" + supCol + oRowIndex + ")");
                                                                 if (!fSameCurrency)
                                                                     cs6.setDataFormat(oS.getWorkbook().createDataFormat().getFormat(format));
@@ -2158,7 +2157,7 @@ public class MainForm {
                                                                 c1.setCellStyle(cs1);
 
                                                                 String options = "";
-                                                                for(String ss:ol.getProduct().getOracleOptions()){
+                                                                for (String ss : ol.getProduct().getOracleOptions()) {
                                                                     OracleOption op = getCurrentProposalForm().getProposal().getConfig().getOracleOptions().get(ss);
                                                                     options += ", " + op.getShortName();
                                                                 }
@@ -2166,7 +2165,7 @@ public class MainForm {
                                                                 Cell c2 = r.createCell(1 + oCellIndex);
                                                                 CellStyle cs2 = rowStyle.getCellStyle(1 + oCellIndex, wb.createCellStyle());
                                                                 cs2.setWrapText(true);
-                                                                c2.setCellValue(options.length()>0?options.substring(1):"");
+                                                                c2.setCellValue(options.length() > 0 ? options.substring(1) : "");
                                                                 c2.setCellStyle(cs2);
 
                                                                 for (int y = 2 + oCellIndex; y <= rowStyle.getLast(); y++) {
@@ -2278,11 +2277,11 @@ public class MainForm {
                                                                 cs2.setWrapText(true);
 
                                                                 String sharedString = "Yes, with";
-                                                                for(String ss:ol.getChildren()){
-                                                                    sharedString += " " + ss + "," ;
+                                                                for (String ss : ol.getChildren()) {
+                                                                    sharedString += " " + ss + ",";
                                                                 }
 
-                                                                c2.setCellValue(ol.isShared()?sharedString.substring(0, sharedString.length() - 1):"No");
+                                                                c2.setCellValue(ol.isShared() ? sharedString.substring(0, sharedString.length() - 1) : "No");
                                                                 c2.setCellStyle(cs2);
 
                                                                 for (int y = 2 + oCellIndex; y <= rowStyle.getLast(); y++) {
@@ -2354,7 +2353,8 @@ public class MainForm {
                                                             }
                                                             i++;
                                                         }
-*/                                                       {
+*/
+                                                        {
                                                             if (oS.getLastRowNum() >= oRowIndex + i) {
                                                                 oS.shiftRows(oRowIndex + i, oS.getLastRowNum(), 1);
                                                             }
@@ -2382,28 +2382,28 @@ public class MainForm {
 
                                                             Cell c3 = r.createCell(2 + oCellIndex);
                                                             CellStyle cs3 = rowStyle.getCellStyle(2 + oCellIndex, wb.createCellStyle());
-                                                            c3.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?oq.getLicenseTotal():0);
+                                                            c3.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? oq.getLicenseTotal() : 0);
                                                             if (!fSameCurrency)
                                                                 cs3.setDataFormat(oS.getWorkbook().createDataFormat().getFormat(format));
                                                             c3.setCellStyle(cs3);
 
                                                             Cell c4 = r.createCell(3 + oCellIndex);
                                                             CellStyle cs4 = rowStyle.getCellStyle(3 + oCellIndex, wb.createCellStyle());
-                                                            c4.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?oq.getOptionsTotal():0);
+                                                            c4.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? oq.getOptionsTotal() : 0);
                                                             if (!fSameCurrency)
                                                                 cs4.setDataFormat(oS.getWorkbook().createDataFormat().getFormat(format));
                                                             c4.setCellStyle(cs4);
 
                                                             Cell c5 = r.createCell(4 + oCellIndex);
                                                             CellStyle cs5 = rowStyle.getCellStyle(4 + oCellIndex, wb.createCellStyle());
-                                                            c5.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?oq.getSupportTotal():0);
+                                                            c5.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? oq.getSupportTotal() : 0);
                                                             if (!fSameCurrency)
                                                                 cs5.setDataFormat(oS.getWorkbook().createDataFormat().getFormat(format));
                                                             c5.setCellStyle(cs5);
 
                                                             Cell c6 = r.createCell(5 + oCellIndex);
                                                             CellStyle cs6 = rowStyle.getCellStyle(5 + oCellIndex, wb.createCellStyle());
-                                                            c6.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?oq.getTotalTotal():0);
+                                                            c6.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? oq.getTotalTotal() : 0);
                                                             //System.out.println("SUM(" + licCol + oRowIndex + ":" + supCol + oRowIndex + ")");
                                                             if (!fSameCurrency)
                                                                 cs6.setDataFormat(oS.getWorkbook().createDataFormat().getFormat(format));
@@ -2426,14 +2426,14 @@ public class MainForm {
 
                                                             Cell c8 = r.createCell(7 + oCellIndex);
                                                             CellStyle cs8 = rowStyle.getCellStyle(7 + oCellIndex, wb.createCellStyle());
-                                                            c8.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?oq.getCPTotal():0);
+                                                            c8.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? oq.getCPTotal() : 0);
                                                             if (!fSameCurrency)
                                                                 cs8.setDataFormat(oS.getWorkbook().createDataFormat().getFormat(format));
                                                             c8.setCellStyle(cs8);
 
                                                             Cell c9 = r.createCell(8 + oCellIndex);
                                                             CellStyle cs9 = rowStyle.getCellStyle(8 + oCellIndex, wb.createCellStyle());
-                                                            c9.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?oq.getCustomerTotal():0);
+                                                            c9.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? oq.getCustomerTotal() : 0);
                                                             //System.out.println("CEILING(" + totCol + (oRowIndex + currentRowIndex) + "*(1-" + disCol + (oRowIndex + currentRowIndex) + "),1)");
                                                             if (!fSameCurrency)
                                                                 cs9.setDataFormat(oS.getWorkbook().createDataFormat().getFormat(format));
@@ -2441,7 +2441,7 @@ public class MainForm {
 
                                                             Cell c10 = r.createCell(9 + oCellIndex);
                                                             CellStyle cs10 = rowStyle.getCellStyle(9 + oCellIndex, wb.createCellStyle());
-                                                            c10.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport()?oq.getTotalMargin():0);
+                                                            c10.setCellValue(!getCurrentProposalForm().getProposal().getConfig().isSalesSupport() ? oq.getTotalMargin() : 0);
                                                             if (!fSameCurrency)
                                                                 cs10.setDataFormat(oS.getWorkbook().createDataFormat().getFormat(format));
                                                             c10.setCellStyle(cs10);
@@ -2975,12 +2975,24 @@ public class MainForm {
             public void actionPerformed(ActionEvent e) {
                 List<ListItem> sgs = new ArrayList<ListItem>();
                 List<ListItem> services = new ArrayList<ListItem>();
+                List<ListItem> serviceInstances = new ArrayList<ListItem>();
+
                 boolean first = true;
+                boolean firstService = true;
                 for (ServicesGroup sg : getCurrentProposalForm().getProposal().getConfig().getServicesRoot().getGroups()) {
                     sgs.add(new ListItem(sg.getName(), sg.getKey()));
                     if (first) {
                         for (Service s : sg.getServices().values()) {
                             services.add(new ListItem(s.getName(), s.getKey()));
+                            if (firstService) {
+                                serviceInstances.add(new ListItem("Custom", ""));
+                                for (Recommendation r : getCurrentProposalForm().getProposal().getConfig().getRecommendations().values()) {
+                                    if (r.getServiceKey().equals(s.getKey())) {
+                                        serviceInstances.add(new ListItem(r.getName(), r.getKey()));
+                                    }
+                                }
+                                firstService = false;
+                            }
                         }
                         first = false;
                     }
@@ -2989,6 +3001,7 @@ public class MainForm {
 
                 final JComboBox serviceGroupField = sgs.size() > 1 ? new JComboBox(sgs.toArray()) : null;
                 final JComboBox serviceField = new JComboBox(services.toArray());
+                final JComboBox serviceInstanceField = new JComboBox(serviceInstances.toArray());
 
                 serviceGroupField.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent actionEvent) {
@@ -3007,10 +3020,44 @@ public class MainForm {
 
                 serviceGroupField.setSelectedIndex(0);
 
+                serviceField.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        ListItem li = (ListItem) serviceField.getSelectedItem();
+                        if (li != null) {
+                            serviceInstanceField.removeAllItems();
+                            serviceInstanceField.addItem(new ListItem("Custom", ""));
+                            for (Recommendation r : getCurrentProposalForm().getProposal().getConfig().getRecommendations().values()) {
+                                if (r.getServiceKey().equals(li.getValue())) {
+                                    serviceInstanceField.addItem(new ListItem(r.getName(), r.getKey()));
+                                }
+                            }
+                        }
+                    }
+                });
+                serviceField.setSelectedIndex(0);
 
                 final JTextField serviceName = new JTextField();
 
                 final JTextArea textArea = new JTextArea("");
+
+                serviceInstanceField.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        ListItem li = (ListItem) serviceInstanceField.getSelectedItem();
+                        if (li != null) {
+                            if ("".equals(li.getValue())) {
+                                // undisable
+                                textArea.setEnabled(true);
+                                serviceName.setEnabled(true);
+                            } else {
+                                // disable
+                                textArea.setEnabled(false);
+                                serviceName.setEnabled(false);
+                            }
+                        }
+                    }
+                });
+                serviceInstanceField.setSelectedIndex(0);
+
                 textArea.setColumns(35);
                 textArea.setRows(10);
                 textArea.setLineWrap(true);
@@ -3021,11 +3068,14 @@ public class MainForm {
                 /*JOptionPane.showMessageDialog(
                         null, spane, "Description", JOptionPane.INFORMATION_MESSAGE);*/
 
+                final JSpinner inputMD = new JSpinner(new SpinnerNumberModel(0d, 0d, 10000d, 1d));
 
                 final JOptionPane optionPane = new JOptionPane(
                         new JComponent[]{
                                 sgs.size() > 1 ? new JLabel("Service group") : null, serviceGroupField,
                                 new JLabel("Service"), serviceField,
+                                new JLabel("Service instance"), serviceInstanceField,
+                                new JLabel("M/D"), inputMD,
                                 new JLabel("Name"), serviceName,
                                 new JLabel("Description"), spane
                         },
@@ -3054,8 +3104,18 @@ public class MainForm {
                                             if (optionPane.getValue() instanceof Integer) {
                                                 int value = (Integer) optionPane.getValue();
                                                 if (value == JOptionPane.OK_OPTION) {
+                                                    String serviceNameString = serviceName.getText();
+                                                    String serviceDesriptionString = textArea.getText();
+                                                    ListItem li = (ListItem) serviceInstanceField.getSelectedItem();
+                                                    if (li != null && !"".equals(li.getValue())) {
+                                                        Recommendation r = getCurrentProposalForm().getProposal().getConfig().getRecommendations().get(li.getValue());
+                                                        if (r != null) {
+                                                            serviceNameString = r.getName();
+                                                            serviceDesriptionString = r.getHint();
+                                                        }
+                                                    }
 
-                                                    getCurrentProposalForm().getProposal().getPSQuote().addService(new com.compassplus.proposalModel.Service(getCurrentProposalForm().getProposal(), serviceName.getText(), textArea.getText(), ((ListItem) serviceField.getSelectedItem()).getValue()));
+                                                    getCurrentProposalForm().getProposal().getPSQuote().addService(new com.compassplus.proposalModel.Service(getCurrentProposalForm().getProposal(), serviceNameString, serviceDesriptionString, ((ListItem) serviceField.getSelectedItem()).getValue(), (Double) inputMD.getValue()));
                                                     try {
                                                         getCurrentProposalForm().getPSForm().update();
                                                     } catch (Exception ee) {
@@ -3086,7 +3146,7 @@ public class MainForm {
                 List<ListItem> sgs = new ArrayList<ListItem>();
                 boolean first = true;
                 for (com.compassplus.configurationModel.TrainingCourse sg : getCurrentProposalForm().getProposal().getConfig().getTrainingCourses().values()) {
-                    if(!getCurrentProposalForm().getProposal().getPSQuote().getTrainingCourses().containsKey(sg.getKey())){
+                    if (!getCurrentProposalForm().getProposal().getPSQuote().getTrainingCourses().containsKey(sg.getKey())) {
                         sgs.add(new ListItem(sg.getName(), sg.getKey()));
                     }
                 }
@@ -3181,7 +3241,7 @@ public class MainForm {
                 if (getCurrentProposalForm() != null && !getCurrentProposalForm().getProposal().getPSQuote().enabled()
                         || getCurrentProposalForm().getProposal().getPSQuote().getTrainingCourses().size() == getCurrentProposalForm().getProposal().getConfig().getTrainingCourses().size()) {
                     addPSTrainingCourse.setEnabled(false);
-                }else{
+                } else {
                     addPSTrainingCourse.setEnabled(true);
                 }
             }
@@ -3294,7 +3354,7 @@ public class MainForm {
 
                     for (Product p : pp.getProducts().values()) {
 
-                        if (_proposal.getOracleQuote().enabled() && _proposal.getOracleQuote().getOracleLicenses().get(p.getName())!= null &&
+                        if (_proposal.getOracleQuote().enabled() && _proposal.getOracleQuote().getOracleLicenses().get(p.getName()) != null &&
                                 (_proposal.getOracleQuote().getOracleLicenses().get(p.getName()).getDiscount() > _proposal.getConfig().getOracleDiscount())) {
                             exceedDL = true;
                         }
@@ -3389,7 +3449,7 @@ public class MainForm {
         }
         int lastRowNum = sheet.getLastRowNum();
 
-        if(debug){
+        if (debug) {
             //System.out.println("lastRowNum = " + lastRowNum);
             //System.out.println("rowIndex = " + rowIndex);
         }

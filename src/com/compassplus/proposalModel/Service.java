@@ -104,10 +104,11 @@ public class Service {
         this.setService(getRecommendation().getServiceKey(), proposal.getConfig());
     }
 
-    public Service(Proposal proposal, String name, String hint, String serviceKey) throws PCTDataFormatException {
+    public Service(Proposal proposal, String name, String hint, String serviceKey, Double substitute) throws PCTDataFormatException {
         this.proposal = proposal;
         this.name = name;
         this.hint = hint;
+        this.substitute = substitute;
         this.setService(serviceKey, proposal.getConfig());
     }
 
