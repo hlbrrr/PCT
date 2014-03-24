@@ -3002,6 +3002,8 @@ public class MainForm {
                 final JComboBox serviceGroupField = sgs.size() > 1 ? new JComboBox(sgs.toArray()) : null;
                 final JComboBox serviceField = new JComboBox(services.toArray());
                 final JComboBox serviceInstanceField = new JComboBox(serviceInstances.toArray());
+                final JSpinner inputMD = new JSpinner(new SpinnerNumberModel(0d, 0d, 10000d, 1d));
+
 
                 serviceGroupField.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent actionEvent) {
@@ -3036,7 +3038,7 @@ public class MainForm {
                 });
                 serviceField.setSelectedIndex(0);
 
-                final JTextField serviceName = new JTextField();
+                final JTextArea serviceName = new JTextArea("");
 
                 final JTextArea textArea = new JTextArea("");
 
@@ -3044,19 +3046,38 @@ public class MainForm {
                     public void actionPerformed(ActionEvent actionEvent) {
                         ListItem li = (ListItem) serviceInstanceField.getSelectedItem();
                         if (li != null) {
+                            Recommendation r = getCurrentProposalForm().getProposal().getConfig().getRecommendations().get(li.getValue());
                             if ("".equals(li.getValue())) {
                                 // undisable
+                                inputMD.setValue(0d);
                                 textArea.setEnabled(true);
+                                textArea.setText("");
                                 serviceName.setEnabled(true);
+                                serviceName.setText("");
                             } else {
                                 // disable
+                                if("static".equals(r.getRecommendationType())){
+                                    inputMD.setValue(r.getMDValue());
+                                }else{
+                                    inputMD.setValue(0d);
+                                }
                                 textArea.setEnabled(false);
+                                textArea.setText(r.getHint());
                                 serviceName.setEnabled(false);
+                                serviceName.setText(r.getName());
                             }
                         }
                     }
                 });
                 serviceInstanceField.setSelectedIndex(0);
+
+                serviceName.setColumns(35);
+                serviceName.setRows(3);
+                serviceName.setLineWrap(true);
+                serviceName.setEditable(true);
+                serviceName.setWrapStyleWord(true);
+                JScrollPane spaneN = new JScrollPane(serviceName);
+                serviceName.setFont(spaneN.getFont());
 
                 textArea.setColumns(35);
                 textArea.setRows(10);
@@ -3068,15 +3089,13 @@ public class MainForm {
                 /*JOptionPane.showMessageDialog(
                         null, spane, "Description", JOptionPane.INFORMATION_MESSAGE);*/
 
-                final JSpinner inputMD = new JSpinner(new SpinnerNumberModel(0d, 0d, 10000d, 1d));
-
                 final JOptionPane optionPane = new JOptionPane(
                         new JComponent[]{
                                 sgs.size() > 1 ? new JLabel("Service group") : null, serviceGroupField,
                                 new JLabel("Service"), serviceField,
-                                new JLabel("Service instance"), serviceInstanceField,
+                                new JLabel("Recommnedation (service instance)"), serviceInstanceField,
                                 new JLabel("M/D"), inputMD,
-                                new JLabel("Name"), serviceName,
+                                new JLabel("Name"), spaneN,
                                 new JLabel("Description"), spane
                         },
                         JOptionPane.QUESTION_MESSAGE,
