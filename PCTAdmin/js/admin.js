@@ -3789,7 +3789,7 @@
                 _clone:$('#Clone', dom).get(),
                 _hint:$('#Hint', dom).get(),
                 _core:$('#Core', dom).get(),
-                _percentageKeysArea:$('#PercentageKeysArea', dom).get(),
+                _percentageKeysArea:$('#PercentageKeysArea', dom).get()
             });
             var that = this;
 
@@ -3885,7 +3885,7 @@
                 _mandatory:$('#Mandatory', dom).get(),
                 _price:$('#Price', dom).get(),
                 _core:$('#Core', dom).get(),
-                _percentageKeysArea:$('#PercentageKeysArea', dom).get(),
+                _percentageKeysArea:$('#PercentageKeysArea', dom).get()
             });
             var that = this;
 
