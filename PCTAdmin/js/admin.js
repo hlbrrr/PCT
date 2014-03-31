@@ -3335,7 +3335,9 @@
                 _remove:$('#Remove', dom).get(),
                 _clone:$('#Clone', dom).get(),
                 _hint:$('#Hint', dom).get(),
-                _core:$('#Core', dom).get()
+                _core:$('#Core', dom).get(),
+                _recommendations:$('#ServiceRecommendations', dom).get()
+
             });
             var that = this;
             $(this._clone).click(function() {
@@ -3369,6 +3371,20 @@
             $(this._serviceTitle).click(function() {
                 $(that._remove).toggleClass('hidden');
                 $(that._settingsPane).toggleClass('hidden');
+                $('.recommendation', that._recommendations).remove();
+                $(that._recommendations).addClass('hidden');
+                $('.divRecommendation', '#Recommendations').each(function(){
+                    var rKey = $('#ReferenceKey', this).val();
+                    console.log(rKey + '  ' + $(that._key).val());
+                    if(rKey == $(that._key).val()){
+                        var text =  $('#Name', this).val() + ' [ Type = ' + $('#RecommendationType', this).val() + ' | MDValue = ' + $('#MDValue', this).val() + ' ]';
+                        $(that._recommendations).removeClass('hidden');
+                        //$(that._recommendations).append('<div class="recommendation" style="padding-left:10px; font-style:italic">' + $('#Name', this).val() + '</div>');
+                        $(that._recommendations).append('<div class="divCapacitiesGroup recommendation" style="margin-top:10px; margin-bottom:0"><div class="divGroupTitle"><div class="titleTable"><div class="titleTableCell titleTableCellButton titleText titleTableCellFill">' + text + '</div></div></div></div>');
+
+
+                    }
+                });
             });
             $.extend(this, PCT.base, {
                 root:$('<div></div>').append(dom.contents()),
